@@ -56,32 +56,76 @@ export async function POST(req: Request) {
     const ipHash = ip ? crypto.createHash('sha256').update(ip).digest('hex') : undefined
 
     // Device hints from client body
-    const { page, query, language, tz, screenW, screenH, dpr } = body
+    const {
+      page,
+      query,
+      language,
+      languages,
+      tz,
+      screenW,
+      screenH,
+      viewportW,
+      viewportH,
+      orientation,
+      dpr,
+      platform: platformHint,
+      deviceMemory,
+      hardwareConcurrency,
+      maxTouchPoints,
+      connection: connectionInfo,
+      storage,
+      navigation,
+      paint,
+      performance: perf,
+      scrollDepth,
+      timeOnPageMs,
+      interactionCounts,
+      visibility,
+    } = body
 
     const parsed = ua ? new UAParser(ua).getResult() : undefined
     const browser = parsed?.browser?.name
     const device  = parsed?.device?.type || 'desktop'
-    const platform = parsed?.os?.name
+    const platform = platformHint || parsed?.os?.name
 
     await prisma.visit.create({
       data: {
         visitorId: vid,
         sessionId: sid,
-        path: page || '/',
-        query: query || undefined,
+        path: typeof page === 'string' && page ? page : '/',
+        query: typeof query === 'string' && query ? query : undefined,
         referrer: referer || undefined,
         eid, utmSource, utmMedium, utmCampaign, utmTerm, utmContent,
         gclid, fbclid, msclkid,
         userAgent: ua || undefined,
-        language: language || undefined,
+        language: typeof language === 'string' ? language : undefined,
+        languages: Array.isArray(languages) && languages.length ? languages : undefined,
         tz: tz || undefined,
-        screenW: screenW ?? null,
-        screenH: screenH ?? null,
-        dpr: dpr ?? null,
+        screenW: typeof screenW === 'number' ? screenW : null,
+        screenH: typeof screenH === 'number' ? screenH : null,
+        viewportW: typeof viewportW === 'number' ? viewportW : null,
+        viewportH: typeof viewportH === 'number' ? viewportH : null,
+        orientation: typeof orientation === 'string' ? orientation : undefined,
+        dpr: typeof dpr === 'number' ? dpr : null,
         platform: platform || undefined,
         device: device || undefined,
         browser: browser || undefined,
-        country, region, city, ipHash,
+        deviceMemory: typeof deviceMemory === 'number' ? deviceMemory : null,
+        hardwareConcurrency: typeof hardwareConcurrency === 'number' ? hardwareConcurrency : null,
+        maxTouchPoints: typeof maxTouchPoints === 'number' ? maxTouchPoints : null,
+        connection: connectionInfo ?? undefined,
+        storage: storage ?? undefined,
+        navigation: navigation ?? undefined,
+        paint: paint ?? undefined,
+        performance: perf ?? undefined,
+        scrollDepth: typeof scrollDepth === 'number' ? scrollDepth : null,
+        timeOnPageMs: typeof timeOnPageMs === 'number' ? Math.round(timeOnPageMs) : null,
+        interactionCounts: interactionCounts ?? undefined,
+        visibility: visibility ?? undefined,
+        country,
+        region,
+        city,
+        ipHash,
       },
     })
 

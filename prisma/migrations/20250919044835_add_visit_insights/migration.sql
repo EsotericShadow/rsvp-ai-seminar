@@ -1,0 +1,17 @@
+-- AlterTable
+ALTER TABLE "Visit" ADD COLUMN     "connection" JSONB,
+ADD COLUMN     "deviceMemory" DOUBLE PRECISION,
+ADD COLUMN     "hardwareConcurrency" INTEGER,
+ADD COLUMN     "interactionCounts" JSONB,
+ADD COLUMN     "languages" JSONB,
+ADD COLUMN     "maxTouchPoints" INTEGER,
+ADD COLUMN     "navigation" JSONB,
+ADD COLUMN     "orientation" TEXT,
+ADD COLUMN     "paint" JSONB,
+ADD COLUMN     "performance" JSONB,
+ADD COLUMN     "scrollDepth" INTEGER,
+ADD COLUMN     "storage" JSONB,
+ADD COLUMN     "timeOnPageMs" INTEGER,
+ADD COLUMN     "viewportH" INTEGER,
+ADD COLUMN     "viewportW" INTEGER,
+ADD COLUMN     "visibility" JSONB;

@@ -26,44 +26,44 @@ model RSVP {
   createdAt          DateTime @default(now())
 
   // NEW: analytics enrichments (all optional)
-  visitorId          String?
-  sessionId          String?
-  referrer           String?
-  eid                String?
-  utmSource          String?
-  utmMedium          String?
-  utmCampaign        String?
-  utmTerm            String?
-  utmContent         String?
-  userAgent          String?
-  language           String?
-  tz                 String?
-  country            String?
-  region             String?
-  city               String?
-  ipHash             String?
-  screenW            Int?
-  screenH            Int?
-  dpr                Float?
-  platform           String?
-  device             String?
-  browser            String?
+  visitorId   String?
+  sessionId   String?
+  referrer    String?
+  eid         String?
+  utmSource   String?
+  utmMedium   String?
+  utmCampaign String?
+  utmTerm     String?
+  utmContent  String?
+  userAgent   String?
+  language    String?
+  tz          String?
+  country     String?
+  region      String?
+  city        String?
+  ipHash      String?
+  screenW     Int?
+  screenH     Int?
+  dpr         Float?
+  platform    String?
+  device      String?
+  browser     String?
 
-  meta               String?
+  meta String?
 }
 
 model Visit {
-  id          String   @id @default(cuid())
-  createdAt   DateTime @default(now())
+  id        String   @id @default(cuid())
+  createdAt DateTime @default(now())
 
   // identification
-  visitorId   String
-  sessionId   String
+  visitorId String
+  sessionId String
 
   // page
-  path        String
-  query       String?
-  referrer    String?
+  path     String
+  query    String?
+  referrer String?
 
   // marketing
   eid         String?
@@ -77,19 +77,35 @@ model Visit {
   msclkid     String?
 
   // client/device
-  userAgent   String?
-  language    String?
-  tz          String?
-  screenW     Int?
-  screenH     Int?
-  dpr         Float?
-  platform    String?
-  device      String?
-  browser     String?
+  userAgent           String?
+  language            String?
+  languages           Json?
+  tz                  String?
+  screenW             Int?
+  screenH             Int?
+  dpr                 Float?
+  platform            String?
+  device              String?
+  browser             String?
+  viewportW           Int?
+  viewportH           Int?
+  orientation         String?
+  deviceMemory        Float?
+  hardwareConcurrency Int?
+  maxTouchPoints      Int?
+  connection          Json?
+  storage             Json?
+  navigation          Json?
+  paint               Json?
+  performance         Json?
+  scrollDepth         Int?
+  timeOnPageMs        Int?
+  interactionCounts   Json?
+  visibility          Json?
 
   // geo/IP (approx)
-  country     String?
-  region      String?
-  city        String?
-  ipHash      String?
+  country String?
+  region  String?
+  city    String?
+  ipHash  String?
 }

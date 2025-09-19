@@ -33,6 +33,25 @@ function shortId(id?: string | null): ReactNode {
   return id.slice(0, 6) + '…' + id.slice(-4)
 }
 
+function formatDuration(ms?: number | null) {
+  if (!ms || ms < 0) return '-'
+  if (ms < 1000) return `${ms} ms`
+  if (ms < 60_000) return `${(ms / 1000).toFixed(1)} s`
+  const minutes = Math.floor(ms / 60000)
+  const seconds = Math.round((ms % 60000) / 1000)
+  return `${minutes}m ${seconds.toString().padStart(2, '0')}s`
+}
+
+function formatConnection(connection: any) {
+  if (!connection) return null
+  const bits: string[] = []
+  if (connection.effectiveType) bits.push(connection.effectiveType)
+  if (typeof connection.downlink === 'number') bits.push(`${connection.downlink} Mbps`)
+  if (typeof connection.rtt === 'number') bits.push(`${connection.rtt} ms RTT`)
+  if (connection.saveData) bits.push('save-data')
+  return bits.length ? bits.join(' · ') : null
+}
+
 type SearchParams = { [k: string]: string | string[] | undefined }
 
 export default async function AdminAnalyticsPage({ searchParams }: { searchParams: SearchParams }) {
@@ -233,7 +252,7 @@ export default async function AdminAnalyticsPage({ searchParams }: { searchParam
         <section className="glass rounded-2xl p-4 sm:p-6">
           <h2 className="text-lg font-semibold mb-3">Recent Visits</h2>
           <div className="overflow-x-auto">
-            <table className="min-w-[1100px] w-full text-sm">
+            <table className="min-w-[1200px] w-full text-sm">
               <thead className="text-left text-neutral-300">
                 <tr className="border-b border-white/10">
                   <th className="py-2 pr-4">When</th>
@@ -242,6 +261,7 @@ export default async function AdminAnalyticsPage({ searchParams }: { searchParam
                   <th className="py-2 pr-4">Marketing</th>
                   <th className="py-2 pr-4">Referrer</th>
                   <th className="py-2 pr-4">Client</th>
+                  <th className="py-2 pr-4">Engagement</th>
                   <th className="py-2 pr-4">Geo</th>
                 </tr>
               </thead>
@@ -258,6 +278,10 @@ export default async function AdminAnalyticsPage({ searchParams }: { searchParam
                     v.msclkid ? `msclkid: ${v.msclkid}` : null,
                   ].filter(Boolean)
                   const resolution = v.screenW && v.screenH ? `${v.screenW}×${v.screenH}` : null
+                  const viewport = v.viewportW && v.viewportH ? `${v.viewportW}×${v.viewportH}` : null
+                  const connection = formatConnection(v.connection)
+                  const languages = Array.isArray(v.languages) ? v.languages.join(', ') : null
+                  const interactions = v.interactionCounts as any
                   return (
                     <tr key={v.id} className="align-top">
                       <td className="py-3 pr-4 whitespace-nowrap text-neutral-300">{fmt(v.createdAt)}</td>
@@ -286,10 +310,34 @@ export default async function AdminAnalyticsPage({ searchParams }: { searchParam
                       <td className="py-3 pr-4 text-sm text-neutral-300 space-y-1">
                         <div>{v.device || dash}{v.browser ? ` · ${v.browser}` : ''}</div>
                         {v.platform ? <div className="text-xs text-neutral-500">{v.platform}</div> : null}
+                        {viewport ? <div className="text-xs text-neutral-500">Viewport {viewport}</div> : null}
                         <div className="flex flex-wrap gap-1 text-xs text-neutral-500">
-                          {resolution ? <Pill>{resolution}</Pill> : null}
+                          {resolution ? <Pill>{`Screen ${resolution}`}</Pill> : null}
                           {typeof v.dpr === 'number' ? <Pill>{`${v.dpr.toFixed(1)}x DPR`}</Pill> : null}
+                          {v.orientation ? <Pill>{v.orientation}</Pill> : null}
+                          {typeof v.deviceMemory === 'number' ? <Pill>{`${v.deviceMemory} GB RAM`}</Pill> : null}
+                          {typeof v.hardwareConcurrency === 'number' ? <Pill>{`${v.hardwareConcurrency} cores`}</Pill> : null}
+                          {typeof v.maxTouchPoints === 'number' ? <Pill>{`${v.maxTouchPoints} touch`}</Pill> : null}
                         </div>
+                        {connection ? <div className="text-xs text-neutral-500">Conn: {connection}</div> : null}
+                        {languages ? <div className="text-xs text-neutral-500">Langs: {languages}</div> : null}
+                      </td>
+                      <td className="py-3 pr-4 text-sm text-neutral-300 space-y-1">
+                        <div>Time on page: {formatDuration(v.timeOnPageMs)}</div>
+                        <div>Scroll depth: {typeof v.scrollDepth === 'number' ? `${v.scrollDepth}%` : '-'}</div>
+                        {interactions ? (
+                          <div className="text-xs text-neutral-500 space-x-2">
+                            {'clicks' in interactions ? <span>Clicks: {interactions.clicks}</span> : null}
+                            {'keypresses' in interactions ? <span>Keys: {interactions.keypresses}</span> : null}
+                            {'copies' in interactions ? <span>Copies: {interactions.copies}</span> : null}
+                            {'pointerMoves' in interactions ? <span>Pointer: {interactions.pointerMoves}</span> : null}
+                          </div>
+                        ) : null}
+                        {Array.isArray(v.visibility) && v.visibility.length ? (
+                          <div className="text-xs text-neutral-500">
+                            Visible events: {v.visibility.length}
+                          </div>
+                        ) : null}
                       </td>
                       <td className="py-3 pr-4 text-sm text-neutral-300 space-y-1">
                         <div>{location}</div>
