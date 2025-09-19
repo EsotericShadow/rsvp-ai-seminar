@@ -13,7 +13,7 @@ const normalizeJsonInput = (value: Prisma.JsonValue | undefined) => {
 }
 
 const resendKey = process.env.RESEND_API_KEY?.trim()
-const linkBase = process.env.CAMPAIGN_LINK_BASE?.replace(///$/, '') || 'https://rsvp-ai-seminar.vercel.app/rsvp'
+const linkBase = process.env.CAMPAIGN_LINK_BASE?.replace(/\/$/, '') || 'https://rsvp-ai-seminar.vercel.app/rsvp'
 const fromEmail = process.env.CAMPAIGN_FROM_EMAIL || 'Evergreen AI <team@evergreen.ai>'
 
 function assertResendConfigured() {
