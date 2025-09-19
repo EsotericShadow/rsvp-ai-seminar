@@ -1,0 +1,95 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model RSVP {
+  id                 String   @id @default(cuid())
+  fullName           String
+  organization       String?
+  email              String   @unique
+  phone              String?
+  attendanceStatus   String
+  attendeeCount      Int
+  dietaryPreference  String
+  dietaryOther       String?
+  accessibilityNeeds String?
+  referralSource     String
+  referralOther      String?
+  wantsResources     Boolean  @default(false)
+  wantsAudit         Boolean  @default(false)
+  learningGoal       String?
+  createdAt          DateTime @default(now())
+
+  // NEW: analytics enrichments (all optional)
+  visitorId          String?
+  sessionId          String?
+  referrer           String?
+  eid                String?
+  utmSource          String?
+  utmMedium          String?
+  utmCampaign        String?
+  utmTerm            String?
+  utmContent         String?
+  userAgent          String?
+  language           String?
+  tz                 String?
+  country            String?
+  region             String?
+  city               String?
+  ipHash             String?
+  screenW            Int?
+  screenH            Int?
+  dpr                Float?
+  platform           String?
+  device             String?
+  browser            String?
+
+  meta               String?
+}
+
+model Visit {
+  id          String   @id @default(cuid())
+  createdAt   DateTime @default(now())
+
+  // identification
+  visitorId   String
+  sessionId   String
+
+  // page
+  path        String
+  query       String?
+  referrer    String?
+
+  // marketing
+  eid         String?
+  utmSource   String?
+  utmMedium   String?
+  utmCampaign String?
+  utmTerm     String?
+  utmContent  String?
+  gclid       String?
+  fbclid      String?
+  msclkid     String?
+
+  // client/device
+  userAgent   String?
+  language    String?
+  tz          String?
+  screenW     Int?
+  screenH     Int?
+  dpr         Float?
+  platform    String?
+  device      String?
+  browser     String?
+
+  // geo/IP (approx)
+  country     String?
+  region      String?
+  city        String?
+  ipHash      String?
+}

@@ -1,0 +1,14 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  body {
+    @apply bg-brand-light text-brand-ink;
+  }
+}
+
+/* Glassmorphism card */
+.glass {
+  @apply bg-white/10 backdrop-blur-xl border border-white/20 shadow-2xl ring-1 ring-white/10;
+}

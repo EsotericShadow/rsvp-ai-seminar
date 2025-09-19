@@ -1,0 +1,440 @@
+'use client';
+
+import { useState } from 'react';
+import { useForm, Controller } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { rsvpSchema, RsvpFormValues } from '@/lib/validators';
+
+// PhoneField component
+function PhoneField({
+  value,
+  onChange,
+  onBlur,
+  id = "phone",
+}: {
+  value?: string;
+  onChange: (v: string) => void;
+  onBlur?: () => void;
+  id?: string;
+}) {
+  const [a, b, c] = (value ?? "").split("-");
+
+  const setPart = (part: "a" | "b" | "c", next: string, el?: HTMLInputElement | null) => {
+    const digits = next.replace(/\D/g, "");
+
+    if (part === "a" && digits.length > 3) {
+      const fullNum = digits.slice(0, 10);
+      const na = fullNum.slice(0, 3);
+      const nb = fullNum.slice(3, 6);
+      const nc = fullNum.slice(6, 10);
+      onChange([na, nb, nc].filter(Boolean).join("-"));
+      
+      const focusId = nc.length === 4 ? `${id}-c` : nb.length === 3 ? `${id}-b` : `${id}-a`;
+      setTimeout(() => (document.getElementById(focusId) as HTMLInputElement | null)?.focus(), 0);
+      return;
+    }
+
+    const max = part === "c" ? 4 : 3;
+    const v = digits.slice(0, max);
+
+    const na = part === "a" ? v : (a ?? "");
+    const nb = part === "b" ? v : (b ?? "");
+    const nc = part === "c" ? v : (c ?? "");
+
+    onChange([na, nb, nc].filter(Boolean).join("-"));
+
+    if (v.length === max && el) {
+      const nextId = part === "a" ? `${id}-b` : part === "b" ? `${id}-c` : null;
+      if (nextId) {
+        const nextEl = document.getElementById(nextId) as HTMLInputElement | null;
+        nextEl?.focus();
+      }
+    }
+  };
+
+  const handlePaste = (e: React.ClipboardEvent<HTMLInputElement>) => {
+    const digits = (e.clipboardData.getData("text") || "").replace(/\D/g, "").slice(0, 10);
+    if (!digits) return;
+    e.preventDefault();
+    const na = digits.slice(0, 3);
+    const nb = digits.slice(3, 6);
+    const nc = digits.slice(6, 10);
+    onChange([na, nb, nc].filter(Boolean).join("-"));
+    const focusId = nc.length === 4 ? `${id}-c` : nb.length === 3 ? `${id}-b` : `${id}-a`;
+    setTimeout(() => (document.getElementById(focusId) as HTMLInputElement | null)?.focus(), 0);
+  };
+
+  return (
+    <div className="flex items-center gap-2">
+      <input
+        id={`${id}-a`}
+        inputMode="numeric"
+        pattern="[0-9]*"
+        value={a ?? ""}
+        onChange={(e) => setPart("a", e.target.value, e.currentTarget)}
+        onPaste={handlePaste}
+        onBlur={onBlur}
+        className="w-14 text-center rounded-md border-gray-300 px-2 py-2 bg-white/20 text-white placeholder:text-gray-300"
+        placeholder="555"
+        aria-label="Area code"
+      />
+      <span className="text-gray-200">-</span>
+      <input
+        id={`${id}-b`}
+        inputMode="numeric"
+        pattern="[0-9]*"
+        value={b ?? ""}
+        onChange={(e) => setPart("b", e.target.value, e.currentTarget)}
+        onPaste={handlePaste}
+        onBlur={onBlur}
+        className="w-14 text-center rounded-md border-gray-300 px-2 py-2 bg-white/20 text-white placeholder:text-gray-300"
+        placeholder="123"
+        aria-label="Prefix"
+      />
+      <span className="text-gray-200">-</span>
+      <input
+        id={`${id}-c`}
+        inputMode="numeric"
+        pattern="[0-9]*"
+        value={c ?? ""}
+        onChange={(e) => setPart("c", e.target.value, e.currentTarget)}
+        onPaste={handlePaste}
+        onBlur={onBlur}
+        className="w-16 text-center rounded-md border-gray-300 px-2 py-2 bg-white/20 text-white placeholder:text-gray-300"
+        placeholder="4567"
+        aria-label="Line number"
+      />
+    </div>
+  );
+}
+
+
+export function RsvpForm() {
+  const [currentStep, setCurrentStep] = useState(0);
+
+  const form = useForm<RsvpFormValues>({
+    resolver: zodResolver(rsvpSchema),
+    mode: 'onTouched', // Show errors on blur
+    defaultValues: {
+      firstName: '',
+      lastName: '',
+      email: '',
+      phone: '',
+      attendanceStatus: 'YES',
+      attendeeCount: 1,
+      dietaryPreference: 'NONE',
+      accessibilityNeeds: '',
+      referralSource: 'WORD_OF_MOUTH',
+      wantsResources: false,
+      wantsAudit: false,
+      learningGoal: '',
+    },
+  });
+
+  const validateStep = async (idx: number) => {
+    if (idx === 0) {
+      // Contact
+      return form.trigger(['firstName', 'lastName', 'email','phone'] as (keyof RsvpFormValues)[]);
+    }
+    if (idx === 1) {
+      // Attendance (+ attendeeCount if YES)
+      const keys: (keyof RsvpFormValues)[] = ['attendanceStatus'];
+      if (form.getValues('attendanceStatus') === 'YES') keys.push('attendeeCount');
+      return form.trigger(keys);
+    }
+    if (idx === 2) {
+      // Diet & Accessibility
+      const keys: (keyof RsvpFormValues)[] = ['dietaryPreference','accessibilityNeeds'];
+      if (form.getValues('dietaryPreference') === 'OTHER') keys.push('dietaryOther');
+      return form.trigger(keys);
+    }
+    if (idx === 3) {
+      // Referral
+      const keys: (keyof RsvpFormValues)[] = ['referralSource'];
+      if (form.getValues('referralSource') === 'OTHER') keys.push('referralOther');
+      return form.trigger(keys);
+    }
+    if (idx === 4) {
+      // Extras
+      return form.trigger(['wantsResources','wantsAudit','learningGoal'] as (keyof RsvpFormValues)[]);
+    }
+    return true;
+  };
+
+  const onNext = async () => {
+    const ok = await validateStep(currentStep);
+    if (!ok) return;
+    setCurrentStep((s) => Math.min(s + 1, 4));
+  };
+
+  const onPrev = () => {
+    setCurrentStep((s) => Math.max(s - 1, 0));
+  };
+
+  async function onSubmit(values: RsvpFormValues) {
+    try {
+      const response = await fetch('/api/rsvp', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(values),
+      });
+
+      if (response.ok) {
+        alert('RSVP Submitted! Thank you for your RSVP.');
+        form.reset();
+        setCurrentStep(0);
+      } else {
+        const errorData = await response.json();
+        alert(`Submission Failed: ${errorData.message || 'Something went wrong.'}`);
+      }
+    } catch (error) {
+      console.error('Error submitting form:', error);
+      alert('Submission Error: Could not connect to the server.');
+    }
+  }
+
+  const stepsContent = [
+    // Step 1: Contact
+    <div className="space-y-4" key="step1">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div>
+          <label htmlFor="firstName" className="block text-sm font-medium text-gray-200">First Name</label>
+          <input
+            id="firstName"
+            autoComplete="given-name"
+            {...form.register('firstName')}
+            className="mt-1 block w-full rounded-lg border border-white/15 bg-white/10 px-3 py-2 text-sm text-white placeholder:text-white/50 shadow-[0_8px_20px_rgba(0,0,0,0.25)] focus:border-brand-sage focus:ring-2 focus:ring-brand-sage/60"
+          />
+          {form.formState.errors.firstName && <p className="mt-1 text-sm text-red-600">{form.formState.errors.firstName.message}</p>}
+        </div>
+        <div>
+          <label htmlFor="lastName" className="block text-sm font-medium text-gray-200">Last Name</label>
+          <input
+            id="lastName"
+            autoComplete="family-name"
+            {...form.register('lastName')}
+            className="mt-1 block w-full rounded-lg border border-white/15 bg-white/10 px-3 py-2 text-sm text-white placeholder:text-white/50 shadow-[0_8px_20px_rgba(0,0,0,0.25)] focus:border-brand-sage focus:ring-2 focus:ring-brand-sage/60"
+          />
+          {form.formState.errors.lastName && <p className="mt-1 text-sm text-red-600">{form.formState.errors.lastName.message}</p>}
+        </div>
+      </div>
+      <div>
+        <label htmlFor="email" className="block text-sm font-medium text-gray-200">Email</label>
+        <input
+          type="email"
+          id="email"
+          autoComplete="email"
+          {...form.register('email')}
+          className="mt-1 block w-full rounded-lg border border-white/15 bg-white/10 px-3 py-2 text-sm text-white placeholder:text-white/50 shadow-[0_8px_20px_rgba(0,0,0,0.25)] focus:border-brand-sage focus:ring-2 focus:ring-brand-sage/60"
+        />
+        {form.formState.errors.email && <p className="mt-1 text-sm text-red-600">{form.formState.errors.email.message}</p>}
+      </div>
+      <div>
+        <label htmlFor="phone" className="block text-sm font-medium text-gray-200">Phone</label>
+        <Controller
+          name="phone"
+          control={form.control}
+          render={({ field, fieldState }) => (
+            <div>
+              <PhoneField value={field.value} onChange={field.onChange} onBlur={field.onBlur} />
+              {fieldState.error && (
+                <p className="mt-2 text-sm text-red-600">{fieldState.error.message}</p>
+              )}
+            </div>
+          )}
+        />
+      </div>
+    </div>,
+
+    // Step 2: Attendance
+    <div className="space-y-4" key="step2">
+       <div className="grid grid-cols-1 md:grid-cols-2 gap-4 items-end">
+        <div>
+          <label htmlFor="attendanceStatus" className="block text-sm font-medium text-gray-200">Will you attend?</label>
+          <select
+            id="attendanceStatus"
+            {...form.register('attendanceStatus')}
+            className="mt-1 block w-full rounded-lg border border-white/15 bg-white/10 px-3 py-2 text-sm text-white shadow-[0_8px_20px_rgba(0,0,0,0.25)] focus:border-brand-sage focus:ring-2 focus:ring-brand-sage/60"
+          >
+            <option value="YES">Yes</option>
+            <option value="NO">No</option>
+            <option value="MAYBE">Maybe</option>
+          </select>
+          {form.formState.errors.attendanceStatus && <p className="mt-1 text-sm text-red-600">{form.formState.errors.attendanceStatus.message}</p>}
+        </div>
+        {form.watch('attendanceStatus') === 'YES' && (
+          <div>
+            <label htmlFor="attendeeCount" className="block text-sm font-medium text-gray-200">Number of Attendees</label>
+            <input
+              type="number"
+              id="attendeeCount"
+              {...form.register('attendeeCount', { valueAsNumber: true, min: 1, max: 20 })}
+              className="mt-1 block w-full rounded-lg border border-white/15 bg-white/10 px-3 py-2 text-sm text-white placeholder:text-white/50 shadow-[0_8px_20px_rgba(0,0,0,0.25)] focus:border-brand-sage focus:ring-2 focus:ring-brand-sage/60"
+            />
+            {form.formState.errors.attendeeCount && <p className="mt-1 text-sm text-red-600">{form.formState.errors.attendeeCount.message}</p>}
+          </div>
+        )}
+      </div>
+    </div>,
+
+    // Step 3: Diet & Accessibility
+    <div className="space-y-4" key="step3">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 items-end">
+        <div>
+          <label htmlFor="dietaryPreference" className="block text-sm font-medium text-gray-200">Dietary Preferences</label>
+          <select
+            id="dietaryPreference"
+            {...form.register('dietaryPreference')}
+            className="mt-1 block w-full rounded-lg border border-white/15 bg-white/10 px-3 py-2 text-sm text-white shadow-[0_8px_20px_rgba(0,0,0,0.25)] focus:border-brand-sage focus:ring-2 focus:ring-brand-sage/60"
+          >
+            <option value="NONE">None</option>
+            <option value="VEGETARIAN">Vegetarian</option>
+            <option value="VEGAN">Vegan</option>
+            <option value="GLUTEN_FREE">Gluten-free</option>
+            <option value="OTHER">Other</option>
+          </select>
+        </div>
+        {form.watch('dietaryPreference') === 'OTHER' && (
+          <div>
+            <label htmlFor="dietaryOther" className="block text-sm font-medium text-gray-200">Please specify</label>
+            <input
+              id="dietaryOther"
+              {...form.register('dietaryOther')}
+              className="mt-1 block w-full rounded-lg border border-white/15 bg-white/10 px-3 py-2 text-sm text-white placeholder:text-white/50 shadow-[0_8px_20px_rgba(0,0,0,0.25)] focus:border-brand-sage focus:ring-2 focus:ring-brand-sage/60"
+            />
+             {form.formState.errors.dietaryOther && <p className="mt-1 text-sm text-red-600">{form.formState.errors.dietaryOther.message}</p>}
+          </div>
+        )}
+        </div>
+      <div>
+        <label htmlFor="accessibilityNeeds" className="block text-sm font-medium text-gray-200">Accessibility Needs (Optional)</label>
+        <textarea
+          id="accessibilityNeeds"
+          rows={3}
+          {...form.register('accessibilityNeeds')}
+          className="mt-1 block w-full rounded-lg border border-white/15 bg-white/10 px-3 py-2 text-sm text-white placeholder:text-white/50 shadow-[0_8px_20px_rgba(0,0,0,0.25)] focus:border-brand-sage focus:ring-2 focus:ring-brand-sage/60"
+        ></textarea>
+      </div>
+    </div>,
+
+    // Step 4: Referral
+    <div className="space-y-4" key="step4">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 items-end">
+        <div>
+          <label htmlFor="referralSource" className="block text-sm font-medium text-gray-200">How did you hear about us?</label>
+          <select
+            id="referralSource"
+            {...form.register('referralSource')}
+            className="mt-1 block w-full rounded-lg border border-white/15 bg-white/10 px-3 py-2 text-sm text-white shadow-[0_8px_20px_rgba(0,0,0,0.25)] focus:border-brand-sage focus:ring-2 focus:ring-brand-sage/60"
+          >
+            <option value="RADIO">Radio</option>
+            <option value="CHAMBER">Chamber</option>
+            <option value="FACEBOOK">Facebook</option>
+            <option value="LINKEDIN">LinkedIn</option>
+            <option value="WORD_OF_MOUTH">Word of Mouth</option>
+            <option value="OTHER">Other</option>
+          </select>
+        </div>
+        {form.watch('referralSource') === 'OTHER' && (
+          <div>
+            <label htmlFor="referralOther" className="block text-sm font-medium text-gray-200">Please specify</label>
+            <input
+              id="referralOther"
+              {...form.register('referralOther')}
+              className="mt-1 block w-full rounded-lg border border-white/15 bg-white/10 px-3 py-2 text-sm text-white placeholder:text-white/50 shadow-[0_8px_20px_rgba(0,0,0,0.25)] focus:border-brand-sage focus:ring-2 focus:ring-brand-sage/60"
+            />
+            {form.formState.errors.referralOther && <p className="mt-1 text-sm text-red-600">{form.formState.errors.referralOther.message}</p>}
+          </div>
+        )}
+      </div>
+    </div>,
+
+    // Step 5: Extras
+    <div className="space-y-4" key="step5">
+      <div className="relative flex items-start">
+        <div className="flex h-5 items-center">
+          <input
+            id="wantsResources"
+            type="checkbox"
+            {...form.register('wantsResources')}
+            className="h-4 w-4 rounded border-gray-300 text-brand-sage focus:ring-brand-sage"
+          />
+        </div>
+        <div className="ml-3 text-sm">
+          <label htmlFor="wantsResources" className="font-medium text-gray-200">Send me the free AI workflows PDF after the event</label>
+        </div>
+      </div>
+      <div className="relative flex items-start">
+        <div className="flex h-5 items-center">
+          <input
+            id="wantsAudit"
+            type="checkbox"
+            {...form.register('wantsAudit')}
+            className="h-4 w-4 rounded border-gray-300 text-brand-sage focus:ring-brand-sage"
+          />
+        </div>
+        <div className="ml-3 text-sm">
+          <label htmlFor="wantsAudit" className="font-medium text-gray-200">Interested in a free AI business audit?</label>
+        </div>
+      </div>
+      <div>
+        <label htmlFor="learningGoal" className="block text-sm font-medium text-gray-200">One thing you want to learn (Optional)</label>
+        <textarea
+          id="learningGoal"
+          rows={3}
+          {...form.register('learningGoal')}
+          className="mt-1 block w-full rounded-lg border border-white/15 bg-white/10 px-3 py-2 text-sm text-white placeholder:text-white/50 shadow-[0_8px_20px_rgba(0,0,0,0.25)] focus:border-brand-sage focus:ring-2 focus:ring-brand-sage/60"
+        ></textarea>
+      </div>
+    </div>
+  ];
+
+  return (
+    <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+      <div className="text-center text-sm text-gray-300 mb-4">
+        Step {currentStep + 1} of {stepsContent.length}
+      </div>
+
+      {stepsContent[currentStep]}
+
+      <div className="flex flex-col-reverse md:flex-row md:justify-between mt-6 gap-4">
+        <div className="md:w-1/3">
+          {currentStep > 0 && (
+            <button
+              type="button"
+              onClick={onPrev}
+              className="w-full inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-gray-600 hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500"
+            >
+              Previous
+            </button>
+          )}
+        </div>
+        <div className="md:w-1/3">
+          {currentStep < stepsContent.length - 1 ? (
+            <button
+              type="button"
+              onClick={onNext}
+              className="w-full inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-brand-ink hover:bg-brand-mid focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-brand-sage"
+            >
+              Next
+            </button>
+          ) : (
+            <button
+              type="submit"
+              className="w-full inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-brand-ink hover:bg-brand-mid focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-brand-sage"
+              disabled={form.formState.isSubmitting}
+            >
+              {form.formState.isSubmitting ? 'Submitting...' : 'Submit RSVP'}
+            </button>
+          )}
+        </div>
+      </div>
+
+      <p className="text-sm text-gray-400 mt-4">
+        By submitting this form, you consent to receive communications related to this event and your selected resources.
+      </p>
+    </form>
+  );
+}
