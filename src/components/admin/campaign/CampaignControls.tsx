@@ -442,6 +442,10 @@ export default function CampaignControls({ initialData, defaults }: { initialDat
           results={businessResults}
           onAddMember={addMember}
           onSubmit={saveGroup}
+          onReset={() => {
+            setGroupDraft({ id: undefined, name: '' })
+            setSelectedMembers([])
+          }}
           isSaving={isSaving}
           existingGroups={groups}
           onSelectGroup={loadGroup}
@@ -650,6 +654,7 @@ function GroupsPanel({
   onAddMember,
   onSubmit,
   isSaving,
+  onReset,
   existingGroups,
   onSelectGroup,
   onDeleteGroup,
@@ -665,6 +670,7 @@ function GroupsPanel({
   onAddMember: (biz: BusinessResult) => void
   onSubmit: () => Promise<void>
   isSaving: boolean
+  onReset: () => void
   existingGroups: Group[]
   onSelectGroup: (group: Group) => void
   onDeleteGroup: (id: string) => void
@@ -753,10 +759,7 @@ function GroupsPanel({
           <div className="flex justify-end gap-2">
             <button
               type="button"
-              onClick={() => {
-                setDraft({ id: undefined, name: '' })
-                setSelectedMembers([])
-              }}
+              onClick={onReset}
               className="rounded-full border border-white/10 px-4 py-2 text-xs text-neutral-300 hover:border-white/30"
             >
               Reset

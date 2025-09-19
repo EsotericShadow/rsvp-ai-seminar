@@ -6,8 +6,14 @@ import { CampaignSendStatus, CampaignStatus, Prisma } from '@prisma/client'
 import prisma from '@/lib/prisma'
 import { fetchLeadMineBusinesses, postLeadMineEvent } from '@/lib/leadMine'
 
+const normalizeJsonInput = (value: Prisma.JsonValue | undefined) => {
+  if (value === undefined) return undefined
+  if (value === null) return Prisma.JsonNull
+  return value
+}
+
 const resendKey = process.env.RESEND_API_KEY?.trim()
-const linkBase = process.env.CAMPAIGN_LINK_BASE?.replace(/\/$/, '') || 'https://rsvp-ai-seminar.vercel.app/rsvp'
+const linkBase = process.env.CAMPAIGN_LINK_BASE?.replace(///$/, '') || 'https://rsvp-ai-seminar.vercel.app/rsvp'
 const fromEmail = process.env.CAMPAIGN_FROM_EMAIL || 'Evergreen AI <team@evergreen.ai>'
 
 function assertResendConfigured() {
@@ -24,7 +30,7 @@ function inviteLinkFromToken(token: string) {
 
 function renderTemplate(template: { htmlBody: string; textBody: string | null }, context: Record<string, string>) {
   const replaceTokens = (input: string) =>
-    Object.entries(context).reduce((acc, [key, value]) => acc.replace(new RegExp(`{{\\s*${key}\\s*}}`, 'g'), value), input)
+    Object.entries(context).reduce((acc, [key, value]) => acc.replace(new RegExp(`{{\s*${key}\s*}}`, 'g'), value), input)
 
   return {
     html: replaceTokens(template.htmlBody),
@@ -158,7 +164,7 @@ export async function createAudienceGroup(input: {
       data: {
         name: input.name,
         description: input.description ?? null,
-        criteria: input.criteria ?? null,
+        criteria: normalizeJsonInput(input.criteria),
       },
     })
 
@@ -198,13 +204,14 @@ export async function updateAudienceGroup(id: string, input: {
   }>
 }) {
   return prisma.$transaction(async (tx) => {
+    const updateData: Prisma.AudienceGroupUpdateInput = {}
+    if (input.name !== undefined) updateData.name = input.name
+    if (input.description !== undefined) updateData.description = input.description
+    if (input.criteria !== undefined) updateData.criteria = normalizeJsonInput(input.criteria)
+
     await tx.audienceGroup.update({
       where: { id },
-      data: {
-        ...(input.name !== undefined ? { name: input.name } : {}),
-        ...(input.description !== undefined ? { description: input.description } : {}),
-        ...(input.criteria !== undefined ? { criteria: input.criteria } : {}),
-      },
+      data: updateData,
     })
 
     await tx.audienceMember.deleteMany({ where: { groupId: id } })
@@ -467,16 +474,13 @@ async function ensureMemberInviteToken(member: { groupId: string; businessId: st
     throw new Error(`Invite token missing for business ${member.businessId}`)
   }
   const inviteToken = business.invite.token
-  await prisma.audienceMember.update({
-    where: { groupId_businessId: { groupId: member.groupId, businessId: member.businessId } },
-    data: { inviteToken },
-  }).catch(() => null)
+  await prisma.audienceMember.update({ where: { groupId_businessId: { groupId: member.groupId, businessId: member.businessId } }, data: { inviteToken } }).catch(() => null)
   return inviteToken
 }
 
 function renderTemplateSubject(subject: string, context: Record<string, string>) {
   return Object.entries(context).reduce(
-    (acc, [key, value]) => acc.replace(new RegExp(`{{\\s*${key}\\s*}}`, 'g'), value),
+    (acc, [key, value]) => acc.replace(new RegExp(`{{\s*${key}\s*}}`, 'g'), value),
     subject,
   )
 }
