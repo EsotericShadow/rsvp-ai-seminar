@@ -483,6 +483,18 @@ export default function CampaignControls({ initialData, defaults }: { initialDat
     setSelectedMembers((prev) => prev.filter((member) => member.businessId !== businessId))
   }
 
+  const addManualMember = useCallback(
+    (member: MemberDraft) => {
+      setSelectedMembers((prev) => {
+        if (prev.some((existing) => existing.businessId === member.businessId)) return prev
+        return [...prev, member]
+      })
+      setActiveTab('groups')
+      setNotice(`Added manual contact ${member.businessName ?? member.businessId}.`)
+    },
+    [setActiveTab, setNotice],
+  )
+
   const runScheduleStep = useCallback(
     async (scheduleId: string, mode: 'preview' | 'send') => {
       if (!scheduleId) return
@@ -592,6 +604,7 @@ export default function CampaignControls({ initialData, defaults }: { initialDat
             onRemoveMember={removeMember}
             onAddMember={addMember}
             onAddMany={addMembers}
+            onAddManual={addManualMember}
             onSubmit={saveGroup}
             onReset={() => {
               setGroupDraft({ name: '' })

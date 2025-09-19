@@ -26,7 +26,15 @@ type FacetResponse = {
   inviteActivity: { withActivity: number; withoutActivity: number }
 }
 
-type SortKey = 'name_asc' | 'recent_activity' | 'emails_sent_desc'
+type SortKey =
+  | 'name_asc'
+  | 'name_desc'
+  | 'recent_activity'
+  | 'emails_sent_desc'
+  | 'visits_desc'
+  | 'rsvps_desc'
+
+const DEFAULT_SORT: SortKey = 'recent_activity'
 
 function parseFilters(raw: string | null): FilterPayload {
   if (!raw) return {}
@@ -124,11 +132,31 @@ function sortBusinesses(list: LeadMineBusiness[], sortKey: SortKey): LeadMineBus
     return [...list].sort((a, b) => (a.name || '').localeCompare(b.name || ''))
   }
 
+  if (sortKey === 'name_desc') {
+    return [...list].sort((a, b) => (b.name || '').localeCompare(a.name || ''))
+  }
+
   if (sortKey === 'emails_sent_desc') {
     return [...list].sort((a, b) => {
       const aEmails = a.invite?.emailsSent ?? 0
       const bEmails = b.invite?.emailsSent ?? 0
       return bEmails - aEmails || (a.name || '').localeCompare(b.name || '')
+    })
+  }
+
+  if (sortKey === 'visits_desc') {
+    return [...list].sort((a, b) => {
+      const aVisits = a.invite?.visitsCount ?? 0
+      const bVisits = b.invite?.visitsCount ?? 0
+      return bVisits - aVisits || (a.name || '').localeCompare(b.name || '')
+    })
+  }
+
+  if (sortKey === 'rsvps_desc') {
+    return [...list].sort((a, b) => {
+      const aRsvps = a.invite?.rsvpsCount ?? 0
+      const bRsvps = b.invite?.rsvpsCount ?? 0
+      return bRsvps - aRsvps || (a.name || '').localeCompare(b.name || '')
     })
   }
 
@@ -160,7 +188,10 @@ export async function GET(request: NextRequest) {
   const idsParam = searchParams.get('ids') || undefined
   const limitParam = searchParams.get('limit') ? Number(searchParams.get('limit')) : 25
   const pageSize = Number.isFinite(limitParam) ? Math.max(limitParam, MIN_PAGE_SIZE) : MIN_PAGE_SIZE
-  const sortParam = (searchParams.get('sort') as SortKey | null) ?? 'recent_activity'
+  const sortRaw = searchParams.get('sort') as SortKey | null
+  const sortParam: SortKey = sortRaw && ['name_asc','name_desc','recent_activity','emails_sent_desc','visits_desc','rsvps_desc'].includes(sortRaw)
+    ? sortRaw
+    : DEFAULT_SORT
   const filtersParam = searchParams.get('filters')
   const filters = parseFilters(filtersParam)
 

@@ -22,7 +22,13 @@ type ExplorerFilters = {
   tags: string[]
 }
 
-type SortOption = 'recent_activity' | 'name_asc' | 'emails_sent_desc'
+type SortOption =
+  | 'recent_activity'
+  | 'name_asc'
+  | 'name_desc'
+  | 'emails_sent_desc'
+  | 'visits_desc'
+  | 'rsvps_desc'
 
 type ApiPayload = {
   businesses: LeadMineBusiness[]
@@ -86,6 +92,7 @@ export function BusinessDirectoryPanel({ onAddMember, onAddMany, existingMemberI
   const [error, setError] = useState<string | null>(null)
   const [selectedIds, setSelectedIds] = useState<string[]>([])
   const [summary, setSummary] = useState<{ total: number; filtered: number } | null>(null)
+  const [selectAllResults, setSelectAllResults] = useState(false)
 
   const existingMemberSet = useMemo(() => new Set(existingMemberIds), [existingMemberIds])
 
@@ -138,6 +145,8 @@ export function BusinessDirectoryPanel({ onAddMember, onAddMany, existingMemberI
 
         if (reset) {
           setBusinesses(data.businesses)
+          setSelectedIds([])
+          setSelectAllResults(false)
         } else {
           setBusinesses((prev) => [...prev, ...data.businesses])
         }
@@ -157,20 +166,43 @@ export function BusinessDirectoryPanel({ onAddMember, onAddMany, existingMemberI
 
   const toggleSelection = (id: string) => {
     setSelectedIds((prev) => {
-      if (prev.includes(id)) return prev.filter((value) => value !== id)
+      if (prev.includes(id)) {
+        const next = prev.filter((value) => value !== id)
+        if (!next.length) setSelectAllResults(false)
+        return next
+      }
       return [...prev, id]
     })
   }
+
+  const selectableBusinessIds = useMemo(
+    () => businesses.filter((biz) => !existingMemberSet.has(biz.id)).map((biz) => biz.id),
+    [businesses, existingMemberSet],
+  )
 
   const handleAddSelected = () => {
     if (!selectedIds.length) return
     const candidates = businesses.filter((biz) => selectedIds.includes(biz.id) && !existingMemberSet.has(biz.id))
     if (!candidates.length) {
       setSelectedIds([])
+      setSelectAllResults(false)
       return
     }
     onAddMany(candidates)
     setSelectedIds([])
+    setSelectAllResults(false)
+  }
+
+  const handleSelectVisible = () => {
+    if (!selectableBusinessIds.length) return
+    setSelectedIds(selectableBusinessIds)
+    setSelectAllResults(false)
+  }
+
+  const handleSelectAll = () => {
+    if (!selectableBusinessIds.length) return
+    setSelectedIds(selectableBusinessIds)
+    setSelectAllResults(true)
   }
 
   const activeFilterCount = useMemo(() => {
@@ -214,7 +246,24 @@ export function BusinessDirectoryPanel({ onAddMember, onAddMany, existingMemberI
             Add selected ({selectedIds.length})
           </button>
           <button
-            onClick={() => setSelectedIds([])}
+            onClick={handleSelectVisible}
+            disabled={!selectableBusinessIds.length}
+            className="rounded-full border border-white/10 px-3 py-2 text-xs text-neutral-300 hover:border-white/30 disabled:cursor-not-allowed disabled:opacity-60"
+          >
+            Select all visible
+          </button>
+          <button
+            onClick={handleSelectAll}
+            disabled={!selectableBusinessIds.length}
+            className="rounded-full border border-white/10 px-3 py-2 text-xs text-neutral-300 hover:border-white/30 disabled:cursor-not-allowed disabled:opacity-60"
+          >
+            Select all results
+          </button>
+          <button
+            onClick={() => {
+              setSelectedIds([])
+              setSelectAllResults(false)
+            }}
             disabled={!selectedIds.length}
             className="rounded-full border border-white/10 px-3 py-2 text-xs text-neutral-300 hover:border-white/30 disabled:cursor-not-allowed disabled:opacity-60"
           >
@@ -309,8 +358,11 @@ export function BusinessDirectoryPanel({ onAddMember, onAddMany, existingMemberI
               className="rounded-md border border-white/10 bg-black/60 px-2 py-1 text-white focus:border-emerald-400 focus:outline-none"
             >
               <option value="recent_activity">Most recent activity</option>
-              <option value="emails_sent_desc">Emails sent (high → low)</option>
               <option value="name_asc">Name (A–Z)</option>
+              <option value="name_desc">Name (Z–A)</option>
+              <option value="emails_sent_desc">Emails sent (high → low)</option>
+              <option value="visits_desc">Visits (high → low)</option>
+              <option value="rsvps_desc">RSVPs (high → low)</option>
             </select>
           </label>
         </div>
@@ -325,7 +377,29 @@ export function BusinessDirectoryPanel({ onAddMember, onAddMany, existingMemberI
           <table className="min-w-[960px] divide-y divide-white/10 text-sm text-neutral-200">
           <thead className="bg-white/5 text-xs uppercase text-neutral-400">
             <tr>
-              <th className="px-3 py-2 text-left">Select</th>
+              <th className="px-3 py-2 text-left">
+                <div className="flex items-center gap-2">
+                  <input
+                    type="checkbox"
+                    className="h-4 w-4 rounded border-white/20 bg-black/40 text-emerald-500 focus:ring-emerald-400"
+                    checked={selectAllResults && selectedIds.length > 0}
+                    onChange={(event) => {
+                      const checked = event.target.checked
+                      if (checked) {
+                        const eligible = businesses
+                          .filter((biz) => !existingMemberSet.has(biz.id))
+                          .map((biz) => biz.id)
+                        setSelectedIds(eligible)
+                        setSelectAllResults(true)
+                      } else {
+                        setSelectedIds([])
+                        setSelectAllResults(false)
+                      }
+                    }}
+                  />
+                  <span>Select</span>
+                </div>
+              </th>
               <th className="px-3 py-2 text-left">Business</th>
               <th className="px-3 py-2 text-left">Contact</th>
               <th className="px-3 py-2 text-left">Status & Tags</th>
