@@ -33,6 +33,9 @@ export type LeadMineBusiness = {
     lastVisitedAt: string | null;
     rsvpsCount: number;
     lastRsvpAt: string | null;
+    lastEmailMeta?: Record<string, unknown> | null;
+    lastVisitMeta?: Record<string, unknown> | null;
+    lastRsvpMeta?: Record<string, unknown> | null;
   } | null;
 };
 
@@ -72,12 +75,16 @@ export async function fetchLeadMineBusinesses(params: {
   cursor?: string;
   hasEmail?: boolean;
   createMissing?: boolean;
+  ids?: string[];
+  search?: string;
 } = {}): Promise<LeadMineBusinessesResponse> {
   const search = new URLSearchParams();
   if (params.limit) search.set('limit', String(params.limit));
   if (params.cursor) search.set('cursor', params.cursor);
   if (params.hasEmail) search.set('hasEmail', '1');
   if (params.createMissing) search.set('createMissing', '1');
+  if (params.ids?.length) search.set('ids', params.ids.join(','));
+  if (params.search) search.set('search', params.search);
 
   const path = `/api/integration/businesses${search.toString() ? `?${search.toString()}` : ''}`;
   return leadMineFetch<LeadMineBusinessesResponse>(path);

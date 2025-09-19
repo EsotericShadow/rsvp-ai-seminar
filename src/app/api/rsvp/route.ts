@@ -7,6 +7,7 @@ import { cookies, headers } from 'next/headers';
 import crypto from 'crypto';
 import { UAParser } from 'ua-parser-js';
 import { postLeadMineEvent } from '@/lib/leadMine';
+import { recordSendEngagement } from '@/lib/campaigns';
 
 const resendApiKey = process.env.RESEND_API_KEY;
 const resendClient = resendApiKey ? new Resend(resendApiKey) : null;
@@ -84,8 +85,23 @@ export async function POST(req: Request) {
     });
 
     if (campaignToken) {
-      postLeadMineEvent({ token: campaignToken, type: 'rsvp', meta: { rsvpId: rsvp.id } }).catch((err) => {
+      const meta = {
+        rsvpId: rsvp.id,
+        visitorId: vid,
+        sessionId: sid,
+        device,
+        platform: os,
+        browser,
+        country,
+        region,
+        city,
+        capturedAt: new Date().toISOString(),
+      };
+      postLeadMineEvent({ token: campaignToken, type: 'rsvp', meta }).catch((err) => {
         console.error('LeadMine RSVP event failed', err);
+      });
+      recordSendEngagement({ inviteToken: campaignToken, type: 'rsvp', at: new Date() }).catch((err) => {
+        console.error('Campaign send RSVP tracking failed', err);
       });
     }
 

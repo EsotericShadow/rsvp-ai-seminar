@@ -109,3 +109,119 @@ model Visit {
   city    String?
   ipHash  String?
 }
+
+enum CampaignStatus {
+  DRAFT
+  SCHEDULED
+  SENDING
+  PAUSED
+  COMPLETED
+  CANCELLED
+}
+
+enum CampaignSendStatus {
+  PENDING
+  SENDING
+  SENT
+  FAILED
+  SKIPPED
+}
+
+model CampaignTemplate {
+  id        String   @id @default(cuid())
+  name      String
+  subject   String
+  htmlBody  String
+  textBody  String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  schedules CampaignSchedule[]
+}
+
+model AudienceGroup {
+  id          String   @id @default(cuid())
+  name        String
+  description String?
+  criteria    Json?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  members  AudienceMember[]
+  schedules CampaignSchedule[]
+}
+
+model AudienceMember {
+  id             String   @id @default(cuid())
+  groupId        String
+  businessId     String
+  businessName   String?
+  primaryEmail   String
+  secondaryEmail String?
+  tagsSnapshot   String[]
+  inviteToken    String?
+  meta           Json?
+  createdAt      DateTime @default(now())
+
+  group AudienceGroup @relation(fields: [groupId], references: [id], onDelete: Cascade)
+
+  @@index([groupId])
+  @@index([businessId])
+  @@unique([groupId, businessId])
+}
+
+model CampaignSchedule {
+  id                 String          @id @default(cuid())
+  name               String
+  templateId         String
+  groupId            String
+  status             CampaignStatus  @default(DRAFT)
+  sendAt             DateTime?
+  timeZone           String?         @default("America/Vancouver")
+  throttlePerMinute  Int?            @default(60)
+  repeatIntervalMins Int?
+  lastRunAt          DateTime?
+  nextRunAt          DateTime?
+  createdAt          DateTime        @default(now())
+  updatedAt          DateTime        @updatedAt
+
+  template CampaignTemplate @relation(fields: [templateId], references: [id], onDelete: Restrict)
+  group    AudienceGroup    @relation(fields: [groupId], references: [id], onDelete: Restrict)
+  sends    CampaignSend[]
+
+  @@index([status])
+  @@index([groupId])
+  @@index([templateId])
+  @@index([nextRunAt])
+}
+
+model CampaignSend {
+  id             String             @id @default(cuid())
+  scheduleId     String
+  groupId        String
+  templateId     String
+  businessId     String
+  businessName   String?
+  email          String
+  inviteToken    String?
+  inviteLink     String?
+  resendMessageId String?
+  status         CampaignSendStatus @default(PENDING)
+  error          String?
+  meta           Json?
+  sentAt         DateTime?
+  openedAt       DateTime?
+  visitedAt      DateTime?
+  rsvpAt         DateTime?
+  createdAt      DateTime          @default(now())
+  updatedAt      DateTime          @updatedAt
+
+  schedule CampaignSchedule @relation(fields: [scheduleId], references: [id], onDelete: Cascade)
+
+  @@index([scheduleId])
+  @@index([groupId])
+  @@index([templateId])
+  @@index([businessId])
+  @@index([status])
+  @@unique([scheduleId, businessId])
+}

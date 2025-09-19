@@ -1,6 +1,7 @@
 import type { Prisma } from '@prisma/client'
 import type { ReactNode } from 'react'
 
+import Link from 'next/link'
 import { cookies } from 'next/headers'
 import { redirect } from 'next/navigation'
 
@@ -330,6 +331,12 @@ export default async function AdminAnalyticsPage({ searchParams }: { searchParam
           </div>
 
           <div className="flex flex-col sm:flex-row gap-2">
+            <Link
+              href="/admin/campaign"
+              className="inline-flex items-center justify-center rounded-lg border border-white/10 bg-black/40 px-3 py-2 text-sm font-medium text-neutral-200 transition hover:border-emerald-400 hover:text-emerald-200"
+            >
+              Open Campaign Manager
+            </Link>
             <form className="flex gap-2" action="/admin/analytics" method="get">
               <input
                 name="q"

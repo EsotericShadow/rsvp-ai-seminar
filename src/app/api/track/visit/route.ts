@@ -4,6 +4,7 @@ import crypto from 'crypto'
 import prisma from '@/lib/prisma'
 import { UAParser } from 'ua-parser-js'
 import { postLeadMineEvent } from '@/lib/leadMine'
+import { recordSendEngagement } from '@/lib/campaigns'
 
 const h = (k: string) => headers().get(k)
 
@@ -139,8 +140,30 @@ export async function POST(req: Request) {
     })
 
     if (campaignToken) {
-      postLeadMineEvent({ token: campaignToken, type: 'visit' }).catch((err) => {
+      const meta = {
+        visitorId: vid,
+        sessionId: sid,
+        path: typeof page === 'string' && page ? page : '/',
+        device,
+        platform,
+        browser,
+        screenW: typeof screenW === 'number' ? screenW : null,
+        screenH: typeof screenH === 'number' ? screenH : null,
+        viewportW: typeof viewportW === 'number' ? viewportW : null,
+        viewportH: typeof viewportH === 'number' ? viewportH : null,
+        tz,
+        country,
+        region,
+        city,
+        capturedAt: new Date().toISOString(),
+      }
+
+      postLeadMineEvent({ token: campaignToken, type: 'visit', meta }).catch((err) => {
         console.error('LeadMine visit event failed', err)
+      })
+
+      recordSendEngagement({ inviteToken: campaignToken, type: 'visit', at: new Date() }).catch((err) => {
+        console.error('Campaign send visit tracking failed', err)
       })
     }
 
