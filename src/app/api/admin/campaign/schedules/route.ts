@@ -48,6 +48,8 @@ export async function POST(request: NextRequest) {
     smartWindowEnd = Number.isNaN(dt.getTime()) ? null : dt
   }
 
+  const timeZone = typeof body.timeZone === 'string' && body.timeZone.trim() ? body.timeZone.trim() : undefined
+
   const schedule = await createSchedule({
     name: String(body.name),
     templateId: String(body.templateId),
@@ -59,6 +61,7 @@ export async function POST(request: NextRequest) {
     stepOrder: body.stepOrder ? Number(body.stepOrder) : undefined,
     smartWindowStart,
     smartWindowEnd,
+    timeZone,
     status: body.status ? (String(body.status) as CampaignStatus) : undefined,
   })
 
@@ -111,6 +114,13 @@ export async function PUT(request: NextRequest) {
     }
   }
 
+  const timeZone =
+    body.timeZone === null
+      ? null
+      : typeof body.timeZone === 'string' && body.timeZone.trim()
+      ? body.timeZone.trim()
+      : undefined
+
   const schedule = await updateSchedule(String(body.id), {
     name: body.name !== undefined ? String(body.name) : undefined,
     templateId: body.templateId !== undefined ? String(body.templateId) : undefined,
@@ -123,6 +133,7 @@ export async function PUT(request: NextRequest) {
     stepOrder: body.stepOrder !== undefined ? Number(body.stepOrder) : undefined,
     smartWindowStart,
     smartWindowEnd,
+    timeZone,
   })
 
   return NextResponse.json({ schedule })

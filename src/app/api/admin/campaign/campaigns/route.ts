@@ -38,6 +38,7 @@ function parseSteps(rawSteps: unknown, allowPartial = false) {
     const repeat = (step as any).repeatIntervalMins
     const stepOrder = (step as any).stepOrder
     const statusRaw = (step as any).status
+    const timeZone = (step as any).timeZone
 
     return {
       id: (step as any).id ? String((step as any).id) : undefined,
@@ -51,6 +52,7 @@ function parseSteps(rawSteps: unknown, allowPartial = false) {
       repeatIntervalMins: repeat === undefined || repeat === null ? undefined : Number(repeat),
       stepOrder: stepOrder === undefined || stepOrder === null ? undefined : Number(stepOrder),
       status: statusRaw ? (String(statusRaw) as CampaignStatus) : undefined,
+      timeZone: typeof timeZone === 'string' && timeZone.trim() ? String(timeZone) : undefined,
     }
   }).filter((value): value is NonNullable<typeof value> => Boolean(value))
 }

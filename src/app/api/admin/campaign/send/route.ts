@@ -55,6 +55,7 @@ export async function POST(req: NextRequest) {
   const previewOnly = Boolean(body?.previewOnly)
   const limit = body?.limit ? Number(body.limit) : undefined
   const scheduleId = body?.scheduleId ? String(body.scheduleId) : undefined
+  const timeZone = typeof body?.timeZone === 'string' && body.timeZone.trim() ? body.timeZone.trim() : undefined
 
   if (scheduleId) {
     const result = await runSchedule(scheduleId, { previewOnly, limit })
@@ -72,6 +73,7 @@ export async function POST(req: NextRequest) {
     sendAt: null,
     throttlePerMinute: body.throttlePerMinute ? Number(body.throttlePerMinute) : undefined,
     repeatIntervalMins: null,
+    timeZone,
   })
 
   // mark as sending to avoid reuse

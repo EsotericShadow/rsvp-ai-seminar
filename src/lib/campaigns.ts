@@ -204,6 +204,7 @@ export async function createCampaign(input: {
     stepOrder?: number | null
     smartWindowStart?: Date | null
     smartWindowEnd?: Date | null
+    timeZone?: string | null
     status?: CampaignStatus
   }>
 }) {
@@ -228,10 +229,11 @@ export async function createCampaign(input: {
             sendAt: step.sendAt ?? null,
             throttlePerMinute: step.throttlePerMinute ?? 60,
             repeatIntervalMins: step.repeatIntervalMins ?? null,
-            nextRunAt: step.sendAt ?? null,
+            nextRunAt: step.sendAt ?? step.smartWindowStart ?? null,
             stepOrder: step.stepOrder ?? index + 1,
             smartWindowStart: step.smartWindowStart ?? null,
             smartWindowEnd: step.smartWindowEnd ?? null,
+            timeZone: step.timeZone ?? 'America/Vancouver',
           },
         })
       }
@@ -268,6 +270,7 @@ export async function updateCampaign(id: string, input: {
     stepOrder?: number | null
     smartWindowStart?: Date | null
     smartWindowEnd?: Date | null
+    timeZone?: string | null
     status?: CampaignStatus
   }>
 }) {
@@ -299,10 +302,11 @@ export async function updateCampaign(id: string, input: {
           sendAt: step.sendAt ?? null,
           throttlePerMinute: step.throttlePerMinute ?? 60,
           repeatIntervalMins: step.repeatIntervalMins ?? null,
-          nextRunAt: step.sendAt ?? null,
+          nextRunAt: step.sendAt ?? step.smartWindowStart ?? null,
           stepOrder,
           smartWindowStart: step.smartWindowStart ?? null,
           smartWindowEnd: step.smartWindowEnd ?? null,
+          timeZone: step.timeZone ?? 'America/Vancouver',
         }
 
         if (step.id) {
@@ -480,6 +484,7 @@ export async function createSchedule(input: {
   stepOrder?: number | null
   smartWindowStart?: Date | null
   smartWindowEnd?: Date | null
+  timeZone?: string | null
   status?: CampaignStatus
 }) {
   return prisma.campaignSchedule.create({
@@ -492,10 +497,11 @@ export async function createSchedule(input: {
       sendAt: input.sendAt ?? null,
       throttlePerMinute: input.throttlePerMinute ?? 60,
       repeatIntervalMins: input.repeatIntervalMins ?? null,
-      nextRunAt: input.sendAt ?? null,
+      nextRunAt: input.sendAt ?? input.smartWindowStart ?? null,
       stepOrder: input.stepOrder ?? 1,
       smartWindowStart: input.smartWindowStart ?? null,
       smartWindowEnd: input.smartWindowEnd ?? null,
+      timeZone: input.timeZone ?? 'America/Vancouver',
     },
     include: {
       template: true,
@@ -517,6 +523,7 @@ export async function updateSchedule(id: string, input: {
   stepOrder?: number | null
   smartWindowStart?: Date | null
   smartWindowEnd?: Date | null
+  timeZone?: string | null
 }) {
   const data: Prisma.CampaignScheduleUpdateInput = {};
   if (input.name !== undefined) data.name = input.name;
@@ -525,7 +532,7 @@ export async function updateSchedule(id: string, input: {
   if (input.status !== undefined) data.status = input.status;
   if (input.sendAt !== undefined) {
     data.sendAt = input.sendAt;
-    data.nextRunAt = input.sendAt;
+    data.nextRunAt = input.sendAt ?? input.smartWindowStart ?? null;
   }
   if (input.throttlePerMinute !== undefined) data.throttlePerMinute = input.throttlePerMinute;
   if (input.repeatIntervalMins !== undefined) data.repeatIntervalMins = input.repeatIntervalMins;
@@ -533,6 +540,10 @@ export async function updateSchedule(id: string, input: {
   if (input.stepOrder !== undefined && input.stepOrder !== null) data.stepOrder = input.stepOrder;
   if (input.smartWindowStart !== undefined) data.smartWindowStart = input.smartWindowStart;
   if (input.smartWindowEnd !== undefined) data.smartWindowEnd = input.smartWindowEnd;
+  if (input.timeZone !== undefined) data.timeZone = input.timeZone ?? 'America/Vancouver';
+  if (input.smartWindowStart !== undefined && input.sendAt === undefined && input.smartWindowStart) {
+    data.nextRunAt = input.smartWindowStart;
+  }
 
   return prisma.campaignSchedule.update({
     where: { id },
@@ -568,6 +579,63 @@ export async function runSchedule(scheduleId: string, options: SendOptions = {})
   })
   if (!schedule) {
     throw new Error('Schedule not found')
+  }
+
+  const now = new Date()
+  if (!options.previewOnly) {
+    if (schedule.sendAt && now < schedule.sendAt) {
+      await prisma.campaignSchedule.update({
+        where: { id: scheduleId },
+        data: {
+          status: CampaignStatus.SCHEDULED,
+          nextRunAt: schedule.sendAt,
+        },
+      })
+      return {
+        scheduleId,
+        processed: 0,
+        sent: 0,
+        previewOnly: false,
+        results: [],
+        deferredUntil: schedule.sendAt.toISOString(),
+      }
+    }
+
+    if (schedule.smartWindowStart && now < schedule.smartWindowStart) {
+      await prisma.campaignSchedule.update({
+        where: { id: scheduleId },
+        data: {
+          status: CampaignStatus.SCHEDULED,
+          nextRunAt: schedule.smartWindowStart,
+        },
+      })
+      return {
+        scheduleId,
+        processed: 0,
+        sent: 0,
+        previewOnly: false,
+        results: [],
+        deferredUntil: schedule.smartWindowStart.toISOString(),
+      }
+    }
+
+    if (schedule.smartWindowEnd && now > schedule.smartWindowEnd) {
+      await prisma.campaignSchedule.update({
+        where: { id: scheduleId },
+        data: {
+          status: CampaignStatus.COMPLETED,
+          nextRunAt: null,
+        },
+      })
+      return {
+        scheduleId,
+        processed: 0,
+        sent: 0,
+        previewOnly: false,
+        results: [],
+        windowClosed: schedule.smartWindowEnd.toISOString(),
+      }
+    }
   }
 
   const members = schedule.group.members.filter((member) => member.primaryEmail)

@@ -39,6 +39,10 @@ type CampaignWithCounts = Campaign & {
   counts: Record<CampaignSendStatus, number>
 }
 
+type CampaignDraft = Partial<Omit<CampaignWithCounts, 'schedules'>> & {
+  schedules?: StepDraft[]
+}
+
 type DashboardData = {
   templates: Template[]
   groups: Group[]
@@ -65,6 +69,8 @@ type StepDraft = {
   groupId: string
   sendAt: Date | null
   throttlePerMinute?: number | null
+  repeatIntervalMins?: number | null
+  timeZone?: string
   stepOrder: number
   smartWindowStart?: Date | null
   smartWindowEnd?: Date | null
@@ -77,9 +83,107 @@ const newStep = (order: number): StepDraft => ({
   templateId: '',
   groupId: '',
   sendAt: null,
+  throttlePerMinute: 60,
+  repeatIntervalMins: null,
+  timeZone: 'America/Vancouver',
   stepOrder: order,
+  smartWindowStart: null,
+  smartWindowEnd: null,
   status: CampaignStatus.DRAFT,
 })
+
+const parseDateValue = (value: unknown): Date | null => {
+  if (!value) return null
+  if (value instanceof Date) return value
+  const dt = new Date(String(value))
+  return Number.isNaN(dt.getTime()) ? null : dt
+}
+
+const formatDateTimeLocal = (value: Date | null | undefined): string => {
+  if (!value) return ''
+  const date = value instanceof Date ? value : new Date(value)
+  if (Number.isNaN(date.getTime())) return ''
+  const pad = (input: number) => String(input).padStart(2, '0')
+  const year = date.getFullYear()
+  const month = pad(date.getMonth() + 1)
+  const day = pad(date.getDate())
+  const hours = pad(date.getHours())
+  const minutes = pad(date.getMinutes())
+  return `${year}-${month}-${day}T${hours}:${minutes}`
+}
+
+const TIME_ZONE_OPTIONS = [
+  'America/Vancouver',
+  'America/Los_Angeles',
+  'America/Edmonton',
+  'America/Denver',
+  'America/Winnipeg',
+  'America/Chicago',
+  'America/Toronto',
+  'America/New_York',
+  'America/Halifax',
+  'America/Phoenix',
+  'America/Anchorage',
+] as const
+
+const TIME_ZONE_DATALIST_ID = 'campaign-timezones'
+
+const sameDate = (a: Date | null | undefined, b: Date | null | undefined) => {
+  const timeA = a ? a.getTime() : null
+  const timeB = b ? b.getTime() : null
+  return timeA === timeB
+}
+
+const normalizeStepDraft = (step: any, index: number): StepDraft => {
+  const templateId = step?.templateId ?? step?.template?.id ?? ''
+  const groupId = step?.groupId ?? step?.group?.id ?? ''
+  const throttle =
+    step?.throttlePerMinute === undefined || step.throttlePerMinute === null
+      ? 60
+      : Number(step.throttlePerMinute)
+  const repeat =
+    step?.repeatIntervalMins === undefined
+      ? null
+      : step.repeatIntervalMins === null
+      ? null
+      : Number(step.repeatIntervalMins)
+  const timeZone =
+    typeof step?.timeZone === 'string' && step.timeZone.trim()
+      ? String(step.timeZone)
+      : 'America/Vancouver'
+
+  return {
+    id: step?.id ? String(step.id) : undefined,
+    name: step?.name ?? '',
+    templateId,
+    groupId,
+    sendAt: parseDateValue(step?.sendAt),
+    throttlePerMinute: throttle,
+    repeatIntervalMins: repeat,
+    timeZone,
+    stepOrder: step?.stepOrder ?? index + 1,
+    smartWindowStart: parseDateValue(step?.smartWindowStart),
+    smartWindowEnd: parseDateValue(step?.smartWindowEnd),
+    status: step?.status ?? CampaignStatus.DRAFT,
+  }
+}
+
+const compareStepDraft = (a: StepDraft, b: StepDraft) =>
+  (a.id ?? undefined) === (b.id ?? undefined) &&
+  a.name === b.name &&
+  a.templateId === b.templateId &&
+  a.groupId === b.groupId &&
+  sameDate(a.sendAt, b.sendAt) &&
+  (a.throttlePerMinute ?? 60) === (b.throttlePerMinute ?? 60) &&
+  (a.repeatIntervalMins ?? null) === (b.repeatIntervalMins ?? null) &&
+  (a.timeZone ?? 'America/Vancouver') === (b.timeZone ?? 'America/Vancouver') &&
+  a.stepOrder === b.stepOrder &&
+  sameDate(a.smartWindowStart ?? null, b.smartWindowStart ?? null) &&
+  sameDate(a.smartWindowEnd ?? null, b.smartWindowEnd ?? null) &&
+  a.status === b.status
+
+const stepDraftsEquivalent = (original: any, normalized: StepDraft, index: number) =>
+  compareStepDraft(normalizeStepDraft(original, index), normalized)
 
 const tabs = [
   { id: 'campaigns', label: 'Campaigns' },
@@ -100,9 +204,11 @@ export default function CampaignControls({ initialData, defaults }: { initialDat
   const [campaigns, setCampaigns] = useState<CampaignWithCounts[]>(initialData.campaigns)
   const [isSaving, setIsSaving] = useState(false)
   const [error, setError] = useState<string | null>(null)
+  const [notice, setNotice] = useState<string | null>(null)
+  const [runningStep, setRunningStep] = useState<{ id: string; mode: 'preview' | 'send' } | null>(null)
 
   // Drafts
-  const [campaignDraft, setCampaignDraft] = useState<Partial<CampaignWithCounts>>({})
+  const [campaignDraft, setCampaignDraft] = useState<CampaignDraft>({})
   const [groupDraft, setGroupDraft] = useState<{ id?: string; name: string; description?: string }>(() => ({ name: '' }))
   const [templateDraft, setTemplateDraft] = useState<{ id?: string; name: string; subject: string; htmlBody: string; textBody: string }>(() => ({
     name: '',
@@ -113,6 +219,26 @@ export default function CampaignControls({ initialData, defaults }: { initialDat
 
   // Group builder state
   const [selectedMembers, setSelectedMembers] = useState<MemberDraft[]>([])
+
+  const handleSelectCampaign = useCallback(
+    (candidate: CampaignDraft | CampaignWithCounts) => {
+      setError(null)
+      setNotice(null)
+      const rawSchedules = Array.isArray(candidate.schedules) ? candidate.schedules : []
+      const normalizedSchedules = rawSchedules.length
+        ? rawSchedules.map((step, index) => normalizeStepDraft(step, index))
+        : [newStep(1)]
+
+      setCampaignDraft({
+        id: candidate.id,
+        name: candidate.name ?? 'New Campaign',
+        description: candidate.description,
+        status: candidate.status ?? CampaignStatus.DRAFT,
+        schedules: normalizedSchedules,
+      })
+    },
+    [setCampaignDraft, setError, setNotice],
+  )
 
   // Side effects
   useEffect(() => {
@@ -152,6 +278,7 @@ export default function CampaignControls({ initialData, defaults }: { initialDat
       setIsSaving(true)
       setError(null)
       try {
+        setNotice(null)
         const { res, data } = await logic()
         if (!res.ok) {
           throw new Error(data.error || 'An API error occurred')
@@ -184,6 +311,7 @@ export default function CampaignControls({ initialData, defaults }: { initialDat
       {
         onSuccess: ({ campaign }) => {
           setCampaignDraft({})
+          setNotice(isUpdate ? 'Campaign updated successfully.' : 'Campaign created successfully.')
           refreshDashboard()
         },
       },
@@ -202,6 +330,7 @@ export default function CampaignControls({ initialData, defaults }: { initialDat
         {
           onSuccess: () => {
             if (campaignDraft.id === id) setCampaignDraft({})
+            setNotice('Campaign deleted.')
             refreshDashboard()
           },
         },
@@ -339,6 +468,42 @@ export default function CampaignControls({ initialData, defaults }: { initialDat
     setSelectedMembers((prev) => prev.filter((member) => member.businessId !== businessId))
   }
 
+  const runScheduleStep = useCallback(
+    async (scheduleId: string, mode: 'preview' | 'send') => {
+      if (!scheduleId) return
+      setRunningStep({ id: scheduleId, mode })
+      setError(null)
+      setNotice(null)
+      try {
+        const res = await fetch('/api/admin/campaign/send', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ scheduleId, previewOnly: mode === 'preview' }),
+        })
+        const data = await res.json().catch(() => ({}))
+        if (!res.ok) {
+          throw new Error(data.error || 'Failed to trigger schedule send')
+        }
+        const result = data.result ?? {}
+        if (result.windowClosed) {
+          setNotice(`Smart window closed at ${new Date(result.windowClosed).toLocaleString()}. No emails were sent.`)
+        } else if (result.deferredUntil) {
+          setNotice(`Not yet in smart window. Rescheduled for ${new Date(result.deferredUntil).toLocaleString()}.`)
+        } else if (mode === 'preview') {
+          setNotice(`Preview ready: ${result.processed ?? 0} recipient(s) processed.`)
+        } else {
+          setNotice(`Send complete: ${result.sent ?? 0} of ${result.processed ?? 0} recipient(s) sent.`)
+        }
+        await refreshDashboard()
+      } catch (err: any) {
+        setError(err?.message || 'Failed to trigger schedule send')
+      } finally {
+        setRunningStep(null)
+      }
+    },
+    [refreshDashboard],
+  )
+
   const loadGroup = (group: Group) => {
     setGroupDraft({ id: group.id, name: group.name, description: group.description ?? undefined })
     setSelectedMembers(
@@ -363,6 +528,12 @@ export default function CampaignControls({ initialData, defaults }: { initialDat
       {error ? (
         <div className="rounded-lg border border-red-500/40 bg-red-500/10 px-4 py-3 text-sm text-red-200">
           {error}
+        </div>
+      ) : null}
+
+      {notice ? (
+        <div className="rounded-lg border border-emerald-400/40 bg-emerald-500/10 px-4 py-3 text-sm text-emerald-200">
+          {notice}
         </div>
       ) : null}
 
@@ -393,6 +564,9 @@ export default function CampaignControls({ initialData, defaults }: { initialDat
             onSave={saveCampaign}
             onDelete={deleteCampaign}
             isSaving={isSaving}
+            onSelectCampaign={handleSelectCampaign}
+            onRunStep={runScheduleStep}
+            runningStep={runningStep}
           />
         )}
         {activeTab === 'groups' && (
@@ -477,20 +651,26 @@ function CampaignsView({
   onSave,
   onDelete,
   isSaving,
+  onSelectCampaign,
+  onRunStep,
+  runningStep,
 }: {
   campaigns: CampaignWithCounts[]
-  draft: Partial<CampaignWithCounts>
-  setDraft: (d: Partial<CampaignWithCounts>) => void
+  draft: CampaignDraft
+  setDraft: (d: CampaignDraft) => void
   templates: Template[]
   groups: Group[]
   onSave: () => void
   onDelete: (id: string) => void
   isSaving: boolean
+  onSelectCampaign: (campaign: CampaignDraft | CampaignWithCounts) => void
+  onRunStep: (scheduleId: string, mode: 'preview' | 'send') => void
+  runningStep: { id: string; mode: 'preview' | 'send' } | null
 }) {
   return (
     <div className="grid grid-cols-1 gap-6 md:grid-cols-3">
       <aside className="md:col-span-1">
-        <CampaignsPanel campaigns={campaigns} onSelect={setDraft} selectedId={draft.id} />
+        <CampaignsPanel campaigns={campaigns} onSelect={onSelectCampaign} selectedId={draft.id} />
       </aside>
       <main className="md:col-span-2">
         <SequenceEditor
@@ -501,6 +681,8 @@ function CampaignsView({
           onSave={onSave}
           onDelete={onDelete}
           isSaving={isSaving}
+          onRunStep={onRunStep}
+          runningStep={runningStep}
         />
       </main>
     </div>
@@ -513,14 +695,17 @@ function CampaignsPanel({
   selectedId,
 }: {
   campaigns: CampaignWithCounts[]
-  onSelect: (campaign: Partial<CampaignWithCounts>) => void
+  onSelect: (campaign: CampaignDraft | CampaignWithCounts) => void
   selectedId?: string
 }) {
   return (
     <div className="rounded-2xl border border-white/10 bg-white/5 p-4">
       <header className="flex items-center justify-between">
         <h2 className="font-semibold text-white">Campaigns</h2>
-        <button onClick={() => onSelect({ name: 'New Campaign', status: CampaignStatus.DRAFT, schedules: [] })} className="text-sm text-emerald-400 hover:text-emerald-300">
+        <button
+          onClick={() => onSelect({ name: 'New Campaign', status: CampaignStatus.DRAFT, schedules: [newStep(1)] })}
+          className="text-sm text-emerald-400 hover:text-emerald-300"
+        >
           + New
         </button>
       </header>
@@ -550,30 +735,77 @@ function SequenceEditor({
   onSave,
   onDelete,
   isSaving,
+  onRunStep,
+  runningStep,
 }: {
-  draft: Partial<CampaignWithCounts>
-  setDraft: (d: Partial<CampaignWithCounts>) => void
+  draft: CampaignDraft
+  setDraft: (d: CampaignDraft) => void
   templates: Template[]
   groups: Group[]
   onSave: () => void
   onDelete: (id: string) => void
   isSaving: boolean
+  onRunStep: (scheduleId: string, mode: 'preview' | 'send') => void
+  runningStep: { id: string; mode: 'preview' | 'send' } | null
 }) {
-  const steps = useMemo(() => draft.schedules || [], [draft.schedules])
+  const steps = useMemo<StepDraft[]>(() => (draft.schedules as StepDraft[] | undefined) ?? [], [draft.schedules])
+
+  useEffect(() => {
+    if (!steps.length) return
+    let needsUpdate = false
+    const normalized = steps.map((step, index) => {
+      const normalizedStep = normalizeStepDraft(step, index)
+      if (!stepDraftsEquivalent(step, normalizedStep, index)) {
+        needsUpdate = true
+      }
+      return normalizedStep
+    })
+    if (needsUpdate) {
+      setDraft({ ...draft, schedules: normalized })
+    }
+  }, [steps, draft, setDraft])
 
   const updateStep = (index: number, newStepData: Partial<StepDraft>) => {
     const newSteps = [...steps]
     newSteps[index] = { ...newSteps[index], ...newStepData }
-    setDraft({ ...draft, schedules: newSteps })
+    const normalizedSteps = newSteps.map((item, idx) => ({ ...item, stepOrder: idx + 1 }))
+    setDraft({ ...draft, schedules: normalizedSteps })
   }
 
   const addStep = () => {
-    const newSteps = [...steps, newStep(steps.length + 1) as any]
-    setDraft({ ...draft, schedules: newSteps })
+    const normalizedSteps = [...steps, newStep(steps.length + 1)]
+    setDraft({ ...draft, schedules: normalizedSteps })
+  }
+
+  const moveStep = (index: number, direction: -1 | 1) => {
+    const newIndex = index + direction
+    if (newIndex < 0 || newIndex >= steps.length) return
+    const newSteps = [...steps]
+    const [step] = newSteps.splice(index, 1)
+    newSteps.splice(newIndex, 0, step)
+    setDraft({ ...draft, schedules: newSteps.map((item, idx) => ({ ...item, stepOrder: idx + 1 })) })
+  }
+
+  const duplicateStep = (index: number) => {
+    const step = steps[index]
+    const clone: StepDraft = {
+      ...step,
+      id: undefined,
+      name: step.name ? `${step.name} (copy)` : '',
+      stepOrder: index + 2,
+      sendAt: step.sendAt ? new Date(step.sendAt) : null,
+      smartWindowStart: step.smartWindowStart ? new Date(step.smartWindowStart) : null,
+      smartWindowEnd: step.smartWindowEnd ? new Date(step.smartWindowEnd) : null,
+    }
+    const newSteps = [...steps]
+    newSteps.splice(index + 1, 0, clone)
+    setDraft({ ...draft, schedules: newSteps.map((item, idx) => ({ ...item, stepOrder: idx + 1 })) })
   }
 
   const removeStep = (index: number) => {
-    const newSteps = steps.filter((_, i) => i !== index)
+    const newSteps = steps
+      .filter((_, i) => i !== index)
+      .map((item, idx) => ({ ...item, stepOrder: idx + 1 }))
     setDraft({ ...draft, schedules: newSteps })
   }
 
@@ -584,6 +816,14 @@ function SequenceEditor({
       </div>
     )
   }
+
+  const statusOptions = [
+    CampaignStatus.DRAFT,
+    CampaignStatus.SCHEDULED,
+    CampaignStatus.PAUSED,
+    CampaignStatus.COMPLETED,
+    CampaignStatus.CANCELLED,
+  ]
 
   return (
     <div className="space-y-6">
@@ -604,110 +844,292 @@ function SequenceEditor({
       </header>
 
       <div className="space-y-4">
-        {steps.map((step, index) => (
-          <div key={step.id || `step-${index}`} className="rounded-xl border border-white/10 bg-black/20 p-4 space-y-3">
-            <div className="flex items-center justify-between">
-              <h3 className="font-semibold text-white">Step {index + 1}</h3>
-              <button onClick={() => removeStep(index)} className="text-xs text-red-400 hover:text-red-300">Remove</button>
-            </div>
-            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-              <div>
-                <label className="text-xs uppercase tracking-wide text-neutral-400">Template</label>
-                <select
-                  value={step.templateId}
-                  onChange={(e) => updateStep(index, { ...step, templateId: e.target.value })}
-                  className="mt-1 w-full rounded-lg border border-white/10 bg-black/60 px-3 py-2 text-sm text-white focus:border-emerald-400 focus:outline-none"
-                >
-                  <option value="">Select template</option>
-                  {templates.map((t) => (
-                    <option key={t.id} value={t.id}>
-                      {t.name}
-                    </option>
-                  ))}
-                </select>
+        {steps.map((step, index) => {
+          const stepStatus = step.status ?? CampaignStatus.DRAFT
+          const throttleValue = step.throttlePerMinute ?? 60
+          const repeatValue = step.repeatIntervalMins ?? null
+          const repeatFieldValue = repeatValue ?? ''
+          const timeZoneValue = step.timeZone ?? 'America/Vancouver'
+          const isFirst = index === 0
+          const isLast = index === steps.length - 1
+          const stepId = step.id
+          const isStepRunning = runningStep?.id === stepId
+          const isPreviewRunning = isStepRunning && runningStep?.mode === 'preview'
+          const isSendRunning = isStepRunning && runningStep?.mode === 'send'
+          const runDisabled = !stepId || isSaving || Boolean(runningStep)
+
+          return (
+            <div key={stepId || `step-${index}`} className="space-y-4 rounded-xl border border-white/10 bg-black/20 p-4">
+              <div className="flex flex-wrap items-center justify-between gap-2">
+                <div>
+                  <div className="flex items-center gap-2">
+                    <h3 className="font-semibold text-white">Step {index + 1}</h3>
+                    <span className="rounded-full bg-white/10 px-2 py-1 text-[11px] uppercase tracking-wide text-neutral-300">
+                      {stepStatus}
+                    </span>
+                  </div>
+                  <p className="text-xs text-neutral-500">
+                    {repeatValue
+                      ? `Repeats every ${repeatValue} minute${repeatValue === 1 ? '' : 's'}`
+                      : 'Single run'}
+                  </p>
+                </div>
+                <div className="flex flex-wrap items-center gap-2 text-xs text-neutral-200">
+                  <button
+                    type="button"
+                    onClick={() => moveStep(index, -1)}
+                    disabled={isFirst}
+                    className="rounded-full border border-white/10 px-3 py-1 hover:border-emerald-400 hover:text-emerald-200 disabled:cursor-not-allowed disabled:opacity-50"
+                  >
+                    Move up
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => moveStep(index, 1)}
+                    disabled={isLast}
+                    className="rounded-full border border-white/10 px-3 py-1 hover:border-emerald-400 hover:text-emerald-200 disabled:cursor-not-allowed disabled:opacity-50"
+                  >
+                    Move down
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => duplicateStep(index)}
+                    className="rounded-full border border-white/10 px-3 py-1 hover:border-white/30"
+                  >
+                    Duplicate
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => removeStep(index)}
+                    className="rounded-full border border-red-500/40 px-3 py-1 text-red-200 hover:bg-red-500/10"
+                  >
+                    Remove
+                  </button>
+                </div>
               </div>
-              <div>
-                <label className="text-xs uppercase tracking-wide text-neutral-400">Audience Group</label>
-                <select
-                  value={step.groupId}
-                  onChange={(e) => updateStep(index, { ...step, groupId: e.target.value })}
-                  className="mt-1 w-full rounded-lg border border-white/10 bg-black/60 px-3 py-2 text-sm text-white focus:border-emerald-400 focus:outline-none"
-                >
-                  <option value="">Select group</option>
-                  {groups.map((g) => (
-                    <option key={g.id} value={g.id}>
-                      {g.name} ({g.members.length} members)
-                    </option>
-                  ))}
-                </select>
+
+              <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+                <div>
+                  <label className="text-xs uppercase tracking-wide text-neutral-400">Template</label>
+                  <select
+                    value={step.templateId}
+                    onChange={(e) => updateStep(index, { templateId: e.target.value })}
+                    className="mt-1 w-full rounded-lg border border-white/10 bg-black/60 px-3 py-2 text-sm text-white focus:border-emerald-400 focus:outline-none"
+                  >
+                    <option value="">Select template</option>
+                    {templates.map((t) => (
+                      <option key={t.id} value={t.id}>
+                        {t.name}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+                <div>
+                  <label className="text-xs uppercase tracking-wide text-neutral-400">Audience Group</label>
+                  <select
+                    value={step.groupId}
+                    onChange={(e) => updateStep(index, { groupId: e.target.value })}
+                    className="mt-1 w-full rounded-lg border border-white/10 bg-black/60 px-3 py-2 text-sm text-white focus:border-emerald-400 focus:outline-none"
+                  >
+                    <option value="">Select group</option>
+                    {groups.map((g) => (
+                      <option key={g.id} value={g.id}>
+                        {g.name} ({g.members.length} members)
+                      </option>
+                    ))}
+                  </select>
+                </div>
               </div>
-            </div>
-            <div>
-              <label className="text-xs uppercase tracking-wide text-neutral-400">Step Name</label>
-              <input
-                value={step.name}
-                onChange={(e) => updateStep(index, { ...step, name: e.target.value })}
-                className="mt-1 w-full rounded-lg border border-white/10 bg-black/60 px-3 py-2 text-sm text-white focus:border-emerald-400 focus:outline-none"
-                placeholder={`e.g., Follow-up Email`}
-              />
-            </div>
-            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+
               <div>
-                <label className="text-xs uppercase tracking-wide text-neutral-400">Send At (optional)</label>
+                <label className="text-xs uppercase tracking-wide text-neutral-400">Step Name</label>
                 <input
-                  type="datetime-local"
-                  value={step.sendAt ? step.sendAt.toISOString().slice(0, 16) : ''}
-                  onChange={(e) => updateStep(index, { ...step, sendAt: e.target.value ? new Date(e.target.value) : null })}
+                  value={step.name}
+                  onChange={(e) => updateStep(index, { name: e.target.value })}
                   className="mt-1 w-full rounded-lg border border-white/10 bg-black/60 px-3 py-2 text-sm text-white focus:border-emerald-400 focus:outline-none"
+                  placeholder="e.g., Follow-up Email"
                 />
               </div>
-              <div>
-                <label className="text-xs uppercase tracking-wide text-neutral-400">Throttle (per minute)</label>
-                <input
-                  type="number"
-                  min={1}
-                  value={step.throttlePerMinute ?? ''}
-                  onChange={(e) => updateStep(index, { ...step, throttlePerMinute: e.target.value ? Number(e.target.value) : undefined })}
-                  className="mt-1 w-full rounded-lg border border-white/10 bg-black/60 px-3 py-2 text-sm text-white focus:border-emerald-400 focus:outline-none"
-                  placeholder="60"
-                />
+
+              <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+                <div>
+                  <label className="text-xs uppercase tracking-wide text-neutral-400">Send At (optional)</label>
+                  <input
+                    type="datetime-local"
+                    value={formatDateTimeLocal(step.sendAt)}
+                    onChange={(e) =>
+                      updateStep(index, {
+                        sendAt: e.target.value ? new Date(e.target.value) : null,
+                      })
+                    }
+                    className="mt-1 w-full rounded-lg border border-white/10 bg-black/60 px-3 py-2 text-sm text-white focus:border-emerald-400 focus:outline-none"
+                  />
+                </div>
+                <div>
+                  <label className="text-xs uppercase tracking-wide text-neutral-400">Throttle (per minute)</label>
+                  <input
+                    type="number"
+                    min={1}
+                    value={throttleValue}
+                    onChange={(e) =>
+                      updateStep(index, {
+                        throttlePerMinute: e.target.value ? Number(e.target.value) : undefined,
+                      })
+                    }
+                    className="mt-1 w-full rounded-lg border border-white/10 bg-black/60 px-3 py-2 text-sm text-white focus:border-emerald-400 focus:outline-none"
+                    placeholder="60"
+                  />
+                </div>
+              </div>
+
+              <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
+                <div>
+                  <label className="text-xs uppercase tracking-wide text-neutral-400">Step status</label>
+                  <select
+                    value={stepStatus}
+                    onChange={(e) => updateStep(index, { status: e.target.value as CampaignStatus })}
+                    className="mt-1 w-full rounded-lg border border-white/10 bg-black/60 px-3 py-2 text-sm text-white focus:border-emerald-400 focus:outline-none"
+                  >
+                    {statusOptions.map((status) => (
+                      <option key={status} value={status}>
+                        {status}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+                <div>
+                  <label className="text-xs uppercase tracking-wide text-neutral-400">Repeat interval (mins)</label>
+                  <input
+                    type="number"
+                    min={0}
+                    value={repeatFieldValue}
+                    onChange={(e) =>
+                      updateStep(index, {
+                        repeatIntervalMins: e.target.value ? Number(e.target.value) : null,
+                      })
+                    }
+                    className="mt-1 w-full rounded-lg border border-white/10 bg-black/60 px-3 py-2 text-sm text-white focus:border-emerald-400 focus:outline-none"
+                    placeholder="Leave blank to disable"
+                  />
+                </div>
+                <div>
+                  <label className="text-xs uppercase tracking-wide text-neutral-400">Time zone</label>
+                  <input
+                    type="text"
+                    list={TIME_ZONE_DATALIST_ID}
+                    value={timeZoneValue}
+                    onChange={(e) => updateStep(index, { timeZone: e.target.value.trim() || undefined })}
+                    className="mt-1 w-full rounded-lg border border-white/10 bg-black/60 px-3 py-2 text-sm text-white focus:border-emerald-400 focus:outline-none"
+                    placeholder="America/Vancouver"
+                  />
+                  <p className="mt-1 text-[11px] text-neutral-500">Use an IANA time zone identifier.</p>
+                </div>
+              </div>
+
+              <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+                <div>
+                  <label className="text-xs uppercase tracking-wide text-neutral-400">Smart window start</label>
+                  <input
+                    type="datetime-local"
+                    value={formatDateTimeLocal(step.smartWindowStart ?? null)}
+                    onChange={(e) =>
+                      updateStep(index, {
+                        smartWindowStart: e.target.value ? new Date(e.target.value) : null,
+                      })
+                    }
+                    className="mt-1 w-full rounded-lg border border-white/10 bg-black/60 px-3 py-2 text-sm text-white focus:border-emerald-400 focus:outline-none"
+                  />
+                </div>
+                <div className="sm:space-y-2">
+                  <label className="text-xs uppercase tracking-wide text-neutral-400">Smart window end</label>
+                  <input
+                    type="datetime-local"
+                    value={formatDateTimeLocal(step.smartWindowEnd ?? null)}
+                    onChange={(e) =>
+                      updateStep(index, {
+                        smartWindowEnd: e.target.value ? new Date(e.target.value) : null,
+                      })
+                    }
+                    className="mt-1 w-full rounded-lg border border-white/10 bg-black/60 px-3 py-2 text-sm text-white focus:border-emerald-400 focus:outline-none"
+                  />
+                  <div className="flex justify-end">
+                    <button
+                      type="button"
+                      onClick={() => updateStep(index, { smartWindowStart: null, smartWindowEnd: null })}
+                      className="rounded-full border border-white/10 px-3 py-1 text-xs text-neutral-300 hover:border-white/30"
+                    >
+                      Clear window
+                    </button>
+                  </div>
+                </div>
+              </div>
+              <p className="text-xs text-neutral-500">
+                Smart windows limit sends to the specified interval. Outside the window the schedule waits or completes.
+              </p>
+
+              <div className="flex flex-wrap items-center justify-between gap-2 border-t border-white/10 pt-3">
+                <p className="text-xs text-neutral-500">Preview simulates this step without sending email.</p>
+                <div className="flex gap-2">
+                  <button
+                    type="button"
+                    disabled={runDisabled}
+                    onClick={() => {
+                      if (!stepId || runDisabled) return
+                      onRunStep(stepId, 'preview')
+                    }}
+                    className="rounded-full border border-white/10 px-3 py-1 text-xs text-neutral-200 hover:border-emerald-400 hover:text-emerald-200 disabled:cursor-not-allowed disabled:opacity-60"
+                  >
+                    {isPreviewRunning ? 'Previewing…' : 'Preview'}
+                  </button>
+                  <button
+                    type="button"
+                    disabled={runDisabled}
+                    onClick={() => {
+                      if (!stepId || runDisabled) return
+                      onRunStep(stepId, 'send')
+                    }}
+                    className="rounded-full bg-emerald-500 px-3 py-1 text-xs font-semibold text-emerald-950 hover:bg-emerald-400 disabled:cursor-not-allowed disabled:opacity-60"
+                  >
+                    {isSendRunning ? 'Sending…' : 'Send now'}
+                  </button>
+                </div>
               </div>
             </div>
-            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-              <div>
-                <label className="text-xs uppercase tracking-wide text-neutral-400">Smart Window Start (optional)</label>
-                <input
-                  type="datetime-local"
-                  value={step.smartWindowStart ? step.smartWindowStart.toISOString().slice(0, 16) : ''}
-                  onChange={(e) => updateStep(index, { ...step, smartWindowStart: e.target.value ? new Date(e.target.value) : null })}
-                  className="mt-1 w-full rounded-lg border border-white/10 bg-black/60 px-3 py-2 text-sm text-white focus:border-emerald-400 focus:outline-none"
-                />
-              </div>
-              <div>
-                <label className="text-xs uppercase tracking-wide text-neutral-400">Smart Window End (optional)</label>
-                <input
-                  type="datetime-local"
-                  value={step.smartWindowEnd ? step.smartWindowEnd.toISOString().slice(0, 16) : ''}
-                  onChange={(e) => updateStep(index, { ...step, smartWindowEnd: e.target.value ? new Date(e.target.value) : null })}
-                  className="mt-1 w-full rounded-lg border border-white/10 bg-black/60 px-3 py-2 text-sm text-white focus:border-emerald-400 focus:outline-none"
-                />
-              </div>
-            </div>
-          </div>
-        ))}
+          )
+        })}
       </div>
 
+      <datalist id={TIME_ZONE_DATALIST_ID}>
+        {TIME_ZONE_OPTIONS.map((tz) => (
+          <option key={tz} value={tz} />
+        ))}
+      </datalist>
+
       <div className="flex items-center justify-between">
-        <button onClick={addStep} className="rounded-full border border-white/10 px-4 py-2 text-sm text-neutral-200 hover:bg-white/5">
+        <button
+          onClick={addStep}
+          type="button"
+          className="rounded-full border border-white/10 px-4 py-2 text-sm text-neutral-200 hover:bg-white/5"
+        >
           + Add Step
         </button>
         <div className="flex items-center gap-3">
           {draft.id ? (
-            <button onClick={() => onDelete(draft.id!)} disabled={isSaving} className="text-sm text-red-400 hover:text-red-300 disabled:opacity-50">
+            <button
+              onClick={() => onDelete(draft.id!)}
+              type="button"
+              disabled={isSaving}
+              className="text-sm text-red-400 hover:text-red-300 disabled:opacity-50"
+            >
               Delete
             </button>
           ) : null}
-          <button onClick={onSave} disabled={isSaving} className="rounded-full bg-emerald-500 px-5 py-2 text-sm font-semibold text-emerald-950 hover:bg-emerald-400 disabled:opacity-50">
+          <button
+            onClick={onSave}
+            type="button"
+            disabled={isSaving}
+            className="rounded-full bg-emerald-500 px-5 py-2 text-sm font-semibold text-emerald-950 hover:bg-emerald-400 disabled:opacity-50"
+          >
             {isSaving ? 'Saving...' : 'Save Campaign'}
           </button>
         </div>
