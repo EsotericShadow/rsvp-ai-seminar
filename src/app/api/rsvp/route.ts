@@ -6,6 +6,7 @@ import { createEvent } from 'ics';
 import { cookies, headers } from 'next/headers';
 import crypto from 'crypto';
 import { UAParser } from 'ua-parser-js';
+import { postLeadMineEvent } from '@/lib/leadMine';
 
 const resendApiKey = process.env.RESEND_API_KEY;
 const resendClient = resendApiKey ? new Resend(resendApiKey) : null;
@@ -34,6 +35,7 @@ export async function POST(req: Request) {
     const utmTerm = c.get('utm_term')?.value;
     const utmContent = c.get('utm_content')?.value;
     const eid = c.get('eid')?.value;
+    const campaignToken = eid && eid.startsWith('biz_') ? eid.slice(4) : undefined;
 
     const ua = h('user-agent') || undefined;
     const referer = h('referer') || undefined;
@@ -80,6 +82,12 @@ export async function POST(req: Request) {
         }),
       },
     });
+
+    if (campaignToken) {
+      postLeadMineEvent({ token: campaignToken, type: 'rsvp', meta: { rsvpId: rsvp.id } }).catch((err) => {
+        console.error('LeadMine RSVP event failed', err);
+      });
+    }
 
     // ... (placeholders for email and ics)
 

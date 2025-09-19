@@ -1,6 +1,7 @@
 node_modules
 .next
 .turbo
+lead-mine/
 
 # Local databases & Prisma artifacts
 prisma/dev.db

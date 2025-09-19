@@ -3,6 +3,7 @@ import { cookies, headers } from 'next/headers'
 import crypto from 'crypto'
 import prisma from '@/lib/prisma'
 import { UAParser } from 'ua-parser-js'
+import { postLeadMineEvent } from '@/lib/leadMine'
 
 const h = (k: string) => headers().get(k)
 
@@ -83,6 +84,14 @@ export async function POST(req: Request) {
       visibility,
     } = body
 
+    const campaignToken = (() => {
+      const raw = c.get('eid')?.value || (typeof query === 'string' && query ? new URLSearchParams(query).get('eid') : null);
+      if (raw && raw.startsWith('biz_')) return raw.slice(4)
+      const bodyToken = typeof body?.eid === 'string' ? body.eid : undefined
+      if (bodyToken && bodyToken.startsWith('biz_')) return bodyToken.slice(4)
+      return null
+    })()
+
     const parsed = ua ? new UAParser(ua).getResult() : undefined
     const browser = parsed?.browser?.name
     const device  = parsed?.device?.type || 'desktop'
@@ -128,6 +137,12 @@ export async function POST(req: Request) {
         ipHash,
       },
     })
+
+    if (campaignToken) {
+      postLeadMineEvent({ token: campaignToken, type: 'visit' }).catch((err) => {
+        console.error('LeadMine visit event failed', err)
+      })
+    }
 
     const res = NextResponse.json({ ok: true })
     for (const { name, value, maxAge } of cookiesToSet) {
