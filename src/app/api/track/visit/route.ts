@@ -11,8 +11,25 @@ export async function POST(req: Request) {
     const body = await req.json().catch(() => ({}))
 
     const c = cookies()
-    const vid  = c.get('vid')?.value
-    const sid  = c.get('sid')?.value
+    let vid  = c.get('vid')?.value
+    let sid  = c.get('sid')?.value
+
+    const cookiesToSet: Array<{ name: string; value: string; maxAge: number }> = []
+
+    if (!vid) {
+      vid = crypto.randomUUID()
+      cookiesToSet.push({ name: 'vid', value: vid, maxAge: 60 * 60 * 24 * 365 * 2 })
+    }
+
+    const now = Date.now()
+    const sidCreatedAt = Number(c.get('sid_ts')?.value || 0)
+    if (!sid || Number.isNaN(sidCreatedAt) || now - sidCreatedAt > 30 * 60 * 1000) {
+      sid = crypto.randomUUID()
+      cookiesToSet.push({ name: 'sid', value: sid, maxAge: 60 * 60 * 24 })
+      cookiesToSet.push({ name: 'sid_ts', value: String(now), maxAge: 60 * 60 * 24 })
+    } else {
+      cookiesToSet.push({ name: 'sid_ts', value: String(now), maxAge: 60 * 60 * 24 })
+    }
 
     // UTM/eid/click IDs from cookies (set in middleware)
     const utmSource   = c.get('utm_source')?.value
@@ -48,8 +65,8 @@ export async function POST(req: Request) {
 
     await prisma.visit.create({
       data: {
-        visitorId: vid ?? 'unknown',
-        sessionId: sid ?? 'unknown',
+        visitorId: vid,
+        sessionId: sid,
         path: page || '/',
         query: query || undefined,
         referrer: referer || undefined,
@@ -68,7 +85,20 @@ export async function POST(req: Request) {
       },
     })
 
-    return NextResponse.json({ ok: true })
+    const res = NextResponse.json({ ok: true })
+    for (const { name, value, maxAge } of cookiesToSet) {
+      res.cookies.set({
+        name,
+        value,
+        path: '/',
+        httpOnly: true,
+        sameSite: 'lax',
+        secure: true,
+        maxAge,
+      })
+    }
+
+    return res
   } catch (e) {
     // never throw to client; stay silent
     return NextResponse.json({ ok: true })
