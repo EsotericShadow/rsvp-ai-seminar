@@ -435,6 +435,21 @@ export default function CampaignControls({ initialData, defaults }: { initialDat
     [templateDraft.id, runApi, refreshDashboard],
   )
 
+  const duplicateTemplate = useCallback(
+    (template: Template) => {
+      setTemplateDraft({
+        id: undefined,
+        name: `${template.name} copy`,
+        subject: template.subject,
+        htmlBody: template.htmlBody,
+        textBody: template.textBody ?? '',
+      })
+      setActiveTab('templates')
+      setNotice(`Duplicated template “${template.name}”. Update the name and save.`)
+    },
+    [setActiveTab, setNotice],
+  )
+
   const addMember = useCallback((business: BusinessResult) => {
     if (!business.contact.primaryEmail && !business.contact.alternateEmail) return
     setSelectedMembers((prev) => {
@@ -594,6 +609,7 @@ export default function CampaignControls({ initialData, defaults }: { initialDat
             draft={templateDraft}
             setDraft={setTemplateDraft}
             onEdit={(template) => setTemplateDraft({ ...template, textBody: template.textBody ?? '' })}
+            onDuplicate={duplicateTemplate}
             onRemove={deleteTemplate}
             onSubmit={saveTemplate}
             isSaving={isSaving}
