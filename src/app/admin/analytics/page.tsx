@@ -1,3 +1,7 @@
+import { cookies } from 'next/headers'
+import { redirect } from 'next/navigation'
+
+import { getAdminConfig, getSessionCookieName, verifySessionToken } from '@/lib/admin-auth'
 import prisma from '@/lib/prisma'
 
 export const dynamic = 'force-dynamic'
@@ -14,29 +18,20 @@ function fmt(d: Date) {
 type SearchParams = { [k: string]: string | string[] | undefined }
 
 export default async function AdminAnalyticsPage({ searchParams }: { searchParams: SearchParams }) {
-  const key = typeof searchParams.key === 'string' ? searchParams.key : undefined
-  const q   = typeof searchParams.q === 'string' ? searchParams.q : undefined
+  const q = typeof searchParams.q === 'string' ? searchParams.q : undefined
 
-  if (!process.env.ADMIN_KEY) {
-    return (
-      <div className="min-h-[100svh] grid place-items-center p-6">
-        <div className="max-w-lg w-full glass rounded-2xl p-6">
-          <h1 className="text-xl font-semibold mb-2">Admin key not configured</h1>
-          <p className="text-sm text-gray-600">Set <code>ADMIN_KEY</code> in your .env.</p>
-        </div>
-      </div>
-    )
+  const adminConfig = getAdminConfig()
+  if (!adminConfig) {
+    redirect('/admin/login?error=config')
   }
 
-  if (key !== process.env.ADMIN_KEY) {
-    return (
-      <div className="min-h-[100svh] grid place-items-center p-6">
-        <div className="max-w-sm w-full glass rounded-2xl p-6">
-          <h1 className="text-xl font-semibold mb-2">Unauthorized</h1>
-          <p className="text-sm text-gray-600">Add <code>?key=YOUR_ADMIN_KEY</code> to the URL.</p>
-        </div>
-      </div>
-    )
+  const { sessionSecret } = adminConfig
+
+  const token = cookies().get(getSessionCookieName())?.value
+  const session = verifySessionToken(token, sessionSecret)
+  if (!session) {
+    const next = q ? `/admin/analytics?q=${encodeURIComponent(q)}` : '/admin/analytics'
+    redirect(`/admin/login?next=${encodeURIComponent(next)}`)
   }
 
   if (!process.env.DATABASE_URL) {
@@ -95,28 +90,36 @@ export default async function AdminAnalyticsPage({ searchParams }: { searchParam
             <p className="text-sm text-neutral-400 mt-1">Last 200 rows shown below. Total Visits: {totals.visits}, RSVPs: {totals.rsvps}</p>
           </div>
 
-          <form className="flex gap-2" action="/admin/analytics" method="get">
-            <input type="hidden" name="key" value={key} />
-            <input
-              name="q"
-              defaultValue={q || ''}
-              placeholder="Search email, eid, campaign…"
-              className="w-56 rounded-lg px-3 py-2 bg-neutral-900 border border-neutral-800 outline-none focus:ring-2 ring-brand-sage"
-            />
-            <button className="rounded-lg bg-brand-ink hover:bg-brand-mid px-3 py-2">Search</button>
-            <a
-              className="rounded-lg bg-neutral-800 hover:bg-neutral-700 px-3 py-2"
-              href={`/api/admin/export?type=rsvps&key=${encodeURIComponent(key!)}`}
-            >
-              Export RSVPs CSV
-            </a>
-            <a
-              className="rounded-lg bg-neutral-800 hover:bg-neutral-700 px-3 py-2"
-              href={`/api/admin/export?type=visits&key=${encodeURIComponent(key!)}`}
-            >
-              Export Visits CSV
-            </a>
-          </form>
+          <div className="flex flex-col sm:flex-row gap-2">
+            <form className="flex gap-2" action="/admin/analytics" method="get">
+              <input
+                name="q"
+                defaultValue={q || ''}
+                placeholder="Search email, eid, campaign…"
+                className="w-56 rounded-lg px-3 py-2 bg-neutral-900 border border-neutral-800 outline-none focus:ring-2 ring-brand-sage"
+              />
+              <button className="rounded-lg bg-brand-ink hover:bg-brand-mid px-3 py-2">Search</button>
+            </form>
+            <div className="flex gap-2 flex-wrap">
+              <a
+                className="rounded-lg bg-neutral-800 hover:bg-neutral-700 px-3 py-2"
+                href="/api/admin/export?type=rsvps"
+              >
+                Export RSVPs CSV
+              </a>
+              <a
+                className="rounded-lg bg-neutral-800 hover:bg-neutral-700 px-3 py-2"
+                href="/api/admin/export?type=visits"
+              >
+                Export Visits CSV
+              </a>
+              <form action="/admin/logout" method="post">
+                <button className="rounded-lg bg-neutral-800 hover:bg-neutral-700 px-3 py-2">
+                  Log out
+                </button>
+              </form>
+            </div>
+          </div>
         </header>
 
         {/* RSVPs */}

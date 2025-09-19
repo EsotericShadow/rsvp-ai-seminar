@@ -1,4 +1,7 @@
+import { cookies } from 'next/headers'
 import { NextResponse } from 'next/server'
+
+import { getAdminConfig, getSessionCookieName, verifySessionToken } from '@/lib/admin-auth'
 import prisma from '@/lib/prisma'
 
 export const runtime = 'nodejs'
@@ -16,13 +19,21 @@ function toCsvRow(values: (string | number | null | undefined)[]) {
 }
 
 export async function GET(req: Request) {
-  const url = new URL(req.url)
-  const type = url.searchParams.get('type')
-  const key  = url.searchParams.get('key')
+  const adminConfig = getAdminConfig()
+  if (!adminConfig) {
+    return NextResponse.json({ error: 'Admin access not configured' }, { status: 500 })
+  }
 
-  if (!process.env.ADMIN_KEY || key !== process.env.ADMIN_KEY) {
+  const { sessionSecret } = adminConfig
+
+  const token = cookies().get(getSessionCookieName())?.value
+  const session = verifySessionToken(token, sessionSecret)
+  if (!session) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
   }
+
+  const url = new URL(req.url)
+  const type = url.searchParams.get('type')
 
   if (!process.env.DATABASE_URL) {
     return NextResponse.json({ error: 'Database not configured' }, { status: 500 })
