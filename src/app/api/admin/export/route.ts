@@ -1,6 +1,9 @@
 import { NextResponse } from 'next/server'
 import prisma from '@/lib/prisma'
 
+export const runtime = 'nodejs'
+export const dynamic = 'force-dynamic'
+
 function toCsvRow(values: (string | number | null | undefined)[]) {
   return values
     .map((v) => {
@@ -19,6 +22,10 @@ export async function GET(req: Request) {
 
   if (!process.env.ADMIN_KEY || key !== process.env.ADMIN_KEY) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+  }
+
+  if (!process.env.DATABASE_URL) {
+    return NextResponse.json({ error: 'Database not configured' }, { status: 500 })
   }
 
   if (type !== 'rsvps' && type !== 'visits') {

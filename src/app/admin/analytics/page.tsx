@@ -1,5 +1,8 @@
 import prisma from '@/lib/prisma'
 
+export const dynamic = 'force-dynamic'
+export const runtime = 'nodejs'
+
 function fmt(d: Date) {
   return new Intl.DateTimeFormat('en-CA', {
     dateStyle: 'medium',
@@ -31,6 +34,17 @@ export default async function AdminAnalyticsPage({ searchParams }: { searchParam
         <div className="max-w-sm w-full glass rounded-2xl p-6">
           <h1 className="text-xl font-semibold mb-2">Unauthorized</h1>
           <p className="text-sm text-gray-600">Add <code>?key=YOUR_ADMIN_KEY</code> to the URL.</p>
+        </div>
+      </div>
+    )
+  }
+
+  if (!process.env.DATABASE_URL) {
+    return (
+      <div className="min-h-[100svh] grid place-items-center p-6">
+        <div className="max-w-lg w-full glass rounded-2xl p-6">
+          <h1 className="text-xl font-semibold mb-2">Database not configured</h1>
+          <p className="text-sm text-gray-600">Set <code>DATABASE_URL</code> in your environment before loading analytics.</p>
         </div>
       </div>
     )
