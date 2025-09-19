@@ -697,11 +697,11 @@ function CampaignsView({
   runningStep: { id: string; mode: 'preview' | 'send' } | null
 }) {
   return (
-    <div className="grid grid-cols-1 gap-6 md:grid-cols-3">
-      <aside className="md:col-span-1">
+    <div className="flex flex-col gap-6 xl:flex-row">
+      <aside className="w-full xl:max-w-xs xl:flex-none">
         <CampaignsPanel campaigns={campaigns} onSelect={onSelectCampaign} selectedId={draft.id} />
       </aside>
-      <main className="md:col-span-2">
+      <main className="w-full flex-1">
         <SequenceEditor
           draft={draft}
           setDraft={setDraft}
@@ -728,29 +728,44 @@ function CampaignsPanel({
   selectedId?: string
 }) {
   return (
-    <div className="rounded-2xl border border-white/10 bg-white/5 p-4">
-      <header className="flex items-center justify-between">
-        <h2 className="font-semibold text-white">Campaigns</h2>
+    <div className="flex h-full flex-col gap-3 rounded-2xl border border-white/10 bg-white/5 p-4">
+      <header className="flex flex-wrap items-center justify-between gap-3">
+        <div>
+          <h2 className="font-semibold text-white">Campaigns</h2>
+          <p className="text-xs text-neutral-400">Select a campaign or start a new sequence.</p>
+        </div>
         <button
           onClick={() => onSelect({ name: 'New Campaign', status: CampaignStatus.DRAFT, schedules: [newStep(1)] })}
-          className="text-sm text-emerald-400 hover:text-emerald-300"
+          className="rounded-full border border-emerald-400 px-3 py-1 text-xs text-emerald-200 hover:bg-emerald-500/10"
         >
           + New
         </button>
       </header>
-      <div className="mt-3 space-y-2">
-        {campaigns.map((c) => (
-          <button
-            key={c.id}
-            onClick={() => onSelect(c)}
-            className={`w-full rounded-lg p-3 text-left transition ${selectedId === c.id ? 'bg-emerald-500/20' : 'hover:bg-white/5'}`}
-          >
-            <p className="font-semibold text-white">{c.name}</p>
-            <p className="text-xs text-neutral-400">
-              {c.schedules.length} steps · {c.status}
-            </p>
-          </button>
-        ))}
+      <div className="-mx-2 flex-1 overflow-y-auto px-2">
+        {campaigns.length === 0 ? (
+          <div className="rounded-lg border border-dashed border-white/20 bg-black/20 p-4 text-xs text-neutral-400">
+            No campaigns yet. Create a new one to get started.
+          </div>
+        ) : (
+          <div className="space-y-2">
+            {campaigns.map((c) => (
+              <button
+                key={c.id}
+                onClick={() => onSelect(c)}
+                className={`w-full rounded-lg border px-3 py-2 text-left transition ${
+                  selectedId === c.id
+                    ? 'border-emerald-400 bg-emerald-500/15 text-emerald-50'
+                    : 'border-white/10 bg-black/30 text-neutral-200 hover:border-emerald-400'
+                }`}
+              >
+                <p className="font-semibold leading-tight">{c.name}</p>
+                <p className="mt-1 text-[11px] text-neutral-400">
+                  {c.schedules.length} step{c.schedules.length === 1 ? '' : 's'} · {c.status}
+                </p>
+              </button>
+            ))}
+          </div>
+        )}
       </div>
     </div>
   )
@@ -856,7 +871,7 @@ function SequenceEditor({
 
   return (
     <div className="space-y-6">
-      <header className="space-y-2">
+      <header className="space-y-2 rounded-2xl border border-white/10 bg-black/30 p-4 shadow-sm">
         <input
           value={draft.name ?? ''}
           onChange={(e) => setDraft({ ...draft, name: e.target.value })}
@@ -888,7 +903,10 @@ function SequenceEditor({
           const runDisabled = !stepId || isSaving || Boolean(runningStep)
 
           return (
-            <div key={stepId || `step-${index}`} className="space-y-4 rounded-xl border border-white/10 bg-black/20 p-4">
+            <div
+              key={stepId || `step-${index}`}
+              className="space-y-4 rounded-2xl border border-white/10 bg-neutral-900/70 p-4 shadow-sm backdrop-blur"
+            >
               <div className="flex flex-wrap items-center justify-between gap-2">
                 <div>
                   <div className="flex items-center gap-2">
@@ -937,7 +955,7 @@ function SequenceEditor({
                 </div>
               </div>
 
-              <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+              <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
                 <div>
                   <label className="text-xs uppercase tracking-wide text-neutral-400">Template</label>
                   <select
@@ -980,7 +998,7 @@ function SequenceEditor({
                 />
               </div>
 
-              <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+              <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
                 <div>
                   <label className="text-xs uppercase tracking-wide text-neutral-400">Send At (optional)</label>
                   <input
@@ -1011,7 +1029,7 @@ function SequenceEditor({
                 </div>
               </div>
 
-              <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
+              <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
                 <div>
                   <label className="text-xs uppercase tracking-wide text-neutral-400">Step status</label>
                   <select

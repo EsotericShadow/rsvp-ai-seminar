@@ -161,8 +161,8 @@ export function GroupsPanel({
         ) : null}
       </header>
 
-      <div className="grid gap-6 lg:grid-cols-1 xl:grid-cols-[minmax(0,360px),minmax(0,1fr)]">
-        <div className="space-y-4 rounded-xl border border-white/10 bg-black/40 p-4">
+      <div className="flex flex-col gap-6 xl:flex-row">
+        <div className="space-y-4 rounded-2xl border border-white/10 bg-neutral-900/70 p-4 shadow-sm xl:max-w-sm xl:flex-none">
           <div>
             <label className="text-xs uppercase tracking-wide text-neutral-400">Group name</label>
             <input
@@ -376,11 +376,13 @@ export function GroupsPanel({
           </div>
         </div>
 
-        <BusinessDirectoryPanel
-          onAddMember={onAddMember}
-          onAddMany={onAddMany}
-          existingMemberIds={memberIds}
-        />
+        <div className="flex-1">
+          <BusinessDirectoryPanel
+            onAddMember={onAddMember}
+            onAddMany={onAddMany}
+            existingMemberIds={memberIds}
+          />
+        </div>
       </div>
     </section>
   )
