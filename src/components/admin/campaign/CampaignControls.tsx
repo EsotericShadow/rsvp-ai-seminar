@@ -2,7 +2,9 @@
 
 import { useEffect, useMemo, useState, useCallback } from 'react'
 import { Campaign, CampaignSchedule, CampaignSendStatus, CampaignStatus, CampaignTemplate, AudienceGroup } from '@prisma/client'
+import type { LeadMineBusiness } from '@/lib/leadMine'
 import { GroupsPanel } from './GroupsPanel'
+import type { MemberDraft } from './GroupsPanel'
 import { TemplatesPanel } from './TemplatesPanel'
 import { BusinessDirectoryPanel } from './BusinessDirectoryPanel'
 
@@ -54,34 +56,7 @@ type AdminDefaults = {
   leadMineConfigured: boolean
 }
 
-type BusinessResult = {
-  id: string
-  name: string | null
-  address: string | null
-  invite: {
-    token: string
-    emailsSent: number
-    visitsCount: number
-    rsvpsCount: number
-    lastEmailMeta?: Record<string, unknown> | null
-  } | null
-  contact: {
-    primaryEmail: string | null
-    alternateEmail: string | null
-    contactPerson: string | null
-    tags: string[]
-  }
-}
-
-type MemberDraft = {
-  businessId: string
-  businessName?: string | null
-  primaryEmail: string
-  secondaryEmail?: string | null
-  inviteToken?: string | null
-  tags?: string[]
-  meta?: Record<string, unknown>
-}
+type BusinessResult = LeadMineBusiness
 
 type StepDraft = {
   id?: string
@@ -139,12 +114,6 @@ export default function CampaignControls({ initialData, defaults }: { initialDat
 
   // Group builder state
   const [selectedMembers, setSelectedMembers] = useState<MemberDraft[]>([])
-
-  // Business directory state
-  const [businessResults, setBusinessResults] = useState<BusinessResult[]>([])
-  const [businessSearch, setBusinessSearch] = useState('')
-  const [isSearching, setIsSearching] = useState(false)
-  const [businessPagination, setBusinessPagination] = useState<{ hasMore: boolean; cursor: string | null }>({ hasMore: false, cursor: null })
 
   // Side effects
   useEffect(() => {
@@ -338,30 +307,7 @@ export default function CampaignControls({ initialData, defaults }: { initialDat
     [templateDraft.id, runApi, refreshDashboard],
   )
 
-  const searchBusinesses = useCallback(async (query: string) => {
-    setBusinessSearch(query)
-    if (!query || query.length < 2) {
-      setBusinessResults([])
-      return
-    }
-    setIsSearching(true)
-    setError(null)
-    try {
-      const res = await fetch(`/api/admin/campaign/businesses?q=${encodeURIComponent(query)}&limit=25`)
-      if (!res.ok) {
-        const payload = await res.json().catch(() => ({}))
-        throw new Error(payload.error || 'Search failed')
-      }
-      const data = await res.json()
-      setBusinessResults(data.businesses as BusinessResult[])
-    } catch (err: any) {
-      setError(err?.message || 'Search failed')
-    } finally {
-      setIsSearching(false)
-    }
-  }, [])
-
-  const addMember = (business: BusinessResult) => {
+  const addMember = useCallback((business: BusinessResult) => {
     if (!business.contact.primaryEmail && !business.contact.alternateEmail) return
     setSelectedMembers((prev) => {
       if (prev.some((member) => member.businessId === business.id)) return prev
@@ -381,7 +327,14 @@ export default function CampaignControls({ initialData, defaults }: { initialDat
         },
       ]
     })
-  }
+  }, [])
+
+  const addMembers = useCallback(
+    (businessList: BusinessResult[]) => {
+      businessList.forEach((biz) => addMember(biz))
+    },
+    [addMember],
+  )
 
   const removeMember = (businessId: string) => {
     setSelectedMembers((prev) => prev.filter((member) => member.businessId !== businessId))
@@ -449,11 +402,8 @@ export default function CampaignControls({ initialData, defaults }: { initialDat
             setDraft={setGroupDraft}
             members={selectedMembers}
             onRemoveMember={removeMember}
-            searchQuery={businessSearch}
-            onSearch={searchBusinesses}
-            isSearching={isSearching}
-            results={businessResults}
             onAddMember={addMember}
+            onAddMany={addMembers}
             onSubmit={saveGroup}
             onReset={() => {
               setGroupDraft({ name: '' })
@@ -476,7 +426,13 @@ export default function CampaignControls({ initialData, defaults }: { initialDat
             isSaving={isSaving}
           />
         )}
-        {activeTab === 'directory' && <BusinessDirectoryPanel onAddMember={addMember} />}
+        {activeTab === 'directory' && (
+          <BusinessDirectoryPanel
+            onAddMember={addMember}
+            onAddMany={addMembers}
+            existingMemberIds={selectedMembers.map((member) => member.businessId)}
+          />
+        )}
       </div>
     </div>
   )
