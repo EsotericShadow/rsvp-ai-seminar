@@ -41,7 +41,7 @@ const INITIAL_FACETS: FacetResponse = {
   inviteActivity: { withActivity: 0, withoutActivity: 0 },
 }
 
-const DEFAULT_LIMIT = 50
+const DEFAULT_LIMIT = 200
 
 function formatDate(input?: string | null) {
   if (!input) return '—'
