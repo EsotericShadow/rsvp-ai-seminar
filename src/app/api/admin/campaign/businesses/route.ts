@@ -3,6 +3,10 @@ import { NextRequest, NextResponse } from 'next/server'
 import { requireAdminSession } from '@/lib/adminSession'
 import { fetchLeadMineBusinesses, LeadMineBusiness } from '@/lib/leadMine'
 
+const MIN_PAGE_SIZE = 200
+const MAX_AGGREGATED_RECORDS = 1200
+const MAX_EXTRA_PAGES = 6
+
 type FilterPayload = {
   hasWebsite?: boolean
   hasInviteActivity?: boolean
@@ -154,34 +158,66 @@ export async function GET(request: NextRequest) {
   const { searchParams } = new URL(request.url)
   const search = searchParams.get('q') || undefined
   const idsParam = searchParams.get('ids') || undefined
-  const limit = searchParams.get('limit') ? Number(searchParams.get('limit')) : 25
-  const cursor = searchParams.get('cursor') || undefined
+  const limitParam = searchParams.get('limit') ? Number(searchParams.get('limit')) : 25
+  const pageSize = Number.isFinite(limitParam) ? Math.max(limitParam, MIN_PAGE_SIZE) : MIN_PAGE_SIZE
   const sortParam = (searchParams.get('sort') as SortKey | null) ?? 'recent_activity'
   const filtersParam = searchParams.get('filters')
   const filters = parseFilters(filtersParam)
 
   try {
-    const response = await fetchLeadMineBusinesses({
+    const initialResponse = await fetchLeadMineBusinesses({
       search,
       ids: idsParam ? idsParam.split(',').map((id) => id.trim()).filter(Boolean) : undefined,
-      limit,
-      cursor,
+      limit: pageSize,
+      cursor: searchParams.get('cursor') || undefined,
       hasEmail: true,
       createMissing: true,
     })
 
-    const facets = buildFacets(response.data)
-    const filtered = filterBusinesses(response.data, filters)
+    const aggregated = new Map<string, LeadMineBusiness>()
+    const mergeBusinesses = (list: LeadMineBusiness[]) => {
+      for (const biz of list) {
+        aggregated.set(biz.id, biz)
+      }
+    }
+
+    mergeBusinesses(initialResponse.data)
+
+    let nextCursor = initialResponse.pagination.nextCursor || undefined
+    let pagesFetched = 1
+
+    while (nextCursor && aggregated.size < MAX_AGGREGATED_RECORDS && pagesFetched < MAX_EXTRA_PAGES) {
+      const nextPage = await fetchLeadMineBusinesses({
+        search,
+        ids: idsParam ? idsParam.split(',').map((id) => id.trim()).filter(Boolean) : undefined,
+        limit: pageSize,
+        cursor: nextCursor,
+        hasEmail: true,
+        createMissing: false,
+      })
+
+      mergeBusinesses(nextPage.data)
+      nextCursor = nextPage.pagination.nextCursor || undefined
+      pagesFetched += 1
+    }
+
+    const aggregatedList = Array.from(aggregated.values())
+    const facets = buildFacets(aggregatedList)
+    const filtered = filterBusinesses(aggregatedList, filters)
     const sorted = sortBusinesses(filtered, sortParam)
 
     return NextResponse.json({
       businesses: sorted,
       pagination: {
-        limit: response.pagination.limit,
-        nextCursor: response.pagination.nextCursor,
-        hasMore: Boolean(response.pagination.nextCursor),
+        limit: sorted.length,
+        nextCursor: null,
+        hasMore: false,
       },
       facets,
+      meta: {
+        totalBusinesses: aggregatedList.length,
+        totalAfterFilters: sorted.length,
+      },
     })
   } catch (error: any) {
     return NextResponse.json({ error: error?.message || 'LeadMine request failed' }, { status: 502 })

@@ -28,6 +28,10 @@ type ApiPayload = {
   businesses: LeadMineBusiness[]
   pagination: { limit: number; nextCursor: string | null; hasMore: boolean }
   facets: FacetResponse
+  meta?: {
+    totalBusinesses?: number
+    totalAfterFilters?: number
+  }
 }
 
 const INITIAL_FACETS: FacetResponse = {
@@ -81,6 +85,7 @@ export function BusinessDirectoryPanel({ onAddMember, onAddMany, existingMemberI
   const [isLoadingMore, setIsLoadingMore] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [selectedIds, setSelectedIds] = useState<string[]>([])
+  const [summary, setSummary] = useState<{ total: number; filtered: number } | null>(null)
 
   const existingMemberSet = useMemo(() => new Set(existingMemberIds), [existingMemberIds])
 
@@ -125,6 +130,9 @@ export function BusinessDirectoryPanel({ onAddMember, onAddMany, existingMemberI
         const data: ApiPayload = await res.json()
 
         setFacets(data.facets ?? INITIAL_FACETS)
+        const total = data.meta?.totalBusinesses ?? data.businesses.length
+        const filteredTotal = data.meta?.totalAfterFilters ?? data.businesses.length
+        setSummary({ total, filtered: filteredTotal })
         setHasMore(Boolean(data.pagination?.hasMore))
         setCursor(data.pagination?.nextCursor ?? null)
 
@@ -254,6 +262,11 @@ export function BusinessDirectoryPanel({ onAddMember, onAddMany, existingMemberI
               >
                 Clear filters ({activeFilterCount})
               </button>
+            ) : null}
+            {summary ? (
+              <span className="rounded-full border border-white/10 px-3 py-1 text-xs text-neutral-400">
+                Showing {businesses.length} of {summary.filtered} matches ({summary.total} total)
+              </span>
             ) : null}
           </div>
         </div>
