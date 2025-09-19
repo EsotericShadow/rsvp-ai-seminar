@@ -1,7 +1,9 @@
+import { cookies } from 'next/headers';
 import { NextRequest, NextResponse } from 'next/server';
 import { Resend } from 'resend';
 
 import { fetchLeadMineBusinesses, postLeadMineEvent } from '@/lib/leadMine';
+import { getAdminConfig, getSessionCookieName, verifySessionToken } from '@/lib/admin-auth';
 
 export const dynamic = 'force-dynamic';
 export const revalidate = 0;
@@ -15,17 +17,40 @@ function unauthorized() {
   return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
 }
 
-function checkSecret(req: NextRequest) {
+function hasValidAdminSession() {
+  const adminConfig = getAdminConfig();
+  if (!adminConfig) return false;
+
+  const token = cookies().get(getSessionCookieName())?.value;
+  if (!token) return false;
+
+  const session = verifySessionToken(token, adminConfig.sessionSecret);
+  return Boolean(session);
+}
+
+function authorizeRequest(req: NextRequest) {
+  if (hasValidAdminSession()) {
+    return null;
+  }
+
   if (!cronSecret) {
     console.warn('CAMPAIGN_CRON_SECRET not configured');
     return NextResponse.json({ error: 'Campaign cron secret not configured' }, { status: 500 });
   }
+
   const header = req.headers.get('authorization') || req.headers.get('x-cron-secret');
   if (!header) return unauthorized();
   const provided = header.startsWith('Bearer ') ? header.slice(7) : header;
   if (provided.trim() !== cronSecret) return unauthorized();
   return null;
 }
+
+type CampaignOverrides = {
+  batchSize?: number;
+  minHoursBetween?: number;
+  previewOnly?: boolean;
+  createMissingInvites?: boolean;
+};
 
 function pickRecipient(business: Awaited<ReturnType<typeof fetchLeadMineBusinesses>>['data'][number]) {
   const email = business.contact.primaryEmail || business.contact.alternateEmail;
@@ -97,8 +122,8 @@ Evergreen AI Partnerships Team`;
 }
 
 export async function POST(req: NextRequest) {
-  const secretCheck = checkSecret(req);
-  if (secretCheck) return secretCheck;
+  const authCheck = authorizeRequest(req);
+  if (authCheck) return authCheck;
 
   if (!resendKey) {
     return NextResponse.json({ error: 'RESEND_API_KEY not configured' }, { status: 500 });
@@ -108,12 +133,28 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: 'LeadMine integration not configured' }, { status: 500 });
   }
 
-  const resend = new Resend(resendKey);
-  const batchSize = Number.parseInt(process.env.CAMPAIGN_EMAIL_BATCH_SIZE || '50', 10) || 50;
-  const minHoursBetween = Number.parseInt(process.env.CAMPAIGN_MIN_HOURS_BETWEEN_EMAILS || '72', 10) || 72;
+  let overrides: CampaignOverrides | null = null;
+  if (req.headers.get('content-type')?.includes('application/json')) {
+    overrides = await req.json().catch(() => null);
+  }
+
+  const defaultBatchSize = Number.parseInt(process.env.CAMPAIGN_EMAIL_BATCH_SIZE || '50', 10) || 50;
+  const defaultMinHoursBetween = Number.parseInt(process.env.CAMPAIGN_MIN_HOURS_BETWEEN_EMAILS || '72', 10) || 72;
+
+  const batchSize = overrides?.batchSize && overrides.batchSize > 0
+    ? Math.min(overrides.batchSize, 200)
+    : defaultBatchSize;
+  const minHoursBetween = overrides?.minHoursBetween != null && overrides.minHoursBetween >= 0
+    ? overrides.minHoursBetween
+    : defaultMinHoursBetween;
+  const previewOnly = Boolean(overrides?.previewOnly);
+  const createMissing = overrides?.createMissingInvites ?? true;
+
   const minIntervalMs = minHoursBetween * 60 * 60 * 1000;
 
-  const businesses = await fetchLeadMineBusinesses({ limit: batchSize * 2, createMissing: true, hasEmail: true });
+  const resend = previewOnly ? null : new Resend(resendKey);
+
+  const businesses = await fetchLeadMineBusinesses({ limit: batchSize * 2, createMissing, hasEmail: true });
 
   const candidates = businesses.data
     .filter((biz) => biz.invite && pickRecipient(biz))
@@ -137,6 +178,11 @@ export async function POST(req: NextRequest) {
     const content = buildEmailContent(biz, inviteLink);
 
     try {
+      if (previewOnly || !resend) {
+        results.push({ businessId: biz.id, email: recipient.email, status: 'skipped', reason: previewOnly ? 'preview_only' : 'resend_missing' });
+        continue;
+      }
+
       await resend.emails.send({
         from: fromAddress,
         to: recipient.email,
@@ -161,6 +207,9 @@ export async function POST(req: NextRequest) {
     attempted: candidates.length,
     sent: results.filter((r) => r.status === 'sent').length,
     results,
+    previewOnly,
+    batchSize,
+    minHoursBetween,
     remaining: Math.max(0, (businesses.data.length || 0) - candidates.length),
   });
 }

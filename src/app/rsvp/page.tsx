@@ -159,6 +159,10 @@ export default function RsvpPage() {
               evergreenwebsolutions.ca
             </a>
             <span aria-hidden="true">·</span>
+            <a href="/privacy" className="hover:text-brand-sage focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-sage">
+              Privacy Policy
+            </a>
+            <span aria-hidden="true">·</span>
             <span>© {new Date().getFullYear()} Evergreen Web Solutions</span>
           </div>
         </div>

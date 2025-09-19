@@ -171,14 +171,86 @@ export function RsvpForm() {
     setCurrentStep((s) => Math.max(s - 1, 0));
   };
 
+  async function collectClientContext(): Promise<Record<string, unknown>> {
+    if (typeof window === 'undefined') return {};
+
+    try {
+      const nav = window.navigator as Navigator & { userAgentData?: { platform?: string; brands?: Array<{ brand: string; version: string }>; mobile?: boolean }; storage?: Navigator['storage']; }
+      const screen = window.screen;
+      const orientation = screen?.orientation?.type;
+      const language = nav.language ?? (nav as any).userLanguage;
+      const languages = Array.isArray(nav.languages) && nav.languages.length ? nav.languages : undefined;
+      const tz = Intl.DateTimeFormat().resolvedOptions().timeZone;
+      const platform = nav.userAgentData?.platform || nav.platform;
+      const deviceMemory = typeof (nav as any).deviceMemory === 'number' ? (nav as any).deviceMemory : undefined;
+      const hardwareConcurrency = typeof nav.hardwareConcurrency === 'number' ? nav.hardwareConcurrency : undefined;
+      const maxTouchPoints = typeof nav.maxTouchPoints === 'number' ? nav.maxTouchPoints : undefined;
+      const storageEstimate = nav.storage && typeof nav.storage.estimate === 'function' ? await nav.storage.estimate() : undefined;
+
+      const navigationEntry = performance.getEntriesByType('navigation')[0] as PerformanceNavigationTiming | undefined;
+      const navigation = navigationEntry
+        ? {
+            type: navigationEntry.type,
+            startTime: Math.round(navigationEntry.startTime),
+            duration: Math.round(navigationEntry.duration),
+            domContentLoaded: Math.round(navigationEntry.domContentLoadedEventEnd),
+            loadEventEnd: Math.round(navigationEntry.loadEventEnd),
+            responseEnd: Math.round(navigationEntry.responseEnd),
+            requestStart: Math.round(navigationEntry.requestStart),
+            transferSize: navigationEntry.transferSize,
+            encodedBodySize: navigationEntry.encodedBodySize,
+            decodedBodySize: navigationEntry.decodedBodySize,
+            redirectCount: navigationEntry.redirectCount,
+          }
+        : undefined;
+
+      const paintEntries = performance.getEntriesByType('paint') as PerformanceEntry[];
+      const paint = paintEntries.length
+        ? paintEntries.map((entry) => ({
+            name: entry.name,
+            startTime: Math.round(entry.startTime),
+            duration: Math.round(entry.duration),
+          }))
+        : undefined;
+
+      return {
+        language,
+        languages,
+        tz,
+        screenW: screen?.width,
+        screenH: screen?.height,
+        viewportW: window.innerWidth,
+        viewportH: window.innerHeight,
+        orientation,
+        dpr: window.devicePixelRatio,
+        platform,
+        deviceMemory,
+        hardwareConcurrency,
+        maxTouchPoints,
+        storage: storageEstimate,
+        navigation,
+        paint,
+        performance: {
+          timeOrigin: Math.round(performance.timeOrigin),
+          now: Math.round(performance.now()),
+        },
+      };
+    } catch (error) {
+      console.error('Failed to collect client context', error);
+      return {};
+    }
+  }
+
   async function onSubmit(values: RsvpFormValues) {
     try {
+      const context = await collectClientContext();
+
       const response = await fetch('/api/rsvp', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify(values),
+        body: JSON.stringify({ ...values, ...context }),
       });
 
       if (response.ok) {
