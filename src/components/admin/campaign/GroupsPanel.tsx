@@ -73,7 +73,7 @@ export function GroupsPanel({
         ) : null}
       </header>
 
-      <div className="grid gap-6 xl:grid-cols-[340px,1fr]">
+      <div className="grid gap-6 lg:grid-cols-1 xl:grid-cols-[minmax(0,360px),minmax(0,1fr)]">
         <div className="space-y-4 rounded-xl border border-white/10 bg-black/40 p-4">
           <div>
             <label className="text-xs uppercase tracking-wide text-neutral-400">Group name</label>

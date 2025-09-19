@@ -321,7 +321,8 @@ export function BusinessDirectoryPanel({ onAddMember, onAddMany, existingMemberI
       ) : null}
 
       <div className="overflow-hidden rounded-lg border border-white/10">
-        <table className="min-w-full divide-y divide-white/10 text-sm text-neutral-200">
+        <div className="w-full overflow-x-auto">
+          <table className="min-w-[960px] divide-y divide-white/10 text-sm text-neutral-200">
           <thead className="bg-white/5 text-xs uppercase text-neutral-400">
             <tr>
               <th className="px-3 py-2 text-left">Select</th>
@@ -423,7 +424,8 @@ export function BusinessDirectoryPanel({ onAddMember, onAddMany, existingMemberI
               </tr>
             ) : null}
           </tbody>
-        </table>
+          </table>
+        </div>
       </div>
 
       {hasMore ? (

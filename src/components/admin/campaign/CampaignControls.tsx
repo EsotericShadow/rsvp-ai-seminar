@@ -85,7 +85,6 @@ const tabs = [
   { id: 'campaigns', label: 'Campaigns' },
   { id: 'groups', label: 'Audience Groups' },
   { id: 'templates', label: 'Templates' },
-  { id: 'directory', label: 'Business Directory' },
 ] as const
 
 type TabKey = typeof tabs[number]['id']
@@ -424,13 +423,6 @@ export default function CampaignControls({ initialData, defaults }: { initialDat
             onRemove={deleteTemplate}
             onSubmit={saveTemplate}
             isSaving={isSaving}
-          />
-        )}
-        {activeTab === 'directory' && (
-          <BusinessDirectoryPanel
-            onAddMember={addMember}
-            onAddMany={addMembers}
-            existingMemberIds={selectedMembers.map((member) => member.businessId)}
           />
         )}
       </div>
