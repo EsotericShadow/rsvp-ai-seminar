@@ -38,19 +38,42 @@ function renderTemplate(template: { htmlBody: string; textBody: string | null },
   }
 }
 
+const emptyCounts = (): Record<CampaignSendStatus, number> => ({
+  [CampaignSendStatus.PENDING]: 0,
+  [CampaignSendStatus.SENDING]: 0,
+  [CampaignSendStatus.SENT]: 0,
+  [CampaignSendStatus.FAILED]: 0,
+  [CampaignSendStatus.SKIPPED]: 0,
+})
+
 export async function listCampaignData() {
-  const [templates, groups, schedules] = await Promise.all([
+  const [templates, groups, schedules, campaigns] = await Promise.all([
     prisma.campaignTemplate.findMany({ orderBy: { updatedAt: 'desc' } }),
     prisma.audienceGroup.findMany({
       orderBy: { updatedAt: 'desc' },
       include: { members: true },
     }),
     prisma.campaignSchedule.findMany({
-      orderBy: { updatedAt: 'desc' },
+      orderBy: [{ campaignId: 'asc' }, { stepOrder: 'asc' }, { updatedAt: 'desc' }],
       include: {
         template: true,
         group: { select: { id: true, name: true } },
+        campaign: { select: { id: true, name: true, status: true } },
         _count: { select: { sends: true } },
+      },
+    }),
+    prisma.campaign.findMany({
+      orderBy: { updatedAt: 'desc' },
+      include: {
+        schedules: {
+          orderBy: { stepOrder: 'asc' },
+          include: {
+            template: true,
+            group: { select: { id: true, name: true } },
+            campaign: { select: { id: true, name: true, status: true } },
+            _count: { select: { sends: true } },
+          },
+        },
       },
     }),
   ])
@@ -60,28 +83,43 @@ export async function listCampaignData() {
     _count: { _all: true },
   })
 
+  const countsBySchedule = new Map<string, Record<CampaignSendStatus, number>>()
+  for (const summary of scheduleSummaries) {
+    const existing = countsBySchedule.get(summary.scheduleId) ?? emptyCounts()
+    existing[summary.status] = summary._count._all
+    countsBySchedule.set(summary.scheduleId, existing)
+  }
+
+  const schedulesWithCounts = schedules.map((schedule) => ({
+    ...schedule,
+    counts: countsBySchedule.get(schedule.id) ?? emptyCounts(),
+  }))
+
+  const campaignsWithCounts = campaigns.map((campaign) => {
+    const steps = campaign.schedules.map((schedule) => ({
+      ...schedule,
+      counts: countsBySchedule.get(schedule.id) ?? emptyCounts(),
+    }))
+
+    const aggregates = emptyCounts()
+    steps.forEach((step) => {
+      Object.entries(step.counts).forEach(([status, value]) => {
+        aggregates[status as CampaignSendStatus] += value as number
+      })
+    })
+
+    return {
+      ...campaign,
+      schedules: steps,
+      counts: aggregates,
+    }
+  })
+
   return {
     templates,
     groups,
-    schedules: schedules.map((schedule) => {
-      const statusCounts = scheduleSummaries
-        .filter((s) => s.scheduleId === schedule.id)
-        .reduce<Record<CampaignSendStatus, number>>((acc, item) => {
-          acc[item.status] = item._count._all
-          return acc
-        }, {
-          [CampaignSendStatus.PENDING]: 0,
-          [CampaignSendStatus.SENDING]: 0,
-          [CampaignSendStatus.SENT]: 0,
-          [CampaignSendStatus.FAILED]: 0,
-          [CampaignSendStatus.SKIPPED]: 0,
-        })
-
-      return {
-        ...schedule,
-        counts: statusCounts,
-      }
-    }),
+    schedules: schedulesWithCounts,
+    campaigns: campaignsWithCounts,
   }
 }
 
@@ -98,10 +136,11 @@ export function listGroups() {
 
 export function listSchedules() {
   return prisma.campaignSchedule.findMany({
-    orderBy: { updatedAt: 'desc' },
+    orderBy: [{ campaignId: 'asc' }, { stepOrder: 'asc' }, { updatedAt: 'desc' }],
     include: {
       template: true,
       group: { select: { id: true, name: true } },
+      campaign: { select: { id: true, name: true, status: true } },
       _count: { select: { sends: true } },
     },
   })
@@ -113,8 +152,198 @@ export function getSchedule(id: string) {
     include: {
       template: true,
       group: { include: { members: true } },
+      campaign: true,
       sends: true,
     },
+  })
+}
+
+export function listCampaigns() {
+  return prisma.campaign.findMany({
+    orderBy: { updatedAt: 'desc' },
+    include: {
+      schedules: {
+        orderBy: { stepOrder: 'asc' },
+        include: {
+          template: true,
+          group: { select: { id: true, name: true } },
+          _count: { select: { sends: true } },
+        },
+      },
+    },
+  })
+}
+
+export function getCampaign(id: string) {
+  return prisma.campaign.findUnique({
+    where: { id },
+    include: {
+      schedules: {
+        orderBy: { stepOrder: 'asc' },
+        include: {
+          template: true,
+          group: { select: { id: true, name: true } },
+          sends: true,
+        },
+      },
+    },
+  })
+}
+
+export async function createCampaign(input: {
+  name: string
+  description?: string | null
+  status?: CampaignStatus
+  steps?: Array<{
+    name?: string
+    templateId: string
+    groupId: string
+    sendAt?: Date | null
+    throttlePerMinute?: number | null
+    repeatIntervalMins?: number | null
+    stepOrder?: number | null
+    smartWindowStart?: Date | null
+    smartWindowEnd?: Date | null
+    status?: CampaignStatus
+  }>
+}) {
+  return prisma.$transaction(async (tx) => {
+    const campaign = await tx.campaign.create({
+      data: {
+        name: input.name,
+        description: input.description ?? null,
+        status: input.status ?? CampaignStatus.DRAFT,
+      },
+    })
+
+    if (input.steps?.length) {
+      for (const [index, step] of input.steps.entries()) {
+        await tx.campaignSchedule.create({
+          data: {
+            name: step.name ?? `${input.name} · Step ${index + 1}`,
+            templateId: step.templateId,
+            groupId: step.groupId,
+            campaignId: campaign.id,
+            status: step.status ?? (step.sendAt ? CampaignStatus.SCHEDULED : CampaignStatus.DRAFT),
+            sendAt: step.sendAt ?? null,
+            throttlePerMinute: step.throttlePerMinute ?? 60,
+            repeatIntervalMins: step.repeatIntervalMins ?? null,
+            nextRunAt: step.sendAt ?? null,
+            stepOrder: step.stepOrder ?? index + 1,
+            smartWindowStart: step.smartWindowStart ?? null,
+            smartWindowEnd: step.smartWindowEnd ?? null,
+          },
+        })
+      }
+    }
+
+    return tx.campaign.findUnique({
+      where: { id: campaign.id },
+      include: {
+        schedules: {
+          orderBy: { stepOrder: 'asc' },
+          include: {
+            template: true,
+            group: { select: { id: true, name: true } },
+            _count: { select: { sends: true } },
+          },
+        },
+      },
+    })
+  })
+}
+
+export async function updateCampaign(id: string, input: {
+  name?: string
+  description?: string | null
+  status?: CampaignStatus
+  steps?: Array<{
+    id?: string
+    name?: string
+    templateId: string
+    groupId: string
+    sendAt?: Date | null
+    throttlePerMinute?: number | null
+    repeatIntervalMins?: number | null
+    stepOrder?: number | null
+    smartWindowStart?: Date | null
+    smartWindowEnd?: Date | null
+    status?: CampaignStatus
+  }>
+}) {
+  return prisma.$transaction(async (tx) => {
+    if (input.name !== undefined || input.description !== undefined || input.status !== undefined) {
+      await tx.campaign.update({
+        where: { id },
+        data: {
+          ...(input.name !== undefined ? { name: input.name } : {}),
+          ...(input.description !== undefined ? { description: input.description } : {}),
+          ...(input.status !== undefined ? { status: input.status } : {}),
+        },
+      })
+    }
+
+    if (input.steps) {
+      const existing = await tx.campaignSchedule.findMany({ where: { campaignId: id } })
+      const existingIds = new Set(existing.map((item) => item.id))
+      const seenIds = new Set<string>()
+
+      for (const [index, step] of input.steps.entries()) {
+        const stepOrder = step.stepOrder ?? index + 1
+        const payload = {
+          name: step.name ?? `${step.templateId} · Step ${stepOrder}`,
+          templateId: step.templateId,
+          groupId: step.groupId,
+          campaignId: id,
+          status: step.status ?? (step.sendAt ? CampaignStatus.SCHEDULED : CampaignStatus.DRAFT),
+          sendAt: step.sendAt ?? null,
+          throttlePerMinute: step.throttlePerMinute ?? 60,
+          repeatIntervalMins: step.repeatIntervalMins ?? null,
+          nextRunAt: step.sendAt ?? null,
+          stepOrder,
+          smartWindowStart: step.smartWindowStart ?? null,
+          smartWindowEnd: step.smartWindowEnd ?? null,
+        }
+
+        if (step.id) {
+          seenIds.add(step.id)
+          await tx.campaignSchedule.update({ where: { id: step.id }, data: payload })
+        } else {
+          await tx.campaignSchedule.create({ data: payload })
+        }
+      }
+
+      const toDelete = [...existingIds].filter((itemId) => !seenIds.has(itemId))
+      if (toDelete.length) {
+        await tx.campaignSchedule.deleteMany({ where: { id: { in: toDelete } } })
+      }
+    }
+
+    return tx.campaign.findUnique({
+      where: { id },
+      include: {
+        schedules: {
+          orderBy: { stepOrder: 'asc' },
+          include: {
+            template: true,
+            group: { select: { id: true, name: true } },
+            _count: { select: { sends: true } },
+          },
+        },
+      },
+    })
+  })
+}
+
+export async function deleteCampaign(id: string, options: { deleteSchedules?: boolean } = {}) {
+  return prisma.$transaction(async (tx) => {
+    if (options.deleteSchedules ?? true) {
+      await tx.campaignSchedule.deleteMany({ where: { campaignId: id } })
+    } else {
+      await tx.campaignSchedule.updateMany({ where: { campaignId: id }, data: { campaignId: null } })
+    }
+
+    await tx.campaign.delete({ where: { id } })
   })
 }
 
@@ -244,24 +473,34 @@ export async function createSchedule(input: {
   name: string
   templateId: string
   groupId: string
+  campaignId?: string | null
   sendAt?: Date | null
   throttlePerMinute?: number | null
   repeatIntervalMins?: number | null
+  stepOrder?: number | null
+  smartWindowStart?: Date | null
+  smartWindowEnd?: Date | null
+  status?: CampaignStatus
 }) {
   return prisma.campaignSchedule.create({
     data: {
       name: input.name,
       templateId: input.templateId,
       groupId: input.groupId,
-      status: input.sendAt ? CampaignStatus.SCHEDULED : CampaignStatus.DRAFT,
+      campaignId: input.campaignId ?? null,
+      status: input.status ?? (input.sendAt ? CampaignStatus.SCHEDULED : CampaignStatus.DRAFT),
       sendAt: input.sendAt ?? null,
       throttlePerMinute: input.throttlePerMinute ?? 60,
       repeatIntervalMins: input.repeatIntervalMins ?? null,
       nextRunAt: input.sendAt ?? null,
+      stepOrder: input.stepOrder ?? 1,
+      smartWindowStart: input.smartWindowStart ?? null,
+      smartWindowEnd: input.smartWindowEnd ?? null,
     },
     include: {
       template: true,
       group: { select: { id: true, name: true } },
+      campaign: { select: { id: true, name: true, status: true } },
     },
   })
 }
@@ -274,21 +513,34 @@ export async function updateSchedule(id: string, input: {
   sendAt?: Date | null
   throttlePerMinute?: number | null
   repeatIntervalMins?: number | null
+  campaignId?: string | null
+  stepOrder?: number | null
+  smartWindowStart?: Date | null
+  smartWindowEnd?: Date | null
 }) {
+  const data: Prisma.CampaignScheduleUpdateInput = {};
+  if (input.name !== undefined) data.name = input.name;
+  if (input.templateId !== undefined) data.template = { connect: { id: input.templateId } };
+  if (input.groupId !== undefined) data.group = { connect: { id: input.groupId } };
+  if (input.status !== undefined) data.status = input.status;
+  if (input.sendAt !== undefined) {
+    data.sendAt = input.sendAt;
+    data.nextRunAt = input.sendAt;
+  }
+  if (input.throttlePerMinute !== undefined) data.throttlePerMinute = input.throttlePerMinute;
+  if (input.repeatIntervalMins !== undefined) data.repeatIntervalMins = input.repeatIntervalMins;
+  if (input.campaignId !== undefined) data.campaign = input.campaignId ? { connect: { id: input.campaignId } } : { disconnect: true };
+  if (input.stepOrder !== undefined && input.stepOrder !== null) data.stepOrder = input.stepOrder;
+  if (input.smartWindowStart !== undefined) data.smartWindowStart = input.smartWindowStart;
+  if (input.smartWindowEnd !== undefined) data.smartWindowEnd = input.smartWindowEnd;
+
   return prisma.campaignSchedule.update({
     where: { id },
-    data: {
-      ...(input.name !== undefined ? { name: input.name } : {}),
-      ...(input.templateId !== undefined ? { templateId: input.templateId } : {}),
-      ...(input.groupId !== undefined ? { groupId: input.groupId } : {}),
-      ...(input.status !== undefined ? { status: input.status } : {}),
-      ...(input.sendAt !== undefined ? { sendAt: input.sendAt, nextRunAt: input.sendAt } : {}),
-      ...(input.throttlePerMinute !== undefined ? { throttlePerMinute: input.throttlePerMinute } : {}),
-      ...(input.repeatIntervalMins !== undefined ? { repeatIntervalMins: input.repeatIntervalMins } : {}),
-    },
+    data,
     include: {
       template: true,
       group: { select: { id: true, name: true } },
+      campaign: { select: { id: true, name: true, status: true } },
     },
   })
 }

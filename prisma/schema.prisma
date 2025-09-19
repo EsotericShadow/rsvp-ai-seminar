@@ -139,6 +139,17 @@ model CampaignTemplate {
   schedules CampaignSchedule[]
 }
 
+model Campaign {
+  id          String         @id @default(cuid())
+  name        String
+  description String?
+  status      CampaignStatus @default(DRAFT)
+  createdAt   DateTime       @default(now())
+  updatedAt   DateTime       @updatedAt
+
+  schedules CampaignSchedule[]
+}
+
 model AudienceGroup {
   id          String   @id @default(cuid())
   name        String
@@ -175,6 +186,7 @@ model CampaignSchedule {
   name               String
   templateId         String
   groupId            String
+  campaignId         String?
   status             CampaignStatus  @default(DRAFT)
   sendAt             DateTime?
   timeZone           String?         @default("America/Vancouver")
@@ -182,17 +194,22 @@ model CampaignSchedule {
   repeatIntervalMins Int?
   lastRunAt          DateTime?
   nextRunAt          DateTime?
+  stepOrder          Int             @default(1)
+  smartWindowStart   DateTime?
+  smartWindowEnd     DateTime?
   createdAt          DateTime        @default(now())
   updatedAt          DateTime        @updatedAt
 
   template CampaignTemplate @relation(fields: [templateId], references: [id], onDelete: Restrict)
   group    AudienceGroup    @relation(fields: [groupId], references: [id], onDelete: Restrict)
+  campaign Campaign?        @relation(fields: [campaignId], references: [id], onDelete: SetNull)
   sends    CampaignSend[]
 
   @@index([status])
   @@index([groupId])
   @@index([templateId])
   @@index([nextRunAt])
+  @@index([campaignId, stepOrder])
 }
 
 model CampaignSend {

@@ -36,13 +36,30 @@ export async function POST(request: NextRequest) {
     sendAt = Number.isNaN(dt.getTime()) ? null : dt
   }
 
+  let smartWindowStart: Date | null = null
+  if (body.smartWindowStart) {
+    const dt = new Date(body.smartWindowStart)
+    smartWindowStart = Number.isNaN(dt.getTime()) ? null : dt
+  }
+
+  let smartWindowEnd: Date | null = null
+  if (body.smartWindowEnd) {
+    const dt = new Date(body.smartWindowEnd)
+    smartWindowEnd = Number.isNaN(dt.getTime()) ? null : dt
+  }
+
   const schedule = await createSchedule({
     name: String(body.name),
     templateId: String(body.templateId),
     groupId: String(body.groupId),
+    campaignId: body.campaignId ? String(body.campaignId) : null,
     sendAt,
     throttlePerMinute: body.throttlePerMinute ? Number(body.throttlePerMinute) : undefined,
     repeatIntervalMins: body.repeatIntervalMins ? Number(body.repeatIntervalMins) : undefined,
+    stepOrder: body.stepOrder ? Number(body.stepOrder) : undefined,
+    smartWindowStart,
+    smartWindowEnd,
+    status: body.status ? (String(body.status) as CampaignStatus) : undefined,
   })
 
   return NextResponse.json({ schedule }, { status: 201 })
@@ -74,6 +91,26 @@ export async function PUT(request: NextRequest) {
   }
   const status = body.status ? (String(body.status) as CampaignStatus) : undefined
 
+  let smartWindowStart: Date | null | undefined = undefined
+  if (body.smartWindowStart === null) {
+    smartWindowStart = null
+  } else if (body.smartWindowStart) {
+    const dt = new Date(body.smartWindowStart)
+    if (!Number.isNaN(dt.getTime())) {
+      smartWindowStart = dt
+    }
+  }
+
+  let smartWindowEnd: Date | null | undefined = undefined
+  if (body.smartWindowEnd === null) {
+    smartWindowEnd = null
+  } else if (body.smartWindowEnd) {
+    const dt = new Date(body.smartWindowEnd)
+    if (!Number.isNaN(dt.getTime())) {
+      smartWindowEnd = dt
+    }
+  }
+
   const schedule = await updateSchedule(String(body.id), {
     name: body.name !== undefined ? String(body.name) : undefined,
     templateId: body.templateId !== undefined ? String(body.templateId) : undefined,
@@ -82,6 +119,10 @@ export async function PUT(request: NextRequest) {
     sendAt,
     throttlePerMinute: body.throttlePerMinute !== undefined ? Number(body.throttlePerMinute) : undefined,
     repeatIntervalMins: body.repeatIntervalMins !== undefined ? Number(body.repeatIntervalMins) : undefined,
+    campaignId: body.campaignId !== undefined ? (body.campaignId ? String(body.campaignId) : null) : undefined,
+    stepOrder: body.stepOrder !== undefined ? Number(body.stepOrder) : undefined,
+    smartWindowStart,
+    smartWindowEnd,
   })
 
   return NextResponse.json({ schedule })

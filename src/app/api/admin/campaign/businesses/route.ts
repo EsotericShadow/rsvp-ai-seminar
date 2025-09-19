@@ -11,17 +11,19 @@ export async function GET(request: NextRequest) {
   const search = searchParams.get('q') || undefined
   const idsParam = searchParams.get('ids') || undefined
   const limit = searchParams.get('limit') ? Number(searchParams.get('limit')) : 25
+  const cursor = searchParams.get('cursor') || undefined
 
   try {
     const response = await fetchLeadMineBusinesses({
       search,
       ids: idsParam ? idsParam.split(',').map((id) => id.trim()).filter(Boolean) : undefined,
       limit,
+      cursor,
       hasEmail: true,
       createMissing: true,
     })
 
-    return NextResponse.json({ businesses: response.data })
+    return NextResponse.json({ businesses: response.data, pagination: response.pagination })
   } catch (error: any) {
     return NextResponse.json({ error: error?.message || 'LeadMine request failed' }, { status: 502 })
   }
