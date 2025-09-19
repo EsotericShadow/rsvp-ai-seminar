@@ -1,3 +1,4 @@
+import type { Prisma } from '@prisma/client'
 import type { ReactNode } from 'react'
 
 import { cookies } from 'next/headers'
@@ -5,6 +6,8 @@ import { redirect } from 'next/navigation'
 
 import { getAdminConfig, getSessionCookieName, verifySessionToken } from '@/lib/admin-auth'
 import prisma from '@/lib/prisma'
+import VisitsTrendChart from '@/components/admin/analytics/VisitsTrendChart'
+import DeviceBreakdownChart from '@/components/admin/analytics/DeviceBreakdownChart'
 
 export const dynamic = 'force-dynamic'
 export const runtime = 'nodejs'
@@ -52,6 +55,37 @@ function formatConnection(connection: any) {
   return bits.length ? bits.join(' · ') : null
 }
 
+function formatPercent(value: number) {
+  if (!Number.isFinite(value)) return '0%'
+  return `${(value * 100).toFixed(1)}%`
+}
+
+function asRecord(value: Prisma.JsonValue | null): Record<string, any> | null {
+  if (!value || typeof value !== 'object' || Array.isArray(value)) return null
+  return value as Record<string, any>
+}
+
+function asStringArray(value: Prisma.JsonValue | null): string[] | null {
+  if (!value || !Array.isArray(value)) return null
+  return value.map((item) => String(item))
+}
+
+type VisibilityEvent = { state: string; at: number }
+
+function asVisibilityList(value: Prisma.JsonValue | null): VisibilityEvent[] {
+  if (!value || !Array.isArray(value)) return []
+  return value
+    .map((entry) => {
+      if (!entry || typeof entry !== 'object') return null
+      const record = entry as Record<string, any>
+      const state = typeof record.state === 'string' ? record.state : null
+      const at = typeof record.at === 'number' ? record.at : null
+      if (!state || at === null) return null
+      return { state, at }
+    })
+    .filter((item): item is VisibilityEvent => item !== null)
+}
+
 type SearchParams = { [k: string]: string | string[] | undefined }
 
 export default async function AdminAnalyticsPage({ searchParams }: { searchParams: SearchParams }) {
@@ -82,6 +116,13 @@ export default async function AdminAnalyticsPage({ searchParams }: { searchParam
     )
   }
 
+  const now = new Date()
+  const dayMs = 1000 * 60 * 60 * 24
+  const visitsTrendDays = 14
+  const visitsTrendStart = new Date(now.getTime() - (visitsTrendDays - 1) * dayMs)
+  const last7Date = new Date(now.getTime() - 7 * dayMs)
+  const last30Date = new Date(now.getTime() - 30 * dayMs)
+
   // Filters (simple "q" search)
   const visitWhere = q
     ? {
@@ -109,14 +150,175 @@ export default async function AdminAnalyticsPage({ searchParams }: { searchParam
       }
     : {}
 
-  const [visits, rsvps, totals] = await Promise.all([
+  const [
+    visits,
+    rsvps,
+    totals,
+    visitsLast7,
+    visitAggregates,
+    engagedCount,
+    deepScrollCount,
+    visitsByDayRaw,
+    topPagesRaw,
+    topReferrersRaw,
+    topCountriesRaw,
+    deviceBreakdownRaw,
+    utmSourceRaw,
+    utmCampaignRaw,
+  ] = await Promise.all([
     prisma.visit.findMany({ where: visitWhere as any, orderBy: { createdAt: 'desc' }, take: 200 }),
     prisma.rSVP.findMany({ where: rsvpWhere as any, orderBy: { createdAt: 'desc' }, take: 200 }),
     (async () => ({
       visits: await prisma.visit.count(),
       rsvps: await prisma.rSVP.count(),
     }))(),
+    prisma.visit.count({ where: { createdAt: { gte: last7Date } } }),
+    prisma.visit.aggregate({
+      _avg: { timeOnPageMs: true, scrollDepth: true, dpr: true },
+      _count: { _all: true },
+    }),
+    prisma.visit.count({ where: { timeOnPageMs: { gt: 60_000 } } }),
+    prisma.visit.count({ where: { scrollDepth: { gte: 75 } } }),
+    prisma.$queryRaw<Array<{ date: Date; count: number }>>`
+      SELECT date_trunc('day', "createdAt")::date AS date, COUNT(*)::int AS count
+      FROM "Visit"
+      WHERE "createdAt" >= ${visitsTrendStart}
+      GROUP BY 1
+      ORDER BY 1
+    `,
+    prisma.$queryRaw<Array<{ path: string | null; count: number }>>`
+      SELECT "path" AS path, COUNT(*)::int AS count
+      FROM "Visit"
+      WHERE "createdAt" >= ${last30Date}
+      GROUP BY 1
+      ORDER BY count DESC
+      LIMIT 6
+    `,
+    prisma.$queryRaw<Array<{ referrer: string | null; count: number }>>`
+      SELECT COALESCE(NULLIF("referrer", ''), 'direct') AS referrer, COUNT(*)::int AS count
+      FROM "Visit"
+      WHERE "createdAt" >= ${last30Date}
+      GROUP BY 1
+      ORDER BY count DESC
+      LIMIT 6
+    `,
+    prisma.$queryRaw<Array<{ country: string | null; count: number }>>`
+      SELECT COALESCE(NULLIF("country", ''), 'unknown') AS country, COUNT(*)::int AS count
+      FROM "Visit"
+      WHERE "createdAt" >= ${last30Date}
+      GROUP BY 1
+      ORDER BY count DESC
+      LIMIT 6
+    `,
+    prisma.$queryRaw<Array<{ device: string | null; count: number }>>`
+      SELECT COALESCE(NULLIF("device", ''), 'unknown') AS device, COUNT(*)::int AS count
+      FROM "Visit"
+      GROUP BY 1
+      ORDER BY count DESC
+      LIMIT 6
+    `,
+    prisma.$queryRaw<Array<{ source: string | null; count: number }>>`
+      SELECT COALESCE(NULLIF("utmSource", ''), '(none)') AS source, COUNT(*)::int AS count
+      FROM "Visit"
+      WHERE "utmSource" IS NOT NULL AND "utmSource" <> ''
+      GROUP BY 1
+      ORDER BY count DESC
+      LIMIT 6
+    `,
+    prisma.$queryRaw<Array<{ campaign: string | null; count: number }>>`
+      SELECT COALESCE(NULLIF("utmCampaign", ''), '(none)') AS campaign, COUNT(*)::int AS count
+      FROM "Visit"
+      WHERE "utmCampaign" IS NOT NULL AND "utmCampaign" <> ''
+      GROUP BY 1
+      ORDER BY count DESC
+      LIMIT 6
+    `,
   ])
+
+  const averageTimeOnPageMs = Number(visitAggregates._avg.timeOnPageMs ?? 0)
+  const averageScrollDepth = Number(visitAggregates._avg.scrollDepth ?? 0)
+  const averageDpr = Number(visitAggregates._avg.dpr ?? 0)
+  const totalVisits = totals.visits
+  const engagedShare = totalVisits ? engagedCount / totalVisits : 0
+  const deepScrollShare = totalVisits ? deepScrollCount / totalVisits : 0
+
+  const dateLabelFormatter = new Intl.DateTimeFormat('en-US', { month: 'short', day: 'numeric' })
+  const visitsTrendMap = new Map<string, number>()
+  for (const row of visitsByDayRaw) {
+    const key = row.date instanceof Date ? row.date.toISOString().slice(0, 10) : String(row.date)
+    visitsTrendMap.set(key, Number(row.count))
+  }
+  const visitsTrendData: { label: string; count: number }[] = []
+  for (let i = 0; i < visitsTrendDays; i += 1) {
+    const date = new Date(visitsTrendStart.getTime() + i * dayMs)
+    const key = date.toISOString().slice(0, 10)
+    visitsTrendData.push({ label: dateLabelFormatter.format(date), count: visitsTrendMap.get(key) ?? 0 })
+  }
+
+  const topPages = topPagesRaw.map((row) => ({
+    name: row.path && row.path.length > 0 ? row.path : '(unknown)',
+    count: Number(row.count),
+  }))
+
+  const topReferrers = topReferrersRaw.map((row) => ({
+    name: row.referrer && row.referrer.length > 0 ? row.referrer : 'direct',
+    count: Number(row.count),
+  }))
+
+  const topCountries = topCountriesRaw.map((row) => ({
+    name: row.country && row.country.length > 0 ? row.country : 'unknown',
+    count: Number(row.count),
+  }))
+
+  const deviceData = deviceBreakdownRaw.map((row) => ({
+    name: row.device && row.device.length > 0 ? row.device : 'unknown',
+    count: Number(row.count),
+  }))
+
+  const utmSources = utmSourceRaw.map((row) => ({
+    name: row.source && row.source.length > 0 ? row.source : '(none)',
+    count: Number(row.count),
+  }))
+
+  const utmCampaigns = utmCampaignRaw.map((row) => ({
+    name: row.campaign && row.campaign.length > 0 ? row.campaign : '(none)',
+    count: Number(row.count),
+  }))
+
+  const numberFormatter = new Intl.NumberFormat('en-US')
+
+  const summaryCards = [
+    {
+      label: 'Total visits',
+      value: numberFormatter.format(totalVisits),
+      helper: 'All time sessions',
+    },
+    {
+      label: 'Visits (7 days)',
+      value: numberFormatter.format(visitsLast7),
+      helper: 'Past week volume',
+    },
+    {
+      label: 'Avg time on page',
+      value: formatDuration(Math.round(averageTimeOnPageMs)),
+      helper: 'Across all visits',
+    },
+    {
+      label: 'Avg scroll depth',
+      value: `${Math.round(averageScrollDepth || 0)}%`,
+      helper: 'Across all visits',
+    },
+    {
+      label: 'Engaged visits',
+      value: formatPercent(engagedShare),
+      helper: `${numberFormatter.format(engagedCount)} sessions > 60s`,
+    },
+    {
+      label: 'Deep scroll share',
+      value: formatPercent(deepScrollShare),
+      helper: `${numberFormatter.format(deepScrollCount)} reached 75%`,
+    },
+  ]
 
   return (
     <div className="min-h-[100svh] bg-neutral-950 text-neutral-100">
@@ -158,6 +360,113 @@ export default async function AdminAnalyticsPage({ searchParams }: { searchParam
             </div>
           </div>
         </header>
+
+        <section className="mb-6 grid gap-3 sm:grid-cols-2 xl:grid-cols-3">
+          {summaryCards.map((card) => (
+            <div key={card.label} className="glass rounded-2xl p-4">
+              <div className="text-xs uppercase tracking-wide text-neutral-400">{card.label}</div>
+              <div className="mt-2 text-2xl font-semibold text-neutral-50">{card.value}</div>
+              <div className="mt-1 text-xs text-neutral-500">{card.helper}</div>
+            </div>
+          ))}
+        </section>
+
+        <section className="mb-6 grid gap-4 lg:grid-cols-3">
+          <div className="glass rounded-2xl p-4 sm:p-6 lg:col-span-2">
+            <h2 className="text-lg font-semibold mb-3">Visits trend (last 14 days)</h2>
+            <VisitsTrendChart data={visitsTrendData} />
+          </div>
+          <div className="glass rounded-2xl p-4 sm:p-6">
+            <h2 className="text-lg font-semibold mb-3">Device &amp; hardware mix</h2>
+            <DeviceBreakdownChart data={deviceData} />
+            <div className="mt-4 text-xs text-neutral-500 space-y-1">
+              <div>Average device DPR: {Number.isFinite(averageDpr) && averageDpr > 0 ? averageDpr.toFixed(2) : '—'}</div>
+              <div>Engaged sessions (&gt;60s): {formatPercent(engagedShare)}</div>
+              <div>Deep scroll (&ge;75%): {formatPercent(deepScrollShare)}</div>
+            </div>
+          </div>
+        </section>
+
+        <section className="mb-6 grid gap-4 lg:grid-cols-3">
+          <div className="glass rounded-2xl p-4 sm:p-6">
+            <h2 className="text-lg font-semibold mb-3">Top pages (30 days)</h2>
+            <ul className="space-y-2 text-sm">
+              {topPages.length ? (
+                topPages.map((item, idx) => (
+                  <li key={`${item.name}-${idx}`} className="flex items-center justify-between gap-2">
+                    <span className="truncate text-neutral-200" title={item.name}>{item.name}</span>
+                    <span className="text-neutral-400">{numberFormatter.format(item.count)}</span>
+                  </li>
+                ))
+              ) : (
+                <li className="text-neutral-500">Not enough data yet.</li>
+              )}
+            </ul>
+          </div>
+          <div className="glass rounded-2xl p-4 sm:p-6">
+            <h2 className="text-lg font-semibold mb-3">Top referrers (30 days)</h2>
+            <ul className="space-y-2 text-sm">
+              {topReferrers.length ? (
+                topReferrers.map((item, idx) => (
+                  <li key={`${item.name}-${idx}`} className="flex items-center justify-between gap-2">
+                    <span className="truncate text-neutral-200" title={item.name}>{item.name}</span>
+                    <span className="text-neutral-400">{numberFormatter.format(item.count)}</span>
+                  </li>
+                ))
+              ) : (
+                <li className="text-neutral-500">Not enough data yet.</li>
+              )}
+            </ul>
+          </div>
+          <div className="glass rounded-2xl p-4 sm:p-6">
+            <h2 className="text-lg font-semibold mb-3">Top countries (30 days)</h2>
+            <ul className="space-y-2 text-sm">
+              {topCountries.length ? (
+                topCountries.map((item, idx) => (
+                  <li key={`${item.name}-${idx}`} className="flex items-center justify-between gap-2">
+                    <span className="truncate text-neutral-200" title={item.name}>{item.name}</span>
+                    <span className="text-neutral-400">{numberFormatter.format(item.count)}</span>
+                  </li>
+                ))
+              ) : (
+                <li className="text-neutral-500">Not enough data yet.</li>
+              )}
+            </ul>
+          </div>
+        </section>
+
+        <section className="mb-6 grid gap-4 lg:grid-cols-2">
+          <div className="glass rounded-2xl p-4 sm:p-6">
+            <h2 className="text-lg font-semibold mb-3">Top UTM sources</h2>
+            <ul className="space-y-2 text-sm">
+              {utmSources.length ? (
+                utmSources.map((item, idx) => (
+                  <li key={`${item.name}-${idx}`} className="flex items-center justify-between gap-2">
+                    <span className="truncate text-neutral-200" title={item.name}>{item.name}</span>
+                    <span className="text-neutral-400">{numberFormatter.format(item.count)}</span>
+                  </li>
+                ))
+              ) : (
+                <li className="text-neutral-500">Not enough data yet.</li>
+              )}
+            </ul>
+          </div>
+          <div className="glass rounded-2xl p-4 sm:p-6">
+            <h2 className="text-lg font-semibold mb-3">Top UTM campaigns</h2>
+            <ul className="space-y-2 text-sm">
+              {utmCampaigns.length ? (
+                utmCampaigns.map((item, idx) => (
+                  <li key={`${item.name}-${idx}`} className="flex items-center justify-between gap-2">
+                    <span className="truncate text-neutral-200" title={item.name}>{item.name}</span>
+                    <span className="text-neutral-400">{numberFormatter.format(item.count)}</span>
+                  </li>
+                ))
+              ) : (
+                <li className="text-neutral-500">Not enough data yet.</li>
+              )}
+            </ul>
+          </div>
+        </section>
 
         {/* RSVPs */}
         <section className="glass rounded-2xl p-4 sm:p-6 mb-6">
@@ -279,9 +588,10 @@ export default async function AdminAnalyticsPage({ searchParams }: { searchParam
                   ].filter(Boolean)
                   const resolution = v.screenW && v.screenH ? `${v.screenW}×${v.screenH}` : null
                   const viewport = v.viewportW && v.viewportH ? `${v.viewportW}×${v.viewportH}` : null
-                  const connection = formatConnection(v.connection)
-                  const languages = Array.isArray(v.languages) ? v.languages.join(', ') : null
-                  const interactions = v.interactionCounts as any
+                  const connection = formatConnection(asRecord(v.connection))
+                  const languageList = asStringArray(v.languages)?.join(', ') ?? null
+                  const interactions = asRecord(v.interactionCounts)
+                  const visibilityEvents = asVisibilityList(v.visibility)
                   return (
                     <tr key={v.id} className="align-top">
                       <td className="py-3 pr-4 whitespace-nowrap text-neutral-300">{fmt(v.createdAt)}</td>
@@ -320,7 +630,7 @@ export default async function AdminAnalyticsPage({ searchParams }: { searchParam
                           {typeof v.maxTouchPoints === 'number' ? <Pill>{`${v.maxTouchPoints} touch`}</Pill> : null}
                         </div>
                         {connection ? <div className="text-xs text-neutral-500">Conn: {connection}</div> : null}
-                        {languages ? <div className="text-xs text-neutral-500">Langs: {languages}</div> : null}
+                        {languageList ? <div className="text-xs text-neutral-500">Langs: {languageList}</div> : null}
                       </td>
                       <td className="py-3 pr-4 text-sm text-neutral-300 space-y-1">
                         <div>Time on page: {formatDuration(v.timeOnPageMs)}</div>
@@ -333,9 +643,9 @@ export default async function AdminAnalyticsPage({ searchParams }: { searchParam
                             {'pointerMoves' in interactions ? <span>Pointer: {interactions.pointerMoves}</span> : null}
                           </div>
                         ) : null}
-                        {Array.isArray(v.visibility) && v.visibility.length ? (
+                        {visibilityEvents.length ? (
                           <div className="text-xs text-neutral-500">
-                            Visible events: {v.visibility.length}
+                            Visible events: {visibilityEvents.length}
                           </div>
                         ) : null}
                       </td>
