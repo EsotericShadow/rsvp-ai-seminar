@@ -117,7 +117,7 @@ export default function LetterGlitch({
   }, [charHeight, charWidth, fontSize]);
 
   const glitchUpdate = useCallback(() => {
-    const changeCount = Math.max(1, Math.floor(letters.current.length * 0.025));
+    const changeCount = Math.max(1, Math.floor(letters.current.length * 0.015));
     for (let i = 0; i < changeCount; i++) {
       const idx = Math.floor(Math.random() * letters.current.length);
       const item = letters.current[idx];
@@ -178,7 +178,7 @@ export default function LetterGlitch({
     resize();
     draw();
     lastGlitchTime.current = typeof performance !== 'undefined' ? performance.now() : Date.now();
-    loop();
+    animationRef.current = requestAnimationFrame(loop);
 
     let resizeTimer: number | undefined;
     const onResize = () => {

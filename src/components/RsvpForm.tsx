@@ -65,7 +65,7 @@ function PhoneField({
   };
 
   return (
-    <div className="flex items-center gap-2">
+    <div className="flex flex-wrap items-center gap-3">
       <input
         id={`${id}-a`}
         inputMode="numeric"
@@ -74,11 +74,11 @@ function PhoneField({
         onChange={(e) => setPart("a", e.target.value, e.currentTarget)}
         onPaste={handlePaste}
         onBlur={onBlur}
-        className="w-14 text-center rounded-md border-gray-300 px-2 py-2 bg-white/20 text-white placeholder:text-gray-300"
+        className="h-12 w-16 rounded-lg border border-white/20 bg-white/15 px-2 text-center text-base text-white placeholder:text-gray-300 focus:border-brand-sage focus:outline-none focus:ring-2 focus:ring-brand-sage/60 sm:h-10 sm:text-sm"
         placeholder="555"
         aria-label="Area code"
       />
-      <span className="text-gray-200">-</span>
+      <span className="text-lg text-white/70 sm:text-base">-</span>
       <input
         id={`${id}-b`}
         inputMode="numeric"
@@ -87,11 +87,11 @@ function PhoneField({
         onChange={(e) => setPart("b", e.target.value, e.currentTarget)}
         onPaste={handlePaste}
         onBlur={onBlur}
-        className="w-14 text-center rounded-md border-gray-300 px-2 py-2 bg-white/20 text-white placeholder:text-gray-300"
+        className="h-12 w-16 rounded-lg border border-white/20 bg-white/15 px-2 text-center text-base text-white placeholder:text-gray-300 focus:border-brand-sage focus:outline-none focus:ring-2 focus:ring-brand-sage/60 sm:h-10 sm:text-sm"
         placeholder="123"
         aria-label="Prefix"
       />
-      <span className="text-gray-200">-</span>
+      <span className="text-lg text-white/70 sm:text-base">-</span>
       <input
         id={`${id}-c`}
         inputMode="numeric"
@@ -100,7 +100,7 @@ function PhoneField({
         onChange={(e) => setPart("c", e.target.value, e.currentTarget)}
         onPaste={handlePaste}
         onBlur={onBlur}
-        className="w-16 text-center rounded-md border-gray-300 px-2 py-2 bg-white/20 text-white placeholder:text-gray-300"
+        className="h-12 w-20 rounded-lg border border-white/20 bg-white/15 px-2 text-center text-base text-white placeholder:text-gray-300 focus:border-brand-sage focus:outline-none focus:ring-2 focus:ring-brand-sage/60 sm:h-10 sm:text-sm"
         placeholder="4567"
         aria-label="Line number"
       />
@@ -130,6 +130,8 @@ export function RsvpForm() {
       learningGoal: '',
     },
   });
+
+  const fieldInputClass = 'mt-1 block w-full rounded-lg border border-white/15 bg-white/10 px-3 py-3 text-base text-white placeholder:text-white/50 shadow-[0_8px_20px_rgba(0,0,0,0.25)] focus:border-brand-sage focus:ring-2 focus:ring-brand-sage/60 sm:py-2.5 sm:text-sm';
 
   const validateStep = async (idx: number) => {
     if (idx === 0) {
@@ -277,7 +279,7 @@ export function RsvpForm() {
             id="firstName"
             autoComplete="given-name"
             {...form.register('firstName')}
-            className="mt-1 block w-full rounded-lg border border-white/15 bg-white/10 px-3 py-2 text-sm text-white placeholder:text-white/50 shadow-[0_8px_20px_rgba(0,0,0,0.25)] focus:border-brand-sage focus:ring-2 focus:ring-brand-sage/60"
+            className={fieldInputClass}
           />
           {form.formState.errors.firstName && <p className="mt-1 text-sm text-red-600">{form.formState.errors.firstName.message}</p>}
         </div>
@@ -287,7 +289,7 @@ export function RsvpForm() {
             id="lastName"
             autoComplete="family-name"
             {...form.register('lastName')}
-            className="mt-1 block w-full rounded-lg border border-white/15 bg-white/10 px-3 py-2 text-sm text-white placeholder:text-white/50 shadow-[0_8px_20px_rgba(0,0,0,0.25)] focus:border-brand-sage focus:ring-2 focus:ring-brand-sage/60"
+            className={fieldInputClass}
           />
           {form.formState.errors.lastName && <p className="mt-1 text-sm text-red-600">{form.formState.errors.lastName.message}</p>}
         </div>
@@ -299,7 +301,7 @@ export function RsvpForm() {
           id="email"
           autoComplete="email"
           {...form.register('email')}
-          className="mt-1 block w-full rounded-lg border border-white/15 bg-white/10 px-3 py-2 text-sm text-white placeholder:text-white/50 shadow-[0_8px_20px_rgba(0,0,0,0.25)] focus:border-brand-sage focus:ring-2 focus:ring-brand-sage/60"
+          className={fieldInputClass}
         />
         {form.formState.errors.email && <p className="mt-1 text-sm text-red-600">{form.formState.errors.email.message}</p>}
       </div>
@@ -328,7 +330,7 @@ export function RsvpForm() {
           <select
             id="attendanceStatus"
             {...form.register('attendanceStatus')}
-            className="mt-1 block w-full rounded-lg border border-white/15 bg-white/10 px-3 py-2 text-sm text-white shadow-[0_8px_20px_rgba(0,0,0,0.25)] focus:border-brand-sage focus:ring-2 focus:ring-brand-sage/60"
+            className={fieldInputClass}
           >
             <option value="YES">Yes</option>
             <option value="NO">No</option>
@@ -343,7 +345,7 @@ export function RsvpForm() {
               type="number"
               id="attendeeCount"
               {...form.register('attendeeCount', { valueAsNumber: true, min: 1, max: 20 })}
-              className="mt-1 block w-full rounded-lg border border-white/15 bg-white/10 px-3 py-2 text-sm text-white placeholder:text-white/50 shadow-[0_8px_20px_rgba(0,0,0,0.25)] focus:border-brand-sage focus:ring-2 focus:ring-brand-sage/60"
+              className={fieldInputClass}
             />
             {form.formState.errors.attendeeCount && <p className="mt-1 text-sm text-red-600">{form.formState.errors.attendeeCount.message}</p>}
           </div>
@@ -359,7 +361,7 @@ export function RsvpForm() {
           <select
             id="dietaryPreference"
             {...form.register('dietaryPreference')}
-            className="mt-1 block w-full rounded-lg border border-white/15 bg-white/10 px-3 py-2 text-sm text-white shadow-[0_8px_20px_rgba(0,0,0,0.25)] focus:border-brand-sage focus:ring-2 focus:ring-brand-sage/60"
+            className={fieldInputClass}
           >
             <option value="NONE">None</option>
             <option value="VEGETARIAN">Vegetarian</option>
@@ -374,7 +376,7 @@ export function RsvpForm() {
             <input
               id="dietaryOther"
               {...form.register('dietaryOther')}
-              className="mt-1 block w-full rounded-lg border border-white/15 bg-white/10 px-3 py-2 text-sm text-white placeholder:text-white/50 shadow-[0_8px_20px_rgba(0,0,0,0.25)] focus:border-brand-sage focus:ring-2 focus:ring-brand-sage/60"
+              className={fieldInputClass}
             />
              {form.formState.errors.dietaryOther && <p className="mt-1 text-sm text-red-600">{form.formState.errors.dietaryOther.message}</p>}
           </div>
@@ -386,7 +388,7 @@ export function RsvpForm() {
           id="accessibilityNeeds"
           rows={3}
           {...form.register('accessibilityNeeds')}
-          className="mt-1 block w-full rounded-lg border border-white/15 bg-white/10 px-3 py-2 text-sm text-white placeholder:text-white/50 shadow-[0_8px_20px_rgba(0,0,0,0.25)] focus:border-brand-sage focus:ring-2 focus:ring-brand-sage/60"
+          className={`${fieldInputClass} min-h-[3.5rem]`}
         ></textarea>
       </div>
     </div>,
@@ -399,7 +401,7 @@ export function RsvpForm() {
           <select
             id="referralSource"
             {...form.register('referralSource')}
-            className="mt-1 block w-full rounded-lg border border-white/15 bg-white/10 px-3 py-2 text-sm text-white shadow-[0_8px_20px_rgba(0,0,0,0.25)] focus:border-brand-sage focus:ring-2 focus:ring-brand-sage/60"
+            className={fieldInputClass}
           >
             <option value="RADIO">Radio</option>
             <option value="CHAMBER">Chamber</option>
@@ -415,7 +417,7 @@ export function RsvpForm() {
             <input
               id="referralOther"
               {...form.register('referralOther')}
-              className="mt-1 block w-full rounded-lg border border-white/15 bg-white/10 px-3 py-2 text-sm text-white placeholder:text-white/50 shadow-[0_8px_20px_rgba(0,0,0,0.25)] focus:border-brand-sage focus:ring-2 focus:ring-brand-sage/60"
+              className={fieldInputClass}
             />
             {form.formState.errors.referralOther && <p className="mt-1 text-sm text-red-600">{form.formState.errors.referralOther.message}</p>}
           </div>
@@ -457,7 +459,7 @@ export function RsvpForm() {
           id="learningGoal"
           rows={3}
           {...form.register('learningGoal')}
-          className="mt-1 block w-full rounded-lg border border-white/15 bg-white/10 px-3 py-2 text-sm text-white placeholder:text-white/50 shadow-[0_8px_20px_rgba(0,0,0,0.25)] focus:border-brand-sage focus:ring-2 focus:ring-brand-sage/60"
+          className={`${fieldInputClass} min-h-[3.5rem]`}
         ></textarea>
       </div>
     </div>
@@ -477,7 +479,7 @@ export function RsvpForm() {
             <button
               type="button"
               onClick={onPrev}
-              className="w-full inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-gray-600 hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500"
+              className="w-full inline-flex justify-center rounded-lg border border-transparent bg-gray-600 px-4 py-3 text-base font-medium text-white shadow-sm hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500 sm:text-sm"
             >
               Previous
             </button>
@@ -488,14 +490,14 @@ export function RsvpForm() {
             <button
               type="button"
               onClick={onNext}
-              className="w-full inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-brand-ink hover:bg-brand-mid focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-brand-sage"
+              className="w-full inline-flex justify-center rounded-lg border border-transparent bg-brand-ink px-4 py-3 text-base font-medium text-white shadow-sm hover:bg-brand-mid focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-brand-sage sm:text-sm"
             >
               Next
             </button>
           ) : (
             <button
               type="submit"
-              className="w-full inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-brand-ink hover:bg-brand-mid focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-brand-sage"
+              className="w-full inline-flex justify-center rounded-lg border border-transparent bg-brand-ink px-4 py-3 text-base font-medium text-white shadow-sm hover:bg-brand-mid focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-brand-sage sm:text-sm"
               disabled={form.formState.isSubmitting}
             >
               {form.formState.isSubmitting ? 'Submitting...' : 'Submit RSVP'}
