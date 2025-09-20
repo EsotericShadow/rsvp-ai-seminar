@@ -8,6 +8,7 @@ import crypto from 'crypto';
 import { UAParser } from 'ua-parser-js';
 import { postLeadMineEvent } from '@/lib/leadMine';
 import { recordSendEngagement } from '@/lib/campaigns';
+import { sendRSVPConfirmation } from '@/lib/sendgrid-email';
 
 const resendApiKey = process.env.RESEND_API_KEY;
 const resendClient = resendApiKey ? new Resend(resendApiKey) : null;
@@ -105,9 +106,52 @@ export async function POST(req: Request) {
       });
     }
 
-    // ... (placeholders for email and ics)
+    // Send confirmation email
+    try {
+      const emailResult = await sendRSVPConfirmation({
+        to: values.email,
+        name: fullName,
+        rsvpId: rsvp.id
+      });
 
-    return NextResponse.json({ message: 'RSVP submitted successfully', rsvpId: rsvp.id }, { status: 200 });
+      if (!emailResult.success) {
+        console.error('Failed to send confirmation email:', emailResult.error);
+        // Don't fail the RSVP if email fails, but log it
+      }
+    } catch (emailError) {
+      console.error('Email sending error:', emailError);
+    }
+
+    // Generate ICS calendar file
+    let icsUrl = null;
+    try {
+      const { error, value } = createEvent({
+        start: [2025, 10, 23, 18, 0],
+        end: [2025, 10, 23, 20, 30],
+        title: 'AI in Northern BC: Information Session',
+        description: 'A comprehensive information session on AI, machine learning, and AI automation for Northern BC businesses.',
+        location: 'Sunshine Inn Terrace — Jasmine Room, 4812 Hwy 16, Terrace, BC, Canada',
+        url: 'https://rsvp.evergreenwebsolutions.ca',
+        organizer: { name: 'Gabriel Lacroix', email: 'gabriel@evergreenwebsolutions.ca' },
+        attendees: [{ name: fullName, email: values.email, rsvp: true }],
+        status: 'CONFIRMED',
+        busyStatus: 'BUSY',
+        transparency: 'OPAQUE'
+      });
+
+      if (!error && value) {
+        // Store ICS file or generate URL
+        icsUrl = `/api/ics?title=${encodeURIComponent('AI in Northern BC: Information Session')}&start=${encodeURIComponent('2025-10-23T18:00:00-07:00')}&end=${encodeURIComponent('2025-10-23T20:30:00-07:00')}&location=${encodeURIComponent('Sunshine Inn Terrace — Jasmine Room')}&desc=${encodeURIComponent('AI Information Session')}`;
+      }
+    } catch (icsError) {
+      console.error('ICS generation error:', icsError);
+    }
+
+    return NextResponse.json({ 
+      message: 'RSVP submitted successfully', 
+      rsvpId: rsvp.id,
+      icsUrl: icsUrl
+    }, { status: 200 });
 
   } catch (error) {
     console.error('API Error:', error);

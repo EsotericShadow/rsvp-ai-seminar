@@ -12,6 +12,7 @@
   "dependencies": {
     "@hookform/resolvers": "^3.3.4",
     "@prisma/client": "^5.12.1",
+    "@sendgrid/mail": "^8.1.6",
     "@types/ua-parser-js": "^0.7.39",
     "@vercel/og": "^0.8.5",
     "bcryptjs": "^3.0.2",
@@ -27,6 +28,7 @@
     "recharts": "^3.2.1",
     "resend": "^3.2.0",
     "ua-parser-js": "^2.0.5",
+    "xlsx": "^0.18.5",
     "zod": "^3.22.4"
   },
   "devDependencies": {
