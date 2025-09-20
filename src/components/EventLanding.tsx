@@ -102,7 +102,7 @@ export default function EventLanding() {
 
       {/* Header / Logo */}
       <motion.header initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.6, ease: EASE }} className="pt-5 sm:pt-8">
-        <div className="mx-auto flex justify-center px-4">
+        <div className="mx-auto flex justify-center">
           <Link
             href="https://evergreenwebsolutions.ca"
             target="_blank"
