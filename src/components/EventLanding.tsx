@@ -19,7 +19,7 @@ const card = "rounded-2xl border border-gray-200 bg-white shadow-sm"
 // --- Data ------------------------------------------------------
 const VENUE_ADDRESS = "4812 Hwy 16, Terrace, BC, Canada"
 const VENUE_NAME = "Sunshine Inn Terrace — Jasmine Room"
-const EVENT_NAME = "AI in Northern BC: Business Readiness — Information Session"
+const EVENT_NAME = "AI in Northern BC: Information Session"
 const START_ISO = "2025-10-23T18:00:00-07:00"
 const END_ISO = "2025-10-23T20:30:00-07:00"
 
@@ -107,7 +107,7 @@ export default function EventLanding() {
             href="https://evergreenwebsolutions.ca"
             target="_blank"
             rel="noreferrer"
-                          className="relative flex items-center rounded-xl border border-gray-200 bg-white shadow-sm transition hover:border-brand-sage/40 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-brand-sage"          >
+                          className="relative flex items-center rounded-xl border border-gray-200 bg-white shadow-sm transition hover:border-brand-sage/40 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-brand-sage w-[200px] h-[100px]"          >
             <span className="sr-only">Visit Evergreen Web Solutions</span>
               <Image
                 src="/AI_in_terrace.svg"
