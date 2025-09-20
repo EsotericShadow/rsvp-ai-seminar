@@ -159,7 +159,7 @@ function TemplatesMain({ templates, draft, onEdit, onDuplicate, onRemove }: {
   const resetPreviewContext = () => setPreviewContext(DEFAULT_PREVIEW_CONTEXT)
 
   return (
-    <div className="space-y-6 rounded-2xl border border-white/10 bg-white/5 p-6">
+    <div className="space-y-6">
       {/* Live Preview Section */}
       <div className="rounded-xl border border-white/10 bg-black/30 p-4">
         <header className="flex items-center justify-between mb-4">
