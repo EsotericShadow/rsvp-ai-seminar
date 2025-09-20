@@ -479,7 +479,7 @@ export function BusinessDirectoryPanel({ onAddMember, onAddMany, existingMemberI
       {/* Desktop Table View */}
       <div className="hidden sm:block overflow-hidden rounded-lg border border-white/10">
         <div className="w-full overflow-x-auto mobile-scroll mobile-touch">
-          <table className="min-w-[800px] divide-y divide-white/10 text-sm text-neutral-200">
+          <table className="min-w-[600px] divide-y divide-white/10 text-sm text-neutral-200">
           <thead className="bg-white/5 text-xs uppercase text-neutral-400">
             <tr>
               <th className="px-3 py-2 text-left">
@@ -505,11 +505,11 @@ export function BusinessDirectoryPanel({ onAddMember, onAddMany, existingMemberI
                   <span>Select</span>
                 </div>
               </th>
-              <th className="px-3 py-2 text-left">Business</th>
-              <th className="px-3 py-2 text-left">Contact</th>
-              <th className="px-3 py-2 text-left">Status & Tags</th>
-              <th className="px-3 py-2 text-left">Activity</th>
-              <th className="px-3 py-2 text-left">Actions</th>
+              <th className="px-3 py-2 text-left w-1/4">Business</th>
+              <th className="px-3 py-2 text-left w-1/4">Contact</th>
+              <th className="px-3 py-2 text-left w-1/6">Status & Tags</th>
+              <th className="px-3 py-2 text-left w-1/6">Activity</th>
+              <th className="px-3 py-2 text-left w-1/6">Actions</th>
             </tr>
           </thead>
           <tbody className="divide-y divide-white/10 bg-black/30">
@@ -529,67 +529,67 @@ export function BusinessDirectoryPanel({ onAddMember, onAddMany, existingMemberI
                       onChange={() => toggleSelection(biz.id)}
                     />
                   </td>
-                  <td className="px-3 py-3 align-top">
-                    <div className="font-medium text-white">{biz.name ?? 'Unknown business'}</div>
+                  <td className="px-3 py-3 align-top w-1/4">
+                    <div className="font-medium text-white truncate">{biz.name ?? 'Unknown business'}</div>
                     {biz.website ? (
                       <a
                         href={biz.website}
                         target="_blank"
                         rel="noreferrer"
-                        className="text-xs text-emerald-300 hover:text-emerald-200"
+                        className="text-xs text-emerald-300 hover:text-emerald-200 truncate block"
                       >
                         {biz.website.replace(/^https?:\/\//, '')}
                       </a>
                     ) : (
-                      <p className="text-xs text-neutral-500">No website on file</p>
+                      <p className="text-xs text-neutral-500">No website</p>
                     )}
-                    {biz.address ? <p className="text-xs text-neutral-500">{biz.address}</p> : null}
+                    {biz.address ? <p className="text-xs text-neutral-500 truncate">{biz.address}</p> : null}
                   </td>
-                  <td className="px-3 py-3 align-top text-xs">
-                    <p className="text-white">{biz.contact.primaryEmail || biz.contact.alternateEmail || 'No email'}</p>
+                  <td className="px-3 py-3 align-top text-xs w-1/4">
+                    <p className="text-white truncate">{biz.contact.primaryEmail || biz.contact.alternateEmail || 'No email'}</p>
                     {biz.contact.alternateEmail ? (
-                      <p className="text-neutral-500">Alt: {biz.contact.alternateEmail}</p>
+                      <p className="text-neutral-500 truncate">Alt: {biz.contact.alternateEmail}</p>
                     ) : null}
                     {biz.contact.contactPerson ? (
-                      <p className="text-neutral-500">Contact: {biz.contact.contactPerson}</p>
+                      <p className="text-neutral-500 truncate">Contact: {biz.contact.contactPerson}</p>
                     ) : null}
                   </td>
-                  <td className="px-3 py-3 align-top text-xs">
+                  <td className="px-3 py-3 align-top text-xs w-1/6">
                     <div>
                       <span className="rounded-full bg-white/10 px-2 py-1 text-[11px] uppercase tracking-wide text-neutral-300">
                         {biz.lead?.status ?? 'UNASSIGNED'}
                       </span>
                     </div>
                     <div className="mt-2 flex flex-wrap gap-1">
-                      {(biz.contact.tags ?? []).slice(0, 4).map((tag) => (
-                        <span key={tag} className="rounded-full bg-white/10 px-2 py-1 text-[11px] text-neutral-300">
+                      {(biz.contact.tags ?? []).slice(0, 2).map((tag) => (
+                        <span key={tag} className="rounded-full bg-white/10 px-2 py-1 text-[11px] text-neutral-300 truncate">
                           {tag}
                         </span>
                       ))}
-                      {(biz.contact.tags?.length ?? 0) > 4 ? (
-                        <span className="text-[11px] text-neutral-500">+{(biz.contact.tags?.length ?? 0) - 4} more</span>
+                      {(biz.contact.tags?.length ?? 0) > 2 ? (
+                        <span className="text-[11px] text-neutral-500">+{(biz.contact.tags?.length ?? 0) - 2}</span>
                       ) : null}
                     </div>
                   </td>
-                  <td className="px-3 py-3 align-top text-xs">
+                  <td className="px-3 py-3 align-top text-xs w-1/6">
                     {invite ? (
                       <div className="space-y-1">
-                        <p className="text-neutral-300">Emails: {invite.emailsSent}</p>
-                        <p className="text-neutral-300">Visits: {invite.visitsCount}</p>
-                        <p className="text-neutral-300">RSVPs: {invite.rsvpsCount}</p>
-                        <p className="text-neutral-500">Last: {formatDate(lastActivity)}</p>
+                        <p className="text-neutral-300 text-xs">E: {invite.emailsSent}</p>
+                        <p className="text-neutral-300 text-xs">V: {invite.visitsCount}</p>
+                        <p className="text-neutral-300 text-xs">R: {invite.rsvpsCount}</p>
+                        <p className="text-neutral-500 text-xs truncate">{formatDate(lastActivity)}</p>
                       </div>
                     ) : (
-                      <p className="text-neutral-500">No activity yet</p>
+                      <p className="text-neutral-500 text-xs">No activity</p>
                     )}
                   </td>
-                  <td className="px-3 py-3 align-top text-xs">
+                  <td className="px-3 py-3 align-top text-xs w-1/6">
                     <button
                       onClick={() => onAddMember(biz)}
                       disabled={alreadyMember}
-                      className="rounded-full border border-emerald-400 px-3 py-1 text-xs text-emerald-200 hover:bg-emerald-500/10 disabled:cursor-not-allowed disabled:border-white/10 disabled:text-neutral-500"
+                      className="rounded-full border border-emerald-400 px-2 py-1 text-xs text-emerald-200 hover:bg-emerald-500/10 disabled:cursor-not-allowed disabled:border-white/10 disabled:text-neutral-500"
                     >
-                      {alreadyMember ? 'Added' : 'Add to group'}
+                      {alreadyMember ? 'Added' : 'Add'}
                     </button>
                   </td>
                 </tr>
