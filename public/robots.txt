@@ -1,0 +1,24 @@
+User-agent: *
+Allow: /
+
+# Sitemap
+Sitemap: https://rsvp.evergreenwebsolutions.ca/sitemap.xml
+
+# Crawl-delay for respectful crawling
+Crawl-delay: 1
+
+# Block admin areas and sensitive endpoints
+Disallow: /admin/
+Disallow: /api/
+Disallow: /_next/
+Disallow: /scripts/
+
+# Allow all public content
+Allow: /rsvp
+Allow: /event
+Allow: /conduct
+Allow: /privacy
+Allow: /unsubscribe
+
+# Host
+Host: rsvp.evergreenwebsolutions.ca

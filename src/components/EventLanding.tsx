@@ -5,6 +5,7 @@ import Link from "next/link"
 import Script from "next/script"
 import dynamic from "next/dynamic"
 import { motion, cubicBezier } from "framer-motion"
+import StructuredData from "./StructuredData"
 
 // RsvpForm must be client-only
 const RsvpForm = dynamic(
@@ -51,15 +52,15 @@ const detailItems: Array<{ label: string; value: string; href?: string }> = [
 ]
 
 const takeaways = [
-  "Local examples that worked — and what they cost.",
-  "A simple checklist to judge fit and risk for your business.",
-  "Time to compare notes with nearby owners and managers.",
+  "Real local examples of AI automation, machine learning, and custom AI integrations that worked — and what they cost.",
+  "A practical checklist to evaluate AI agents, RAG systems, and automation solutions for your business.",
+  "Networking with Northern BC business leaders implementing AI, deep learning, and digital transformation.",
 ]
 
 const audience = [
-  "Owners, managers, and superintendents in mining, construction, forestry.",
-  "Leaders in tourism, logistics, and local government.",
-  "Office, admin, and operations teams looking to save time on routine work.",
+  "Owners, managers, and superintendents in mining, construction, forestry, manufacturing, and energy sectors.",
+  "Leaders in tourism, hospitality, retail, logistics, healthcare, education, agriculture, and local government.",
+  "Office, admin, operations, and IT teams looking to implement AI automation, machine learning, and digital transformation.",
 ]
 
 // --- Variants --------------------------------------------------
@@ -81,24 +82,9 @@ const scrollFadeIn = {
 export default function EventLanding() {
   return (
     <div className="relative min-h-[100svh] bg-white text-gray-900">
-      {/* JSON-LD */}
-      <Script id="event-schema" type="application/ld+json">
-        {JSON.stringify({
-          "@context": "https://schema.org",
-          "@type": "BusinessEvent",
-          name: EVENT_NAME,
-          startDate: START_ISO,
-          endDate: END_ISO,
-          eventAttendanceMode: "https://schema.org/OfflineEventAttendanceMode",
-          eventStatus: "https://schema.org/EventScheduled",
-          location: { "@type": "Place", name: VENUE_NAME, address: VENUE_ADDRESS },
-          organizer: { "@type": "Organization", name: "Evergreen Web Solutions", url: "https://evergreenwebsolutions.ca" },
-          image: ["https://yourdomain.com/og"],
-          description:
-            "A plain-language information session for Northern BC businesses. See real examples and leave with clear next steps.",
-          offers: { "@type": "Offer", price: "0", priceCurrency: "CAD", availability: "https://schema.org/InStock" },
-        })}
-      </Script>
+      {/* Structured Data */}
+      <StructuredData type="event" />
+      <StructuredData type="breadcrumb" />
 
       {/* Header / Logo */}
       <motion.header initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.7, ease: EASE }} className="w-full h-auto">
@@ -144,7 +130,7 @@ export default function EventLanding() {
             One evening. Plain language. Local examples. Clear first steps.
           </motion.p>
           <motion.p variants={itemVariants} className="hidden sm:block text-base sm:text-lg leading-8 text-gray-700">
-            Spend one evening cutting through AI hype in plain language. See local examples from mining, construction, and forestry, and understand where AI could help your team and where it won’t.
+            Spend one evening cutting through AI hype in plain language. See real-world examples of AI automation, machine learning, and custom AI integrations from mining, construction, forestry, tourism, and other Northern BC industries. Understand where AI agents, RAG systems, and AI automation could help your Terrace, Kitimat, or Prince Rupert business.
           </motion.p>
 
           <motion.div variants={itemVariants} className="flex flex-col items-center justify-center gap-3 sm:flex-row sm:gap-4">

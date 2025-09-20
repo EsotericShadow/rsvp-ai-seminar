@@ -3,9 +3,32 @@ import type { Metadata } from "next";
 import { getPrivacyPolicy } from "@/lib/privacy";
 
 export const metadata: Metadata = {
-  title: "Privacy Policy | Evergreen RSVP",
+  title: "Privacy Policy | AI in Northern BC Event RSVP",
   description:
-    "Review Evergreen Web Solutions' privacy policy to understand how event RSVP and visit data are collected, used, and protected.",
+    "Review Evergreen Web Solutions' privacy policy to understand how event RSVP and visit data are collected, used, and protected. Learn about our commitment to data privacy and security.",
+  keywords: [
+    "privacy policy",
+    "data protection",
+    "RSVP privacy",
+    "event data privacy",
+    "Evergreen Web Solutions privacy",
+    "AI event privacy",
+    "data security"
+  ],
+  openGraph: {
+    title: "Privacy Policy - AI in Northern BC Event RSVP",
+    description: "Review Evergreen Web Solutions' privacy policy to understand how event RSVP and visit data are collected, used, and protected.",
+    url: "https://rsvp.evergreenwebsolutions.ca/privacy",
+    type: "website",
+  },
+  twitter: {
+    card: "summary",
+    title: "Privacy Policy - AI in Northern BC Event RSVP",
+    description: "Review Evergreen Web Solutions' privacy policy to understand how event RSVP and visit data are collected, used, and protected.",
+  },
+  alternates: {
+    canonical: "https://rsvp.evergreenwebsolutions.ca/privacy",
+  },
 };
 
 export default async function PrivacyPage() {
