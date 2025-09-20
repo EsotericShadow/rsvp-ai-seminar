@@ -219,11 +219,19 @@ export function BusinessDirectoryPanel({ onAddMember, onAddMany, existingMemberI
   }
 
   const handleStatusChange = (value: string) => {
-    setFilters((prev) => ({ ...prev, statuses: value ? [value] : [] }))
+    setFilters((prev) => {
+      const newStatuses = prev.statuses.includes(value)
+        ? prev.statuses.filter((s) => s !== value)
+        : [...prev.statuses, value]
+      return { ...prev, statuses: newStatuses }
+    })
   }
 
   const handleTagChange = (value: string) => {
-    setFilters((prev) => ({ ...prev, tags: value ? [value] : [] }))
+    setFilters((prev) => {
+      const newTags = prev.tags.includes(value) ? prev.tags.filter((t) => t !== value) : [...prev.tags, value]
+      return { ...prev, tags: newTags }
+    })
   }
 
   const isBusy = isLoading || isLoadingMore
@@ -320,36 +328,42 @@ export function BusinessDirectoryPanel({ onAddMember, onAddMany, existingMemberI
           </div>
         </div>
         <div className="grid gap-2 text-xs text-neutral-200">
-          <label className="flex flex-col gap-1">
+          <div className="space-y-1">
             <span className="text-neutral-400">Lead status</span>
-            <select
-              value={filters.statuses[0] ?? ''}
-              onChange={(event) => handleStatusChange(event.target.value)}
-              className="rounded-md border border-white/10 bg-black/60 px-2 py-1 text-white focus:border-emerald-400 focus:outline-none"
-            >
-              <option value="">All statuses</option>
+            <div className="-mx-1 flex flex-wrap gap-1.5">
               {facets.statuses.map((option) => (
-                <option key={option.value} value={option.value}>
+                <button
+                  key={option.value}
+                  onClick={() => handleStatusChange(option.value)}
+                  className={`rounded-full border px-2 py-0.5 text-[11px] transition ${
+                    filters.statuses.includes(option.value)
+                      ? 'border-emerald-400 bg-emerald-500/20 text-emerald-200'
+                      : 'border-white/10 text-neutral-300 hover:border-white/30'
+                  }`}
+                >
                   {option.value} ({option.count})
-                </option>
+                </button>
               ))}
-            </select>
-          </label>
-          <label className="flex flex-col gap-1">
+            </div>
+          </div>
+          <div className="space-y-1">
             <span className="text-neutral-400">Tag</span>
-            <select
-              value={filters.tags[0] ?? ''}
-              onChange={(event) => handleTagChange(event.target.value)}
-              className="rounded-md border border-white/10 bg-black/60 px-2 py-1 text-white focus:border-emerald-400 focus:outline-none"
-            >
-              <option value="">All tags</option>
+            <div className="-mx-1 flex flex-wrap gap-1.5">
               {facets.tags.map((option) => (
-                <option key={option.value} value={option.value}>
+                <button
+                  key={option.value}
+                  onClick={() => handleTagChange(option.value)}
+                  className={`rounded-full border px-2 py-0.5 text-[11px] transition ${
+                    filters.tags.includes(option.value)
+                      ? 'border-emerald-400 bg-emerald-500/20 text-emerald-200'
+                      : 'border-white/10 text-neutral-300 hover:border-white/30'
+                  }`}
+                >
                   {option.value} ({option.count})
-                </option>
+                </button>
               ))}
-            </select>
-          </label>
+            </div>
+          </div>
           <label className="flex flex-col gap-1">
             <span className="text-neutral-400">Sort by</span>
             <select

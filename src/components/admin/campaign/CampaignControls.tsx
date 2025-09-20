@@ -185,6 +185,86 @@ const compareStepDraft = (a: StepDraft, b: StepDraft) =>
 const stepDraftsEquivalent = (original: any, normalized: StepDraft, index: number) =>
   compareStepDraft(normalizeStepDraft(original, index), normalized)
 
+type StepSection = {
+  id: 'audience' | 'messaging' | 'timing' | 'review'
+  label: string
+  description: string
+  status: 'complete' | 'current' | 'pending'
+}
+
+function buildStepSections(steps: StepDraft[], draft: CampaignDraft): StepSection[] {
+  const hasAudience = steps.length > 0 && steps.every((step) => Boolean(step.groupId))
+  const hasMessaging = steps.length > 0 && steps.every((step) => Boolean(step.templateId) && Boolean(step.name?.trim()))
+  const hasTiming = steps.length > 0 && steps.every((step) => Boolean(step.sendAt) || Boolean(step.smartWindowStart))
+  const reviewReady = hasAudience && hasMessaging && hasTiming && draft.status !== undefined
+
+  const base: Array<{ id: StepSection['id']; label: string; description: string; complete: boolean }> = [
+    {
+      id: 'audience',
+      label: 'Audience',
+      description: 'Choose who should receive this touchpoint.',
+      complete: hasAudience,
+    },
+    {
+      id: 'messaging',
+      label: 'Messaging',
+      description: 'Pick the template and tailor the subject.',
+      complete: hasMessaging,
+    },
+    {
+      id: 'timing',
+      label: 'Timing',
+      description: 'Schedule the send window and cadence.',
+      complete: hasTiming,
+    },
+    {
+      id: 'review',
+      label: 'Review',
+      description: 'Confirm status and final checks.',
+      complete: reviewReady,
+    },
+  ]
+
+  let currentAssigned = false
+  return base.map(({ id, label, description, complete }) => {
+    if (complete) {
+      return { id, label, description, status: 'complete' as const }
+    }
+    if (!currentAssigned) {
+      currentAssigned = true
+      return { id, label, description, status: 'current' as const }
+    }
+    return { id, label, description, status: 'pending' as const }
+  })
+}
+
+function Stepper({ sections }: { sections: StepSection[] }) {
+  return (
+    <ol className="flex flex-col gap-3 rounded-2xl border border-white/10 bg-neutral-900/60 p-4 shadow-sm sm:flex-row sm:items-stretch sm:gap-4">
+      {sections.map((section, idx) => {
+        const statusStyles =
+          section.status === 'complete'
+            ? 'border-emerald-400 bg-emerald-500/10 text-emerald-200'
+            : section.status === 'current'
+            ? 'border-white/40 bg-white/10 text-white'
+            : 'border-white/10 bg-transparent text-neutral-400'
+
+        return (
+          <li key={section.id} className="flex flex-1 items-start gap-3">
+            <div className={`flex h-7 w-7 flex-none items-center justify-center rounded-full border text-xs font-semibold ${statusStyles}`}>
+              {section.status === 'complete' ? '✓' : idx + 1}
+            </div>
+            <div className="flex-1">
+              <p className="text-sm font-semibold text-white">{section.label}</p>
+              <p className="text-xs text-neutral-400">{section.description}</p>
+            </div>
+          </li>
+        )
+      })}
+    </ol>
+  )
+}
+
 const tabs = [
   { id: 'campaigns', label: 'Campaigns' },
   { id: 'groups', label: 'Audience Groups' },
@@ -298,12 +378,13 @@ export default function CampaignControls({ initialData, defaults }: { initialDat
   // Campaigns
   const saveCampaign = useCallback(async () => {
     const isUpdate = !!campaignDraft.id
+    const payload = { ...campaignDraft, steps: campaignDraft.schedules }
     await runApi<{ campaign: CampaignWithCounts }>(
       async () => {
         const res = await fetch('/api/admin/campaign/campaigns', {
           method: isUpdate ? 'PUT' : 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(campaignDraft),
+          body: JSON.stringify(payload),
         })
         const data = await res.json()
         return { res, data }
@@ -727,6 +808,8 @@ function CampaignsPanel({
   onSelect: (campaign: CampaignDraft | CampaignWithCounts) => void
   selectedId?: string
 }) {
+  const [isCollapsed, setIsCollapsed] = useState(false)
+
   return (
     <div className="flex h-full flex-col gap-3 rounded-2xl border border-white/10 bg-white/5 p-4">
       <header className="flex flex-wrap items-center justify-between gap-3">
@@ -734,14 +817,22 @@ function CampaignsPanel({
           <h2 className="font-semibold text-white">Campaigns</h2>
           <p className="text-xs text-neutral-400">Select a campaign or start a new sequence.</p>
         </div>
-        <button
-          onClick={() => onSelect({ name: 'New Campaign', status: CampaignStatus.DRAFT, schedules: [newStep(1)] })}
-          className="rounded-full border border-emerald-400 px-3 py-1 text-xs text-emerald-200 hover:bg-emerald-500/10"
-        >
-          + New
-        </button>
+        <div className="flex items-center gap-2">
+          <button
+            onClick={() => onSelect({ name: 'New Campaign', status: CampaignStatus.DRAFT, schedules: [newStep(1)] })}
+            className="rounded-full border border-emerald-400 px-3 py-1 text-xs text-emerald-200 hover:bg-emerald-500/10"
+          >
+            + New
+          </button>
+          <button
+            onClick={() => setIsCollapsed(!isCollapsed)}
+            className="rounded-full border border-white/10 px-3 py-1 text-xs text-neutral-300 hover:border-white/30 xl:hidden"
+          >
+            {isCollapsed ? 'Show' : 'Hide'}
+          </button>
+        </div>
       </header>
-      <div className="-mx-2 flex-1 overflow-y-auto px-2">
+      <div className={`-mx-2 flex-1 overflow-y-auto px-2 ${isCollapsed ? 'hidden' : ''}`}>
         {campaigns.length === 0 ? (
           <div className="rounded-lg border border-dashed border-white/20 bg-black/20 p-4 text-xs text-neutral-400">
             No campaigns yet. Create a new one to get started.
@@ -793,6 +884,7 @@ function SequenceEditor({
   runningStep: { id: string; mode: 'preview' | 'send' } | null
 }) {
   const steps = useMemo<StepDraft[]>(() => (draft.schedules as StepDraft[] | undefined) ?? [], [draft.schedules])
+  const sections = useMemo(() => buildStepSections(steps, draft), [steps, draft])
 
   useEffect(() => {
     if (!steps.length) return
@@ -871,6 +963,8 @@ function SequenceEditor({
 
   return (
     <div className="space-y-6">
+      <Stepper sections={sections} />
+
       <header className="space-y-2 rounded-2xl border border-white/10 bg-black/30 p-4 shadow-sm">
         <input
           value={draft.name ?? ''}
@@ -887,7 +981,11 @@ function SequenceEditor({
         />
       </header>
 
-      <div className="space-y-4">
+      <div className="relative pl-8">
+        <div
+          className="absolute bottom-0 left-[1.3rem] top-0 w-0.5 bg-neutral-800/80"
+          aria-hidden="true"
+        />
         {steps.map((step, index) => {
           const stepStatus = step.status ?? CampaignStatus.DRAFT
           const throttleValue = step.throttlePerMinute ?? 60
@@ -903,10 +1001,9 @@ function SequenceEditor({
           const runDisabled = !stepId || isSaving || Boolean(runningStep)
 
           return (
-            <div
-              key={stepId || `step-${index}`}
-              className="space-y-4 rounded-2xl border border-white/10 bg-neutral-900/70 p-4 shadow-sm backdrop-blur"
-            >
+            <div key={stepId || `step-${index}`} className="relative pl-2">
+              <div className="absolute left-[-2.1rem] top-2 h-6 w-6 rounded-full border-2 border-neutral-800/80 bg-neutral-950" />
+              <div className="space-y-4 rounded-2xl border border-white/10 bg-neutral-900/70 p-4 shadow-sm backdrop-blur">
               <div className="flex flex-wrap items-center justify-between gap-2">
                 <div>
                   <div className="flex items-center gap-2">
@@ -1141,9 +1238,21 @@ function SequenceEditor({
                   </button>
                 </div>
               </div>
+              </div>
             </div>
           )
         })}
+      </div>
+
+      <div className="relative pl-2 pt-4">
+        <div className="absolute left-[-2.1rem] top-6 h-6 w-6 rounded-full border-2 border-neutral-800/80 bg-neutral-950" />
+        <button
+          onClick={addStep}
+          type="button"
+          className="w-full rounded-2xl border-2 border-dashed border-white/10 py-8 text-center text-sm text-neutral-400 hover:border-white/30 hover:text-neutral-300"
+        >
+          + Add Step
+        </button>
       </div>
 
       <datalist id={TIME_ZONE_DATALIST_ID}>
@@ -1152,34 +1261,25 @@ function SequenceEditor({
         ))}
       </datalist>
 
-      <div className="flex items-center justify-between">
-        <button
-          onClick={addStep}
-          type="button"
-          className="rounded-full border border-white/10 px-4 py-2 text-sm text-neutral-200 hover:bg-white/5"
-        >
-          + Add Step
-        </button>
-        <div className="flex items-center gap-3">
-          {draft.id ? (
-            <button
-              onClick={() => onDelete(draft.id!)}
-              type="button"
-              disabled={isSaving}
-              className="text-sm text-red-400 hover:text-red-300 disabled:opacity-50"
-            >
-              Delete
-            </button>
-          ) : null}
+      <div className="flex items-center justify-between pt-6">
+        {draft.id ? (
           <button
-            onClick={onSave}
+            onClick={() => onDelete(draft.id!)}
             type="button"
             disabled={isSaving}
-            className="rounded-full bg-emerald-500 px-5 py-2 text-sm font-semibold text-emerald-950 hover:bg-emerald-400 disabled:opacity-50"
+            className="text-sm text-red-400 hover:text-red-300 disabled:opacity-50"
           >
-            {isSaving ? 'Saving...' : 'Save Campaign'}
+            Delete
           </button>
-        </div>
+        ) : null}
+        <button
+          onClick={onSave}
+          type="button"
+          disabled={isSaving}
+          className="rounded-full bg-emerald-500 px-5 py-2 text-sm font-semibold text-emerald-950 hover:bg-emerald-400 disabled:opacity-50"
+        >
+          {isSaving ? 'Saving...' : 'Save Campaign'}
+        </button>
       </div>
     </div>
   )
