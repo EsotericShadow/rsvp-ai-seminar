@@ -4,7 +4,7 @@ import { Resend } from 'resend'
 import { CampaignSendStatus, CampaignStatus, Prisma } from '@prisma/client'
 
 import prisma from '@/lib/prisma'
-import { fetchLeadMineBusinesses, postLeadMineEvent } from '@/lib/leadMine'
+import { fetchLeadMineBusinesses, LeadMineBusiness } from '@/lib/leadMine'
 
 const normalizeJsonInput = (value: Prisma.JsonValue | undefined) => {
   if (value === undefined) return undefined
@@ -13,7 +13,8 @@ const normalizeJsonInput = (value: Prisma.JsonValue | undefined) => {
 }
 
 const resendKey = process.env.RESEND_API_KEY?.trim()
-const linkBase = process.env.CAMPAIGN_LINK_BASE?.replace(/\/$/, '') || 'https://rsvp.evergreenwebsolutions.ca'
+const linkBase =
+  process.env.CAMPAIGN_LINK_BASE?.replace(/\/$/, '') || 'https://rsvp.evergreenwebsolutions.ca'
 const fromEmail = process.env.CAMPAIGN_FROM_EMAIL || 'Evergreen AI <gabriel.lacroix94@icloud.com>'
 
 function assertResendConfigured() {
@@ -28,9 +29,15 @@ function inviteLinkFromToken(token: string) {
   return url.toString()
 }
 
-function renderTemplate(template: { htmlBody: string; textBody: string | null }, context: Record<string, string>) {
+function renderTemplate(
+  template: { htmlBody: string; textBody: string | null },
+  context: Record<string, string>,
+) {
   const replaceTokens = (input: string) =>
-    Object.entries(context).reduce((acc, [key, value]) => acc.replace(new RegExp(`{{\s*${key}\s*}}`, 'g'), value), input)
+    Object.entries(context).reduce(
+      (acc, [key, value]) => acc.replace(new RegExp(`{{\\s*${key}\\s*}}`, 'g'), value),
+      input,
+    )
 
   return {
     html: replaceTokens(template.htmlBody),
@@ -255,25 +262,28 @@ export async function createCampaign(input: {
   })
 }
 
-export async function updateCampaign(id: string, input: {
-  name?: string
-  description?: string | null
-  status?: CampaignStatus
-  steps?: Array<{
-    id?: string
+export async function updateCampaign(
+  id: string,
+  input: {
     name?: string
-    templateId: string
-    groupId: string
-    sendAt?: Date | null
-    throttlePerMinute?: number | null
-    repeatIntervalMins?: number | null
-    stepOrder?: number | null
-    smartWindowStart?: Date | null
-    smartWindowEnd?: Date | null
-    timeZone?: string | null
+    description?: string | null
     status?: CampaignStatus
-  }>
-}) {
+    steps?: Array<{
+      id?: string
+      name?: string
+      templateId: string
+      groupId: string
+      sendAt?: Date | null
+      throttlePerMinute?: number | null
+      repeatIntervalMins?: number | null
+      stepOrder?: number | null
+      smartWindowStart?: Date | null
+      smartWindowEnd?: Date | null
+      timeZone?: string | null
+      status?: CampaignStatus
+    }>
+  },
+) {
   return prisma.$transaction(async (tx) => {
     if (input.name !== undefined || input.description !== undefined || input.status !== undefined) {
       await tx.campaign.update({
@@ -351,7 +361,12 @@ export async function deleteCampaign(id: string, options: { deleteSchedules?: bo
   })
 }
 
-export async function createTemplate(input: { name: string; subject: string; htmlBody: string; textBody?: string | null }) {
+export async function createTemplate(input: {
+  name: string
+  subject: string
+  htmlBody: string
+  textBody?: string | null
+}) {
   return prisma.campaignTemplate.create({
     data: {
       name: input.name,
@@ -362,7 +377,10 @@ export async function createTemplate(input: { name: string; subject: string; htm
   })
 }
 
-export async function updateTemplate(id: string, input: { name?: string; subject?: string; htmlBody?: string; textBody?: string | null }) {
+export async function updateTemplate(
+  id: string,
+  input: { name?: string; subject?: string; htmlBody?: string; textBody?: string | null },
+) {
   return prisma.campaignTemplate.update({
     where: { id },
     data: {
@@ -387,9 +405,6 @@ export async function createAudienceGroup(input: {
     businessName?: string
     primaryEmail: string
     secondaryEmail?: string
-    inviteToken?: string | null
-    tags?: string[]
-    meta?: Prisma.JsonValue
   }>
 }) {
   return prisma.$transaction(async (tx) => {
@@ -401,7 +416,7 @@ export async function createAudienceGroup(input: {
       },
     })
 
-    await Promise.all(
+    const createdMembers = await Promise.all(
       input.members.map((member) =>
         tx.audienceMember.create({
           data: {
@@ -410,32 +425,33 @@ export async function createAudienceGroup(input: {
             businessName: member.businessName ?? null,
             primaryEmail: member.primaryEmail,
             secondaryEmail: member.secondaryEmail ?? null,
-            inviteToken: member.inviteToken ?? null,
-            tagsSnapshot: member.tags ?? [],
-            meta: member.meta ?? undefined,
+            meta: (member as any).meta || null,
           },
         }),
       ),
     )
 
+    // Backfill tokens via LeadMine (createMissing=1), then persist
+    await backfillInviteTokensForMembers(createdMembers)
+
     return tx.audienceGroup.findUnique({ where: { id: group.id }, include: { members: true } })
   })
 }
 
-export async function updateAudienceGroup(id: string, input: {
-  name?: string
-  description?: string | null
-  criteria?: Prisma.JsonValue
-  members: Array<{
-    businessId: string
-    businessName?: string
-    primaryEmail: string
-    secondaryEmail?: string
-    inviteToken?: string | null
-    tags?: string[]
-    meta?: Prisma.JsonValue
-  }>
-}) {
+export async function updateAudienceGroup(
+  id: string,
+  input: {
+    name?: string
+    description?: string | null
+    criteria?: Prisma.JsonValue
+    members: Array<{
+      businessId: string
+      businessName?: string
+      primaryEmail: string
+      secondaryEmail?: string
+    }>
+  },
+) {
   return prisma.$transaction(async (tx) => {
     const updateData: Prisma.AudienceGroupUpdateInput = {}
     if (input.name !== undefined) updateData.name = input.name
@@ -447,23 +463,23 @@ export async function updateAudienceGroup(id: string, input: {
       data: updateData,
     })
 
+    // Replace members
     await tx.audienceMember.deleteMany({ where: { groupId: id } })
-    await Promise.all(
-      input.members.map((member) =>
-        tx.audienceMember.create({
-          data: {
-            groupId: id,
-            businessId: member.businessId,
-            businessName: member.businessName ?? null,
-            primaryEmail: member.primaryEmail,
-            secondaryEmail: member.secondaryEmail ?? null,
-            inviteToken: member.inviteToken ?? null,
-            tagsSnapshot: member.tags ?? [],
-            meta: member.meta ?? undefined,
-          },
-        }),
-      ),
-    )
+
+    await tx.audienceMember.createMany({
+      data: (input.members ?? []).map((m) => ({
+        groupId: id,
+        businessId: m.businessId,
+        businessName: m.businessName ?? null,
+        primaryEmail: m.primaryEmail,
+        secondaryEmail: m.secondaryEmail ?? null,
+        meta: (m as any).meta || null,
+      })),
+    })
+
+    // Re-read created members (createMany doesn’t return rows)
+    const createdMembers = await tx.audienceMember.findMany({ where: { groupId: id } })
+    await backfillInviteTokensForMembers(createdMembers)
 
     return tx.audienceGroup.findUnique({ where: { id }, include: { members: true } })
   })
@@ -511,38 +527,42 @@ export async function createSchedule(input: {
   })
 }
 
-export async function updateSchedule(id: string, input: {
-  name?: string
-  templateId?: string
-  groupId?: string
-  status?: CampaignStatus
-  sendAt?: Date | null
-  throttlePerMinute?: number | null
-  repeatIntervalMins?: number | null
-  campaignId?: string | null
-  stepOrder?: number | null
-  smartWindowStart?: Date | null
-  smartWindowEnd?: Date | null
-  timeZone?: string | null
-}) {
-  const data: Prisma.CampaignScheduleUpdateInput = {};
-  if (input.name !== undefined) data.name = input.name;
-  if (input.templateId !== undefined) data.template = { connect: { id: input.templateId } };
-  if (input.groupId !== undefined) data.group = { connect: { id: input.groupId } };
-  if (input.status !== undefined) data.status = input.status;
+export async function updateSchedule(
+  id: string,
+  input: {
+    name?: string
+    templateId?: string
+    groupId?: string
+    status?: CampaignStatus
+    sendAt?: Date | null
+    throttlePerMinute?: number | null
+    repeatIntervalMins?: number | null
+    campaignId?: string | null
+    stepOrder?: number | null
+    smartWindowStart?: Date | null
+    smartWindowEnd?: Date | null
+    timeZone?: string | null
+  },
+) {
+  const data: Prisma.CampaignScheduleUpdateInput = {}
+  if (input.name !== undefined) data.name = input.name
+  if (input.templateId !== undefined) data.template = { connect: { id: input.templateId } }
+  if (input.groupId !== undefined) data.group = { connect: { id: input.groupId } }
+  if (input.status !== undefined) data.status = input.status
   if (input.sendAt !== undefined) {
-    data.sendAt = input.sendAt;
-    data.nextRunAt = input.sendAt ?? input.smartWindowStart ?? null;
+    data.sendAt = input.sendAt
+    data.nextRunAt = input.sendAt ?? input.smartWindowStart ?? null
   }
-  if (input.throttlePerMinute !== undefined) data.throttlePerMinute = input.throttlePerMinute;
-  if (input.repeatIntervalMins !== undefined) data.repeatIntervalMins = input.repeatIntervalMins;
-  if (input.campaignId !== undefined) data.campaign = input.campaignId ? { connect: { id: input.campaignId } } : { disconnect: true };
-  if (input.stepOrder !== undefined && input.stepOrder !== null) data.stepOrder = input.stepOrder;
-  if (input.smartWindowStart !== undefined) data.smartWindowStart = input.smartWindowStart;
-  if (input.smartWindowEnd !== undefined) data.smartWindowEnd = input.smartWindowEnd;
-  if (input.timeZone !== undefined) data.timeZone = input.timeZone ?? 'America/Vancouver';
+  if (input.throttlePerMinute !== undefined) data.throttlePerMinute = input.throttlePerMinute
+  if (input.repeatIntervalMins !== undefined) data.repeatIntervalMins = input.repeatIntervalMins
+  if (input.campaignId !== undefined)
+    data.campaign = input.campaignId ? { connect: { id: input.campaignId } } : { disconnect: true }
+  if (input.stepOrder !== undefined && input.stepOrder !== null) data.stepOrder = input.stepOrder
+  if (input.smartWindowStart !== undefined) data.smartWindowStart = input.smartWindowStart
+  if (input.smartWindowEnd !== undefined) data.smartWindowEnd = input.smartWindowEnd
+  if (input.timeZone !== undefined) data.timeZone = input.timeZone ?? 'America/Vancouver'
   if (input.smartWindowStart !== undefined && input.sendAt === undefined && input.smartWindowStart) {
-    data.nextRunAt = input.smartWindowStart;
+    data.nextRunAt = input.smartWindowStart
   }
 
   return prisma.campaignSchedule.update({
@@ -579,10 +599,11 @@ export async function runSchedule(scheduleId: string, options: SendOptions = {})
           },
         },
       },
+      campaign: true,
     },
   })
-  if (!schedule) {
-    throw new Error('Schedule not found')
+  if (!schedule || !schedule.campaignId) {
+    throw new Error('Schedule not found or not linked to a campaign')
   }
 
   const now = new Date()
@@ -647,151 +668,65 @@ export async function runSchedule(scheduleId: string, options: SendOptions = {})
     return { scheduleId, processed: 0, sent: 0, previewOnly: options.previewOnly ?? false, results: [] }
   }
 
-  const existingSends = await prisma.campaignSend.findMany({
-    where: { scheduleId, businessId: { in: members.map((m) => m.businessId) } },
-  })
-
-  const existingMap = new Map(existingSends.map((send) => [`${send.businessId}`, send]))
-
-  const sendsToProcess: Array<{ member: typeof members[number]; send: Prisma.CampaignSendGetPayload<{ include: {} }> | null }> = members.map((member) => ({ member, send: existingMap.get(member.businessId) ?? null }))
-
-  const resend = options.previewOnly
-    ? null
-    : (() => {
-        assertResendConfigured()
-        return new Resend(resendKey)
-      })()
   if (!options.previewOnly) {
-    await prisma.campaignSchedule.update({ where: { id: scheduleId }, data: { status: CampaignStatus.SENDING, lastRunAt: new Date() } })
+    await prisma.campaignSchedule.update({
+      where: { id: scheduleId },
+      data: { status: CampaignStatus.SENDING, lastRunAt: new Date() },
+    })
   }
 
   const limit = options.limit ?? members.length
-  const resultLog: Array<{ businessId: string; email: string; status: CampaignSendStatus; error?: string }> = []
+  const resultLog: Array<{ businessId: string; email: string; status: string; error?: string }> = []
+  const emailJobsToCreate: Array<{
+    campaignId: string
+    recipientEmail: string
+    recipientId: string
+    sendAt: Date
+    status: 'scheduled'
+  }> = []
 
   let processed = 0
-  let sent = 0
 
-  for (const entry of sendsToProcess) {
+  for (const member of members) {
     if (processed >= limit) break
     processed += 1
 
-    const { member } = entry
     const inviteToken = await ensureMemberInviteToken({
+      id: member.id,
       groupId: member.groupId,
       businessId: member.businessId,
+      primaryEmail: member.primaryEmail,
+      businessName: member.businessName,
+      secondaryEmail: member.secondaryEmail,
       inviteToken: member.inviteToken,
     })
 
     if (!inviteToken) {
-      const message = `Invite token missing for business ${member.businessId}`
-      await prisma.campaignSend.upsert({
-        where: { scheduleId_businessId: { scheduleId, businessId: member.businessId } },
-        create: {
-          scheduleId,
-          groupId: schedule.groupId,
-          templateId: schedule.templateId,
-          businessId: member.businessId,
-          businessName: member.businessName ?? null,
-          email: member.primaryEmail,
-          inviteToken: null,
-          inviteLink: null,
-          status: CampaignSendStatus.SKIPPED,
-          error: message,
-          meta: {},
-        },
-        update: {
-          inviteToken: null,
-          inviteLink: null,
-          status: CampaignSendStatus.SKIPPED,
-          error: message,
-          updatedAt: new Date(),
-        },
+      resultLog.push({
+        businessId: member.businessId,
+        email: member.primaryEmail,
+        status: 'SKIPPED',
+        error: 'Missing invite token',
       })
-      resultLog.push({ businessId: member.businessId, email: member.primaryEmail, status: CampaignSendStatus.SKIPPED, error: message })
-      continue
-    }
-    const inviteLink = inviteLinkFromToken(inviteToken)
-    const context = {
-      business_name: member.businessName ?? 'Business team',
-      invite_link: inviteLink,
-      unsubscribe_link: '#',
-    }
-    const rendered = renderTemplate(schedule.template, context)
-
-    if (options.previewOnly) {
-      resultLog.push({ businessId: member.businessId, email: member.primaryEmail, status: CampaignSendStatus.SKIPPED })
       continue
     }
 
-    try {
-      const response = await resend!.emails.send({
-        from: fromEmail,
-        to: member.primaryEmail,
-        subject: renderTemplateSubject(schedule.template.subject, context),
-        html: rendered.html,
-        text: rendered.text,
-        headers: {
-          'X-Entity-Ref-ID': inviteToken,
-        },
-      })
+    emailJobsToCreate.push({
+      campaignId: schedule.campaignId,
+      recipientEmail: member.primaryEmail,
+      recipientId: member.businessId,
+      sendAt: schedule.sendAt || schedule.nextRunAt || new Date(),
+      status: 'scheduled',
+    })
 
-      await prisma.campaignSend.upsert({
-        where: { scheduleId_businessId: { scheduleId, businessId: member.businessId } },
-        create: {
-          scheduleId,
-          groupId: schedule.groupId,
-          templateId: schedule.templateId,
-          businessId: member.businessId,
-          businessName: member.businessName ?? null,
-          email: member.primaryEmail,
-          inviteToken,
-          inviteLink,
-          resendMessageId: response.data?.id ?? null,
-          status: CampaignSendStatus.SENT,
-          sentAt: new Date(),
-          meta: { rendered },
-        },
-        update: {
-          inviteToken,
-          inviteLink,
-          resendMessageId: response.data?.id ?? null,
-          status: CampaignSendStatus.SENT,
-          sentAt: new Date(),
-          error: null,
-          meta: { rendered },
-        },
-      })
+    resultLog.push({ businessId: member.businessId, email: member.primaryEmail, status: 'QUEUED' })
+  }
 
-      await postLeadMineEvent({ token: inviteToken, type: 'email_sent', meta: { scheduleId, templateId: schedule.templateId, businessId: member.businessId } })
-      resultLog.push({ businessId: member.businessId, email: member.primaryEmail, status: CampaignSendStatus.SENT })
-      sent += 1
-    } catch (error: any) {
-      const message = error?.message || 'Unknown send error'
-      await prisma.campaignSend.upsert({
-        where: { scheduleId_businessId: { scheduleId, businessId: member.businessId } },
-        create: {
-          scheduleId,
-          groupId: schedule.groupId,
-          templateId: schedule.templateId,
-          businessId: member.businessId,
-          businessName: member.businessName ?? null,
-          email: member.primaryEmail,
-          inviteToken,
-          inviteLink,
-          status: CampaignSendStatus.FAILED,
-          error: message,
-          meta: { rendered },
-        },
-        update: {
-          inviteToken,
-          inviteLink,
-          status: CampaignSendStatus.FAILED,
-          error: message,
-          updatedAt: new Date(),
-        },
-      })
-      resultLog.push({ businessId: member.businessId, email: member.primaryEmail, status: CampaignSendStatus.FAILED, error: message })
-    }
+  if (emailJobsToCreate.length > 0) {
+    await prisma.emailJob.createMany({
+      data: emailJobsToCreate,
+      skipDuplicates: true,
+    })
   }
 
   if (!options.previewOnly) {
@@ -812,29 +747,122 @@ export async function runSchedule(scheduleId: string, options: SendOptions = {})
   return {
     scheduleId,
     processed,
-    sent,
+    sent: 0, // queueing only
     previewOnly: options.previewOnly ?? false,
     results: resultLog,
   }
 }
 
-async function ensureMemberInviteToken(member: { groupId: string; businessId: string; inviteToken?: string | null }) {
+/**
+ * Ensure a single member has an invite token by calling LeadMine with
+ * ids + createMissing=1, then persisting to AudienceMember.
+ */
+async function ensureMemberInviteToken(member: {
+  id: string
+  groupId: string
+  businessId: string
+  primaryEmail: string
+  businessName?: string | null
+  inviteToken?: string | null
+  secondaryEmail?: string | null
+}): Promise<string | null> {
   if (member.inviteToken) return member.inviteToken
 
-  const resp = await fetchLeadMineBusinesses({ ids: [member.businessId], createMissing: true })
-  const business = resp.data[0]
-  if (!business?.invite?.token) {
-    console.warn(`Invite token missing for business ${member.businessId}`)
+  try {
+    const { data } = await fetchLeadMineBusinesses({
+      ids: [member.businessId],
+      createMissing: true,
+      limit: 1,
+    })
+
+    const lm: LeadMineBusiness | undefined = data?.[0]
+    const token = lm?.invite?.token ?? null
+
+    if (token) {
+      await prisma.audienceMember.update({
+        where: { id: member.id },
+        data: { inviteToken: token },
+      })
+    } else {
+      console.warn(`Invite token missing for business ${member.businessId}`)
+    }
+
+    return token
+  } catch (err) {
+    console.warn(`LeadMine lookup failed for ${member.businessId}: ${(err as Error)?.message || err}`)
     return null
   }
-  const inviteToken = business.invite.token
-  await prisma.audienceMember.update({ where: { groupId_businessId: { groupId: member.groupId, businessId: member.businessId } }, data: { inviteToken } }).catch(() => null)
-  return inviteToken
+}
+
+/**
+ * Bulk backfill tokens for a set of members: calls LeadMine once with all ids,
+ * persists tokens for those returned, and leaves others untouched.
+ * For manual entries, generates tokens directly.
+ */
+async function backfillInviteTokensForMembers(members: Array<{
+  id: string
+  groupId: string
+  businessId: string
+  primaryEmail: string | null
+  inviteToken: string | null
+  meta?: any
+}>) {
+  const needing = members.filter((m) => !m.inviteToken && m.primaryEmail && m.businessId)
+  if (!needing.length) return
+
+  // Separate manual entries from LeadMine entries
+  const manualEntries = needing.filter((m) => m.meta?.manual)
+  const leadMineEntries = needing.filter((m) => !m.meta?.manual)
+
+  const updates: Array<Promise<any>> = []
+
+  // Handle manual entries - generate tokens directly
+  for (const m of manualEntries) {
+    const token = `manual_${m.businessId}_${Date.now()}_${Math.random().toString(36).slice(2, 8)}`
+    updates.push(
+      prisma.audienceMember.update({
+        where: { id: m.id },
+        data: { inviteToken: token },
+      }),
+    )
+  }
+
+  // Handle LeadMine entries
+  if (leadMineEntries.length > 0) {
+    const ids = Array.from(new Set(leadMineEntries.map((m) => m.businessId)))
+    try {
+      const { data } = await fetchLeadMineBusinesses({
+        ids,
+        createMissing: true,
+        limit: ids.length,
+      })
+
+      const foundById = new Map<string, LeadMineBusiness>()
+      for (const b of data || []) foundById.set(b.id, b)
+
+      for (const m of leadMineEntries) {
+        const lm = foundById.get(m.businessId)
+        const token = lm?.invite?.token
+        if (token) {
+          updates.push(
+            prisma.audienceMember.update({
+              where: { id: m.id },
+              data: { inviteToken: token },
+            }),
+          )
+        }
+      }
+    } catch (err) {
+      console.warn(`LeadMine bulk backfill failed: ${(err as Error)?.message || err}`)
+    }
+  }
+
+  if (updates.length) await Promise.allSettled(updates)
 }
 
 function renderTemplateSubject(subject: string, context: Record<string, string>) {
   return Object.entries(context).reduce(
-    (acc, [key, value]) => acc.replace(new RegExp(`{{\s*${key}\s*}}`, 'g'), value),
+    (acc, [key, value]) => acc.replace(new RegExp(`{{\\s*${key}\\s*}}`, 'g'), value),
     subject,
   )
 }

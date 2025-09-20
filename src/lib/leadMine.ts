@@ -1,5 +1,4 @@
-import 'server-only';
-
+// src/lib/leadMine.ts
 const baseUrl = process.env.LEADMINE_API_BASE?.replace(/\/$/, '') ?? '';
 const apiKey = process.env.LEADMINE_API_KEY?.trim();
 
@@ -55,7 +54,7 @@ async function leadMineFetch<T>(path: string, init?: RequestInit): Promise<T> {
   const res = await fetch(`${baseUrl}${path}`, {
     ...init,
     headers: {
-      'Authorization': `Bearer ${apiKey}`,
+      Authorization: `Bearer ${apiKey}`,
       'Content-Type': 'application/json',
       ...(init?.headers || {}),
     },
@@ -70,6 +69,7 @@ async function leadMineFetch<T>(path: string, init?: RequestInit): Promise<T> {
   return res.json() as Promise<T>;
 }
 
+// The only supported way to fetch/create is this GET with ids + createMissing
 export async function fetchLeadMineBusinesses(params: {
   limit?: number;
   cursor?: string;

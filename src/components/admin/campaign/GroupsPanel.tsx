@@ -132,7 +132,7 @@ export function GroupsPanel({
       businessName,
       primaryEmail,
       secondaryEmail: secondaryEmail || undefined,
-      inviteToken: null,
+      inviteToken: undefined, // Will be generated when saved to database
       tags,
       meta: {
         manual: true,
@@ -161,8 +161,8 @@ export function GroupsPanel({
         ) : null}
       </header>
 
-      <div className="flex flex-col gap-6 xl:flex-row">
-        <div className="space-y-4 rounded-2xl border border-white/10 bg-neutral-900/70 p-4 shadow-sm xl:max-w-sm xl:flex-none">
+      <div className="flex flex-col gap-6 lg:flex-row">
+        <div className="space-y-4 rounded-2xl border border-white/10 bg-neutral-900/70 p-4 shadow-sm lg:max-w-sm lg:flex-none">
           <div>
             <label className="text-xs uppercase tracking-wide text-neutral-400">Group name</label>
             <input

@@ -36,16 +36,18 @@ export default async function AdminCampaignPage() {
 
   return (
     <div className="min-h-screen bg-neutral-950 text-neutral-100">
-      <div className="mx-auto flex max-w-5xl flex-col gap-8 px-4 py-12 sm:px-6 lg:px-8">
+      <div className="mx-auto flex max-w-7xl flex-col gap-6 px-3 py-8 sm:px-4 sm:py-12 lg:px-8">
         <header className="space-y-2">
           <p className="text-xs uppercase tracking-[0.35em] text-emerald-300/80">Evergreen Admin</p>
-          <h1 className="text-3xl font-semibold sm:text-4xl">Campaign Control Center</h1>
+          <h1 className="text-2xl font-semibold sm:text-3xl lg:text-4xl">Campaign Control Center</h1>
           <p className="text-sm text-neutral-400 sm:text-base">
             Configure outreach settings, preview invite batches, and trigger Resend deliveries for Lead Mine businesses.
           </p>
         </header>
 
-        <CampaignControls defaults={defaults} initialData={initialData} />
+        <div className="overflow-hidden">
+          <CampaignControls defaults={defaults} initialData={initialData} />
+        </div>
       </div>
     </div>
   );
