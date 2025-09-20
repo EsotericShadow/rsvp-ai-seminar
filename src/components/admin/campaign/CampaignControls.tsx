@@ -12,6 +12,14 @@ import { BusinessDirectoryPanel } from './BusinessDirectoryPanel'
 
 type Template = CampaignTemplate
 
+type TemplateDraft = {
+  id?: string
+  name: string
+  subject: string
+  htmlBody: string
+  textBody: string
+}
+
 type Group = AudienceGroup & {
   members: Array<{
     id: string
