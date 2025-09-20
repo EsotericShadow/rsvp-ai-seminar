@@ -1393,85 +1393,9 @@ function TemplatesView({
       </aside>
       <main className="w-full flex-1 min-w-0">
         <div className="space-y-6">
-          {/* Live Preview Section */}
           <div className="rounded-xl border border-white/10 bg-black/30 p-4">
-            <header className="flex items-center justify-between mb-4">
-              <div>
-                <p className="text-sm font-semibold text-neutral-200">Live preview</p>
-                <p className="text-xs text-neutral-500">
-                  Rendered with sample data · Subject: <span className="text-neutral-300">{draft.subject || '—'}</span>
-                </p>
-              </div>
-              <div className="flex items-center gap-4">
-                <div className="flex flex-col gap-3 rounded-lg border border-white/10 bg-black/20 p-3 text-xs text-neutral-300">
-                  <div className="flex items-center justify-between">
-                    <span className="font-semibold text-neutral-200">Preview data</span>
-                    <button type="button" className="rounded-full border border-white/10 px-3 py-1 text-[11px] text-neutral-300 hover:border-white/30">
-                      Reset
-                    </button>
-                  </div>
-                  <div className="grid gap-2">
-                    {['business_name', 'invite_link', 'unsubscribe_link'].map((token) => (
-                      <label key={token} className="flex flex-col gap-1">
-                        <span className="text-neutral-500">{`{{${token}}}`}</span>
-                        <input
-                          className="rounded-md border border-white/10 bg-black/40 px-2 py-1 text-white focus:border-emerald-400 focus:outline-none"
-                          placeholder={`Sample ${token.replace('_', ' ')}`}
-                          defaultValue={token === 'business_name' ? 'Sample Business' : token === 'invite_link' ? 'https://rsvp.evergreenwebsolutions.ca/rsvp?eid=sample' : 'https://rsvp.evergreenwebsolutions.ca/unsubscribe?email=sample@example.com'}
-                        />
-                      </label>
-                    ))}
-                  </div>
-                </div>
-              </div>
-            </header>
-            <div className="prose prose-sm prose-invert max-h-72 overflow-auto rounded-lg border border-white/10 bg-black/40 p-4">
-              <div dangerouslySetInnerHTML={{ __html: draft.htmlBody || '<p>Enter HTML content to see preview...</p>' }} />
-            </div>
-          </div>
-
-          {/* Templates List */}
-          <div className="space-y-3">
-            <h3 className="text-sm font-semibold text-neutral-200">Existing Templates</h3>
-            {templates.map((template) => (
-              <article key={template.id} className="rounded-xl border border-white/10 bg-black/40 p-4">
-                <header className="flex flex-wrap items-start justify-between gap-3">
-                  <div>
-                    <h3 className="text-base font-semibold text-white">{template.name}</h3>
-                    <p className="text-xs text-neutral-400">Subject: {template.subject}</p>
-                  </div>
-                  <div className="flex flex-wrap items-center gap-2 text-xs">
-                    <button
-                      onClick={() => onEdit(template)}
-                      className="rounded-full border border-white/10 px-3 py-1 text-neutral-200 hover:border-emerald-400 hover:text-emerald-200"
-                    >
-                      Edit
-                    </button>
-                    <button
-                      onClick={() => onDuplicate(template)}
-                      className="rounded-full border border-white/10 px-3 py-1 text-neutral-200 hover:border-white/30"
-                    >
-                      Duplicate
-                    </button>
-                    <button
-                      onClick={() => onRemove(template.id)}
-                      className="rounded-full border border-red-500/40 px-3 py-1 text-red-200 hover:bg-red-500/10"
-                    >
-                      Delete
-                    </button>
-                  </div>
-                </header>
-                <details className="mt-3 text-xs text-neutral-300">
-                  <summary className="cursor-pointer text-neutral-400">Quick preview</summary>
-                  <div className="prose prose-invert mt-2 max-w-none rounded-lg border border-white/10 bg-black/30 p-3">
-                    <div dangerouslySetInnerHTML={{ __html: template.htmlBody }} />
-                  </div>
-                </details>
-              </article>
-            ))}
-            {templates.length === 0 && (
-              <p className="text-center text-sm text-neutral-500">No templates yet. Create your first template using the form on the left.</p>
-            )}
+            <h2 className="text-lg font-semibold text-white">Templates Tab - Debug Mode</h2>
+            <p className="text-sm text-neutral-400">This should match the campaigns tab layout exactly.</p>
           </div>
         </div>
       </main>
