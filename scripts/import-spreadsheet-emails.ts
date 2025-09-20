@@ -51,13 +51,14 @@ async function importSpreadsheetEmails() {
     for (const row of jsonData) {
       try {
         // Extract data from row - using actual column names from spreadsheet
-        const businessName = row['Entity Name'] || '';
-        const primaryEmail = row['Contact Email'] || '';
-        const businessId = row['License Number'] || row['ID'] || row['Business ID'] || '';
-        const address = `${row['Mailing Address Street'] || ''} ${row['Mailing Address City'] || ''} ${row['Province / State'] || ''} ${row['Mailing Address Postal Code'] || ''}`.trim();
-        const city = row['Mailing Address City'] || 'Terrace';
-        const province = row['Province / State'] || 'BC';
-        const postalCode = row['Mailing Address Postal Code'] || '';
+        const typedRow = row as Record<string, any>;
+        const businessName = typedRow['Entity Name'] || '';
+        const primaryEmail = typedRow['Contact Email'] || '';
+        const businessId = typedRow['License Number'] || typedRow['ID'] || typedRow['Business ID'] || '';
+        const address = `${typedRow['Mailing Address Street'] || ''} ${typedRow['Mailing Address City'] || ''} ${typedRow['Province / State'] || ''} ${typedRow['Mailing Address Postal Code'] || ''}`.trim();
+        const city = typedRow['Mailing Address City'] || 'Terrace';
+        const province = typedRow['Province / State'] || 'BC';
+        const postalCode = typedRow['Mailing Address Postal Code'] || '';
 
         // Skip if no email or business name
         if (!primaryEmail || !businessName) {

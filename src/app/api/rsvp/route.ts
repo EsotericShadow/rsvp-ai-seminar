@@ -134,9 +134,8 @@ export async function POST(req: Request) {
         url: 'https://rsvp.evergreenwebsolutions.ca',
         organizer: { name: 'Gabriel Lacroix', email: 'gabriel@evergreenwebsolutions.ca' },
         attendees: [{ name: fullName, email: values.email, rsvp: true }],
-        status: 'CONFIRMED',
-        busyStatus: 'BUSY',
-        transparency: 'OPAQUE'
+            status: 'CONFIRMED',
+            busyStatus: 'BUSY'
       });
 
       if (!error && value) {

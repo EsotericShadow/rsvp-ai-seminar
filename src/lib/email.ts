@@ -188,7 +188,7 @@ export async function sendRSVPConfirmation({
     const response = await resend.emails.send({
       from: EMAIL_CONFIG.from,
       to: [to],
-      replyTo: EMAIL_CONFIG.replyTo,
+      reply_to: EMAIL_CONFIG.replyTo,
       subject: `RSVP Confirmed: AI in Northern BC - October 23, 2025`,
       html: generateRSVPConfirmationHTML(name, eventDetails),
       text: generateRSVPConfirmationText(name, eventDetails),
@@ -242,7 +242,7 @@ export async function sendEventReminder({
     const response = await resend.emails.send({
       from: EMAIL_CONFIG.from,
       to: [to],
-      replyTo: EMAIL_CONFIG.replyTo,
+      reply_to: EMAIL_CONFIG.replyTo,
       subject,
       html: `
         <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">

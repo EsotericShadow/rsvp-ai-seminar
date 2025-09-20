@@ -23,7 +23,7 @@ async function debugSpreadsheet() {
     console.log('\n📝 First 3 rows:');
     for (let i = 0; i < Math.min(3, jsonData.length); i++) {
       console.log(`\nRow ${i + 1}:`);
-      const row = jsonData[i];
+      const row = jsonData[i] as Record<string, any>;
       Object.keys(row).forEach(key => {
         console.log(`  ${key}: ${row[key]}`);
       });
@@ -32,7 +32,7 @@ async function debugSpreadsheet() {
     // Show all column names
     console.log('\n📋 All column names:');
     if (jsonData.length > 0) {
-      const firstRow = jsonData[0];
+      const firstRow = jsonData[0] as Record<string, any>;
       Object.keys(firstRow).forEach((key, index) => {
         console.log(`  ${index + 1}. "${key}"`);
       });
@@ -44,8 +44,9 @@ async function debugSpreadsheet() {
     let validEmails = 0;
     
     jsonData.forEach(row => {
-      const businessName = row['Business Name'] || row['Name'] || row['Company'] || row['Business'] || '';
-      const email = row['Email'] || row['Primary Email'] || row['Contact Email'] || row['E-mail'] || '';
+      const typedRow = row as Record<string, any>;
+      const businessName = typedRow['Business Name'] || typedRow['Name'] || typedRow['Company'] || typedRow['Business'] || '';
+      const email = typedRow['Email'] || typedRow['Primary Email'] || typedRow['Contact Email'] || typedRow['E-mail'] || '';
       
       if (businessName && businessName.trim()) businessNameCount++;
       if (email && email.trim()) emailCount++;
