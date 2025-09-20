@@ -235,9 +235,7 @@ export default function EventLanding() {
                       alt="Gabriel Lacroix"
                       width={320}
                       height={320}
-                      sizes="(min-width:1024px) 320px, 50vw"
                       className="h-full w-full object-cover ring-1 ring-gray-200"
-                      style={{ objectPosition: "50% 24%" }}
                     />
                   </div>
                 </div>
