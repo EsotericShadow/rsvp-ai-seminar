@@ -101,8 +101,7 @@ export default function EventLanding() {
       </Script>
 
       {/* Header / Logo */}
-      <motion.header initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.7, ease: EASE }} className="pt-5 sm:pt-8">
-        <div className="mx-auto">
+      <motion.header initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.7, ease: EASE }} className="w-full h-auto">
           <Link
             href="https://evergreenwebsolutions.ca"
             target="_blank"
@@ -119,7 +118,6 @@ export default function EventLanding() {
               className="w-full h-auto object-cover"
             />
           </Link>
-        </div>
       </motion.header>
 
       {/* Main */}
