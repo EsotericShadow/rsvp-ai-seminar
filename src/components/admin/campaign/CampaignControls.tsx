@@ -1316,25 +1316,19 @@ function TemplatesView({
   onSubmit: () => Promise<void>
   isSaving: boolean
 }) {
-  // WORKING STRUCTURE - DON'T CHANGE THIS
+  // WORKING DEBUG VERSION - DON'T CHANGE THE STRUCTURE
   return (
     <div className="flex flex-col gap-6 lg:flex-row">
       <aside className="w-full lg:max-w-sm lg:flex-none">
-        <TemplatesSidebar
-          draft={draft}
-          setDraft={setDraft}
-          onSubmit={onSubmit}
-          isSaving={isSaving}
-        />
+        <CampaignsPanel campaigns={[]} onSelect={() => {}} selectedId={undefined} />
       </aside>
       <main className="w-full flex-1 min-w-0">
-        <TemplatesMain
-          templates={templates}
-          draft={draft}
-          onEdit={onEdit}
-          onDuplicate={onDuplicate}
-          onRemove={onRemove}
-        />
+        <div className="space-y-6">
+          <div className="rounded-xl border border-white/10 bg-black/30 p-4">
+            <h2 className="text-lg font-semibold text-white">Templates Tab - Debug Mode</h2>
+            <p className="text-sm text-neutral-400">This should match the campaigns tab layout exactly.</p>
+          </div>
+        </div>
       </main>
     </div>
   )
