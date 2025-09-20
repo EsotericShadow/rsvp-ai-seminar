@@ -34,6 +34,7 @@ type TemplatesPanelProps = {
 }
 
 export function TemplatesPanel({ templates, draft, setDraft, onEdit, onDuplicate, onRemove, onSubmit, isSaving }: TemplatesPanelProps) {
+  // Templates tab should match campaigns tab structure (no white background wrapper)
   return (
     <div className="flex flex-col gap-6 lg:flex-row">
       <aside className="w-full lg:max-w-sm lg:flex-none">
