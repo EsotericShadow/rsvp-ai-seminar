@@ -1316,6 +1316,7 @@ function TemplatesView({
   onSubmit: () => Promise<void>
   isSaving: boolean
 }) {
+  // WORKING STRUCTURE - DON'T CHANGE THIS
   return (
     <div className="flex flex-col gap-6 lg:flex-row">
       <aside className="w-full lg:max-w-sm lg:flex-none">
