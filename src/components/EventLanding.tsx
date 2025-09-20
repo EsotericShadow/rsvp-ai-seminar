@@ -3,7 +3,7 @@
 import Image from 'next/image'
 import Link from 'next/link'
 import dynamic from 'next/dynamic'
-import { useEffect, useState } from 'react'
+import { motion } from 'framer-motion'
 
 import { RsvpForm } from '@/components/RsvpForm'
 
@@ -18,7 +18,7 @@ const LetterGlitch = dynamic(() => import('@/components/LetterGlitch'), {
   loading: () => <StaticBackdrop />,
 })
 
-const detailPills = [
+const detailItems = [
   {
     label: 'When',
     value: 'Thursday, October 23 · Doors 6:00 PM',
@@ -45,19 +45,40 @@ const audience = [
   'Marketing and operations teams looking for automation that respects local values.',
 ]
 
+// Animation Variants
+const containerVariants = {
+  hidden: { opacity: 0 },
+  visible: {
+    opacity: 1,
+    transition: {
+      staggerChildren: 0.1,
+    },
+  },
+}
+
+const itemVariants = {
+  hidden: { y: 20, opacity: 0 },
+  visible: {
+    y: 0,
+    opacity: 1,
+    transition: {
+      duration: 0.5,
+      ease: 'easeOut',
+    },
+  },
+}
+
+const scrollFadeIn = {
+  initial: { opacity: 0, y: 30 },
+  whileInView: { opacity: 1, y: 0 },
+  viewport: { once: true, amount: 0.3 },
+  transition: { duration: 0.6, ease: 'easeOut' },
+}
+
 export default function EventLanding() {
-  const [animationsReady, setAnimationsReady] = useState(false)
-
-  useEffect(() => {
-    const frame = requestAnimationFrame(() => setAnimationsReady(true))
-    return () => cancelAnimationFrame(frame)
-  }, [])
-
-  const animate = (base: string, animation: string) =>
-    `${base} ${animationsReady ? `motion-safe:${animation}` : ''}`.trim()
-
   return (
     <div className="relative min-h-[100svh]">
+      {/* Background */}
       <div className="fixed inset-0 -z-10 pointer-events-none">
         <LetterGlitch
           glitchSpeed={20}
@@ -82,7 +103,13 @@ export default function EventLanding() {
         </div>
       </div>
 
-      <header className="pt-6 sm:pt-8">
+      {/* Header */}
+      <motion.header
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ duration: 0.8, delay: 0.1 }}
+        className="pt-6 sm:pt-8"
+      >
         <div className="mx-auto flex justify-center px-4">
           <div className="relative">
             <div className="absolute -inset-2 rounded-[2rem] bg-brand-ink/25 blur-lg" aria-hidden="true" />
@@ -104,20 +131,26 @@ export default function EventLanding() {
             </Link>
           </div>
         </div>
-      </header>
+      </motion.header>
 
+      {/* Main Content */}
       <main className="px-4 py-8 sm:px-6 sm:py-10 lg:px-8">
-        <div className={animate('mx-auto max-w-4xl text-center text-white/90 space-y-6', 'animate-fade-in-up')}>
-          <span className="inline-flex items-center justify-center rounded-md border border-white/20 bg-white/10 px-4 py-1 text-xs font-medium uppercase tracking-[0.35em] text-white/70">
+        <motion.div
+          variants={containerVariants}
+          initial="hidden"
+          animate="visible"
+          className="mx-auto max-w-4xl text-center text-white/90 space-y-6"
+        >
+          <motion.span variants={itemVariants} className="inline-flex items-center justify-center rounded-md border border-white/20 bg-white/10 px-4 py-1 text-xs font-medium uppercase tracking-[0.35em] text-white/70">
             Limited seats · RSVP closes October 16
-          </span>
-          <h1 className="text-3xl font-semibold tracking-tight sm:text-5xl">
+          </motion.span>
+          <motion.h1 variants={itemVariants} className="text-3xl font-semibold tracking-tight sm:text-5xl">
             AI in Northern BC: Business Readiness Seminar
-          </h1>
-          <p className="text-base leading-relaxed text-white/70 sm:text-lg">
+          </motion.h1>
+          <motion.p variants={itemVariants} className="text-base leading-relaxed text-white/70 sm:text-lg">
             Spend one evening translating AI headlines into practical action for northern businesses. See tools that respect regional realities, hear what’s working for your neighbours, and leave with a roadmap you can deploy next week.
-          </p>
-          <div className={animate('flex flex-col items-center justify-center gap-3 sm:flex-row sm:gap-4', 'animate-fade-in-up')}>
+          </motion.p>
+          <motion.div variants={itemVariants} className="flex flex-col items-center justify-center gap-3 sm:flex-row sm:gap-4">
             <Link
               href="#rsvp-form"
               className="w-full sm:w-auto rounded-lg bg-brand-sage px-8 py-3 text-base font-semibold text-black shadow-lg shadow-brand-sage/30 transition hover:bg-brand-light focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-sage"
@@ -130,18 +163,15 @@ export default function EventLanding() {
             >
               Ask Gabriel a question first
             </Link>
-          </div>
-        </div>
+          </motion.div>
+        </motion.div>
 
-        <div
-          className={animate(
-            'glass rounded-2xl border-white/10 p-4 mt-8 w-full max-w-3xl mx-auto',
-            'animate-fade-in-up'
-          )}
-          style={{ animationDelay: animationsReady ? '0.1s' : undefined }}
+        <motion.div
+          {...scrollFadeIn}
+          className="glass rounded-2xl border-white/10 p-4 mt-8 w-full max-w-3xl mx-auto"
         >
           <div className="grid grid-cols-1 sm:grid-cols-3 divide-y sm:divide-y-0 sm:divide-x divide-white/15">
-            {detailPills.map((item) => (
+            {detailItems.map((item) => (
               <div
                 key={item.label}
                 className="px-4 py-3 text-center"
@@ -153,13 +183,13 @@ export default function EventLanding() {
               </div>
             ))}
           </div>
-        </div>
+        </motion.div>
 
         <div className="mx-auto mt-10 grid max-w-5xl gap-8 lg:grid-cols-[minmax(0,3fr)_minmax(0,2fr)]">
-          <section
+          <motion.section
             id="rsvp-form"
-            className={animate('glass rounded-2xl p-5 sm:p-6 md:p-8', 'animate-fade-in-up')}
-            style={{ animationDelay: animationsReady ? '0.18s' : undefined }}
+            {...scrollFadeIn}
+            className="glass rounded-2xl p-5 sm:p-6 md:p-8"
           >
             <div className="space-y-6 text-white/80">
               <header className="space-y-2 text-left">
@@ -180,11 +210,11 @@ export default function EventLanding() {
                 and we’ll coordinate seats for your team.
               </div>
             </div>
-          </section>
+          </motion.section>
 
-          <aside
-            className={animate('rounded-2xl border border-white/10 bg-black/55 p-6 sm:p-8 text-white/80 backdrop-blur', 'animate-fade-in-up')}
-            style={{ animationDelay: animationsReady ? '0.28s' : undefined }}
+          <motion.aside
+            {...scrollFadeIn}
+            className="rounded-2xl border border-white/10 bg-black/55 p-6 sm:p-8 text-white/80 backdrop-blur"
           >
             <h2 className="text-xl font-semibold text-white sm:text-2xl">What you’ll take away</h2>
             <ul className="mt-4 space-y-3 text-sm leading-relaxed sm:text-base">
@@ -233,12 +263,12 @@ export default function EventLanding() {
                 ))}
               </ul>
             </div>
-          </aside>
+          </motion.aside>
         </div>
 
-        <section
-          className={animate('mx-auto mt-12 max-w-4xl rounded-2xl border border-white/10 bg-black/45 px-6 py-6 text-center text-white/80', 'animate-fade-in')}
-          style={{ animationDelay: animationsReady ? '0.4s' : undefined }}
+        <motion.section
+          {...scrollFadeIn}
+          className="mx-auto mt-12 max-w-4xl rounded-2xl border border-white/10 bg-black/45 px-6 py-6 text-center text-white/80"
         >
           <h2 className="text-xl font-semibold text-white sm:text-2xl">Let’s set your team up for momentum</h2>
           <p className="mt-3 text-sm leading-relaxed text-white/70 sm:text-base">
@@ -260,11 +290,11 @@ export default function EventLanding() {
               Learn about Evergreen Web Solutions
             </Link>
           </div>
-        </section>
+        </motion.section>
 
-        <footer
-          className={animate('mt-16 border-t border-white/10 bg-black/60 py-8 text-sm text-white/60', 'animate-fade-in')}
-          style={{ animationDelay: animationsReady ? '0.5s' : undefined }}
+        <motion.footer
+          {...scrollFadeIn}
+          className="mt-16 border-t border-white/10 bg-black/60 py-8 text-sm text-white/60"
         >
           <div className="mx-auto flex max-w-5xl flex-col gap-4 px-6 sm:flex-row sm:items-center sm:justify-between">
             <div>
@@ -298,7 +328,7 @@ export default function EventLanding() {
               <span>© {new Date().getFullYear()} Evergreen Web Solutions</span>
             </div>
           </div>
-        </footer>
+        </motion.footer>
       </main>
     </div>
   )
