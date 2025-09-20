@@ -708,18 +708,16 @@ export default function CampaignControls({ initialData, defaults }: { initialDat
           />
         )}
         {activeTab === 'templates' && (
-          <div className="debug-templates-tab">
-            <TemplatesView
-              templates={templates}
-              draft={templateDraft}
-              setDraft={setTemplateDraft}
-              onEdit={(template) => setTemplateDraft({ ...template, textBody: template.textBody ?? '' })}
-              onDuplicate={duplicateTemplate}
-              onRemove={deleteTemplate}
-              onSubmit={saveTemplate}
-              isSaving={isSaving}
-            />
-          </div>
+          <TemplatesView
+            templates={templates}
+            draft={templateDraft}
+            setDraft={setTemplateDraft}
+            onEdit={(template) => setTemplateDraft({ ...template, textBody: template.textBody ?? '' })}
+            onDuplicate={duplicateTemplate}
+            onRemove={deleteTemplate}
+            onSubmit={saveTemplate}
+            isSaving={isSaving}
+          />
         )}
       </div>
     </div>
