@@ -677,6 +677,35 @@ export async function runSchedule(scheduleId: string, options: SendOptions = {})
       businessId: member.businessId,
       inviteToken: member.inviteToken,
     })
+
+    if (!inviteToken) {
+      const message = `Invite token missing for business ${member.businessId}`
+      await prisma.campaignSend.upsert({
+        where: { scheduleId_businessId: { scheduleId, businessId: member.businessId } },
+        create: {
+          scheduleId,
+          groupId: schedule.groupId,
+          templateId: schedule.templateId,
+          businessId: member.businessId,
+          businessName: member.businessName ?? null,
+          email: member.primaryEmail,
+          inviteToken: null,
+          inviteLink: null,
+          status: CampaignSendStatus.SKIPPED,
+          error: message,
+          meta: {},
+        },
+        update: {
+          inviteToken: null,
+          inviteLink: null,
+          status: CampaignSendStatus.SKIPPED,
+          error: message,
+          updatedAt: new Date(),
+        },
+      })
+      resultLog.push({ businessId: member.businessId, email: member.primaryEmail, status: CampaignSendStatus.SKIPPED, error: message })
+      continue
+    }
     const inviteLink = inviteLinkFromToken(inviteToken)
     const context = {
       business_name: member.businessName ?? 'Business team',
@@ -791,7 +820,8 @@ async function ensureMemberInviteToken(member: { groupId: string; businessId: st
   const resp = await fetchLeadMineBusinesses({ ids: [member.businessId], createMissing: true })
   const business = resp.data[0]
   if (!business?.invite?.token) {
-    throw new Error(`Invite token missing for business ${member.businessId}`)
+    console.warn(`Invite token missing for business ${member.businessId}`)
+    return null
   }
   const inviteToken = business.invite.token
   await prisma.audienceMember.update({ where: { groupId_businessId: { groupId: member.groupId, businessId: member.businessId } }, data: { inviteToken } }).catch(() => null)
