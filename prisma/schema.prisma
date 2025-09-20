@@ -148,6 +148,7 @@ model Campaign {
   updatedAt   DateTime       @updatedAt
 
   schedules CampaignSchedule[]
+  settings  CampaignSettings?
 }
 
 model AudienceGroup {
@@ -242,4 +243,71 @@ model CampaignSend {
   @@index([businessId])
   @@index([status])
   @@unique([scheduleId, businessId])
+}
+
+// ---------- Enums ----------
+enum EmailJobStatus {
+  scheduled
+  processing
+  sent
+  failed
+}
+
+enum EmailEventType {
+  send_attempt
+  sent
+  failed
+  bounce
+  complaint
+  opened
+  clicked
+  paused
+  resumed
+  schedule_updated
+}
+
+// ---------- Models ----------
+model CampaignSettings {
+  campaignId        String   @id
+  windows           Json     // [{ start: "09:30", end: "11:45" }, ...]
+  throttlePerMinute Int      @default(60)
+  maxConcurrent     Int      @default(50)
+  perDomain         Json?    // { "gmail.com": { "tpm": 20 }, ... }
+  quietHours        Json?    // [{ start: "22:00", end: "07:00" }]
+  updatedAt         DateTime @updatedAt
+  paused            Boolean  @default(false) // 👈 NEW
+
+  campaign Campaign @relation(fields: [campaignId], references: [id], onDelete: Cascade)
+}
+
+model EmailJob {
+  id                   String          @id @default(cuid())
+  campaignId           String
+  recipientEmail       String
+  recipientId          String?
+  sendAt               DateTime
+  status               EmailJobStatus  @default(scheduled)
+  attempts             Int             @default(0)
+  error                String?
+  processingStartedAt  DateTime?
+  sentAt               DateTime?
+  providerMessageId    String?
+  createdAt            DateTime        @default(now())
+  updatedAt            DateTime        @updatedAt
+
+  events EmailEvent[]
+
+  @@index([campaignId, status, sendAt])
+}
+
+model EmailEvent {
+  id        String          @id @default(cuid())
+  jobId     String
+  type      EmailEventType
+  meta      Json?
+  createdAt DateTime        @default(now())
+
+  job EmailJob @relation(fields: [jobId], references: [id], onDelete: Cascade)
+
+  @@index([jobId, type, createdAt])
 }
