@@ -81,7 +81,8 @@ export async function getPrivacyPolicy(): Promise<{
     })
 
     if (!response.ok) {
-      throw new Error(`Failed to load policy (${response.status})`)
+      console.warn(`Privacy fetch failed (${response.status}). Using fallback.`);
+      return { policy: fallbackPolicy, resolvedFrom: "fallback" };
     }
 
     const policy = (await response.json()) as PrivacyPolicy
