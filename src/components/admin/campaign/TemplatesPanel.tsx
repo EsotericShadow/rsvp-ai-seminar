@@ -35,35 +35,25 @@ type TemplatesPanelProps = {
 
 export function TemplatesPanel({ templates, draft, setDraft, onEdit, onDuplicate, onRemove, onSubmit, isSaving }: TemplatesPanelProps) {
   return (
-    <section className="space-y-6 rounded-2xl border border-white/10 bg-white/5 p-6">
-      <header className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
-        <div>
-          <h2 className="text-xl font-semibold text-white">Templates</h2>
-          <p className="text-sm text-neutral-400">Craft reusable content, preview tokens in real time, and duplicate variations quickly.</p>
-        </div>
-        {draft.id ? <span className="rounded-full bg-emerald-500/20 px-3 py-1 text-xs font-medium text-emerald-200">Editing {draft.name}</span> : null}
-      </header>
-
-      <div className="flex flex-col gap-6 lg:flex-row">
-        <aside className="w-full lg:max-w-sm lg:flex-none">
-          <TemplatesSidebar
-            draft={draft}
-            setDraft={setDraft}
-            onSubmit={onSubmit}
-            isSaving={isSaving}
-          />
-        </aside>
-        <main className="w-full flex-1 min-w-0">
-          <TemplatesMain
-            templates={templates}
-            draft={draft}
-            onEdit={onEdit}
-            onDuplicate={onDuplicate}
-            onRemove={onRemove}
-          />
-        </main>
-      </div>
-    </section>
+    <div className="flex flex-col gap-6 lg:flex-row">
+      <aside className="w-full lg:max-w-sm lg:flex-none">
+        <TemplatesSidebar
+          draft={draft}
+          setDraft={setDraft}
+          onSubmit={onSubmit}
+          isSaving={isSaving}
+        />
+      </aside>
+      <main className="w-full flex-1 min-w-0">
+        <TemplatesMain
+          templates={templates}
+          draft={draft}
+          onEdit={onEdit}
+          onDuplicate={onDuplicate}
+          onRemove={onRemove}
+        />
+      </main>
+    </div>
   )
 }
 
@@ -74,7 +64,17 @@ function TemplatesSidebar({ draft, setDraft, onSubmit, isSaving }: {
   isSaving: boolean
 }) {
   return (
-    <div className="space-y-4 rounded-2xl border border-white/10 bg-neutral-900/70 p-4 shadow-sm">
+    <div className="flex h-full flex-col gap-3 rounded-2xl border border-white/10 bg-white/5 p-4">
+      <header className="flex flex-wrap items-center justify-between gap-3">
+        <div>
+          <h2 className="font-semibold text-white">Templates</h2>
+          <p className="text-xs text-neutral-400">Create and manage email templates.</p>
+        </div>
+        {draft.id ? (
+          <span className="rounded-full bg-emerald-500/20 px-3 py-1 text-xs font-medium text-emerald-200">Editing {draft.name}</span>
+        ) : null}
+      </header>
+
       <form
         onSubmit={(event) => {
           event.preventDefault()
@@ -159,7 +159,7 @@ function TemplatesMain({ templates, draft, onEdit, onDuplicate, onRemove }: {
   const resetPreviewContext = () => setPreviewContext(DEFAULT_PREVIEW_CONTEXT)
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 rounded-2xl border border-white/10 bg-white/5 p-6">
       {/* Live Preview Section */}
       <div className="rounded-xl border border-white/10 bg-black/30 p-4">
         <header className="flex items-center justify-between mb-4">
