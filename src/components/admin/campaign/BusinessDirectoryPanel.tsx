@@ -245,7 +245,7 @@ export function BusinessDirectoryPanel({ onAddMember, onAddMany, existingMemberI
             Browse verified licence holders, filter by attributes, and add them to your audience. Start with the most recent invite activity or refine using tags and statuses.
           </p>
         </div>
-        <div className="flex items-center gap-2">
+        <div className="flex flex-wrap items-center gap-2">
           <button
             onClick={handleAddSelected}
             disabled={!selectedIds.length}
@@ -253,35 +253,38 @@ export function BusinessDirectoryPanel({ onAddMember, onAddMany, existingMemberI
           >
             Add selected ({selectedIds.length})
           </button>
-          <button
-            onClick={handleSelectVisible}
-            disabled={!selectableBusinessIds.length}
-            className="rounded-full border border-white/10 px-3 py-2 text-xs text-neutral-300 hover:border-white/30 disabled:cursor-not-allowed disabled:opacity-60"
-          >
-            Select all visible
-          </button>
-          <button
-            onClick={handleSelectAll}
-            disabled={!selectableBusinessIds.length}
-            className="rounded-full border border-white/10 px-3 py-2 text-xs text-neutral-300 hover:border-white/30 disabled:cursor-not-allowed disabled:opacity-60"
-          >
-            Select all results
-          </button>
-          <button
-            onClick={() => {
-              setSelectedIds([])
-              setSelectAllResults(false)
-            }}
-            disabled={!selectedIds.length}
-            className="rounded-full border border-white/10 px-3 py-2 text-xs text-neutral-300 hover:border-white/30 disabled:cursor-not-allowed disabled:opacity-60"
-          >
-            Clear selection
-          </button>
+          <div className="flex flex-wrap gap-2">
+            <button
+              onClick={handleSelectVisible}
+              disabled={!selectableBusinessIds.length}
+              className="rounded-full border border-white/10 px-3 py-2 text-xs text-neutral-300 hover:border-white/30 disabled:cursor-not-allowed disabled:opacity-60"
+            >
+              Select visible
+            </button>
+            <button
+              onClick={handleSelectAll}
+              disabled={!selectableBusinessIds.length}
+              className="rounded-full border border-white/10 px-3 py-2 text-xs text-neutral-300 hover:border-white/30 disabled:cursor-not-allowed disabled:opacity-60"
+            >
+              Select all
+            </button>
+            <button
+              onClick={() => {
+                setSelectedIds([])
+                setSelectAllResults(false)
+              }}
+              disabled={!selectedIds.length}
+              className="rounded-full border border-white/10 px-3 py-2 text-xs text-neutral-300 hover:border-white/30 disabled:cursor-not-allowed disabled:opacity-60"
+            >
+              Clear
+            </button>
+          </div>
         </div>
       </header>
 
-      <div className="grid gap-3 md:grid-cols-[minmax(0,1fr),220px]">
-        <div className="flex flex-col gap-3">
+      <div className="space-y-4">
+        {/* Search and Quick Filters */}
+        <div className="space-y-3">
           <div className="relative">
             <input
               value={searchInput}
@@ -310,27 +313,29 @@ export function BusinessDirectoryPanel({ onAddMember, onAddMany, existingMemberI
                   : 'border-white/10 text-neutral-300 hover:border-white/30'
               }`}
             >
-              Recent invite activity ({facets.inviteActivity.withActivity})
+              Recent activity ({facets.inviteActivity.withActivity})
             </button>
             {activeFilterCount > 0 ? (
               <button
                 onClick={clearFilters}
                 className="rounded-full border border-white/10 px-3 py-1 text-xs text-neutral-300 hover:border-white/30"
               >
-                Clear filters ({activeFilterCount})
+                Clear ({activeFilterCount})
               </button>
             ) : null}
             {summary ? (
               <span className="rounded-full border border-white/10 px-3 py-1 text-xs text-neutral-400">
-                Showing {businesses.length} of {summary.filtered} matches ({summary.total} total)
+                {businesses.length} of {summary.filtered} ({summary.total} total)
               </span>
             ) : null}
           </div>
         </div>
-        <div className="grid gap-2 text-xs text-neutral-200">
-          <div className="space-y-1">
-            <span className="text-neutral-400">Lead status</span>
-            <div className="-mx-1 flex flex-wrap gap-1.5">
+
+        {/* Advanced Filters */}
+        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+          <div className="space-y-2">
+            <span className="text-xs text-neutral-400">Lead status</span>
+            <div className="flex flex-wrap gap-1.5">
               {facets.statuses.map((option) => (
                 <button
                   key={option.value}
@@ -346,9 +351,9 @@ export function BusinessDirectoryPanel({ onAddMember, onAddMany, existingMemberI
               ))}
             </div>
           </div>
-          <div className="space-y-1">
-            <span className="text-neutral-400">Tag</span>
-            <div className="-mx-1 flex flex-wrap gap-1.5">
+          <div className="space-y-2">
+            <span className="text-xs text-neutral-400">Tags</span>
+            <div className="flex flex-wrap gap-1.5">
               {facets.tags.map((option) => (
                 <button
                   key={option.value}
@@ -364,21 +369,23 @@ export function BusinessDirectoryPanel({ onAddMember, onAddMany, existingMemberI
               ))}
             </div>
           </div>
-          <label className="flex flex-col gap-1">
-            <span className="text-neutral-400">Sort by</span>
-            <select
-              value={sort}
-              onChange={(event) => setSort(event.target.value as SortOption)}
-              className="rounded-md border border-white/10 bg-black/60 px-2 py-1 text-white focus:border-emerald-400 focus:outline-none"
-            >
-              <option value="recent_activity">Most recent activity</option>
-              <option value="name_asc">Name (A–Z)</option>
-              <option value="name_desc">Name (Z–A)</option>
-              <option value="emails_sent_desc">Emails sent (high → low)</option>
-              <option value="visits_desc">Visits (high → low)</option>
-              <option value="rsvps_desc">RSVPs (high → low)</option>
-            </select>
-          </label>
+          <div className="space-y-2">
+            <label className="flex flex-col gap-1">
+              <span className="text-xs text-neutral-400">Sort by</span>
+              <select
+                value={sort}
+                onChange={(event) => setSort(event.target.value as SortOption)}
+                className="rounded-md border border-white/10 bg-black/60 px-2 py-1 text-xs text-white focus:border-emerald-400 focus:outline-none"
+              >
+                <option value="recent_activity">Most recent activity</option>
+                <option value="name_asc">Name (A–Z)</option>
+                <option value="name_desc">Name (Z–A)</option>
+                <option value="emails_sent_desc">Emails sent (high → low)</option>
+                <option value="visits_desc">Visits (high → low)</option>
+                <option value="rsvps_desc">RSVPs (high → low)</option>
+              </select>
+            </label>
+          </div>
         </div>
       </div>
 
@@ -386,9 +393,93 @@ export function BusinessDirectoryPanel({ onAddMember, onAddMany, existingMemberI
         <div className="rounded-lg border border-red-500/40 bg-red-500/10 px-4 py-3 text-sm text-red-200">{error}</div>
       ) : null}
 
-      <div className="overflow-hidden rounded-lg border border-white/10">
-        <div className="w-full overflow-x-auto">
-          <table className="min-w-[960px] divide-y divide-white/10 text-sm text-neutral-200">
+      {/* Mobile Card View */}
+      <div className="block space-y-3 sm:hidden">
+        {businesses.map((biz) => {
+          const alreadyMember = existingMemberSet.has(biz.id)
+          const selected = selectedIds.includes(biz.id)
+          const invite = biz.invite
+          const lastActivity = latestActivity(invite)
+          return (
+            <div key={biz.id} className={`rounded-lg border border-white/10 bg-black/30 p-4 ${alreadyMember ? 'opacity-60' : ''}`}>
+              <div className="flex items-start justify-between gap-3">
+                <div className="flex-1 min-w-0">
+                  <div className="flex items-center gap-2 mb-2">
+                    <input
+                      type="checkbox"
+                      className="h-4 w-4 rounded border-white/20 bg-black/40 text-emerald-500 focus:ring-emerald-400 flex-shrink-0"
+                      checked={selected}
+                      disabled={alreadyMember}
+                      onChange={() => toggleSelection(biz.id)}
+                    />
+                    <h3 className="font-medium text-white truncate">{biz.name ?? 'Unknown business'}</h3>
+                  </div>
+                  
+                  <div className="space-y-1 text-xs">
+                    <p className="text-white">{biz.contact.primaryEmail || biz.contact.alternateEmail || 'No email'}</p>
+                    {biz.contact.alternateEmail && (
+                      <p className="text-neutral-500">Alt: {biz.contact.alternateEmail}</p>
+                    )}
+                    {biz.contact.contactPerson && (
+                      <p className="text-neutral-500">Contact: {biz.contact.contactPerson}</p>
+                    )}
+                  </div>
+
+                  <div className="mt-2 flex flex-wrap gap-1">
+                    <span className="rounded-full bg-white/10 px-2 py-1 text-[11px] uppercase tracking-wide text-neutral-300">
+                      {biz.lead?.status ?? 'UNASSIGNED'}
+                    </span>
+                    {(biz.contact.tags ?? []).slice(0, 3).map((tag) => (
+                      <span key={tag} className="rounded-full bg-white/10 px-2 py-1 text-[11px] text-neutral-300">
+                        {tag}
+                      </span>
+                    ))}
+                    {(biz.contact.tags?.length ?? 0) > 3 && (
+                      <span className="text-[11px] text-neutral-500">+{(biz.contact.tags?.length ?? 0) - 3} more</span>
+                    )}
+                  </div>
+
+                  {invite && (
+                    <div className="mt-2 text-xs text-neutral-300">
+                      <p>Emails: {invite.emailsSent} • Visits: {invite.visitsCount} • RSVPs: {invite.rsvpsCount}</p>
+                      <p className="text-neutral-500">Last: {formatDate(lastActivity)}</p>
+                    </div>
+                  )}
+
+                  {biz.website && (
+                    <a
+                      href={biz.website}
+                      target="_blank"
+                      rel="noreferrer"
+                      className="mt-1 block text-xs text-emerald-300 hover:text-emerald-200 truncate"
+                    >
+                      {biz.website.replace(/^https?:\/\//, '')}
+                    </a>
+                  )}
+                </div>
+
+                <button
+                  onClick={() => onAddMember(biz)}
+                  disabled={alreadyMember}
+                  className="rounded-full border border-emerald-400 px-3 py-1 text-xs text-emerald-200 hover:bg-emerald-500/10 disabled:cursor-not-allowed disabled:border-white/10 disabled:text-neutral-500 flex-shrink-0"
+                >
+                  {alreadyMember ? 'Added' : 'Add'}
+                </button>
+              </div>
+            </div>
+          )
+        })}
+        {!businesses.length && !isLoading && (
+          <div className="rounded-lg border border-dashed border-white/20 bg-black/30 p-6 text-center text-sm text-neutral-400">
+            No businesses found. Try adjusting filters or search terms.
+          </div>
+        )}
+      </div>
+
+      {/* Desktop Table View */}
+      <div className="hidden sm:block overflow-hidden rounded-lg border border-white/10">
+        <div className="w-full overflow-x-auto mobile-scroll mobile-touch">
+          <table className="min-w-[800px] divide-y divide-white/10 text-sm text-neutral-200">
           <thead className="bg-white/5 text-xs uppercase text-neutral-400">
             <tr>
               <th className="px-3 py-2 text-left">
@@ -417,7 +508,7 @@ export function BusinessDirectoryPanel({ onAddMember, onAddMany, existingMemberI
               <th className="px-3 py-2 text-left">Business</th>
               <th className="px-3 py-2 text-left">Contact</th>
               <th className="px-3 py-2 text-left">Status & Tags</th>
-              <th className="px-3 py-2 text-left">Invite activity</th>
+              <th className="px-3 py-2 text-left">Activity</th>
               <th className="px-3 py-2 text-left">Actions</th>
             </tr>
           </thead>
@@ -483,13 +574,13 @@ export function BusinessDirectoryPanel({ onAddMember, onAddMany, existingMemberI
                   <td className="px-3 py-3 align-top text-xs">
                     {invite ? (
                       <div className="space-y-1">
-                        <p className="text-neutral-300">Emails sent: {invite.emailsSent}</p>
+                        <p className="text-neutral-300">Emails: {invite.emailsSent}</p>
                         <p className="text-neutral-300">Visits: {invite.visitsCount}</p>
                         <p className="text-neutral-300">RSVPs: {invite.rsvpsCount}</p>
-                        <p className="text-neutral-500">Last touch: {formatDate(lastActivity)}</p>
+                        <p className="text-neutral-500">Last: {formatDate(lastActivity)}</p>
                       </div>
                     ) : (
-                      <p className="text-neutral-500">No invite activity yet</p>
+                      <p className="text-neutral-500">No activity yet</p>
                     )}
                   </td>
                   <td className="px-3 py-3 align-top text-xs">

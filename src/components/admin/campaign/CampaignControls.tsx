@@ -645,20 +645,22 @@ export default function CampaignControls({ initialData, defaults }: { initialDat
         </div>
       ) : null}
 
-      <nav className="flex flex-wrap gap-2 border-b border-white/10 pb-4">
-        {tabs.map((tab) => (
-          <button
-            key={tab.id}
-            onClick={() => setActiveTab(tab.id)}
-            className={`rounded-full px-4 py-2 text-sm font-medium transition ${
-              activeTab === tab.id
-                ? 'bg-emerald-500 text-emerald-950 shadow'
-                : 'bg-white/5 text-neutral-300 hover:bg-white/10'
-            }`}
-          >
-            {tab.label}
-          </button>
-        ))}
+      <nav className="border-b border-white/10 pb-4">
+        <div className="flex gap-2 overflow-x-auto pb-2 scrollbar-thin scrollbar-track-transparent scrollbar-thumb-white/20 mobile-scroll mobile-touch">
+          {tabs.map((tab) => (
+            <button
+              key={tab.id}
+              onClick={() => setActiveTab(tab.id)}
+              className={`whitespace-nowrap rounded-full px-4 py-2 text-sm font-medium transition mobile-touch ${
+                activeTab === tab.id
+                  ? 'bg-emerald-500 text-emerald-950 shadow'
+                  : 'bg-white/5 text-neutral-300 hover:bg-white/10'
+              }`}
+            >
+              {tab.label}
+            </button>
+          ))}
+        </div>
       </nav>
 
       <div className="mt-6">
@@ -778,11 +780,11 @@ function CampaignsView({
   runningStep: { id: string; mode: 'preview' | 'send' } | null
 }) {
   return (
-    <div className="flex flex-col gap-6 xl:flex-row">
-      <aside className="w-full xl:max-w-xs xl:flex-none">
+    <div className="flex flex-col gap-6 lg:flex-row">
+      <aside className="w-full lg:max-w-sm lg:flex-none">
         <CampaignsPanel campaigns={campaigns} onSelect={onSelectCampaign} selectedId={draft.id} />
       </aside>
-      <main className="w-full flex-1">
+      <main className="w-full flex-1 min-w-0">
         <SequenceEditor
           draft={draft}
           setDraft={setDraft}
