@@ -74,7 +74,7 @@ export async function getPrivacyPolicy(): Promise<{
 
   try {
     const response = await fetch(url, {
-      cache: "no-store",
+      cache: "force-cache",
       headers: {
         Accept: "application/json",
       },
