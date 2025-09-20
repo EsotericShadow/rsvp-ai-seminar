@@ -1,5 +1,5 @@
 import EventLanding from "@/components/EventLanding"
 
-export default function HomePage() {
+export default function EventPage() {
   return <EventLanding />
 }

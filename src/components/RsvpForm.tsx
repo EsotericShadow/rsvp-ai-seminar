@@ -74,11 +74,11 @@ function PhoneField({
         onChange={(e) => setPart("a", e.target.value, e.currentTarget)}
         onPaste={handlePaste}
         onBlur={onBlur}
-        className="h-12 w-16 rounded-lg border border-white/20 bg-white/15 px-2 text-center text-base text-white placeholder:text-gray-300 focus:border-brand-sage focus:outline-none focus:ring-2 focus:ring-brand-sage/60 sm:h-10 sm:text-sm"
+        className="h-12 w-16 rounded-lg border border-gray-300 bg-white px-2 text-center text-base text-gray-900 placeholder:text-gray-400 focus:border-brand-sage focus:outline-none focus:ring-2 focus:ring-brand-sage/60 sm:h-10 sm:text-sm"
         placeholder="555"
         aria-label="Area code"
       />
-      <span className="text-lg text-white/70 sm:text-base">-</span>
+      <span className="text-lg text-gray-700 sm:text-base">-</span>
       <input
         id={`${id}-b`}
         inputMode="numeric"
@@ -87,11 +87,11 @@ function PhoneField({
         onChange={(e) => setPart("b", e.target.value, e.currentTarget)}
         onPaste={handlePaste}
         onBlur={onBlur}
-        className="h-12 w-16 rounded-lg border border-white/20 bg-white/15 px-2 text-center text-base text-white placeholder:text-gray-300 focus:border-brand-sage focus:outline-none focus:ring-2 focus:ring-brand-sage/60 sm:h-10 sm:text-sm"
+        className="h-12 w-16 rounded-lg border border-gray-300 bg-white px-2 text-center text-base text-gray-900 placeholder:text-gray-400 focus:border-brand-sage focus:outline-none focus:ring-2 focus:ring-brand-sage/60 sm:h-10 sm:text-sm"
         placeholder="123"
         aria-label="Prefix"
       />
-      <span className="text-lg text-white/70 sm:text-base">-</span>
+      <span className="text-lg text-gray-700 sm:text-base">-</span>
       <input
         id={`${id}-c`}
         inputMode="numeric"
@@ -100,7 +100,7 @@ function PhoneField({
         onChange={(e) => setPart("c", e.target.value, e.currentTarget)}
         onPaste={handlePaste}
         onBlur={onBlur}
-        className="h-12 w-20 rounded-lg border border-white/20 bg-white/15 px-2 text-center text-base text-white placeholder:text-gray-300 focus:border-brand-sage focus:outline-none focus:ring-2 focus:ring-brand-sage/60 sm:h-10 sm:text-sm"
+        className="h-12 w-20 rounded-lg border border-gray-300 bg-white px-2 text-center text-base text-gray-900 placeholder:text-gray-400 focus:border-brand-sage focus:outline-none focus:ring-2 focus:ring-brand-sage/60 sm:h-10 sm:text-sm"
         placeholder="4567"
         aria-label="Line number"
       />
@@ -131,7 +131,7 @@ export function RsvpForm() {
     },
   });
 
-  const fieldInputClass = 'mt-1 block w-full rounded-lg border border-white/15 bg-white/10 px-3 py-3 text-base text-white placeholder:text-white/50 shadow-[0_8px_20px_rgba(0,0,0,0.25)] focus:border-brand-sage focus:ring-2 focus:ring-brand-sage/60 sm:py-2.5 sm:text-sm';
+  const fieldInputClass = 'mt-1 block w-full rounded-lg border border-gray-300 bg-white px-3 py-3 text-base text-gray-900 placeholder:text-gray-400 shadow-sm focus:border-brand-sage focus:ring-2 focus:ring-brand-sage/60 sm:py-2.5 sm:text-sm';
 
   const validateStep = async (idx: number) => {
     if (idx === 0) {
@@ -269,12 +269,12 @@ export function RsvpForm() {
     }
   }
 
-  const stepsContent = [
+  const stepsContent: JSX.Element[] = [
     // Step 1: Contact
     <div className="space-y-4" key="step1">
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <div>
-          <label htmlFor="firstName" className="block text-sm font-medium text-gray-200">First Name</label>
+          <label htmlFor="firstName" className="block text-sm font-medium text-gray-800">First Name</label>
           <input
             id="firstName"
             autoComplete="given-name"
@@ -284,7 +284,7 @@ export function RsvpForm() {
           {form.formState.errors.firstName && <p className="mt-1 text-sm text-red-600">{form.formState.errors.firstName.message}</p>}
         </div>
         <div>
-          <label htmlFor="lastName" className="block text-sm font-medium text-gray-200">Last Name</label>
+          <label htmlFor="lastName" className="block text-sm font-medium text-gray-800">Last Name</label>
           <input
             id="lastName"
             autoComplete="family-name"
@@ -295,7 +295,7 @@ export function RsvpForm() {
         </div>
       </div>
       <div>
-        <label htmlFor="email" className="block text-sm font-medium text-gray-200">Email</label>
+        <label htmlFor="email" className="block text-sm font-medium text-gray-800">Email</label>
         <input
           type="email"
           id="email"
@@ -306,7 +306,7 @@ export function RsvpForm() {
         {form.formState.errors.email && <p className="mt-1 text-sm text-red-600">{form.formState.errors.email.message}</p>}
       </div>
       <div>
-        <label htmlFor="phone" className="block text-sm font-medium text-gray-200">Phone</label>
+        <label htmlFor="phone" className="block text-sm font-medium text-gray-800">Phone</label>
         <Controller
           name="phone"
           control={form.control}
@@ -326,7 +326,7 @@ export function RsvpForm() {
     <div className="space-y-4" key="step2">
        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 items-end">
         <div>
-          <label htmlFor="attendanceStatus" className="block text-sm font-medium text-gray-200">Will you attend?</label>
+          <label htmlFor="attendanceStatus" className="block text-sm font-medium text-gray-800">Will you attend?</label>
           <select
             id="attendanceStatus"
             {...form.register('attendanceStatus')}
@@ -340,7 +340,7 @@ export function RsvpForm() {
         </div>
         {form.watch('attendanceStatus') === 'YES' && (
           <div>
-            <label htmlFor="attendeeCount" className="block text-sm font-medium text-gray-200">Number of Attendees</label>
+            <label htmlFor="attendeeCount" className="block text-sm font-medium text-gray-800">Number of Attendees</label>
             <input
               type="number"
               id="attendeeCount"
@@ -357,7 +357,7 @@ export function RsvpForm() {
     <div className="space-y-4" key="step3">
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4 items-end">
         <div>
-          <label htmlFor="dietaryPreference" className="block text-sm font-medium text-gray-200">Dietary Preferences</label>
+          <label htmlFor="dietaryPreference" className="block text-sm font-medium text-gray-800">Dietary Preferences</label>
           <select
             id="dietaryPreference"
             {...form.register('dietaryPreference')}
@@ -372,7 +372,7 @@ export function RsvpForm() {
         </div>
         {form.watch('dietaryPreference') === 'OTHER' && (
           <div>
-            <label htmlFor="dietaryOther" className="block text-sm font-medium text-gray-200">Please specify</label>
+            <label htmlFor="dietaryOther" className="block text-sm font-medium text-gray-800">Please specify</label>
             <input
               id="dietaryOther"
               {...form.register('dietaryOther')}
@@ -383,7 +383,7 @@ export function RsvpForm() {
         )}
         </div>
       <div>
-        <label htmlFor="accessibilityNeeds" className="block text-sm font-medium text-gray-200">Accessibility Needs (Optional)</label>
+        <label htmlFor="accessibilityNeeds" className="block text-sm font-medium text-gray-800">Accessibility Needs (Optional)</label>
         <textarea
           id="accessibilityNeeds"
           rows={3}
@@ -397,7 +397,7 @@ export function RsvpForm() {
     <div className="space-y-4" key="step4">
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4 items-end">
         <div>
-          <label htmlFor="referralSource" className="block text-sm font-medium text-gray-200">How did you hear about us?</label>
+          <label htmlFor="referralSource" className="block text-sm font-medium text-gray-800">How did you hear about us?</label>
           <select
             id="referralSource"
             {...form.register('referralSource')}
@@ -413,7 +413,7 @@ export function RsvpForm() {
         </div>
         {form.watch('referralSource') === 'OTHER' && (
           <div>
-            <label htmlFor="referralOther" className="block text-sm font-medium text-gray-200">Please specify</label>
+            <label htmlFor="referralOther" className="block text-sm font-medium text-gray-800">Please specify</label>
             <input
               id="referralOther"
               {...form.register('referralOther')}
@@ -437,7 +437,7 @@ export function RsvpForm() {
           />
         </div>
         <div className="ml-3 text-sm">
-          <label htmlFor="wantsResources" className="font-medium text-gray-200">Send me the free AI workflows PDF after the event</label>
+          <label htmlFor="wantsResources" className="font-medium text-gray-800">Send me the free AI workflows PDF after the event</label>
         </div>
       </div>
       <div className="relative flex items-start">
@@ -450,11 +450,11 @@ export function RsvpForm() {
           />
         </div>
         <div className="ml-3 text-sm">
-          <label htmlFor="wantsAudit" className="font-medium text-gray-200">Interested in a free AI business audit?</label>
+          <label htmlFor="wantsAudit" className="font-medium text-gray-800">Interested in a free AI business audit?</label>
         </div>
       </div>
       <div>
-        <label htmlFor="learningGoal" className="block text-sm font-medium text-gray-200">One thing you want to learn (Optional)</label>
+        <label htmlFor="learningGoal" className="block text-sm font-medium text-gray-800">One thing you want to learn (Optional)</label>
         <textarea
           id="learningGoal"
           rows={3}
@@ -479,7 +479,7 @@ export function RsvpForm() {
             <button
               type="button"
               onClick={onPrev}
-              className="w-full inline-flex justify-center rounded-lg border border-transparent bg-gray-600 px-4 py-3 text-base font-medium text-white shadow-sm hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500 sm:text-sm"
+              className="w-full inline-flex justify-center rounded-lg border border-transparent bg-gray-200 px-4 py-3 text-base font-medium text-gray-900 shadow-sm hover:bg-gray-300 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500 sm:text-sm"
             >
               Previous
             </button>
@@ -489,15 +489,14 @@ export function RsvpForm() {
           {currentStep < stepsContent.length - 1 ? (
             <button
               type="button"
-              onClick={onNext}
-              className="w-full inline-flex justify-center rounded-lg border border-transparent bg-brand-ink px-4 py-3 text-base font-medium text-white shadow-sm hover:bg-brand-mid focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-brand-sage sm:text-sm"
+              className="w-full inline-flex justify-center rounded-lg border border-transparent bg-brand-sage px-4 py-3 text-base font-medium text-gray-900 shadow-sm hover:bg-brand-light focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-brand-sage sm:text-sm"
             >
               Next
             </button>
           ) : (
             <button
               type="submit"
-              className="w-full inline-flex justify-center rounded-lg border border-transparent bg-brand-ink px-4 py-3 text-base font-medium text-white shadow-sm hover:bg-brand-mid focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-brand-sage sm:text-sm"
+              className="w-full inline-flex justify-center rounded-lg border border-transparent bg-brand-sage px-4 py-3 text-base font-medium text-gray-900 shadow-sm hover:bg-brand-light focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-brand-sage sm:text-sm"
               disabled={form.formState.isSubmitting}
             >
               {form.formState.isSubmitting ? 'Submitting...' : 'Submit RSVP'}

@@ -18,7 +18,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" suppressHydrationWarning>
-      <body className={`min-h-screen bg-brand-light font-sans antialiased ${inter.variable}`}>
+      <body className={`min-h-screen bg-white font-sans antialiased ${inter.variable}`}>
         {children}
         <SiteAnalytics />
       </body>
