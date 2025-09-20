@@ -24,62 +24,50 @@ model RSVP {
   wantsAudit         Boolean  @default(false)
   learningGoal       String?
   createdAt          DateTime @default(now())
-
-  // NEW: analytics enrichments (all optional)
-  visitorId   String?
-  sessionId   String?
-  referrer    String?
-  eid         String?
-  utmSource   String?
-  utmMedium   String?
-  utmCampaign String?
-  utmTerm     String?
-  utmContent  String?
-  userAgent   String?
-  language    String?
-  tz          String?
-  country     String?
-  region      String?
-  city        String?
-  ipHash      String?
-  screenW     Int?
-  screenH     Int?
-  dpr         Float?
-  platform    String?
-  device      String?
-  browser     String?
-
-  meta String?
+  visitorId          String?
+  sessionId          String?
+  referrer           String?
+  eid                String?
+  utmSource          String?
+  utmMedium          String?
+  utmCampaign        String?
+  utmTerm            String?
+  utmContent         String?
+  userAgent          String?
+  language           String?
+  tz                 String?
+  country            String?
+  region             String?
+  city               String?
+  ipHash             String?
+  screenW            Int?
+  screenH            Int?
+  dpr                Float?
+  platform           String?
+  device             String?
+  browser            String?
+  meta               String?
 }
 
 model Visit {
-  id        String   @id @default(cuid())
-  createdAt DateTime @default(now())
-
-  // identification
-  visitorId String
-  sessionId String
-
-  // page
-  path     String
-  query    String?
-  referrer String?
-
-  // marketing
-  eid         String?
-  utmSource   String?
-  utmMedium   String?
-  utmCampaign String?
-  utmTerm     String?
-  utmContent  String?
-  gclid       String?
-  fbclid      String?
-  msclkid     String?
-
-  // client/device
+  id                  String   @id @default(cuid())
+  createdAt           DateTime @default(now())
+  visitorId           String
+  sessionId           String
+  path                String
+  query               String?
+  referrer            String?
+  eid                 String?
+  utmSource           String?
+  utmMedium           String?
+  utmCampaign         String?
+  utmTerm             String?
+  utmContent          String?
+  gclid               String?
+  fbclid              String?
+  msclkid             String?
   userAgent           String?
   language            String?
-  languages           Json?
   tz                  String?
   screenW             Int?
   screenH             Int?
@@ -87,27 +75,180 @@ model Visit {
   platform            String?
   device              String?
   browser             String?
-  viewportW           Int?
-  viewportH           Int?
-  orientation         String?
+  country             String?
+  region              String?
+  city                String?
+  ipHash              String?
+  connection          Json?
   deviceMemory        Float?
   hardwareConcurrency Int?
+  interactionCounts   Json?
+  languages           Json?
   maxTouchPoints      Int?
-  connection          Json?
-  storage             Json?
   navigation          Json?
+  orientation         String?
   paint               Json?
   performance         Json?
   scrollDepth         Int?
+  storage             Json?
   timeOnPageMs        Int?
-  interactionCounts   Json?
+  viewportH           Int?
+  viewportW           Int?
   visibility          Json?
+}
 
-  // geo/IP (approx)
-  country String?
-  region  String?
-  city    String?
-  ipHash  String?
+model CampaignTemplate {
+  id        String             @id @default(cuid())
+  name      String
+  subject   String
+  htmlBody  String
+  textBody  String?
+  createdAt DateTime           @default(now())
+  updatedAt DateTime           @updatedAt
+  schedules CampaignSchedule[]
+}
+
+model Campaign {
+  id          String             @id @default(cuid())
+  name        String
+  description String?
+  status      CampaignStatus     @default(DRAFT)
+  createdAt   DateTime           @default(now())
+  updatedAt   DateTime           @updatedAt
+  schedules   CampaignSchedule[]
+  settings    CampaignSettings?
+}
+
+model AudienceGroup {
+  id          String             @id @default(cuid())
+  name        String
+  description String?
+  criteria    Json?
+  createdAt   DateTime           @default(now())
+  updatedAt   DateTime           @updatedAt
+  members     AudienceMember[]
+  schedules   CampaignSchedule[]
+}
+
+model AudienceMember {
+  id             String        @id @default(cuid())
+  groupId        String
+  businessId     String
+  businessName   String?
+  primaryEmail   String
+  secondaryEmail String?
+  tagsSnapshot   String[]
+  inviteToken    String?
+  meta           Json?
+  createdAt      DateTime      @default(now())
+  unsubscribed   Boolean       @default(false)
+  group          AudienceGroup @relation(fields: [groupId], references: [id], onDelete: Cascade)
+
+  @@unique([groupId, businessId])
+  @@index([groupId])
+  @@index([businessId])
+}
+
+model CampaignSchedule {
+  id                 String           @id @default(cuid())
+  name               String
+  templateId         String
+  groupId            String
+  status             CampaignStatus   @default(DRAFT)
+  sendAt             DateTime?
+  timeZone           String?          @default("America/Vancouver")
+  throttlePerMinute  Int?             @default(60)
+  repeatIntervalMins Int?
+  lastRunAt          DateTime?
+  nextRunAt          DateTime?
+  createdAt          DateTime         @default(now())
+  updatedAt          DateTime         @updatedAt
+  campaignId         String?
+  smartWindowEnd     DateTime?
+  smartWindowStart   DateTime?
+  stepOrder          Int              @default(1)
+  campaign           Campaign?        @relation(fields: [campaignId], references: [id])
+  group              AudienceGroup    @relation(fields: [groupId], references: [id])
+  template           CampaignTemplate @relation(fields: [templateId], references: [id])
+  sends              CampaignSend[]
+
+  @@index([status])
+  @@index([groupId])
+  @@index([templateId])
+  @@index([nextRunAt])
+  @@index([campaignId, stepOrder])
+}
+
+model CampaignSend {
+  id              String             @id @default(cuid())
+  scheduleId      String
+  groupId         String
+  templateId      String
+  businessId      String
+  businessName    String?
+  email           String
+  inviteToken     String?
+  inviteLink      String?
+  resendMessageId String?
+  status          CampaignSendStatus @default(PENDING)
+  error           String?
+  meta            Json?
+  sentAt          DateTime?
+  openedAt        DateTime?
+  visitedAt       DateTime?
+  rsvpAt          DateTime?
+  createdAt       DateTime           @default(now())
+  updatedAt       DateTime           @updatedAt
+  schedule        CampaignSchedule   @relation(fields: [scheduleId], references: [id], onDelete: Cascade)
+
+  @@unique([scheduleId, businessId])
+  @@index([scheduleId])
+  @@index([groupId])
+  @@index([templateId])
+  @@index([businessId])
+  @@index([status])
+}
+
+model CampaignSettings {
+  campaignId        String   @id
+  windows           Json
+  throttlePerMinute Int      @default(60)
+  maxConcurrent     Int      @default(50)
+  perDomain         Json?
+  quietHours        Json?
+  updatedAt         DateTime @updatedAt
+  paused            Boolean  @default(false)
+  campaign          Campaign @relation(fields: [campaignId], references: [id], onDelete: Cascade)
+}
+
+model EmailJob {
+  id                  String         @id @default(cuid())
+  campaignId          String
+  recipientEmail      String
+  recipientId         String?
+  sendAt              DateTime
+  status              EmailJobStatus @default(scheduled)
+  attempts            Int            @default(0)
+  error               String?
+  processingStartedAt DateTime?
+  sentAt              DateTime?
+  providerMessageId   String?
+  createdAt           DateTime       @default(now())
+  updatedAt           DateTime       @updatedAt
+  events              EmailEvent[]
+
+  @@index([campaignId, status, sendAt])
+}
+
+model EmailEvent {
+  id        String         @id @default(cuid())
+  jobId     String
+  type      EmailEventType
+  meta      Json?
+  createdAt DateTime       @default(now())
+  job       EmailJob       @relation(fields: [jobId], references: [id], onDelete: Cascade)
+
+  @@index([jobId, type, createdAt])
 }
 
 enum CampaignStatus {
@@ -127,125 +268,6 @@ enum CampaignSendStatus {
   SKIPPED
 }
 
-model CampaignTemplate {
-  id        String   @id @default(cuid())
-  name      String
-  subject   String
-  htmlBody  String
-  textBody  String?
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
-  schedules CampaignSchedule[]
-}
-
-model Campaign {
-  id          String         @id @default(cuid())
-  name        String
-  description String?
-  status      CampaignStatus @default(DRAFT)
-  createdAt   DateTime       @default(now())
-  updatedAt   DateTime       @updatedAt
-
-  schedules CampaignSchedule[]
-  settings  CampaignSettings?
-}
-
-model AudienceGroup {
-  id          String   @id @default(cuid())
-  name        String
-  description String?
-  criteria    Json?
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
-
-  members  AudienceMember[]
-  schedules CampaignSchedule[]
-}
-
-model AudienceMember {
-  id             String   @id @default(cuid())
-  groupId        String
-  businessId     String
-  businessName   String?
-  primaryEmail   String
-  secondaryEmail String?
-  tagsSnapshot   String[]
-  inviteToken    String?
-  meta           Json?
-  unsubscribed   Boolean  @default(false)
-  createdAt      DateTime @default(now())
-
-  group AudienceGroup @relation(fields: [groupId], references: [id], onDelete: Cascade)
-
-  @@index([groupId])
-  @@index([businessId])
-  @@unique([groupId, businessId])
-}
-
-model CampaignSchedule {
-  id                 String          @id @default(cuid())
-  name               String
-  templateId         String
-  groupId            String
-  campaignId         String?
-  status             CampaignStatus  @default(DRAFT)
-  sendAt             DateTime?
-  timeZone           String?         @default("America/Vancouver")
-  throttlePerMinute  Int?            @default(60)
-  repeatIntervalMins Int?
-  lastRunAt          DateTime?
-  nextRunAt          DateTime?
-  stepOrder          Int             @default(1)
-  smartWindowStart   DateTime?
-  smartWindowEnd     DateTime?
-  createdAt          DateTime        @default(now())
-  updatedAt          DateTime        @updatedAt
-
-  template CampaignTemplate @relation(fields: [templateId], references: [id], onDelete: Restrict)
-  group    AudienceGroup    @relation(fields: [groupId], references: [id], onDelete: Restrict)
-  campaign Campaign?        @relation(fields: [campaignId], references: [id], onDelete: SetNull)
-  sends    CampaignSend[]
-
-  @@index([status])
-  @@index([groupId])
-  @@index([templateId])
-  @@index([nextRunAt])
-  @@index([campaignId, stepOrder])
-}
-
-model CampaignSend {
-  id             String             @id @default(cuid())
-  scheduleId     String
-  groupId        String
-  templateId     String
-  businessId     String
-  businessName   String?
-  email          String
-  inviteToken    String?
-  inviteLink     String?
-  resendMessageId String?
-  status         CampaignSendStatus @default(PENDING)
-  error          String?
-  meta           Json?
-  sentAt         DateTime?
-  openedAt       DateTime?
-  visitedAt      DateTime?
-  rsvpAt         DateTime?
-  createdAt      DateTime          @default(now())
-  updatedAt      DateTime          @updatedAt
-
-  schedule CampaignSchedule @relation(fields: [scheduleId], references: [id], onDelete: Cascade)
-
-  @@index([scheduleId])
-  @@index([groupId])
-  @@index([templateId])
-  @@index([businessId])
-  @@index([status])
-  @@unique([scheduleId, businessId])
-}
-
-// ---------- Enums ----------
 enum EmailJobStatus {
   scheduled
   processing
@@ -264,50 +286,4 @@ enum EmailEventType {
   paused
   resumed
   schedule_updated
-}
-
-// ---------- Models ----------
-model CampaignSettings {
-  campaignId        String   @id
-  windows           Json     // [{ start: "09:30", end: "11:45" }, ...]
-  throttlePerMinute Int      @default(60)
-  maxConcurrent     Int      @default(50)
-  perDomain         Json?    // { "gmail.com": { "tpm": 20 }, ... }
-  quietHours        Json?    // [{ start: "22:00", end: "07:00" }]
-  updatedAt         DateTime @updatedAt
-  paused            Boolean  @default(false) // 👈 NEW
-
-  campaign Campaign @relation(fields: [campaignId], references: [id], onDelete: Cascade)
-}
-
-model EmailJob {
-  id                   String          @id @default(cuid())
-  campaignId           String
-  recipientEmail       String
-  recipientId          String?
-  sendAt               DateTime
-  status               EmailJobStatus  @default(scheduled)
-  attempts             Int             @default(0)
-  error                String?
-  processingStartedAt  DateTime?
-  sentAt               DateTime?
-  providerMessageId    String?
-  createdAt            DateTime        @default(now())
-  updatedAt            DateTime        @updatedAt
-
-  events EmailEvent[]
-
-  @@index([campaignId, status, sendAt])
-}
-
-model EmailEvent {
-  id        String          @id @default(cuid())
-  jobId     String
-  type      EmailEventType
-  meta      Json?
-  createdAt DateTime        @default(now())
-
-  job EmailJob @relation(fields: [jobId], references: [id], onDelete: Cascade)
-
-  @@index([jobId, type, createdAt])
 }

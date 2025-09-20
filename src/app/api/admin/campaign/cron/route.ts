@@ -7,9 +7,18 @@ const Body = z.object({
   campaignId: z.string().optional(), // optional: process a single campaign
 });
 
+export async function GET() {
+  // Handle GET requests from Vercel cron
+  return await processCronJobs({ limit: 50 });
+}
+
 export async function POST(req: Request) {
   const json = await req.json().catch(() => ({}));
   const { limit, campaignId } = Body.parse(json);
+  return await processCronJobs({ limit, campaignId });
+}
+
+async function processCronJobs({ limit = 50, campaignId }: { limit?: number; campaignId?: string } = {}) {
 
   const now = new Date();
 
