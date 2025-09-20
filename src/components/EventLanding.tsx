@@ -107,15 +107,16 @@ export default function EventLanding() {
             href="https://evergreenwebsolutions.ca"
             target="_blank"
             rel="noreferrer"
-                          className="relative flex items-center rounded-xl border border-gray-200 bg-white shadow-sm transition hover:border-brand-sage/40 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-brand-sage w-[200px] h-[100px]"          >
-            <span className="sr-only">Visit Evergreen Web Solutions</span>
+              className="relative flex items-center rounded-xl border border-gray-200 bg-white shadow-sm transition hover:border-brand-sage/40 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-brand-sage w-[300px] h-[150px]"
+            >
+              <span className="sr-only">Visit Evergreen Web Solutions</span>
               <Image
                 src="/AI_in_terrace.svg"
                 alt="AI in Northern BC"
-                width={200}
-                height={100}
+                width={300}
+                height={150}
                 priority
-                sizes="200px"
+                sizes="300px"
                 className="h-auto w-auto object-cover"
               />
           </Link>
