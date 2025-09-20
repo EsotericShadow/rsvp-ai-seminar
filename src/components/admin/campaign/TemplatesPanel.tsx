@@ -58,14 +58,15 @@ export function TemplatesPanel({ templates, draft, setDraft, onEdit, onDuplicate
         {draft.id ? <span className="rounded-full bg-emerald-500/20 px-3 py-1 text-xs font-medium text-emerald-200">Editing {draft.name}</span> : null}
       </header>
 
-      <div className="grid gap-6 xl:grid-cols-[minmax(0,1fr),minmax(320px,420px)]">
-        <form
-          onSubmit={(event) => {
-            event.preventDefault()
-            onSubmit()
-          }}
-          className="space-y-4 rounded-xl border border-white/10 bg-black/40 p-4"
-        >
+      <div className="flex flex-col gap-6 lg:flex-row">
+        <div className="w-full lg:max-w-2xl lg:flex-none">
+          <form
+            onSubmit={(event) => {
+              event.preventDefault()
+              onSubmit()
+            }}
+            className="space-y-4 rounded-xl border border-white/10 bg-black/40 p-4"
+          >
           <div className="grid gap-4 md:grid-cols-2">
             <div>
               <label className="text-xs uppercase tracking-wide text-neutral-400">Template name</label>
@@ -147,9 +148,11 @@ export function TemplatesPanel({ templates, draft, setDraft, onEdit, onDuplicate
               {isSaving ? 'Saving…' : draft.id ? 'Update template' : 'Create template'}
             </button>
           </div>
-        </form>
+          </form>
+        </div>
 
-        <div className="space-y-4">
+        <div className="w-full flex-1 min-w-0">
+          <div className="space-y-4">
           <div className="rounded-xl border border-white/10 bg-black/30 p-4">
             <header className="flex items-center justify-between">
               <div>
@@ -222,6 +225,7 @@ export function TemplatesPanel({ templates, draft, setDraft, onEdit, onDuplicate
                 </article>
               ))
             )}
+          </div>
           </div>
         </div>
       </div>
