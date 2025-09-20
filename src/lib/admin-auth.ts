@@ -10,15 +10,19 @@ type Config = {
 }
 
 export function getAdminConfig(): Config | null {
-  const username = process.env.ADMIN_USER?.trim()
-  const passwordHash = process.env.ADMIN_PASSWORD_HASH?.trim()
-  const sessionSecret = process.env.ADMIN_SESSION_SECRET?.trim()
+  const username = process.env.ADMIN_USER
+  const passwordHash = process.env.ADMIN_PASSWORD_HASH
+  const sessionSecret = process.env.ADMIN_SESSION_SECRET
 
   if (!username || !passwordHash || !sessionSecret) {
     return null
   }
 
-  return { username, passwordHash, sessionSecret }
+  return {
+    username,
+    passwordHash,
+    sessionSecret,
+  }
 }
 
 export function getSessionCookieName() {

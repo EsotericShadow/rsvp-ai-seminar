@@ -26,6 +26,7 @@ async function loginAction(formData: FormData) {
   }
 
   const ok = await bcrypt.compare(password, passwordHash)
+
   if (!ok) {
     redirect(`/admin/login?error=invalid&next=${encodeURIComponent(next)}`)
   }
@@ -38,7 +39,7 @@ async function loginAction(formData: FormData) {
     value: token,
     httpOnly: true,
     sameSite: 'lax',
-    secure: true,
+    secure: process.env.NODE_ENV === 'production',
     path: '/',
     expires: new Date(expiresAt),
   })
