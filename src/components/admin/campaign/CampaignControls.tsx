@@ -1316,19 +1316,24 @@ function TemplatesView({
   onSubmit: () => Promise<void>
   isSaving: boolean
 }) {
-  // TEMPORARY: Use exact same structure as CampaignsView to debug
   return (
     <div className="flex flex-col gap-6 lg:flex-row">
       <aside className="w-full lg:max-w-sm lg:flex-none">
-        <CampaignsPanel campaigns={[]} onSelect={() => {}} selectedId={undefined} />
+        <TemplatesSidebar
+          draft={draft}
+          setDraft={setDraft}
+          onSubmit={onSubmit}
+          isSaving={isSaving}
+        />
       </aside>
       <main className="w-full flex-1 min-w-0">
-        <div className="space-y-6">
-          <div className="rounded-xl border border-white/10 bg-black/30 p-4">
-            <h2 className="text-lg font-semibold text-white">Templates Tab - Debug Mode</h2>
-            <p className="text-sm text-neutral-400">This should match the campaigns tab layout exactly.</p>
-          </div>
-        </div>
+        <TemplatesMain
+          templates={templates}
+          draft={draft}
+          onEdit={onEdit}
+          onDuplicate={onDuplicate}
+          onRemove={onRemove}
+        />
       </main>
     </div>
   )
