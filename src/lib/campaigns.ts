@@ -572,7 +572,11 @@ export async function runSchedule(scheduleId: string, options: SendOptions = {})
       template: true,
       group: {
         include: {
-          members: true,
+          members: {
+            where: {
+              unsubscribed: false,
+            },
+          },
         },
       },
     },

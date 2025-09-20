@@ -172,6 +172,7 @@ model AudienceMember {
   tagsSnapshot   String[]
   inviteToken    String?
   meta           Json?
+  unsubscribed   Boolean  @default(false)
   createdAt      DateTime @default(now())
 
   group AudienceGroup @relation(fields: [groupId], references: [id], onDelete: Cascade)
