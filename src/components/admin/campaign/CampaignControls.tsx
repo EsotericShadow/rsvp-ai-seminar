@@ -300,6 +300,7 @@ export default function CampaignControls({ initialData, defaults }: { initialDat
   const [editingTemplate, setEditingTemplate] = useState<Template | null>(null)
   const [showGlobalTemplate, setShowGlobalTemplate] = useState(false)
   const [showGlobalTemplateSettings, setShowGlobalTemplateSettings] = useState(false)
+  const [globalTemplateRefreshTrigger, setGlobalTemplateRefreshTrigger] = useState(0)
   const [notice, setNotice] = useState<string | null>(null)
   const [runningStep, setRunningStep] = useState<{ id: string; mode: 'preview' | 'send' } | null>(null)
 
@@ -767,6 +768,7 @@ export default function CampaignControls({ initialData, defaults }: { initialDat
             template={editingTemplate}
             onSave={saveTemplateFromEditor}
             onCancel={() => setEditingTemplate(null)}
+            refreshTrigger={globalTemplateRefreshTrigger}
           />
         )}
 
@@ -774,6 +776,7 @@ export default function CampaignControls({ initialData, defaults }: { initialDat
         {showGlobalTemplate && (
           <GlobalHTMLTemplate
             onCancel={() => setShowGlobalTemplate(false)}
+            refreshTrigger={globalTemplateRefreshTrigger}
           />
         )}
 
@@ -797,6 +800,8 @@ export default function CampaignControls({ initialData, defaults }: { initialDat
 
                 setNotice('Global template settings saved successfully!');
                 setShowGlobalTemplateSettings(false);
+                // Trigger refresh of global template preview
+                setGlobalTemplateRefreshTrigger(prev => prev + 1);
               } catch (error) {
                 console.error('Error saving global template settings:', error);
                 setError('Failed to save global template settings');

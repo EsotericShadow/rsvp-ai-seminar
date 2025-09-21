@@ -6,9 +6,10 @@ import GlobalTemplateContentEditor from './GlobalTemplateContentEditor';
 interface GlobalHTMLTemplateProps {
   onSave?: (html: string) => void;
   onCancel?: () => void;
+  refreshTrigger?: number; // Add refresh trigger prop
 }
 
-export default function GlobalHTMLTemplate({ onSave, onCancel }: GlobalHTMLTemplateProps) {
+export default function GlobalHTMLTemplate({ onSave, onCancel, refreshTrigger }: GlobalHTMLTemplateProps) {
   const [html, setHtml] = useState('');
   const [previewKey, setPreviewKey] = useState(0);
   const [activeTab, setActiveTab] = useState<'html' | 'content' | 'preview'>('html');
@@ -47,37 +48,52 @@ export default function GlobalHTMLTemplate({ onSave, onCancel }: GlobalHTMLTempl
     global_event_includes: 'Coffee, refreshments, networking, and actionable AI insights',
   });
 
-  // Load current global template and settings on mount
-  useEffect(() => {
-    const loadTemplateAndSettings = async () => {
-      try {
-        // Load global template
-        const templateResponse = await fetch('/api/admin/global-template');
-        if (templateResponse.ok) {
-          const templateData = await templateResponse.json();
-          setHtml(templateData.html || getDefaultTemplate());
-        } else {
-          setHtml(getDefaultTemplate());
-        }
-
-        // Load global template settings
-        const settingsResponse = await fetch('/api/admin/global-template-settings');
-        if (settingsResponse.ok) {
-          const settingsData = await settingsResponse.json();
-          setPreviewContent(prev => ({
-            ...prev,
-            ...settingsData
-          }));
-        } else {
-          console.error('Failed to load global template settings');
-        }
-      } catch (error) {
-        console.error('Error loading global template or settings:', error);
+  // Load current global template and settings on mount and when component becomes visible
+  const loadTemplateAndSettings = async () => {
+    try {
+      // Load global template
+      const templateResponse = await fetch('/api/admin/global-template');
+      if (templateResponse.ok) {
+        const templateData = await templateResponse.json();
+        setHtml(templateData.html || getDefaultTemplate());
+      } else {
         setHtml(getDefaultTemplate());
       }
-    };
+
+      // Load global template settings
+      const settingsResponse = await fetch('/api/admin/global-template-settings');
+      if (settingsResponse.ok) {
+        const settingsData = await settingsResponse.json();
+        setPreviewContent(prev => ({
+          ...prev,
+          ...settingsData
+        }));
+      } else {
+        console.error('Failed to load global template settings');
+      }
+    } catch (error) {
+      console.error('Error loading global template or settings:', error);
+      setHtml(getDefaultTemplate());
+    }
+  };
+
+  useEffect(() => {
     loadTemplateAndSettings();
   }, []);
+
+  // Refresh settings when component becomes visible (e.g., after global template settings are saved)
+  useEffect(() => {
+    if (activeTab === 'preview' || activeTab === 'content') {
+      loadTemplateAndSettings();
+    }
+  }, [activeTab]);
+
+  // Refresh when refreshTrigger changes (e.g., after global template settings are saved)
+  useEffect(() => {
+    if (refreshTrigger) {
+      loadTemplateAndSettings();
+    }
+  }, [refreshTrigger]);
 
   // Auto-refresh preview when HTML changes
   useEffect(() => {
