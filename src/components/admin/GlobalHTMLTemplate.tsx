@@ -197,6 +197,19 @@ export default function GlobalHTMLTemplate({ onSave, onCancel }: GlobalHTMLTempl
     { name: 'Closing Message', code: '{{closing_message}}', desc: 'Closing message' },
     { name: 'Closing Signature', code: '{{closing_signature}}', desc: 'Closing signature' },
     { name: 'Unsubscribe Link', code: '{{unsubscribe_link}}', desc: 'Unsubscribe link' },
+    // Global template variables
+    { name: 'Global Hero Title', code: '{{global_hero_title}}', desc: 'Hero section title' },
+    { name: 'Global Hero Message', code: '{{global_hero_message}}', desc: 'Hero section message' },
+    { name: 'Global Signature Name', code: '{{global_signature_name}}', desc: 'Global signature name' },
+    { name: 'Global Signature Title', code: '{{global_signature_title}}', desc: 'Global signature title' },
+    { name: 'Global Signature Company', code: '{{global_signature_company}}', desc: 'Global signature company' },
+    { name: 'Global Signature Location', code: '{{global_signature_location}}', desc: 'Global signature location' },
+    { name: 'Global Event Title', code: '{{global_event_title}}', desc: 'Event details section title' },
+    { name: 'Global Event Date', code: '{{global_event_date}}', desc: 'Event date' },
+    { name: 'Global Event Time', code: '{{global_event_time}}', desc: 'Event time' },
+    { name: 'Global Event Location', code: '{{global_event_location}}', desc: 'Event location' },
+    { name: 'Global Event Cost', code: '{{global_event_cost}}', desc: 'Event cost' },
+    { name: 'Global Event Includes', code: '{{global_event_includes}}', desc: 'What the event includes' },
   ];
 
   const getPreviewHTML = () => {
@@ -217,7 +230,20 @@ export default function GlobalHTMLTemplate({ onSave, onCancel }: GlobalHTMLTempl
       .replace(/\{\{closing_title\}\}/g, 'Looking Forward')
       .replace(/\{\{closing_message\}\}/g, 'We\'re excited to share these practical AI solutions with you and help your business grow.')
       .replace(/\{\{closing_signature\}\}/g, 'Gabriel Lacroix<br>Evergreen Web Solutions<br>Terrace, BC')
-      .replace(/\{\{unsubscribe_link\}\}/g, 'https://rsvp.evergreenwebsolutions.ca/unsubscribe?token=sample');
+      .replace(/\{\{unsubscribe_link\}\}/g, 'https://rsvp.evergreenwebsolutions.ca/unsubscribe?token=sample')
+      // Global template variables
+      .replace(/\{\{global_hero_title\}\}/g, 'Welcome to Evergreen AI')
+      .replace(/\{\{global_hero_message\}\}/g, 'Thank you for your interest in our upcoming informational session about practical AI tools for Northern BC businesses.')
+      .replace(/\{\{global_signature_name\}\}/g, 'Gabriel Lacroix')
+      .replace(/\{\{global_signature_title\}\}/g, 'AI Solutions Specialist')
+      .replace(/\{\{global_signature_company\}\}/g, 'Evergreen Web Solutions')
+      .replace(/\{\{global_signature_location\}\}/g, 'Terrace, BC')
+      .replace(/\{\{global_event_title\}\}/g, 'Event Details')
+      .replace(/\{\{global_event_date\}\}/g, 'October 23rd, 2025')
+      .replace(/\{\{global_event_time\}\}/g, '6:00 PM - 8:00 PM')
+      .replace(/\{\{global_event_location\}\}/g, 'Terrace, BC')
+      .replace(/\{\{global_event_cost\}\}/g, 'Free')
+      .replace(/\{\{global_event_includes\}\}/g, 'Coffee, refreshments, networking, and actionable AI insights');
   };
 
   return (
