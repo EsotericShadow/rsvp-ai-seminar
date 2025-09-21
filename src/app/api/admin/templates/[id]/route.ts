@@ -46,8 +46,7 @@ export async function PUT(
       additional_info_title,
       additional_info_body,
       closing_title,
-      closing_message,
-      closing_signature
+      closing_message
     } = body;
 
     const template = await prisma.campaignTemplate.update({
@@ -72,7 +71,6 @@ export async function PUT(
         additional_info_body,
         closing_title,
         closing_message,
-        closing_signature,
         updatedAt: new Date(),
       },
     });
