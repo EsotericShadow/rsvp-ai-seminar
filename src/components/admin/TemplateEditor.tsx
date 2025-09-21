@@ -19,7 +19,7 @@ export default function TemplateEditor({ template, onSave, onCancel }: TemplateE
   });
   
   const [isSaving, setIsSaving] = useState(false);
-  const [activeTab, setActiveTab] = useState<'html' | 'text' | 'preview'>('html');
+  const [activeTab, setActiveTab] = useState<'html' | 'text'>('html');
   const [previewMode, setPreviewMode] = useState<'desktop' | 'mobile'>('desktop');
   const [previewHTML, setPreviewHTML] = useState('');
 
@@ -188,17 +188,6 @@ export default function TemplateEditor({ template, onSave, onCancel }: TemplateE
                 }`}
               >
                 Text Version
-              </button>
-              <button
-                type="button"
-                onClick={() => setActiveTab('preview')}
-                className={`px-4 py-2 text-sm font-medium ${
-                  activeTab === 'preview'
-                    ? 'text-blue-600 border-b-2 border-blue-600 bg-blue-50'
-                    : 'text-gray-600 hover:text-gray-800'
-                }`}
-              >
-                Live Preview
               </button>
             </div>
 
