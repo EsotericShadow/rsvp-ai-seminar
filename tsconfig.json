@@ -38,6 +38,7 @@
     "node_modules",
     ".next",
     "out",
-    "lead-mine"
+    "lead-mine",
+    "scripts"
   ]
 }
