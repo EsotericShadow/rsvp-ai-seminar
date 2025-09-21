@@ -52,6 +52,37 @@ export async function POST(req: Request) {
     const device = parsed?.device?.type || 'desktop';
     const os = parsed?.os?.name;
 
+    // Extract comprehensive analytics data from request body
+    const {
+      // Client-side analytics data
+      language,
+      languages,
+      tz,
+      screenW,
+      screenH,
+      viewportW,
+      viewportH,
+      orientation,
+      dpr,
+      deviceMemory,
+      hardwareConcurrency,
+      maxTouchPoints,
+      connection,
+      storage,
+      navigation,
+      paint,
+      performance,
+      scrollDepth,
+      timeOnPageMs,
+      interactionCounts,
+      visibility,
+      // Engagement metrics
+      engagementScore,
+      pageViews,
+      sessionDuration,
+      bounceRate,
+    } = body;
+
     const rsvp = await prisma.rSVP.create({
       data: {
         ...values,
@@ -67,20 +98,44 @@ export async function POST(req: Request) {
         utmTerm,
         utmContent,
         userAgent: ua,
-        language: body.language,
-        tz: body.tz,
+        language: language || undefined,
+        tz: tz || undefined,
         country,
         region,
         city,
         ipHash,
-        screenW: body.screenW ?? null,
-        screenH: body.screenH ?? null,
-        dpr: body.dpr ?? null,
+        screenW: screenW ?? null,
+        screenH: screenH ?? null,
+        dpr: dpr ?? null,
         platform: os,
         device,
         browser,
         meta: JSON.stringify({
           submittedAtLocal: new Date().toISOString(),
+          // Comprehensive analytics data
+          analytics: {
+            languages: Array.isArray(languages) && languages.length ? languages : undefined,
+            viewportW: typeof viewportW === 'number' ? viewportW : undefined,
+            viewportH: typeof viewportH === 'number' ? viewportH : undefined,
+            orientation: typeof orientation === 'string' ? orientation : undefined,
+            deviceMemory: typeof deviceMemory === 'number' ? deviceMemory : undefined,
+            hardwareConcurrency: typeof hardwareConcurrency === 'number' ? hardwareConcurrency : undefined,
+            maxTouchPoints: typeof maxTouchPoints === 'number' ? maxTouchPoints : undefined,
+            connection: connection ?? undefined,
+            storage: storage ?? undefined,
+            navigation: navigation ?? undefined,
+            paint: paint ?? undefined,
+            performance: performance ?? undefined,
+            scrollDepth: typeof scrollDepth === 'number' ? scrollDepth : undefined,
+            timeOnPageMs: typeof timeOnPageMs === 'number' ? Math.round(timeOnPageMs) : undefined,
+            interactionCounts: interactionCounts ?? undefined,
+            visibility: visibility ?? undefined,
+            // Engagement metrics
+            engagementScore: typeof engagementScore === 'number' ? engagementScore : undefined,
+            pageViews: typeof pageViews === 'number' ? pageViews : undefined,
+            sessionDuration: typeof sessionDuration === 'number' ? sessionDuration : undefined,
+            bounceRate: typeof bounceRate === 'number' ? bounceRate : undefined,
+          },
         }),
       },
     });
@@ -97,6 +152,42 @@ export async function POST(req: Request) {
         region,
         city,
         capturedAt: new Date().toISOString(),
+        // Comprehensive analytics data for LeadMine
+        analytics: {
+          // Basic device info
+          screenW,
+          screenH,
+          viewportW,
+          viewportH,
+          orientation,
+          dpr,
+          deviceMemory,
+          hardwareConcurrency,
+          maxTouchPoints,
+          // Performance metrics
+          scrollDepth,
+          timeOnPageMs,
+          connection,
+          // Engagement metrics
+          engagementScore,
+          pageViews,
+          sessionDuration,
+          bounceRate,
+          interactionCounts,
+          // Marketing attribution
+          utmSource,
+          utmMedium,
+          utmCampaign,
+          utmTerm,
+          utmContent,
+          referrer: referer,
+          // RSVP specific data
+          attendanceStatus: values.attendanceStatus,
+          attendeeCount: values.attendanceStatus === 'YES' ? (values.attendeeCount ?? 1) : 0,
+          wantsResources: values.wantsResources,
+          wantsAudit: values.wantsAudit,
+          referralSource: values.referralSource,
+        },
       };
       postLeadMineEvent({ token: campaignToken, type: 'rsvp', meta }).catch((err) => {
         console.error('LeadMine RSVP event failed', err);
