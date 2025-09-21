@@ -32,7 +32,6 @@ export default function GlobalHTMLTemplate({ onSave, onCancel }: GlobalHTMLTempl
     additional_info_body: '',
     closing_title: 'Looking Forward',
     closing_message: 'We\'re excited to share these practical AI solutions with you and help your business grow.',
-    closing_signature: '',
     // Global template variables
     global_hero_title: 'Welcome to Evergreen AI',
     global_hero_message: 'Thank you for your interest in our upcoming informational session about practical AI tools for Northern BC businesses.',
@@ -251,7 +250,6 @@ export default function GlobalHTMLTemplate({ onSave, onCancel }: GlobalHTMLTempl
     { name: 'Additional Info Body', code: '{{additional_info_body}}', desc: 'Additional info section body' },
     { name: 'Closing Title', code: '{{closing_title}}', desc: 'Closing section title' },
     { name: 'Closing Message', code: '{{closing_message}}', desc: 'Closing message' },
-    { name: 'Closing Signature', code: '{{closing_signature}}', desc: 'Closing signature' },
     { name: 'Unsubscribe Link', code: '{{unsubscribe_link}}', desc: 'Unsubscribe link' },
     // Global template variables
     { name: 'Global Hero Title', code: '{{global_hero_title}}', desc: 'Hero section title' },
@@ -286,7 +284,6 @@ export default function GlobalHTMLTemplate({ onSave, onCancel }: GlobalHTMLTempl
       .replace(/\{\{additional_info_body\}\}/g, previewContent.additional_info_body)
       .replace(/\{\{closing_title\}\}/g, previewContent.closing_title)
       .replace(/\{\{closing_message\}\}/g, previewContent.closing_message)
-      .replace(/\{\{closing_signature\}\}/g, previewContent.closing_signature)
       .replace(/\{\{unsubscribe_link\}\}/g, 'https://rsvp.evergreenwebsolutions.ca/unsubscribe?token=sample')
       // Global template variables
       .replace(/\{\{global_hero_title\}\}/g, previewContent.global_hero_title)

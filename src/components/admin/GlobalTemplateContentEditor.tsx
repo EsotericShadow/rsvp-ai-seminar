@@ -18,7 +18,6 @@ interface PreviewContent {
   additional_info_body: string;
   closing_title: string;
   closing_message: string;
-  closing_signature: string;
   // Global content will be loaded separately from Global Template Settings
   global_hero_title: string;
   global_hero_message: string;
@@ -173,16 +172,6 @@ export default function GlobalTemplateContentEditor({
                   className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-900 bg-white"
                   rows={2}
                   placeholder="e.g., We're excited to share these practical AI solutions with you..."
-                />
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Closing Signature</label>
-                <textarea
-                  value={previewContent.closing_signature}
-                  onChange={(e) => setPreviewContent(prev => ({ ...prev, closing_signature: e.target.value }))}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-900 bg-white"
-                  rows={2}
-                  placeholder="e.g., Gabriel Lacroix<br>Evergreen Web Solutions<br>Terrace, BC"
                 />
               </div>
             </div>

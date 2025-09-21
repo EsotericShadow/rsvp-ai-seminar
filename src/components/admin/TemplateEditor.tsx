@@ -31,7 +31,6 @@ interface TemplateFormData {
   additional_info_body: string;
   closing_title: string;
   closing_message: string;
-  closing_signature: string;
 }
 
 export default function TemplateEditor({ template, onSave, onCancel }: TemplateEditorProps) {
@@ -40,22 +39,21 @@ export default function TemplateEditor({ template, onSave, onCancel }: TemplateE
     subject: template.subject,
     htmlBody: template.htmlBody,
     textBody: template.textBody || '',
-    // Initialize template variables with defaults
-    greeting_title: '',
-    greeting_message: '',
-    signature_name: 'Gabriel Lacroix',
-    signature_title: 'AI Solutions Specialist',
-    signature_company: 'Evergreen Web Solutions',
-    signature_location: 'Terrace, BC',
-    main_content_title: '',
-    main_content_body: template.htmlBody, // Use existing htmlBody as main content
-    button_text: 'View details & RSVP',
-    button_link: '{{invite_link}}',
-    additional_info_title: '',
-    additional_info_body: '',
-    closing_title: '',
-    closing_message: '',
-    closing_signature: '',
+    // Initialize template variables with saved values or defaults
+    greeting_title: template.greeting_title || '',
+    greeting_message: template.greeting_message || '',
+    signature_name: template.signature_name || 'Gabriel Lacroix',
+    signature_title: template.signature_title || 'AI Solutions Specialist',
+    signature_company: template.signature_company || 'Evergreen Web Solutions',
+    signature_location: template.signature_location || 'Terrace, BC',
+    main_content_title: template.main_content_title || '',
+    main_content_body: template.main_content_body || template.htmlBody, // Use saved content or existing htmlBody
+    button_text: template.button_text || 'View details & RSVP',
+    button_link: template.button_link || '{{invite_link}}',
+    additional_info_title: template.additional_info_title || '',
+    additional_info_body: template.additional_info_body || '',
+    closing_title: template.closing_title || '',
+    closing_message: template.closing_message || '',
   });
   
   const [isSaving, setIsSaving] = useState(false);
@@ -167,7 +165,6 @@ export default function TemplateEditor({ template, onSave, onCancel }: TemplateE
         additional_info_body: formData.additional_info_body,
         closing_title: formData.closing_title,
         closing_message: formData.closing_message,
-        closing_signature: formData.closing_signature,
       });
     } catch (error) {
       console.error('Error saving template:', error);
