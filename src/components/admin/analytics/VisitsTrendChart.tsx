@@ -25,11 +25,11 @@ export default function VisitsTrendChart({ data }: VisitsTrendChartProps) {
           <XAxis dataKey="label" stroke="rgba(255,255,255,0.4)" fontSize={12} tickLine={false} axisLine={false} />
           <YAxis stroke="rgba(255,255,255,0.4)" fontSize={12} tickLine={false} axisLine={false} width={48} tickFormatter={formatNumber} allowDecimals={false} />
           <Tooltip
-            contentStyle={{ backgroundColor: '#0f172a', border: '1px solid rgba(148,163,184,0.2)', borderRadius: '10px' }}
-            labelStyle={{ color: '#cbd5f5' }}
+            contentStyle={{ backgroundColor: '#1a1d18', border: '1px solid rgba(160, 173, 146, 0.3)', borderRadius: '10px' }}
+            labelStyle={{ color: '#f1f5f0' }}
             formatter={(value) => [formatNumber(value as number), 'Visits']}
           />
-          <Area type="monotone" dataKey="count" stroke="#22C55E" fill="url(#trend)" strokeWidth={2} />
+          <Area type="monotone" dataKey="count" stroke="#22c55e" fill="url(#trend)" strokeWidth={2} />
         </AreaChart>
       </ResponsiveContainer>
     </div>

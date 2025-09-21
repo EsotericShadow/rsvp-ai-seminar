@@ -3,7 +3,7 @@ import { redirect } from "next/navigation";
 
 import { getAdminConfig, getSessionCookieName, verifySessionToken } from "@/lib/admin-auth";
 import CampaignControls from "@/components/admin/campaign/CampaignControls";
-import AdminNavigation from "@/components/admin/AdminNavigation";
+import AdminLayout from "@/components/admin/AdminLayout";
 import { listCampaignData } from "@/lib/campaigns";
 
 export const dynamic = "force-dynamic";
@@ -36,21 +36,12 @@ export default async function AdminCampaignPage() {
   const initialData = await listCampaignData();
 
   return (
-    <div className="min-h-screen bg-neutral-950 text-neutral-100">
-      <AdminNavigation />
-      <div className="mx-auto flex max-w-7xl flex-col gap-6 px-3 py-8 sm:px-4 sm:py-12 lg:px-8">
-        <header className="space-y-2">
-          <p className="text-xs uppercase tracking-[0.35em] text-emerald-300/80">Evergreen Admin</p>
-          <h1 className="text-2xl font-semibold sm:text-3xl lg:text-4xl">Campaign Control Center</h1>
-          <p className="text-sm text-neutral-400 sm:text-base">
-            Configure outreach settings, preview invite batches, and trigger Resend deliveries for Lead Mine businesses.
-          </p>
-        </header>
-
-        <div className="overflow-hidden">
-          <CampaignControls defaults={defaults} initialData={initialData} />
-        </div>
-      </div>
-    </div>
+    <AdminLayout
+      title="Campaign Control Center"
+      subtitle="Configure outreach settings, preview invite batches, and trigger Resend deliveries for Lead Mine businesses."
+      badge="Evergreen Admin"
+    >
+      <CampaignControls defaults={defaults} initialData={initialData} />
+    </AdminLayout>
   );
 }
