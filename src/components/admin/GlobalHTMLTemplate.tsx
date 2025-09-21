@@ -13,6 +13,7 @@ export default function GlobalHTMLTemplate({ onSave, onCancel }: GlobalHTMLTempl
   const [previewKey, setPreviewKey] = useState(0);
   const [activeTab, setActiveTab] = useState<'html' | 'content' | 'preview'>('html');
   const [previewMode, setPreviewMode] = useState<'desktop' | 'mobile'>('desktop');
+  const [showVariables, setShowVariables] = useState(false);
   
   // State for preview content editing
   const [previewContent, setPreviewContent] = useState({
@@ -377,25 +378,41 @@ export default function GlobalHTMLTemplate({ onSave, onCancel }: GlobalHTMLTempl
             <>
               {/* Left Panel - HTML Editor */}
               <div className="w-full lg:w-1/2 flex flex-col min-h-0">
-                {/* Variable Insertion */}
-                <div className="p-3 border-b border-gray-200 bg-gray-50 flex-shrink-0">
-                  <div className="text-xs text-gray-500 mb-2">
-                    💡 Insert template variables (these will be replaced when emails are sent):
-                  </div>
-                  <div className="grid grid-cols-2 gap-2">
-                    {templateVariables.map((variable) => (
-                      <button
-                        key={variable.name}
-                        type="button"
-                        onClick={() => insertVariable(variable.code)}
-                        className="text-left p-2 text-xs bg-blue-100 text-blue-800 rounded hover:bg-blue-200 transition-colors"
-                        title={variable.desc}
-                      >
-                        <div className="font-medium">{variable.name}</div>
-                        <div className="text-blue-600 font-mono">{variable.code}</div>
-                      </button>
-                    ))}
-                  </div>
+                {/* Variable Insertion - Collapsible */}
+                <div className="border-b border-gray-200 bg-gray-50 flex-shrink-0">
+                  <button
+                    type="button"
+                    onClick={() => setShowVariables(!showVariables)}
+                    className="w-full p-3 text-left hover:bg-gray-100 focus:outline-none focus:bg-gray-100"
+                  >
+                    <div className="flex items-center justify-between">
+                      <h4 className="text-sm font-medium text-gray-900">💡 Template Variables</h4>
+                      <span className={`text-xs text-gray-500 transform transition-transform ${showVariables ? 'rotate-180' : ''}`}>
+                        ▼
+                      </span>
+                    </div>
+                  </button>
+                  {showVariables && (
+                    <div className="px-3 pb-3">
+                      <div className="text-xs text-gray-500 mb-2">
+                        Click to insert variables into the HTML editor:
+                      </div>
+                      <div className="grid grid-cols-2 gap-2 max-h-40 overflow-y-auto">
+                        {templateVariables.map((variable) => (
+                          <button
+                            key={variable.name}
+                            type="button"
+                            onClick={() => insertVariable(variable.code)}
+                            className="text-left p-2 text-xs bg-blue-100 text-blue-800 rounded hover:bg-blue-200 transition-colors"
+                            title={variable.desc}
+                          >
+                            <div className="font-medium">{variable.name}</div>
+                            <div className="text-blue-600 font-mono">{variable.code}</div>
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+                  )}
                 </div>
                 
                 {/* HTML Editor */}
