@@ -3,6 +3,10 @@
 import { useState, useEffect, useCallback } from 'react';
 import { CampaignTemplate } from '@prisma/client';
 import { generateEmailHTML, generateEmailText } from '@/lib/email-template';
+import { TemplateEditorErrorBoundary } from './EditorErrorBoundary';
+import { LoadingButton, LoadingOverlay, useLoadingState } from '../LoadingStates';
+import { useErrorLogger } from '@/lib/error-logger';
+import { validateTemplate } from '@/lib/validation';
 
 interface TemplateEditorProps {
   template: CampaignTemplate;
@@ -33,7 +37,10 @@ interface TemplateFormData {
   closing_message: string;
 }
 
-export default function TemplateEditor({ template, onSave, onCancel }: TemplateEditorProps) {
+function TemplateEditor({ template, onSave, onCancel }: TemplateEditorProps) {
+  const { logError, logInfo } = useErrorLogger('TemplateEditor');
+  const { isLoading, error, startLoading, stopLoading, setLoadingError } = useLoadingState();
+  
   const [formData, setFormData] = useState<TemplateFormData>({
     name: template.name,
     subject: template.subject,
@@ -55,8 +62,6 @@ export default function TemplateEditor({ template, onSave, onCancel }: TemplateE
     closing_title: template.closing_title || '',
     closing_message: template.closing_message || '',
   });
-  
-  const [isSaving, setIsSaving] = useState(false);
   const [activeTab, setActiveTab] = useState<'html' | 'text'>('html');
   const [previewMode, setPreviewMode] = useState<'desktop' | 'mobile'>('desktop');
   const [previewHTML, setPreviewHTML] = useState('');
@@ -143,9 +148,12 @@ export default function TemplateEditor({ template, onSave, onCancel }: TemplateE
   }, [getPreviewHTML]);
 
   const handleSave = async () => {
-    setIsSaving(true);
+    startLoading();
+    logInfo('Starting template save operation', { metadata: { templateId: template.id } });
+
     try {
-      await onSave({
+      // Validate form data
+      const templateData = {
         name: formData.name,
         subject: formData.subject,
         htmlBody: formData.htmlBody,
@@ -165,12 +173,22 @@ export default function TemplateEditor({ template, onSave, onCancel }: TemplateE
         additional_info_body: formData.additional_info_body,
         closing_title: formData.closing_title,
         closing_message: formData.closing_message,
-      });
+      };
+
+      const validation = validateTemplate(templateData);
+      if (!validation.success) {
+        throw new Error(`Validation failed: ${JSON.stringify(validation.error)}`);
+      }
+
+      await onSave(validation.data as Partial<CampaignTemplate>);
+      logInfo('Template saved successfully', { metadata: { templateId: template.id } });
     } catch (error) {
-      console.error('Error saving template:', error);
-      alert('Failed to save template');
+      const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+      logError('Failed to save template', error instanceof Error ? error : new Error(errorMessage));
+      setLoadingError(errorMessage);
+      alert(`Failed to save template: ${errorMessage}`);
     } finally {
-      setIsSaving(false);
+      stopLoading();
     }
   };
 
@@ -208,18 +226,18 @@ export default function TemplateEditor({ template, onSave, onCancel }: TemplateE
             <button
               onClick={onCancel}
               className="px-3 py-2 text-gray-600 hover:text-gray-800 border border-gray-300 rounded-md hover:bg-gray-50 text-sm sm:text-base"
-              disabled={isSaving}
+              disabled={isLoading}
             >
               Cancel
             </button>
-            <button
+            <LoadingButton
               type="submit"
-              disabled={isSaving}
+              isLoading={isLoading}
+              loadingText="Saving..."
               className="px-3 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed flex items-center space-x-2 text-sm sm:text-base"
             >
-              {isSaving && <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>}
-              <span>{isSaving ? 'Saving...' : 'Save Changes'}</span>
-            </button>
+              Save Changes
+            </LoadingButton>
           </div>
         </div>
 
@@ -545,5 +563,14 @@ export default function TemplateEditor({ template, onSave, onCancel }: TemplateE
         </form>
       </div>
     </div>
+  );
+}
+
+// Export the component wrapped with error boundary
+export default function TemplateEditorWithErrorBoundary(props: TemplateEditorProps) {
+  return (
+    <TemplateEditorErrorBoundary>
+      <TemplateEditor {...props} />
+    </TemplateEditorErrorBoundary>
   );
 }
