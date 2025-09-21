@@ -154,7 +154,6 @@ let globalTemplate = `<!DOCTYPE html>
                     <td class="content-cell">
                         <h3 style="margin-top:0;">{{closing_title}}</h3>
                         <p style="margin-bottom:6px;">{{closing_message}}</p>
-                        <p style="margin-bottom:0;">{{closing_signature}}</p>
                     </td>
                 </tr>
                 
