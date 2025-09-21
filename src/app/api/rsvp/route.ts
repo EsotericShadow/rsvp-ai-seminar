@@ -10,6 +10,7 @@ import { postLeadMineEvent } from '@/lib/leadMine';
 import { recordSendEngagement } from '@/lib/campaigns';
 import { sendRSVPConfirmation } from '@/lib/sendgrid-email';
 import { checkRSVPRateLimit } from '@/lib/rate-limiter';
+import { validateRSVPSubmission, getTestDetectionConfig } from '@/lib/test-detection';
 
 const resendApiKey = process.env.RESEND_API_KEY;
 const resendClient = resendApiKey ? new Resend(resendApiKey) : null;
@@ -40,6 +41,33 @@ export async function POST(req: Request) {
     const values = validation.data;
     const fullName = `${values.firstName} ${values.lastName}`;
     
+    // Get tracking data for test detection
+    const c = cookies();
+    const h = (k: string) => headers().get(k);
+    
+    const vid = c.get('vid')?.value;
+    const sid = c.get('sid')?.value;
+    const ua = h('user-agent') || undefined;
+    const referer = h('referer') || undefined;
+    
+    // Detect test submissions
+    const testValidation = validateRSVPSubmission({
+      email: values.email,
+      fullName,
+      userAgent: ua,
+      visitorId: vid,
+      sessionId: sid,
+      referrer: referer,
+    }, getTestDetectionConfig());
+    
+    if (testValidation.isTest) {
+      console.warn('Test submission blocked:', testValidation.message);
+      return NextResponse.json({ 
+        message: 'Test submissions are not allowed',
+        reason: testValidation.testDetection.reasons.join(', ')
+      }, { status: 400 });
+    }
+    
     // Map validation data to database schema
     const rsvpData = {
       fullName,
@@ -58,12 +86,6 @@ export async function POST(req: Request) {
       learningGoal: values.learningGoal,
     };
 
-    const c = cookies();
-    const h = (k: string) => headers().get(k);
-
-    const vid = c.get('vid')?.value;
-    const sid = c.get('sid')?.value;
-
     const utmSource = c.get('utm_source')?.value;
     const utmMedium = c.get('utm_medium')?.value;
     const utmCampaign = c.get('utm_campaign')?.value;
@@ -71,9 +93,6 @@ export async function POST(req: Request) {
     const utmContent = c.get('utm_content')?.value;
     const eid = c.get('eid')?.value;
     const campaignToken = eid && eid.startsWith('biz_') ? eid.slice(4) : undefined;
-
-    const ua = h('user-agent') || undefined;
-    const referer = h('referer') || undefined;
     const country = h('x-vercel-ip-country') || undefined;
     const region = h('x-vercel-ip-country-region') || undefined;
     const city = h('x-vercel-ip-city') || undefined;
