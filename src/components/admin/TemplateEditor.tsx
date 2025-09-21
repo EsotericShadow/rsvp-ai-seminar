@@ -12,6 +12,7 @@ interface TemplateEditorProps {
   template: CampaignTemplate;
   onSave: (updatedTemplate: Partial<CampaignTemplate>) => Promise<void>;
   onCancel: () => void;
+  refreshTrigger?: number;
 }
 
 // Extended form data interface for all template variables
@@ -36,7 +37,7 @@ interface TemplateFormData {
   closing_message: string;
 }
 
-function TemplateEditor({ template, onSave, onCancel }: TemplateEditorProps) {
+function TemplateEditor({ template, onSave, onCancel, refreshTrigger }: TemplateEditorProps) {
   const { logError, logInfo } = useErrorLogger('TemplateEditor');
   const { isLoading, error, startLoading, stopLoading, setLoadingError } = useLoadingState();
   
@@ -63,9 +64,26 @@ function TemplateEditor({ template, onSave, onCancel }: TemplateEditorProps) {
   const [activeTab, setActiveTab] = useState<'html' | 'text'>('html');
   const [previewMode, setPreviewMode] = useState<'desktop' | 'mobile'>('desktop');
   const [previewHTML, setPreviewHTML] = useState('');
+  const [globalSettings, setGlobalSettings] = useState<any>(null);
 
   // Auto-refresh preview when content changes
   const [previewKey, setPreviewKey] = useState(0);
+
+  // Load global template settings on mount and when refreshTrigger changes
+  useEffect(() => {
+    const loadGlobalSettings = async () => {
+      try {
+        const response = await fetch('/api/admin/global-template-settings');
+        if (response.ok) {
+          const settings = await response.json();
+          setGlobalSettings(settings);
+        }
+      } catch (error) {
+        console.error('Error loading global template settings:', error);
+      }
+    };
+    loadGlobalSettings();
+  }, [refreshTrigger]);
   
   const getPreviewHTML = useCallback(async () => {
     // Replace variables with sample data for preview
@@ -94,21 +112,21 @@ function TemplateEditor({ template, onSave, onCancel }: TemplateEditorProps) {
       closing_message: formData.closing_message,
       businessName: 'Sample Business Name',
       businessId: 'sample-business-123',
-      // Global template variables (will use defaults from email-template.ts)
-      global_hero_title: 'Welcome to Evergreen AI',
-      global_hero_message: 'Thank you for your interest in our upcoming informational session about practical AI tools for Northern BC businesses.',
-      global_signature_name: 'Gabriel Lacroix',
-      global_signature_title: 'AI Solutions Specialist',
-      global_signature_company: 'Evergreen Web Solutions',
-      global_signature_location: 'Terrace, BC',
-      global_event_title: 'Event Details',
-      global_event_date: 'October 23rd, 2025',
-      global_event_time: '6:00 PM - 8:00 PM',
-      global_event_location: 'Terrace, BC',
-      global_event_cost: 'Free',
-      global_event_includes: 'Coffee, refreshments, networking, and actionable AI insights',
+      // Global template variables (use loaded settings or defaults)
+      global_hero_title: globalSettings?.global_hero_title || 'Welcome to Evergreen AI',
+      global_hero_message: globalSettings?.global_hero_message || 'Thank you for your interest in our upcoming informational session about practical AI tools for Northern BC businesses.',
+      global_signature_name: globalSettings?.global_signature_name || 'Gabriel Lacroix',
+      global_signature_title: globalSettings?.global_signature_title || 'AI Solutions Specialist',
+      global_signature_company: globalSettings?.global_signature_company || 'Evergreen Web Solutions',
+      global_signature_location: globalSettings?.global_signature_location || 'Terrace, BC',
+      global_event_title: globalSettings?.global_event_title || 'Event Details',
+      global_event_date: globalSettings?.global_event_date || 'October 23rd, 2025',
+      global_event_time: globalSettings?.global_event_time || '6:00 PM - 8:00 PM',
+      global_event_location: globalSettings?.global_event_location || 'Terrace, BC',
+      global_event_cost: globalSettings?.global_event_cost || 'Free',
+      global_event_includes: globalSettings?.global_event_includes || 'Coffee, refreshments, networking, and actionable AI insights',
     });
-  }, [formData]);
+  }, [formData, globalSettings]);
 
   useEffect(() => {
     const timer = setTimeout(() => {
