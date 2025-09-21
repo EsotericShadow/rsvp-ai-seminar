@@ -39,6 +39,24 @@ export async function POST(req: Request) {
 
     const values = validation.data;
     const fullName = `${values.firstName} ${values.lastName}`;
+    
+    // Map validation data to database schema
+    const rsvpData = {
+      fullName,
+      organization: values.organization,
+      email: values.email,
+      phone: values.phone,
+      attendanceStatus: values.attendanceStatus,
+      attendeeCount: values.attendeeCount,
+      dietaryPreference: values.dietaryPreference,
+      dietaryOther: values.dietaryOther,
+      accessibilityNeeds: values.accessibilityNeeds,
+      referralSource: values.referralSource,
+      referralOther: values.referralOther,
+      wantsResources: values.wantsResources,
+      wantsAudit: values.wantsAudit,
+      learningGoal: values.learningGoal,
+    };
 
     const c = cookies();
     const h = (k: string) => headers().get(k);
@@ -100,8 +118,7 @@ export async function POST(req: Request) {
 
     const rsvp = await prisma.rSVP.create({
       data: {
-        ...values,
-        fullName,
+        ...rsvpData,
         attendeeCount: values.attendanceStatus === 'YES' ? (values.attendeeCount ?? 1) : 0,
         visitorId: vid,
         sessionId: sid,
@@ -278,7 +295,7 @@ export async function POST(req: Request) {
     }, { status: 200 });
 
   } catch (error) {
-    console.error('API Error:', error);
+    console.error('RSVP API Error:', error);
     return NextResponse.json({ message: 'Internal Server Error' }, { status: 500 });
   }
 }
