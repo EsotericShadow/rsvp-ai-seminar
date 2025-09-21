@@ -19,12 +19,12 @@ const analyticsSchema = z.object({
   hardwareConcurrency: z.number().optional(),
   maxTouchPoints: z.number().optional(),
   
-  // Performance metrics
-  connection: z.record(z.any()).optional(),
-  storage: z.record(z.any()).optional(),
-  navigation: z.record(z.any()).optional(),
-  paint: z.record(z.any()).optional(),
-  performance: z.record(z.any()).optional(),
+  // Performance metrics - can be objects or primitives
+  connection: z.union([z.record(z.any()), z.string(), z.number()]).optional(),
+  storage: z.union([z.record(z.any()), z.number()]).optional(),
+  navigation: z.union([z.record(z.any()), z.number()]).optional(),
+  paint: z.union([z.record(z.any()), z.number()]).optional(),
+  performance: z.union([z.record(z.any()), z.number()]).optional(),
   
   // Engagement metrics
   scrollDepth: z.number().optional(),
