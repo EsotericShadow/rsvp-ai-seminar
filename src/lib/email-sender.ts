@@ -1,7 +1,8 @@
 import { Resend } from 'resend';
 import prisma from '@/lib/prisma';
-import { renderTemplate, inviteLinkFromToken } from './campaigns';
+import { inviteLinkFromToken } from './campaigns';
 import { postLeadMineEvent } from './leadMine';
+import { generateEmailHTML, generateEmailText } from './email-template';
 
 const resend = new Resend(process.env.RESEND_API_KEY);
 
@@ -68,16 +69,39 @@ export async function sendCampaignEmail(jobId: string) {
       inviteToken: member.inviteToken,
     };
 
-    // Render template
-    const rendered = renderTemplate(schedule.template, context);
+    // Extract content from template (assume it's stored as plain content, not full HTML)
+    const templateContent = schedule.template.htmlBody;
+    
+    // Replace placeholders in content
+    const processedContent = templateContent
+      .replace(/\{\{\s*business_name\s*\}\}/g, context.business_name)
+      .replace(/\{\{\s*business_id\s*\}\}/g, context.business_id)
+      .replace(/\{\{\s*invite_link\s*\}\}/g, context.invite_link);
+
+    // Generate HTML and text using global template
+    const html = generateEmailHTML({
+      subject: schedule.template.subject,
+      greeting: `Hi ${context.business_name},`,
+      body: processedContent,
+      ctaText: 'View details & RSVP',
+      ctaLink: context.invite_link,
+      inviteToken: member.inviteToken,
+    });
+
+    const text = generateEmailText({
+      greeting: `Hi ${context.business_name},`,
+      body: schedule.template.textBody || processedContent.replace(/<[^>]*>/g, ''),
+      ctaText: 'View details & RSVP',
+      ctaLink: context.invite_link,
+    });
 
     // Send email via Resend
     const emailResponse = await resend.emails.send({
       from: 'Gabriel Lacroix <gabriel@evergreenwebsolutions.ca>',
       to: [job.recipientEmail],
       subject: schedule.template.subject.replace(/\{\{\s*business_name\s*\}\}/g, context.business_name),
-      html: rendered.html,
-      text: rendered.text,
+      html: html,
+      text: text,
     });
 
     if (emailResponse.error) {
@@ -101,8 +125,9 @@ export async function sendCampaignEmail(jobId: string) {
         meta: {
           template: {
             subject: schedule.template.subject,
-            html: rendered.html,
-            text: rendered.text,
+            html: html,
+            text: text,
+            content: processedContent,
           },
           context,
         },
