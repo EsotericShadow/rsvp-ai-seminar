@@ -9,6 +9,19 @@ export async function generateEmailHTML(content: {
   inviteToken?: string;
   businessName?: string;
   businessId?: string;
+  // New template variables
+  greeting_title?: string;
+  greeting_message?: string;
+  signature_name?: string;
+  signature_title?: string;
+  signature_company?: string;
+  signature_location?: string;
+  main_content_title?: string;
+  additional_info_title?: string;
+  additional_info_body?: string;
+  closing_title?: string;
+  closing_message?: string;
+  closing_signature?: string;
 }) {
   const {
     subject = '',
@@ -19,7 +32,20 @@ export async function generateEmailHTML(content: {
     footer = 'Looking forward to seeing you,<br />Gabriel Lacroix<br />Evergreen Web Solutions',
     inviteToken,
     businessName = 'Valued Customer',
-    businessId = ''
+    businessId = '',
+    // New template variables with defaults
+    greeting_title = '',
+    greeting_message = '',
+    signature_name = 'Gabriel Lacroix',
+    signature_title = 'AI Solutions Specialist',
+    signature_company = 'Evergreen Web Solutions',
+    signature_location = 'Terrace, BC',
+    main_content_title = '',
+    additional_info_title = '',
+    additional_info_body = '',
+    closing_title = '',
+    closing_message = '',
+    closing_signature = 'Gabriel Lacroix<br>Evergreen Web Solutions<br>Terrace, BC'
   } = content;
 
   // Get global template from API
@@ -50,21 +76,21 @@ export async function generateEmailHTML(content: {
   // Replace variables in global template
   const finalHTML = globalTemplate
     .replace(/\{\{subject\}\}/g, subject)
-    .replace(/\{\{greeting_title\}\}/g, '') // Remove duplicate greeting title
-    .replace(/\{\{greeting_message\}\}/g, '') // Remove duplicate greeting message
-    .replace(/\{\{signature_name\}\}/g, 'Gabriel Lacroix')
-    .replace(/\{\{signature_title\}\}/g, 'AI Solutions Specialist')
-    .replace(/\{\{signature_company\}\}/g, 'Evergreen Web Solutions')
-    .replace(/\{\{signature_location\}\}/g, 'Terrace, BC')
-    .replace(/\{\{main_content_title\}\}/g, '') // Remove duplicate content title
-    .replace(/\{\{main_content_body\}\}/g, body) // This should be the individual template's htmlBody content
+    .replace(/\{\{greeting_title\}\}/g, greeting_title)
+    .replace(/\{\{greeting_message\}\}/g, greeting_message)
+    .replace(/\{\{signature_name\}\}/g, signature_name)
+    .replace(/\{\{signature_title\}\}/g, signature_title)
+    .replace(/\{\{signature_company\}\}/g, signature_company)
+    .replace(/\{\{signature_location\}\}/g, signature_location)
+    .replace(/\{\{main_content_title\}\}/g, main_content_title)
+    .replace(/\{\{main_content_body\}\}/g, body)
     .replace(/\{\{button_text\}\}/g, ctaText)
     .replace(/\{\{button_link\}\}/g, ctaLink)
-    .replace(/\{\{additional_info_title\}\}/g, '') // Remove duplicate additional info
-    .replace(/\{\{additional_info_body\}\}/g, '') // Remove duplicate additional info
-    .replace(/\{\{closing_title\}\}/g, '') // Remove duplicate closing title
-    .replace(/\{\{closing_message\}\}/g, '') // Remove duplicate closing message
-    .replace(/\{\{closing_signature\}\}/g, 'Gabriel Lacroix<br>Evergreen Web Solutions<br>Terrace, BC')
+    .replace(/\{\{additional_info_title\}\}/g, additional_info_title)
+    .replace(/\{\{additional_info_body\}\}/g, additional_info_body)
+    .replace(/\{\{closing_title\}\}/g, closing_title)
+    .replace(/\{\{closing_message\}\}/g, closing_message)
+    .replace(/\{\{closing_signature\}\}/g, closing_signature)
     .replace(/\{\{business_name\}\}/g, businessName)
     .replace(/\{\{business_id\}\}/g, businessId)
     .replace(/\{\{invite_link\}\}/g, ctaLink)

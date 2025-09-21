@@ -1,0 +1,16 @@
+-- AlterTable
+ALTER TABLE "CampaignTemplate" ADD COLUMN     "additional_info_body" TEXT,
+ADD COLUMN     "additional_info_title" TEXT,
+ADD COLUMN     "button_link" TEXT,
+ADD COLUMN     "button_text" TEXT,
+ADD COLUMN     "closing_message" TEXT,
+ADD COLUMN     "closing_signature" TEXT,
+ADD COLUMN     "closing_title" TEXT,
+ADD COLUMN     "greeting_message" TEXT,
+ADD COLUMN     "greeting_title" TEXT,
+ADD COLUMN     "main_content_body" TEXT,
+ADD COLUMN     "main_content_title" TEXT,
+ADD COLUMN     "signature_company" TEXT,
+ADD COLUMN     "signature_location" TEXT,
+ADD COLUMN     "signature_name" TEXT,
+ADD COLUMN     "signature_title" TEXT;

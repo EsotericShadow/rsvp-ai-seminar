@@ -103,6 +103,22 @@ model CampaignTemplate {
   subject   String
   htmlBody  String
   textBody  String?
+  // Template variables
+  greeting_title      String?
+  greeting_message    String?
+  signature_name      String?
+  signature_title     String?
+  signature_company   String?
+  signature_location  String?
+  main_content_title  String?
+  main_content_body   String?
+  button_text         String?
+  button_link         String?
+  additional_info_title   String?
+  additional_info_body    String?
+  closing_title       String?
+  closing_message     String?
+  closing_signature   String?
   createdAt DateTime           @default(now())
   updatedAt DateTime           @updatedAt
   schedules CampaignSchedule[]
