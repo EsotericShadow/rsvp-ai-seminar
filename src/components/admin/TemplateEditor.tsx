@@ -82,7 +82,7 @@ export default function TemplateEditor({ template, onSave, onCancel }: TemplateE
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-start justify-center p-2 sm:p-4 z-50 overflow-y-auto">
-      <div className="bg-white rounded-lg max-w-7xl w-full max-h-[98vh] sm:max-h-[95vh] overflow-hidden flex flex-col my-4 sm:my-8">
+      <div className="bg-white rounded-lg max-w-7xl w-full max-h-[98vh] sm:max-h-[95vh] overflow-y-auto flex flex-col my-4 sm:my-8">
         <form onSubmit={(e) => { e.preventDefault(); handleSave(); }}>
         {/* Header */}
         <div className="p-3 sm:p-6 border-b border-gray-200 flex flex-col sm:flex-row sm:justify-between sm:items-center bg-gray-50 gap-3">
@@ -107,7 +107,7 @@ export default function TemplateEditor({ template, onSave, onCancel }: TemplateE
         </div>
 
         {/* Main Content */}
-        <div className="flex-1 flex flex-col lg:flex-row overflow-auto">
+        <div className="flex-1 flex flex-col lg:flex-row min-h-0">
           {/* Left Panel - Editor */}
           <div className="w-full lg:w-1/2 flex flex-col border-b lg:border-b-0 lg:border-r border-gray-200 min-h-0">
             {/* Template Info */}
@@ -163,7 +163,7 @@ export default function TemplateEditor({ template, onSave, onCancel }: TemplateE
             </div>
 
             {/* Editor */}
-            <div className="flex-1 flex flex-col min-h-0">
+            <div className="flex-1 flex flex-col min-h-0 overflow-hidden">
               {activeTab === 'html' && (
                 <>
                   {/* Variable Insertion */}
@@ -183,12 +183,12 @@ export default function TemplateEditor({ template, onSave, onCancel }: TemplateE
                   </div>
                   
                   {/* HTML Editor */}
-                  <div className="flex-1 p-4 min-h-0">
+                  <div className="flex-1 p-4 min-h-0 overflow-hidden">
                     <textarea
                       id="htmlBody"
                       value={formData.htmlBody}
                       onChange={(e) => setFormData(prev => ({ ...prev, htmlBody: e.target.value }))}
-                      className="w-full h-full resize-none border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 font-mono text-sm text-gray-900 bg-white"
+                      className="w-full h-full resize-none border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 font-mono text-sm text-gray-900 bg-white overflow-y-auto"
                       placeholder="Enter HTML content..."
                     />
                   </div>
@@ -196,11 +196,11 @@ export default function TemplateEditor({ template, onSave, onCancel }: TemplateE
               )}
 
               {activeTab === 'text' && (
-                <div className="flex-1 p-4 min-h-0">
+                <div className="flex-1 p-4 min-h-0 overflow-hidden">
                   <textarea
                     value={formData.textBody}
                     onChange={(e) => setFormData(prev => ({ ...prev, textBody: e.target.value }))}
-                    className="w-full h-full resize-none border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-900 bg-white"
+                    className="w-full h-full resize-none border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-900 bg-white overflow-y-auto"
                     placeholder="Enter plain text content..."
                   />
                 </div>
@@ -238,7 +238,7 @@ export default function TemplateEditor({ template, onSave, onCancel }: TemplateE
             </div>
 
             {/* Preview Content */}
-            <div className="flex-1 p-4 overflow-auto bg-gray-100 min-h-0">
+            <div className="flex-1 p-4 overflow-y-auto bg-gray-100 min-h-0">
               <div className={`mx-auto bg-white rounded-lg shadow-sm ${
                 previewMode === 'mobile' ? 'max-w-sm' : 'max-w-2xl'
               }`}>
