@@ -3,6 +3,7 @@ import { redirect } from "next/navigation";
 
 import { getAdminConfig, getSessionCookieName, verifySessionToken } from "@/lib/admin-auth";
 import CampaignControls from "@/components/admin/campaign/CampaignControls";
+import AdminNavigation from "@/components/admin/AdminNavigation";
 import { listCampaignData } from "@/lib/campaigns";
 
 export const dynamic = "force-dynamic";
@@ -36,6 +37,7 @@ export default async function AdminCampaignPage() {
 
   return (
     <div className="min-h-screen bg-neutral-950 text-neutral-100">
+      <AdminNavigation />
       <div className="mx-auto flex max-w-7xl flex-col gap-6 px-3 py-8 sm:px-4 sm:py-12 lg:px-8">
         <header className="space-y-2">
           <p className="text-xs uppercase tracking-[0.35em] text-emerald-300/80">Evergreen Admin</p>
