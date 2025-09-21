@@ -22,6 +22,19 @@ export async function generateEmailHTML(content: {
   closing_title?: string;
   closing_message?: string;
   closing_signature?: string;
+  // Global template variables
+  global_hero_title?: string;
+  global_hero_message?: string;
+  global_signature_name?: string;
+  global_signature_title?: string;
+  global_signature_company?: string;
+  global_signature_location?: string;
+  global_event_title?: string;
+  global_event_date?: string;
+  global_event_time?: string;
+  global_event_location?: string;
+  global_event_cost?: string;
+  global_event_includes?: string;
 }) {
   const {
     subject = '',
@@ -45,7 +58,20 @@ export async function generateEmailHTML(content: {
     additional_info_body = '',
     closing_title = '',
     closing_message = '',
-    closing_signature = 'Gabriel Lacroix<br>Evergreen Web Solutions<br>Terrace, BC'
+    closing_signature = 'Gabriel Lacroix<br>Evergreen Web Solutions<br>Terrace, BC',
+    // Global template variables with defaults
+    global_hero_title = 'Welcome to Evergreen AI',
+    global_hero_message = 'Thank you for your interest in our upcoming informational session about practical AI tools for Northern BC businesses.',
+    global_signature_name = 'Gabriel Lacroix',
+    global_signature_title = 'AI Solutions Specialist',
+    global_signature_company = 'Evergreen Web Solutions',
+    global_signature_location = 'Terrace, BC',
+    global_event_title = 'Event Details',
+    global_event_date = 'October 23rd, 2025',
+    global_event_time = '6:00 PM - 8:00 PM',
+    global_event_location = 'Terrace, BC',
+    global_event_cost = 'Free',
+    global_event_includes = 'Coffee, refreshments, networking, and actionable AI insights'
   } = content;
 
   // Get global template from API
@@ -94,7 +120,20 @@ export async function generateEmailHTML(content: {
     .replace(/\{\{business_name\}\}/g, businessName)
     .replace(/\{\{business_id\}\}/g, businessId)
     .replace(/\{\{invite_link\}\}/g, ctaLink)
-    .replace(/\{\{unsubscribe_link\}\}/g, `/unsubscribe?token=${inviteToken || ''}`);
+    .replace(/\{\{unsubscribe_link\}\}/g, `/unsubscribe?token=${inviteToken || ''}`)
+    // Global template variables
+    .replace(/\{\{global_hero_title\}\}/g, global_hero_title)
+    .replace(/\{\{global_hero_message\}\}/g, global_hero_message)
+    .replace(/\{\{global_signature_name\}\}/g, global_signature_name)
+    .replace(/\{\{global_signature_title\}\}/g, global_signature_title)
+    .replace(/\{\{global_signature_company\}\}/g, global_signature_company)
+    .replace(/\{\{global_signature_location\}\}/g, global_signature_location)
+    .replace(/\{\{global_event_title\}\}/g, global_event_title)
+    .replace(/\{\{global_event_date\}\}/g, global_event_date)
+    .replace(/\{\{global_event_time\}\}/g, global_event_time)
+    .replace(/\{\{global_event_location\}\}/g, global_event_location)
+    .replace(/\{\{global_event_cost\}\}/g, global_event_cost)
+    .replace(/\{\{global_event_includes\}\}/g, global_event_includes);
 
   // Add tracking pixel to the end
   return finalHTML + trackingPixel;

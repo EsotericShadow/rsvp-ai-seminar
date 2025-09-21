@@ -7,6 +7,7 @@ import { GroupsPanel } from './GroupsPanel'
 import type { MemberDraft } from './GroupsPanel'
 import TemplateEditor from '../TemplateEditor'
 import GlobalHTMLTemplate from '../GlobalHTMLTemplate'
+import GlobalTemplateSettings from '../GlobalTemplateSettings'
 import HTMLEditor from '../HTMLEditor'
 import TextEditor from '../TextEditor'
 // TemplatesPanel will be implemented inline to match CampaignsView structure
@@ -298,6 +299,7 @@ export default function CampaignControls({ initialData, defaults }: { initialDat
   const [error, setError] = useState<string | null>(null)
   const [editingTemplate, setEditingTemplate] = useState<Template | null>(null)
   const [showGlobalTemplate, setShowGlobalTemplate] = useState(false)
+  const [showGlobalTemplateSettings, setShowGlobalTemplateSettings] = useState(false)
   const [notice, setNotice] = useState<string | null>(null)
   const [runningStep, setRunningStep] = useState<{ id: string; mode: 'preview' | 'send' } | null>(null)
 
@@ -751,6 +753,7 @@ export default function CampaignControls({ initialData, defaults }: { initialDat
             onSubmit={saveTemplate}
             isSaving={isSaving}
             setShowGlobalTemplate={setShowGlobalTemplate}
+            setShowGlobalTemplateSettings={setShowGlobalTemplateSettings}
           />
         )}
 
@@ -767,6 +770,18 @@ export default function CampaignControls({ initialData, defaults }: { initialDat
         {showGlobalTemplate && (
           <GlobalHTMLTemplate
             onCancel={() => setShowGlobalTemplate(false)}
+          />
+        )}
+
+        {/* Global Template Settings Modal */}
+        {showGlobalTemplateSettings && (
+          <GlobalTemplateSettings
+            onSave={async (settings) => {
+              // TODO: Implement saving global template settings
+              console.log('Saving global template settings:', settings);
+              setShowGlobalTemplateSettings(false);
+            }}
+            onCancel={() => setShowGlobalTemplateSettings(false)}
           />
         )}
       </div>
@@ -1357,6 +1372,7 @@ function TemplatesView({
   onSubmit,
   isSaving,
   setShowGlobalTemplate,
+  setShowGlobalTemplateSettings,
 }: {
   templates: Template[]
   draft: TemplateDraft
@@ -1367,6 +1383,7 @@ function TemplatesView({
   onSubmit: () => Promise<void>
   isSaving: boolean
   setShowGlobalTemplate: (show: boolean) => void
+  setShowGlobalTemplateSettings: (show: boolean) => void
 }) {
   // State for filtering and search
   const [searchTerm, setSearchTerm] = useState('')
@@ -1455,6 +1472,12 @@ function TemplatesView({
             className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors text-sm font-medium"
           >
             Global HTML Template
+          </button>
+          <button
+            onClick={() => setShowGlobalTemplateSettings(true)}
+            className="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors text-sm font-medium"
+          >
+            Global Template Settings
           </button>
           <div className="text-sm text-neutral-400">
             {sortedGroups.length} groups, {filteredTemplates.length} of {templates.length} templates
