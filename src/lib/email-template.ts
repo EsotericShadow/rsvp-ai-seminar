@@ -54,7 +54,7 @@ export async function generateEmailHTML(content: {
     .replace(/\{\{signature_company\}\}/g, 'Evergreen Web Solutions')
     .replace(/\{\{signature_location\}\}/g, 'Terrace, BC')
     .replace(/\{\{main_content_title\}\}/g, 'What You\'ll Learn')
-    .replace(/\{\{main_content_body\}\}/g, body)
+    .replace(/\{\{main_content_body\}\}/g, body) // This should be the individual template's htmlBody content
     .replace(/\{\{button_text\}\}/g, ctaText)
     .replace(/\{\{button_link\}\}/g, ctaLink)
     .replace(/\{\{additional_info_title\}\}/g, 'Event Details')
