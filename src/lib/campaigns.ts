@@ -30,7 +30,7 @@ export function inviteLinkFromToken(token: string) {
 }
 
 export function renderTemplate(
-  template: { htmlBody: string; textBody: string | null },
+  template: { htmlBody: string; textBody: string | null; button_text?: string | null },
   context: Record<string, string>,
 ) {
   const replaceTokens = (input: string) =>
@@ -38,6 +38,15 @@ export function renderTemplate(
       (acc, [key, value]) => acc.replace(new RegExp(`{{\\s*${key}\\s*}}`, 'g'), value),
       input,
     )
+
+  // Generate the tracking link from the invite token
+  const trackingLink = context.inviteToken ? inviteLinkFromToken(context.inviteToken) : '#'
+  
+  // Replace any remaining invite_link variables with the actual tracking link
+  const contextWithTrackingLink = {
+    ...context,
+    invite_link: trackingLink,
+  }
 
   // Add tracking pixel to HTML if it doesn't exist
   let html = replaceTokens(template.htmlBody)
@@ -48,6 +57,9 @@ export function renderTemplate(
       html += trackingPixel
     }
   }
+
+  // Replace any button links with the tracking link
+  html = html.replace(/\{\{\s*invite_link\s*\}\}/g, trackingLink)
 
   return {
     html,

@@ -30,7 +30,6 @@ interface TemplateFormData {
   main_content_title: string;
   main_content_body: string;
   button_text: string;
-  button_link: string;
   additional_info_title: string;
   additional_info_body: string;
   closing_title: string;
@@ -56,7 +55,6 @@ function TemplateEditor({ template, onSave, onCancel }: TemplateEditorProps) {
     main_content_title: template.main_content_title || '',
     main_content_body: template.main_content_body || template.htmlBody, // Use saved content or existing htmlBody
     button_text: template.button_text || 'View details & RSVP',
-    button_link: template.button_link || '{{invite_link}}',
     additional_info_title: template.additional_info_title || '',
     additional_info_body: template.additional_info_body || '',
     closing_title: template.closing_title || '',
@@ -89,7 +87,7 @@ function TemplateEditor({ template, onSave, onCancel }: TemplateEditorProps) {
       main_content_title: formData.main_content_title,
       body: content, // This is the main content body
       ctaText: formData.button_text,
-      ctaLink: formData.button_link.replace('{{invite_link}}', 'https://rsvp.evergreenwebsolutions.ca/rsvp/sample-business-123'),
+      ctaLink: 'https://rsvp.evergreenwebsolutions.ca/rsvp/sample-business-123', // Use sample tracking link for preview
       additional_info_title: formData.additional_info_title,
       additional_info_body: formData.additional_info_body,
       closing_title: formData.closing_title,
@@ -168,7 +166,6 @@ function TemplateEditor({ template, onSave, onCancel }: TemplateEditorProps) {
         main_content_title: formData.main_content_title,
         main_content_body: formData.main_content_body,
         button_text: formData.button_text,
-        button_link: formData.button_link,
         additional_info_title: formData.additional_info_title,
         additional_info_body: formData.additional_info_body,
         closing_title: formData.closing_title,
@@ -327,16 +324,9 @@ function TemplateEditor({ template, onSave, onCancel }: TemplateEditorProps) {
                             className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-900 bg-white"
                             placeholder="e.g., View details & RSVP"
                           />
-                        </div>
-                        <div>
-                          <label className="block text-sm font-medium text-gray-700 mb-1">Button Link</label>
-                          <input
-                            type="text"
-                            value={formData.button_link}
-                            onChange={(e) => setFormData(prev => ({ ...prev, button_link: e.target.value }))}
-                            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-900 bg-white"
-                            placeholder="e.g., {{invite_link}}"
-                          />
+                          <p className="text-xs text-gray-500 mt-1">
+                            💡 The tracking link will be automatically generated for each business when emails are sent.
+                          </p>
                         </div>
                       </div>
                     </div>

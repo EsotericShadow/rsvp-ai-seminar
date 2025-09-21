@@ -113,7 +113,6 @@ model CampaignTemplate {
   main_content_title  String?
   main_content_body   String?
   button_text         String?
-  button_link         String?
   additional_info_title   String?
   additional_info_body    String?
   closing_title       String?
