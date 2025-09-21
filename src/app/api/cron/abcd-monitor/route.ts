@@ -196,7 +196,15 @@ async function adjustSplit(tests: any[], winnerVariant: string) {
       where: { id: test.id },
       data: {
         status: shouldSend ? 'SCHEDULED' : 'DRAFT',
-        timeZone: `A/B/C Test - ${variant} - ${split}%`
+        // Store A/B/C test info in meta field instead of timeZone
+        meta: {
+          abTest: {
+            variant: variant,
+            split: split,
+            testGroup: test.id,
+            lastUpdated: new Date().toISOString()
+          }
+        }
       }
     });
   }

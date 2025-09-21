@@ -167,6 +167,7 @@ model CampaignSchedule {
   smartWindowEnd     DateTime?
   smartWindowStart   DateTime?
   stepOrder          Int              @default(1)
+  meta               Json?
   campaign           Campaign?        @relation(fields: [campaignId], references: [id])
   group              AudienceGroup    @relation(fields: [groupId], references: [id])
   template           CampaignTemplate @relation(fields: [templateId], references: [id])
