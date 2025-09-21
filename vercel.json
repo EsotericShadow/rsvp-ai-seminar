@@ -1,5 +1,8 @@
 {
   "crons": [
-    { "path": "/api/admin/campaign/cron", "schedule": "*/5 * * * *" }
+    {
+      "path": "/api/cron/abcd-monitor",
+      "schedule": "0 */6 * * *"
+    }
   ]
 }
