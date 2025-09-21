@@ -204,7 +204,12 @@ export async function POST(req: Request) {
       }
 
       postLeadMineEvent({ token: campaignToken, type: 'visit', meta }).catch((err) => {
-        console.error('LeadMine visit event failed', err)
+        // Only log as warning for unknown tokens (test data), error for real issues
+        if (err.message.includes('Unknown invite token')) {
+          console.warn(`LeadMine visit event skipped for unknown token: ${campaignToken}`)
+        } else {
+          console.error('LeadMine visit event failed', err)
+        }
       })
 
       recordSendEngagement({ inviteToken: campaignToken, type: 'visit', at: new Date() }).catch((err) => {
