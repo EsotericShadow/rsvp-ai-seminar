@@ -8,7 +8,6 @@ export default function AdminNavigation() {
 
   const navItems = [
     { href: '/admin/campaign', label: 'Campaign Control', icon: '📧' },
-    { href: '/admin/templates', label: 'Templates', icon: '📝' },
     { href: '/admin/analytics', label: 'Analytics', icon: '📊' },
   ];
 

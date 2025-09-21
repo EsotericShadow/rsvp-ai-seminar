@@ -5,6 +5,7 @@ import { Campaign, CampaignSchedule, CampaignSendStatus, CampaignStatus, Campaig
 import type { LeadMineBusiness } from '@/lib/leadMine'
 import { GroupsPanel } from './GroupsPanel'
 import type { MemberDraft } from './GroupsPanel'
+import TemplateEditor from '../TemplateEditor'
 // TemplatesPanel will be implemented inline to match CampaignsView structure
 import { BusinessDirectoryPanel } from './BusinessDirectoryPanel'
 
@@ -292,6 +293,7 @@ export default function CampaignControls({ initialData, defaults }: { initialDat
   const [campaigns, setCampaigns] = useState<CampaignWithCounts[]>(initialData.campaigns)
   const [isSaving, setIsSaving] = useState(false)
   const [error, setError] = useState<string | null>(null)
+  const [editingTemplate, setEditingTemplate] = useState<Template | null>(null)
   const [notice, setNotice] = useState<string | null>(null)
   const [runningStep, setRunningStep] = useState<{ id: string; mode: 'preview' | 'send' } | null>(null)
 
@@ -534,9 +536,36 @@ export default function CampaignControls({ initialData, defaults }: { initialDat
         textBody: template.textBody ?? '',
       })
       setActiveTab('templates')
-      setNotice(`Duplicated template “${template.name}”. Update the name and save.`)
+      setNotice(`Duplicated template "${template.name}". Update the name and save.`)
     },
     [setActiveTab, setNotice],
+  )
+
+  // Save template from editor
+  const saveTemplateFromEditor = useCallback(
+    async (updatedTemplate: Partial<Template>) => {
+      if (!editingTemplate) return
+
+      await runApi(
+        async () => {
+          const res = await fetch(`/api/admin/templates/${editingTemplate.id}`, {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(updatedTemplate),
+          })
+          const data = await res.json()
+          return { res, data }
+        },
+        {
+          onSuccess: () => {
+            setEditingTemplate(null)
+            setNotice('Template updated successfully.')
+            refreshDashboard()
+          },
+        },
+      )
+    },
+    [editingTemplate, runApi, refreshDashboard],
   )
 
   const addMember = useCallback((business: BusinessResult) => {
@@ -712,11 +741,20 @@ export default function CampaignControls({ initialData, defaults }: { initialDat
             templates={templates}
             draft={templateDraft}
             setDraft={setTemplateDraft}
-            onEdit={(template) => setTemplateDraft({ ...template, textBody: template.textBody ?? '' })}
+            onEdit={(template) => setEditingTemplate(template)}
             onDuplicate={duplicateTemplate}
             onRemove={deleteTemplate}
             onSubmit={saveTemplate}
             isSaving={isSaving}
+          />
+        )}
+
+        {/* Template Editor Modal */}
+        {editingTemplate && (
+          <TemplateEditor
+            template={editingTemplate}
+            onSave={saveTemplateFromEditor}
+            onCancel={() => setEditingTemplate(null)}
           />
         )}
       </div>

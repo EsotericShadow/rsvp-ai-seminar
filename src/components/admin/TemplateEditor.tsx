@@ -1,16 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-
-interface CampaignTemplate {
-  id: string;
-  name: string;
-  subject: string;
-  htmlBody: string;
-  textBody: string | null;
-  createdAt: string;
-  updatedAt: string;
-}
+import { CampaignTemplate } from '@prisma/client';
 
 interface TemplateEditorProps {
   template: CampaignTemplate;
