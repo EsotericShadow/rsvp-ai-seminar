@@ -4,347 +4,208 @@ import { NextRequest, NextResponse } from 'next/server';
 let globalTemplate = `<!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
     <title>{{subject}}</title>
-    
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
-    
     <style>
-        .evergreen-body {
-            display: block;
-            padding: 0px;
-            margin: 0px;
-        }
-
-        .evergreen-wrapper {
-            width: 100%;
-            display: block;
-            overflow: hidden;
-            box-sizing: border-box;
-            color: #222;
-            background: #f0fdf4;
-            font-size: 18px;
-            font-weight: normal;
-            font-family: 'Inter', 'Open Sans', 'Roboto', 'Segoe UI', 'Helvetica Neue', Helvetica, Tahoma, Arial, monospace, sans-serif;
-        }
-
-        .evergreen-table {
-            border-collapse: collapse;
-            border-spacing: 0;
-            border: 0px;
-            width: 640px;
-            max-width: 90%;
-            margin: 40px auto;
-            box-shadow: 0px 20px 48px rgba(16, 185, 129, 0.15);
-            border-radius: 12px;
-            overflow: hidden;
-        }
-
-        .evergreen-table tr {
-            background: #ffffff;
-        }
-
-        .evergreen-table td,
-        .evergreen-table th {
-            border: 0px;
-            border-spacing: 0;
-            border-collapse: collapse;
-        }
-
-        .evergreen-table tr td {
-            padding: 0px 40px;
-            box-sizing: border-box;
-        }
-
-        .evergreen-margin {
-            float: left;
-            width: 100%;
-            overflow: hidden;
-            height: 40px;
-            padding-bottom: 0px;
-            box-sizing: border-box;
-        }
-
-        .evergreen-div {
-            float: left;
-            width: 100%;
-            overflow: hidden;
-            box-sizing: border-box;
-        }
-
-        .evergreen-table h1,
-        .evergreen-table h2,
-        .evergreen-table h3,
-        .evergreen-table h4 {
-            float: left;
-            width: 100%;
-            margin: 0px 0px 20px 0px !important;
-            padding: 0px;
-        }
-
-        .evergreen-table h1 {
-            font-size: 33px;
-            color: #10b981;
-        }
-
-        .evergreen-table h2 {
-            font-size: 26px;
-            color: #059669;
-        }
-
-        .evergreen-table h3 {
-            font-size: 23px;
-            color: #047857;
-        }
-
-        .evergreen-table p {
-            float: left;
-            width: 100%;
-            font-size: 18px;
-            margin: 0px 0px 20px 0px !important;
-            color: #374151;
-        }
-
-        .evergreen-table h4 {
-            font-size: 20px;
-            color: #047857;
-        }
-
-        .evergreen-table a {
-            color: #10b981;
-            font-weight: 600;
-        }
-
-        .evergreen-table a:hover {
-            color: #059669;
-        }
-
-        .evergreen-table a:active {
-            color: #047857;
-        }
-
-        .evergreen-table a:visited {
-            color: #065f46;
-        }
-
-        .evergreen-table a.evergreen-link {
-            display: inline-block;
-            width: auto !important;
-            outline: none !important;
-            text-decoration: none !important;
-        }
-
-        .evergreen-table img,
-        .evergreen-table a img {
-            display: block;
-            max-width: 100%;
-            margin-bottom: 20px;
-            border: 0px;
-            border-radius: 10px;
-            overflow: hidden;
-        }
-
-        .evergreen-table a.evergreen-button {
-            display: inline-block;
-            font-weight: 700;
-            font-size: 17px;
-            padding: 15px 40px;
-            margin: 20px 0px;
-            color: #ffffff !important;
-            background: linear-gradient(135deg, #10b981 0%, #059669 100%) !important;
-            border-radius: 10px;
-            text-decoration: none;
-            outline: none;
-            box-shadow: 0 4px 14px rgba(16, 185, 129, 0.3);
-        }
-
-        .evergreen-table a.evergreen-button:hover {
-            color: #ffffff !important;
-            background: linear-gradient(135deg, #059669 0%, #047857 100%) !important;
-            transform: translateY(-2px);
-            box-shadow: 0 6px 20px rgba(16, 185, 129, 0.4);
-        }
-
-        .evergreen-code {
-            float: left;
-            width: 100%;
-            overflow: hidden;
-            box-sizing: border-box;
-            padding: 15px 40px;
-            margin: 20px 0px;
-            border: 2px dashed #10b981;
-            background: #f0fdf4;
-            color: #059669;
-            font-weight: 700;
-            font-size: 23px;
-            border-radius: 8px;
-        }
-
-        .evergreen-flex {
-            float: left;
-            width: 100%;
-            text-align: center;
-        }
-
-        .evergreen-divider {
-            float: left;
-            width: 100%;
-            overflow: hidden;
-            margin: 20px 0px;
-            border-top: 2px solid #f0fdf4;
-        }
-
-        .evergreen-logo {
-            width: 80px;
-            height: 80px;
-            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
-            border-radius: 50%;
-            display: inline-block;
-            margin: 20px 0;
-            position: relative;
-        }
-
-        .evergreen-logo::before {
-            content: "🌲";
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            font-size: 40px;
-        }
-
-        .evergreen-signature {
-            background: #f0fdf4;
-            padding: 20px;
-            border-radius: 10px;
-            border-left: 4px solid #10b981;
-            margin: 20px 0;
-        }
-
-        .evergreen-social {
-            display: inline-block;
-            width: 40px;
-            height: 40px;
-            background: #10b981;
-            border-radius: 50%;
-            margin: 5px;
-            position: relative;
-        }
-
-        .evergreen-social::before {
-            content: "";
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            width: 20px;
-            height: 20px;
-            background: #ffffff;
-            border-radius: 3px;
-        }
-
-        @media (max-width: 640px) {
-            .evergreen-table {
-                width: 95%;
-                margin: 20px auto;
-            }
-            
-            .evergreen-table tr td {
-                padding: 0px 20px;
-            }
-            
-            .evergreen-table h1 {
-                font-size: 28px;
-            }
-            
-            .evergreen-table h2 {
-                font-size: 22px;
-            }
-            
-            .evergreen-table p {
-                font-size: 16px;
-            }
+        /* Reset & base */
+        html,body{margin:0;padding:0;width:100% !important;-webkit-text-size-adjust:100%;-ms-text-size-adjust:100%;}
+        body{background:#f0fdf4;font-family:'Inter',system-ui,-apple-system,"Segoe UI",Roboto,Arial,sans-serif;color:#222;}
+        img{display:block;border:0;outline:none;text-decoration:none;}
+        a{color:#10b981;text-decoration:none;}
+        
+        /* Wrapper */
+        .evergreen-wrapper{width:100%;max-width:640px;margin:40px auto;box-sizing:border-box;padding:0;}
+        .evergreen-table{width:100%;border-collapse:collapse;box-shadow:0 20px 48px rgba(16,185,129,0.15);border-radius:12px;overflow:hidden;background:#fff;}
+        
+        /* Typography */
+        h1,h2,h3,h4,p{margin:0 0 12px 0;padding:0;line-height:1.3;}
+        h1{font-size:28px;color:#10b981;font-weight:700;}
+        h2{font-size:20px;color:#047857;font-weight:600;}
+        h3{font-size:18px;color:#047857;font-weight:600;}
+        p{font-size:16px;color:#374151;margin-bottom:12px;}
+        
+        /* Header / logo */
+        .evergreen-header{padding:24px;text-align:center;}
+        .evergreen-logo{width:72px;height:72px;margin:8px auto;border-radius:50%;background:linear-gradient(135deg,#10b981 0%,#059669 100%);position:relative;display:inline-block;}
+        .evergreen-logo::before{content:"🌲";position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);font-size:34px;}
+        
+        /* HERO nested table */
+        .hero-inner{width:100%;border-radius:8px;overflow:hidden;}
+        .hero-left{width:8px;background:#10b981;vertical-align:top;}
+        .hero-right{vertical-align:middle;padding:18px 16px;background-color:#e6f9ef; /* fallback */ background-color:rgba(16,185,129,0.06); border-radius:0 8px 8px 0;}
+        .hero-title{font-size:20px;color:#065f46;font-weight:700;margin-bottom:6px;}
+        .hero-sub{font-size:14px;color:#065f46;margin:0;}
+        
+        /* Content blocks */
+        .content-cell{padding:18px 24px;}
+        .evergreen-signature{background:#f0fdf4;padding:14px;border-radius:8px;border-left:4px solid #10b981;margin:14px 0;}
+        .btn{display:inline-block;padding:12px 28px;border-radius:10px;font-weight:700;color:#fff !important;background:linear-gradient(135deg,#10b981 0%,#059669 100%);text-decoration:none;box-shadow:0 4px 14px rgba(16,185,129,0.3);}
+        
+        /* Event details section */
+        .event-details{background:#f8fafc;padding:16px;border-radius:8px;border:1px solid #e2e8f0;margin:14px 0;}
+        .event-details h3{color:#1e293b;margin-bottom:8px;}
+        .event-details p{margin-bottom:4px;color:#475569;}
+        
+        /* Divider & footer */
+        .divider{border-top:1px solid #f0fdf4;margin:16px 0;}
+        .footer{padding:12px 24px 28px 24px;text-align:center;color:#6b7280;font-size:13px;}
+        .social-link{display:inline-flex;align-items:center;gap:8px;margin:6px 10px;text-decoration:none;color:#065f46;font-weight:600;}
+        .social-icon-bg{display:inline-block;width:36px;height:36px;border-radius:8px;vertical-align:middle;flex:0 0 36px;display:inline-flex;align-items:center;justify-content:center;}
+        .sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0;}
+        
+        @media (max-width:480px){
+            h1{font-size:22px;}
+            .hero-title{font-size:18px;}
+            .content-cell{padding:12px 16px;}
+            .evergreen-wrapper{margin:16px auto;}
+            .social-link{display:block;padding:8px 0;}
         }
     </style>
 </head>
-
-<body class="evergreen-body">
+<body>
     <div class="evergreen-wrapper">
-        <table class="evergreen-table">
+        <table class="evergreen-table" role="presentation" cellpadding="0" cellspacing="0" aria-hidden="false">
             <tbody>
-                <tr class="evergreen-tr">
-                    <td class="evergreen-td" colspan="10" style="">
-                        <div class="evergreen-margin"></div>
-                        <center>
-                            <h1>{{subject}}</h1>
-                            <div class="evergreen-logo"></div>
-                        </center>
-                        
+                <!-- Header -->
+                <tr>
+                    <td class="evergreen-header" style="padding-top:22px;padding-bottom:8px;">
+                        <h1 style="margin-bottom:6px;">{{subject}}</h1>
+                        <div class="evergreen-logo" aria-hidden="true"></div>
+                    </td>
+                </tr>
+                
+                <!-- HERO (vertical bar + translucent fill) -->
+                <tr>
+                    <td style="padding:0 24px 0 24px;">
+                        <table class="hero-inner" role="presentation" cellpadding="0" cellspacing="0" width="100%" style="border-collapse:collapse;">
+                            <tr>
+                                <td class="hero-left" width="8" style="background:#10b981;"></td>
+                                <td class="hero-right" style="background-color:#e6f9ef; background-color:rgba(16,185,129,0.06);">
+                                    <div>
+                                        <div class="hero-title">{{global_hero_title}}</div>
+                                        <p class="hero-sub">{{global_hero_message}}</p>
+                                    </div>
+                                </td>
+                            </tr>
+                        </table>
+                    </td>
+                </tr>
+                
+                <!-- Greeting Title -->
+                <tr>
+                    <td class="content-cell" style="padding-top:16px;">
                         <h2>{{greeting_title}}</h2>
-                        <p>{{greeting_message}}</p>
-                        
-                        <div class="evergreen-signature">
-                            <p><strong>{{signature_name}}</strong><br>
-                            {{signature_title}}<br>
-                            {{signature_company}}<br>
-                            {{signature_location}}</p>
+                    </td>
+                </tr>
+                
+                <!-- Main content title + body -->
+                <tr>
+                    <td class="content-cell">
+                        <h2 style="margin-top:0;">{{main_content_title}}</h2>
+                        <p style="margin-top:6px;margin-bottom:12px;">{{main_content_body}}</p>
+                    </td>
+                </tr>
+                
+                <!-- Button -->
+                <tr>
+                    <td class="content-cell" style="text-align:center;padding-bottom:12px;">
+                        <a href="{{button_link}}" target="_blank" class="btn" style="display:inline-block;">{{button_text}}</a>
+                    </td>
+                </tr>
+                
+                <!-- Event Details -->
+                <tr>
+                    <td class="content-cell">
+                        <div class="event-details">
+                            <h3>{{global_event_title}}</h3>
+                            <p><strong>Date:</strong> {{global_event_date}}</p>
+                            <p><strong>Time:</strong> {{global_event_time}}</p>
+                            <p><strong>Location:</strong> {{global_event_location}}</p>
+                            <p><strong>Cost:</strong> {{global_event_cost}}</p>
+                            <p><strong>Includes:</strong> {{global_event_includes}}</p>
                         </div>
                     </td>
                 </tr>
-
-                <tr class="evergreen-tr">
-                    <td class="evergreen-td" colspan="10" style="">
-                        <h2>{{main_content_title}}</h2>
-                        <p>{{main_content_body}}</p>
-                    </td>
-                </tr>
-
-                <tr class="evergreen-tr">
-                    <td class="evergreen-td" colspan="10" style="">
-                        <center>
-                            <a href="{{button_link}}" class="evergreen-button" target="_blank">{{button_text}}</a>
-                        </center>
-                    </td>
-                </tr>
-
-                <tr class="evergreen-tr">
-                    <td class="evergreen-td" colspan="10" style="">
-                        <h2>{{additional_info_title}}</h2>
+                
+                <!-- Additional info -->
+                <tr>
+                    <td class="content-cell">
+                        <h3 style="margin-top:0;">{{additional_info_title}}</h3>
                         <p>{{additional_info_body}}</p>
                     </td>
                 </tr>
-
-                <tr class="evergreen-tr">
-                    <td class="evergreen-td" colspan="10" style="">
-                        <br />
-                        <h3>{{closing_title}}</h3>
-                        <p>
-                            {{closing_message}}<br />
-                            {{closing_signature}}
-                        </p>
+                
+                <!-- Signature block (uses global signature variables) -->
+                <tr>
+                    <td class="content-cell">
+                        <div class="evergreen-signature">
+                            <p style="margin:0;"><strong>{{global_signature_name}}</strong><br>
+                            {{global_signature_title}}<br>
+                            {{global_signature_company}}<br>
+                            {{global_signature_location}}</p>
+                        </div>
                     </td>
                 </tr>
-
-                <tr class="evergreen-tr">
-                    <td class="evergreen-td" colspan="10" style="">
-                        <div class="evergreen-divider"></div>
-                        <center>
-                            <span style="color: #6b7280">© 2025 Gabriel Lacroix - Evergreen Web Solutions, Terrace BC</span>
-                        </center>
-                        <div class="evergreen-flex">
-                            <a href="mailto:gabriel@evergreenwebsolutions.ca" class="evergreen-link">
-                                <div class="evergreen-social"></div>
-                            </a>
-                            <a href="https://evergreenwebsolutions.ca" class="evergreen-link">
-                                <div class="evergreen-social"></div>
-                            </a>
-                            <a href="{{unsubscribe_link}}" class="evergreen-link">
-                                <div class="evergreen-social"></div>
-                            </a>
+                
+                <!-- Closing -->
+                <tr>
+                    <td class="content-cell">
+                        <h3 style="margin-top:0;">{{closing_title}}</h3>
+                        <p style="margin-bottom:6px;">{{closing_message}}</p>
+                        <p style="margin-bottom:0;">{{closing_signature}}</p>
+                    </td>
+                </tr>
+                
+                <!-- Divider and footer with unsubscribe (VISIBLE) -->
+                <tr>
+                    <td style="padding:12px 24px 18px 24px;">
+                        <div class="divider"></div>
+                        <div class="footer" role="contentinfo" aria-label="Footer">
+                            <div style="margin-bottom:8px;">© 2025 Gabriel Lacroix - Evergreen Web Solutions, Terrace BC</div>
+                            
+                            <!-- Social links: LinkedIn / Facebook / X (label + icon) -->
+                            <div style="margin-bottom:12px; text-align:center;">
+                                <!-- LinkedIn -->
+                                <a href="https://www.linkedin.com/in/gabriel-marko-6b7aaa357/" target="_blank" rel="noopener noreferrer" class="social-link" aria-label="LinkedIn – opens in a new tab">
+                                    <span class="social-icon-bg" style="background:#0A66C2;">
+                                        <!-- LinkedIn SVG -->
+                                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="18" height="18" aria-hidden="true" focusable="false">
+                                            <path fill="#ffffff" d="M4.98 3.5C4.98 4.88 3.87 6 2.49 6 1.11 6 .01 4.88.01 3.5S1.11 1 2.49 1C3.87 1 4.98 2.12 4.98 3.5zM.22 8.5h4.54v13H.22v-13zM8.5 8.5h4.36v1.77h.06c.61-1.16 2.1-2.38 4.32-2.38 4.63 0 5.48 3.05 5.48 7.01v8.6h-4.54v-7.61c0-1.82-.03-4.17-2.54-4.17-2.54 0-2.93 1.98-2.93 4.03v7.75H8.5v-13z"/>
+                                        </svg>
+                                    </span>
+                                    <span>LinkedIn</span>
+                                </a>
+                                
+                                <!-- Facebook -->
+                                <a href="https://www.facebook.com/share/14Exmoytvrs/?mibextid=wwXIfr" target="_blank" rel="noopener noreferrer" class="social-link" aria-label="Facebook – opens in a new tab">
+                                    <span class="social-icon-bg" style="background:#1877F2;">
+                                        <!-- Facebook SVG -->
+                                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="18" height="18" aria-hidden="true" focusable="false">
+                                            <path fill="#ffffff" d="M22 12a10 10 0 1 0-11.5 9.9v-7h-2.2V12h2.2V9.7c0-2.2 1.3-3.4 3.2-3.4.9 0 1.8.16 1.8.16v2h-1c-1 0-1.3.6-1.3 1.2V12h2.3l-.37 2.9h-1.93v7A10 10 0 0 0 22 12z"/>
+                                        </svg>
+                                    </span>
+                                    <span>Facebook</span>
+                                </a>
+                                
+                                <!-- X -->
+                                <a href="https://x.com/Evergreenweb3D" target="_blank" rel="noopener noreferrer" class="social-link" aria-label="X (Twitter) – opens in a new tab">
+                                    <span class="social-icon-bg" style="background:#000000;">
+                                        <!-- X SVG -->
+                                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="18" height="18" aria-hidden="true" focusable="false">
+                                            <path fill="#ffffff" d="M22 5.92c-.64.28-1.33.47-2.05.55a3.6 3.6 0 0 0-6.14 2.6v.5A10.2 10.2 0 0 1 3.16 5.15a3.6 3.6 0 0 0 1.12 4.8c-.52 0-1.01-.16-1.44-.4v.04c0 1.57 1.12 2.88 2.6 3.18a3.6 3.6 0 0 1-1.44.05c.41 1.27 1.6 2.2 3.02 2.22A7.22 7.22 0 0 1 2 19.54 10.2 10.2 0 0 0 7.78 21c6.26 0 9.69-5.18 9.69-9.67v-.44c.66-.48 1.23-1.1 1.7-1.8-.6.28-1.25.48-1.93.58z"/>
+                                        </svg>
+                                    </span>
+                                    <span>X</span>
+                                </a>
+                            </div>
+                            
+                            <!-- Visible unsubscribe text (required & obvious) -->
+                            <div style="font-size:13px;color:#6b7280;">
+                                If you no longer wish to receive these emails, <a href="{{unsubscribe_link}}" style="color:#065f46;font-weight:600;" target="_blank" rel="noopener noreferrer">unsubscribe here</a>.
+                            </div>
                         </div>
-                        <div class="evergreen-margin"></div>
                     </td>
                 </tr>
             </tbody>

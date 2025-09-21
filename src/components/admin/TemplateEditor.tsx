@@ -94,6 +94,19 @@ export default function TemplateEditor({ template, onSave, onCancel }: TemplateE
       closing_signature: formData.closing_signature,
       businessName: 'Sample Business Name',
       businessId: 'sample-business-123',
+      // Global template variables (will use defaults from email-template.ts)
+      global_hero_title: 'Welcome to Evergreen AI',
+      global_hero_message: 'Thank you for your interest in our upcoming informational session about practical AI tools for Northern BC businesses.',
+      global_signature_name: 'Gabriel Lacroix',
+      global_signature_title: 'AI Solutions Specialist',
+      global_signature_company: 'Evergreen Web Solutions',
+      global_signature_location: 'Terrace, BC',
+      global_event_title: 'Event Details',
+      global_event_date: 'October 23rd, 2025',
+      global_event_time: '6:00 PM - 8:00 PM',
+      global_event_location: 'Terrace, BC',
+      global_event_cost: 'Free',
+      global_event_includes: 'Coffee, refreshments, networking, and actionable AI insights',
     });
   }, [formData]);
 
@@ -406,6 +419,15 @@ export default function TemplateEditor({ template, onSave, onCancel }: TemplateE
                           />
                         </div>
                       </div>
+                    </div>
+
+                    {/* Note about Global Signature */}
+                    <div className="bg-blue-50 p-4 rounded-lg border border-blue-200">
+                      <h3 className="text-sm font-medium text-blue-900 mb-2">📝 Signature Information</h3>
+                      <p className="text-sm text-blue-800">
+                        Signature details are managed globally in the Global Template Settings. 
+                        The global signature will be used for all emails to maintain consistency.
+                      </p>
                     </div>
                   </div>
                 </div>
