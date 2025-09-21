@@ -18,14 +18,34 @@ export default function SettingsTab({}: SettingsTabProps) {
     theme: 'dark',
     compactMode: false,
     showAdvancedMetrics: false,
+    showDataLabels: true,
+    chartAnimation: true,
     
     // Export settings
     exportFormat: 'csv',
     includeMetadata: true,
+    exportTimezone: 'local',
+    
+    // Data retention
+    dataRetentionDays: 365,
+    autoDeleteOldData: false,
+    backupFrequency: 'weekly',
     
     // Notifications
     emailNotifications: false,
     notificationThreshold: 100,
+    slackNotifications: false,
+    webhookUrl: '',
+    
+    // Privacy & Security
+    anonymizeData: false,
+    trackUserBehavior: true,
+    respectDoNotTrack: true,
+    
+    // Performance
+    enableCaching: true,
+    cacheTimeout: 300,
+    maxConcurrentRequests: 10,
   });
 
   const handleSettingChange = (key: string, value: any) => {
@@ -48,10 +68,24 @@ export default function SettingsTab({}: SettingsTabProps) {
         theme: 'dark',
         compactMode: false,
         showAdvancedMetrics: false,
+        showDataLabels: true,
+        chartAnimation: true,
         exportFormat: 'csv',
         includeMetadata: true,
+        exportTimezone: 'local',
+        dataRetentionDays: 365,
+        autoDeleteOldData: false,
+        backupFrequency: 'weekly',
         emailNotifications: false,
         notificationThreshold: 100,
+        slackNotifications: false,
+        webhookUrl: '',
+        anonymizeData: false,
+        trackUserBehavior: true,
+        respectDoNotTrack: true,
+        enableCaching: true,
+        cacheTimeout: 300,
+        maxConcurrentRequests: 10,
       });
     }
   };
@@ -62,18 +96,18 @@ export default function SettingsTab({}: SettingsTabProps) {
       <div className="flex items-center justify-between">
         <div>
           <h2 className="text-2xl font-bold text-white">Dashboard Settings</h2>
-          <p className="text-gray-300 mt-1">Configure your analytics dashboard preferences</p>
+          <p className="text-neutral-300 mt-1">Configure your analytics dashboard preferences</p>
         </div>
         <div className="flex space-x-3">
           <button
             onClick={handleResetSettings}
-            className="px-4 py-2 text-sm font-medium text-gray-300 bg-gray-700/50 hover:bg-gray-700 rounded-lg transition-colors"
+            className="px-4 py-2 text-sm font-medium text-neutral-300 bg-secondary-700/50 hover:bg-secondary-700 rounded-lg transition-colors"
           >
             Reset to Defaults
           </button>
           <button
             onClick={handleSaveSettings}
-            className="px-4 py-2 text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 rounded-lg transition-colors"
+            className="px-4 py-2 text-sm font-medium text-white bg-primary-600 hover:bg-primary-700 rounded-lg transition-colors"
           >
             Save Settings
           </button>
@@ -81,7 +115,7 @@ export default function SettingsTab({}: SettingsTabProps) {
       </div>
 
       {/* Settings Sections */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+      <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-6">
         {/* Dashboard Settings */}
         <div className="glass rounded-xl p-6">
           <h3 className="text-lg font-semibold text-white mb-4">Dashboard Preferences</h3>
@@ -193,6 +227,32 @@ export default function SettingsTab({}: SettingsTabProps) {
                 Show advanced metrics
               </label>
             </div>
+
+            <div className="flex items-center">
+              <input
+                type="checkbox"
+                id="dataLabels"
+                checked={settings.showDataLabels}
+                onChange={(e) => handleSettingChange('showDataLabels', e.target.checked)}
+                className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-600 rounded bg-gray-800"
+              />
+              <label htmlFor="dataLabels" className="ml-2 text-sm text-gray-300">
+                Show data labels on charts
+              </label>
+            </div>
+
+            <div className="flex items-center">
+              <input
+                type="checkbox"
+                id="chartAnimation"
+                checked={settings.chartAnimation}
+                onChange={(e) => handleSettingChange('chartAnimation', e.target.checked)}
+                className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-600 rounded bg-gray-800"
+              />
+              <label htmlFor="chartAnimation" className="ml-2 text-sm text-gray-300">
+                Enable chart animations
+              </label>
+            </div>
           </div>
         </div>
 
@@ -226,6 +286,22 @@ export default function SettingsTab({}: SettingsTabProps) {
               <label htmlFor="includeMetadata" className="ml-2 text-sm text-gray-300">
                 Include metadata in exports
               </label>
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium text-gray-300 mb-2">
+                Export Timezone
+              </label>
+              <select
+                value={settings.exportTimezone}
+                onChange={(e) => handleSettingChange('exportTimezone', e.target.value)}
+                className="w-full px-3 py-2 bg-gray-800 border border-gray-600 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+              >
+                <option value="local">Local Time</option>
+                <option value="utc">UTC</option>
+                <option value="pst">Pacific Time</option>
+                <option value="est">Eastern Time</option>
+              </select>
             </div>
           </div>
         </div>
