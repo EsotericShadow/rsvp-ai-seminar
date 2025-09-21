@@ -151,6 +151,7 @@ export default function TemplateEditor({ template, onSave, onCancel }: TemplateE
             {/* Tabs */}
             <div className="flex border-b border-gray-200">
               <button
+                type="button"
                 onClick={() => setActiveTab('html')}
                 className={`px-4 py-2 text-sm font-medium ${
                   activeTab === 'html'
@@ -161,6 +162,7 @@ export default function TemplateEditor({ template, onSave, onCancel }: TemplateE
                 Content Editor
               </button>
               <button
+                type="button"
                 onClick={() => setActiveTab('text')}
                 className={`px-4 py-2 text-sm font-medium ${
                   activeTab === 'text'
@@ -171,6 +173,7 @@ export default function TemplateEditor({ template, onSave, onCancel }: TemplateE
                 Text Version
               </button>
               <button
+                type="button"
                 onClick={() => setActiveTab('preview')}
                 className={`px-4 py-2 text-sm font-medium ${
                   activeTab === 'preview'
@@ -196,6 +199,7 @@ export default function TemplateEditor({ template, onSave, onCancel }: TemplateE
                       {['{{business_name}}', '{{business_id}}', '{{invite_link}}'].map(variable => (
                         <button
                           key={variable}
+                          type="button"
                           onClick={() => insertVariable(variable)}
                           className="px-2 py-1 text-xs bg-blue-100 text-blue-800 rounded hover:bg-blue-200"
                         >
@@ -244,6 +248,7 @@ export default function TemplateEditor({ template, onSave, onCancel }: TemplateE
               </div>
               <div className="flex space-x-2">
                 <button
+                  type="button"
                   onClick={() => setPreviewMode('desktop')}
                   className={`px-3 py-1 text-sm rounded ${
                     previewMode === 'desktop'
@@ -254,6 +259,7 @@ export default function TemplateEditor({ template, onSave, onCancel }: TemplateE
                   Desktop
                 </button>
                 <button
+                  type="button"
                   onClick={() => setPreviewMode('mobile')}
                   className={`px-3 py-1 text-sm rounded ${
                     previewMode === 'mobile'
