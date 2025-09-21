@@ -1071,36 +1071,36 @@ function SequenceEditor({
                     type="button"
                     onClick={() => moveStep(index, -1)}
                     disabled={isFirst}
-                    className="rounded-full border border-white/10 px-3 py-1 hover:border-emerald-400 hover:text-emerald-200 disabled:cursor-not-allowed disabled:opacity-50"
+                    className="rounded-full border border-white/10 px-2 py-1 sm:px-3 hover:border-emerald-400 hover:text-emerald-200 disabled:cursor-not-allowed disabled:opacity-50"
                   >
-                    Move up
+                    ↑
                   </button>
                   <button
                     type="button"
                     onClick={() => moveStep(index, 1)}
                     disabled={isLast}
-                    className="rounded-full border border-white/10 px-3 py-1 hover:border-emerald-400 hover:text-emerald-200 disabled:cursor-not-allowed disabled:opacity-50"
+                    className="rounded-full border border-white/10 px-2 py-1 sm:px-3 hover:border-emerald-400 hover:text-emerald-200 disabled:cursor-not-allowed disabled:opacity-50"
                   >
-                    Move down
+                    ↓
                   </button>
                   <button
                     type="button"
                     onClick={() => duplicateStep(index)}
-                    className="rounded-full border border-white/10 px-3 py-1 hover:border-white/30"
+                    className="rounded-full border border-white/10 px-2 py-1 sm:px-3 hover:border-white/30"
                   >
-                    Duplicate
+                    Copy
                   </button>
                   <button
                     type="button"
                     onClick={() => removeStep(index)}
-                    className="rounded-full border border-red-500/40 px-3 py-1 text-red-200 hover:bg-red-500/10"
+                    className="rounded-full border border-red-500/40 px-2 py-1 sm:px-3 text-red-200 hover:bg-red-500/10"
                   >
-                    Remove
+                    Delete
                   </button>
                 </div>
               </div>
 
-              <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+              <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
                 <div>
                   <label className="text-xs uppercase tracking-wide text-neutral-400">Template</label>
                   <select
@@ -1143,7 +1143,7 @@ function SequenceEditor({
                 />
               </div>
 
-              <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+              <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
                 <div>
                   <label className="text-xs uppercase tracking-wide text-neutral-400">Send At (optional)</label>
                   <input
@@ -1174,7 +1174,7 @@ function SequenceEditor({
                 </div>
               </div>
 
-              <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
+              <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
                 <div>
                   <label className="text-xs uppercase tracking-wide text-neutral-400">Step status</label>
                   <select
@@ -1259,7 +1259,7 @@ function SequenceEditor({
                 Smart windows limit sends to the specified interval. Outside the window the schedule waits or completes.
               </p>
 
-              <div className="flex flex-wrap items-center justify-between gap-2 border-t border-white/10 pt-3">
+              <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 border-t border-white/10 pt-3">
                 <p className="text-xs text-neutral-500">Preview simulates this step without sending email.</p>
                 <div className="flex gap-2">
                   <button
@@ -1411,8 +1411,9 @@ function TemplatesView({
         </div>
       </div>
 
-      {/* Filters and Search */}
-      <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-5">
+      {/* Filters and Search - Mobile Optimized */}
+      <div className="space-y-4">
+        {/* Search - Full width on mobile */}
         <div>
           <label className="block text-xs font-medium text-neutral-300 mb-1">Search</label>
           <input
@@ -1424,88 +1425,91 @@ function TemplatesView({
           />
         </div>
         
-        <div>
-          <label className="block text-xs font-medium text-neutral-300 mb-1">Industry</label>
-          <select
-            value={industryFilter}
-            onChange={(e) => setIndustryFilter(e.target.value)}
-            className="w-full rounded-lg border border-white/10 bg-black/60 px-3 py-2 text-sm text-white focus:border-emerald-400 focus:outline-none"
-          >
-            <option value="">All Industries</option>
-            {industries.map(industry => (
-              <option key={industry} value={industry}>{industry}</option>
-            ))}
-          </select>
-        </div>
+        {/* Filter Row 1 - 2 columns on mobile, 3 on tablet, 4 on desktop */}
+        <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4">
+          <div>
+            <label className="block text-xs font-medium text-neutral-300 mb-1">Industry</label>
+            <select
+              value={industryFilter}
+              onChange={(e) => setIndustryFilter(e.target.value)}
+              className="w-full rounded-lg border border-white/10 bg-black/60 px-3 py-2 text-sm text-white focus:border-emerald-400 focus:outline-none"
+            >
+              <option value="">All Industries</option>
+              {industries.map(industry => (
+                <option key={industry} value={industry}>{industry}</option>
+              ))}
+            </select>
+          </div>
 
-        <div>
-          <label className="block text-xs font-medium text-neutral-300 mb-1">Email #</label>
-          <select
-            value={emailFilter}
-            onChange={(e) => setEmailFilter(e.target.value)}
-            className="w-full rounded-lg border border-white/10 bg-black/60 px-3 py-2 text-sm text-white focus:border-emerald-400 focus:outline-none"
-          >
-            <option value="">All Emails</option>
-            {emailNumbers.map(num => (
-              <option key={num!} value={num!}>Email {num}</option>
-            ))}
-          </select>
-        </div>
+          <div>
+            <label className="block text-xs font-medium text-neutral-300 mb-1">Email #</label>
+            <select
+              value={emailFilter}
+              onChange={(e) => setEmailFilter(e.target.value)}
+              className="w-full rounded-lg border border-white/10 bg-black/60 px-3 py-2 text-sm text-white focus:border-emerald-400 focus:outline-none"
+            >
+              <option value="">All Emails</option>
+              {emailNumbers.map(num => (
+                <option key={num!} value={num!}>Email {num}</option>
+              ))}
+            </select>
+          </div>
 
-        <div>
-          <label className="block text-xs font-medium text-neutral-300 mb-1">Variant</label>
-          <select
-            value={variantFilter}
-            onChange={(e) => setVariantFilter(e.target.value)}
-            className="w-full rounded-lg border border-white/10 bg-black/60 px-3 py-2 text-sm text-white focus:border-emerald-400 focus:outline-none"
-          >
-            <option value="">All Variants</option>
-            {variants.map(variant => (
-              <option key={variant!} value={variant!}>Variant {variant}</option>
-            ))}
-          </select>
-        </div>
+          <div>
+            <label className="block text-xs font-medium text-neutral-300 mb-1">Variant</label>
+            <select
+              value={variantFilter}
+              onChange={(e) => setVariantFilter(e.target.value)}
+              className="w-full rounded-lg border border-white/10 bg-black/60 px-3 py-2 text-sm text-white focus:border-emerald-400 focus:outline-none"
+            >
+              <option value="">All Variants</option>
+              {variants.map(variant => (
+                <option key={variant!} value={variant!}>Variant {variant}</option>
+              ))}
+            </select>
+          </div>
 
-        <div>
-          <label className="block text-xs font-medium text-neutral-300 mb-1">Sort By</label>
-          <select
-            value={sortBy}
-            onChange={(e) => setSortBy(e.target.value as 'name' | 'created' | 'updated')}
-            className="w-full rounded-lg border border-white/10 bg-black/60 px-3 py-2 text-sm text-white focus:border-emerald-400 focus:outline-none"
-          >
-            <option value="name">Name</option>
-            <option value="created">Created Date</option>
-            <option value="updated">Updated Date</option>
-          </select>
+          <div>
+            <label className="block text-xs font-medium text-neutral-300 mb-1">Sort By</label>
+            <select
+              value={sortBy}
+              onChange={(e) => setSortBy(e.target.value as 'name' | 'created' | 'updated')}
+              className="w-full rounded-lg border border-white/10 bg-black/60 px-3 py-2 text-sm text-white focus:border-emerald-400 focus:outline-none"
+            >
+              <option value="name">Name</option>
+              <option value="created">Created Date</option>
+              <option value="updated">Updated Date</option>
+            </select>
+          </div>
         </div>
       </div>
 
-      {/* Templates List */}
+      {/* Templates List - Mobile Optimized */}
       <div className="space-y-3">
         {filteredTemplates.map((template) => (
-          <div key={template.id} className="rounded-xl border border-white/10 bg-black/40 p-4 hover:bg-black/60 transition-colors">
-            <div className="flex items-center justify-between gap-4">
+          <div key={template.id} className="rounded-xl border border-white/10 bg-black/40 p-3 sm:p-4 hover:bg-black/60 transition-colors">
+            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
               <div className="flex-1 min-w-0">
-                <h3 className="text-base font-semibold text-white">{template.name}</h3>
-                <p className="text-sm text-neutral-400 mt-1">Subject: {template.subject}</p>
+                <h3 className="text-sm sm:text-base font-semibold text-white break-words">{template.name}</h3>
+                <p className="text-xs sm:text-sm text-neutral-400 mt-1 break-words">Subject: {template.subject}</p>
                 <p className="text-xs text-neutral-500 mt-1">Created: {new Date(template.createdAt).toLocaleDateString()}</p>
               </div>
-              <div className="flex gap-2 flex-shrink-0">
+              <div className="flex flex-wrap gap-2 flex-shrink-0">
                 <button
                   onClick={() => onEdit(template)}
-                  className="rounded-full border border-white/10 px-3 py-1 text-xs text-neutral-200 hover:border-emerald-400 hover:text-emerald-200 transition-colors"
+                  className="rounded-full border border-white/10 px-2 py-1 sm:px-3 text-xs text-neutral-200 hover:border-emerald-400 hover:text-emerald-200 transition-colors"
                 >
                   Edit
                 </button>
                 <button
                   onClick={() => onDuplicate(template)}
-                  className="rounded-full border border-white/10 px-3 py-1 text-xs text-neutral-200 hover:border-blue-400 hover:text-blue-200 transition-colors"
+                  className="rounded-full border border-white/10 px-2 py-1 sm:px-3 text-xs text-neutral-200 hover:border-blue-400 hover:text-blue-200 transition-colors"
                 >
-                  Duplicate
+                  Copy
                 </button>
                 <button
                   onClick={() => onRemove(template.id)}
-                  className="rounded-full border border-white/10 px-3 py-1 text-xs text-neutral-200 hover:border-red-400 hover:text-red-200 transition-colors"
+                  className="rounded-full border border-white/10 px-2 py-1 sm:px-3 text-xs text-neutral-200 hover:border-red-400 hover:text-red-200 transition-colors"
                 >
                   Delete
                 </button>

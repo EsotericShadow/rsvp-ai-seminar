@@ -81,15 +81,15 @@ export default function TemplateEditor({ template, onSave, onCancel }: TemplateE
   };
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
-      <div className="bg-white rounded-lg max-w-7xl w-full max-h-[95vh] overflow-hidden flex flex-col">
+    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-2 sm:p-4 z-50">
+      <div className="bg-white rounded-lg max-w-7xl w-full max-h-[98vh] sm:max-h-[95vh] overflow-hidden flex flex-col">
         {/* Header */}
-        <div className="p-6 border-b border-gray-200 flex justify-between items-center bg-gray-50">
-          <h2 className="text-xl font-semibold">Edit Template</h2>
-          <div className="flex space-x-3">
+        <div className="p-3 sm:p-6 border-b border-gray-200 flex flex-col sm:flex-row sm:justify-between sm:items-center bg-gray-50 gap-3">
+          <h2 className="text-lg sm:text-xl font-semibold">Edit Template</h2>
+          <div className="flex space-x-2 sm:space-x-3">
             <button
               onClick={onCancel}
-              className="px-4 py-2 text-gray-600 hover:text-gray-800 border border-gray-300 rounded-md hover:bg-gray-50"
+              className="px-3 py-2 text-gray-600 hover:text-gray-800 border border-gray-300 rounded-md hover:bg-gray-50 text-sm sm:text-base"
               disabled={isSaving}
             >
               Cancel
@@ -97,7 +97,7 @@ export default function TemplateEditor({ template, onSave, onCancel }: TemplateE
             <button
               onClick={handleSave}
               disabled={isSaving}
-              className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed flex items-center space-x-2"
+              className="px-3 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed flex items-center space-x-2 text-sm sm:text-base"
             >
               {isSaving && <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>}
               <span>{isSaving ? 'Saving...' : 'Save Changes'}</span>
@@ -106,9 +106,9 @@ export default function TemplateEditor({ template, onSave, onCancel }: TemplateE
         </div>
 
         {/* Main Content */}
-        <div className="flex-1 flex overflow-hidden">
+        <div className="flex-1 flex flex-col lg:flex-row overflow-hidden">
           {/* Left Panel - Editor */}
-          <div className="w-1/2 flex flex-col border-r border-gray-200">
+          <div className="w-full lg:w-1/2 flex flex-col border-b lg:border-b-0 lg:border-r border-gray-200">
             {/* Template Info */}
             <div className="p-4 border-b border-gray-200 bg-gray-50">
               <div className="space-y-3">
@@ -208,7 +208,7 @@ export default function TemplateEditor({ template, onSave, onCancel }: TemplateE
           </div>
 
           {/* Right Panel - Preview */}
-          <div className="w-1/2 flex flex-col">
+          <div className="w-full lg:w-1/2 flex flex-col">
             {/* Preview Header */}
             <div className="p-4 border-b border-gray-200 bg-gray-50 flex justify-between items-center">
               <h3 className="font-medium">Live Preview</h3>
