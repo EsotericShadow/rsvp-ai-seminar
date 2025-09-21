@@ -274,23 +274,67 @@ export default function TemplateEditor({ template, onSave, onCancel }: TemplateE
 
             {/* Preview Content */}
             <div className="flex-1 p-4 overflow-y-auto bg-gray-100 min-h-0">
-              <div className={`mx-auto bg-white rounded-lg shadow-sm ${
-                previewMode === 'mobile' ? 'max-w-sm' : 'max-w-2xl'
-              }`}>
-                {/* Email Header Preview */}
-                <div className="p-4 border-b border-gray-200 bg-gray-50 text-sm text-gray-600">
-                  <div><strong>To:</strong> sample@business.com</div>
-                  <div><strong>From:</strong> Gabriel Lacroix &lt;gabriel@evergreenwebsolutions.ca&gt;</div>
-                  <div><strong>Subject:</strong> {formData.subject}</div>
+              {previewMode === 'mobile' ? (
+                // Mobile Email Preview
+                <div className="mx-auto max-w-sm bg-black rounded-lg shadow-sm overflow-hidden">
+                  {/* Mobile Email Client Header */}
+                  <div className="bg-gray-800 text-white p-3 text-sm flex items-center justify-between">
+                    <div className="flex items-center space-x-2">
+                      <div className="w-6 h-6 bg-blue-500 rounded-full"></div>
+                      <span>Mail</span>
+                    </div>
+                    <div className="text-xs text-gray-300">10:30 AM</div>
+                  </div>
+                  
+                  {/* Mobile Email Header */}
+                  <div className="bg-gray-50 p-3 border-b border-gray-200 text-xs">
+                    <div className="font-semibold text-gray-800">{formData.subject}</div>
+                    <div className="text-gray-600 mt-1">Gabriel Lacroix &lt;gabriel@evergreenwebsolutions.ca&gt;</div>
+                    <div className="text-gray-500">to me</div>
+                  </div>
+                  
+                  {/* Mobile Email Body */}
+                  <div 
+                    key={previewKey}
+                    className="p-3 text-sm"
+                    dangerouslySetInnerHTML={{ __html: getPreviewHTML() }}
+                  />
                 </div>
-                
-                {/* Email Body Preview */}
-                <div 
-                  key={previewKey}
-                  className="p-4"
-                  dangerouslySetInnerHTML={{ __html: getPreviewHTML() }}
-                />
-              </div>
+              ) : (
+                // Desktop Email Preview
+                <div className="mx-auto max-w-4xl bg-white rounded-lg shadow-sm border border-gray-200">
+                  {/* Desktop Email Client Header */}
+                  <div className="bg-gray-100 border-b border-gray-200 p-3 flex items-center justify-between">
+                    <div className="flex items-center space-x-4">
+                      <div className="w-8 h-8 bg-blue-500 rounded-full"></div>
+                      <div>
+                        <div className="font-medium text-gray-800">Gmail</div>
+                        <div className="text-xs text-gray-600">Inbox (1)</div>
+                      </div>
+                    </div>
+                    <div className="text-sm text-gray-500">10:30 AM</div>
+                  </div>
+                  
+                  {/* Desktop Email Header */}
+                  <div className="bg-gray-50 p-4 border-b border-gray-200">
+                    <div className="flex items-start justify-between mb-2">
+                      <div className="text-lg font-semibold text-gray-800">{formData.subject}</div>
+                      <div className="text-sm text-gray-500">Today 10:30 AM</div>
+                    </div>
+                    <div className="text-sm text-gray-600">
+                      <div><strong>From:</strong> Gabriel Lacroix &lt;gabriel@evergreenwebsolutions.ca&gt;</div>
+                      <div><strong>To:</strong> me</div>
+                    </div>
+                  </div>
+                  
+                  {/* Desktop Email Body */}
+                  <div 
+                    key={previewKey}
+                    className="p-6"
+                    dangerouslySetInnerHTML={{ __html: getPreviewHTML() }}
+                  />
+                </div>
+              )}
             </div>
           </div>
         </div>
