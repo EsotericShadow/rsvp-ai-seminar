@@ -6,6 +6,9 @@ import type { LeadMineBusiness } from '@/lib/leadMine'
 import { GroupsPanel } from './GroupsPanel'
 import type { MemberDraft } from './GroupsPanel'
 import TemplateEditor from '../TemplateEditor'
+import GlobalHTMLTemplate from '../GlobalHTMLTemplate'
+import HTMLEditor from '../HTMLEditor'
+import TextEditor from '../TextEditor'
 // TemplatesPanel will be implemented inline to match CampaignsView structure
 import { BusinessDirectoryPanel } from './BusinessDirectoryPanel'
 
@@ -294,6 +297,7 @@ export default function CampaignControls({ initialData, defaults }: { initialDat
   const [isSaving, setIsSaving] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [editingTemplate, setEditingTemplate] = useState<Template | null>(null)
+  const [showGlobalTemplate, setShowGlobalTemplate] = useState(false)
   const [notice, setNotice] = useState<string | null>(null)
   const [runningStep, setRunningStep] = useState<{ id: string; mode: 'preview' | 'send' } | null>(null)
 
@@ -746,6 +750,7 @@ export default function CampaignControls({ initialData, defaults }: { initialDat
             onRemove={deleteTemplate}
             onSubmit={saveTemplate}
             isSaving={isSaving}
+            setShowGlobalTemplate={setShowGlobalTemplate}
           />
         )}
 
@@ -755,6 +760,13 @@ export default function CampaignControls({ initialData, defaults }: { initialDat
             template={editingTemplate}
             onSave={saveTemplateFromEditor}
             onCancel={() => setEditingTemplate(null)}
+          />
+        )}
+
+        {/* Global HTML Template Modal */}
+        {showGlobalTemplate && (
+          <GlobalHTMLTemplate
+            onCancel={() => setShowGlobalTemplate(false)}
           />
         )}
       </div>
@@ -1344,6 +1356,7 @@ function TemplatesView({
   onRemove,
   onSubmit,
   isSaving,
+  setShowGlobalTemplate,
 }: {
   templates: Template[]
   draft: TemplateDraft
@@ -1353,6 +1366,7 @@ function TemplatesView({
   onRemove: (id: string) => void
   onSubmit: () => Promise<void>
   isSaving: boolean
+  setShowGlobalTemplate: (show: boolean) => void
 }) {
   // State for filtering and search
   const [searchTerm, setSearchTerm] = useState('')
@@ -1435,9 +1449,17 @@ function TemplatesView({
           <h2 className="text-2xl font-bold text-white">Email Templates</h2>
           <p className="text-sm text-neutral-400">Manage your email templates with advanced filtering and editing</p>
         </div>
-            <div className="text-sm text-neutral-400">
-              {sortedGroups.length} groups, {filteredTemplates.length} of {templates.length} templates
-            </div>
+        <div className="flex items-center space-x-4">
+          <button
+            onClick={() => setShowGlobalTemplate(true)}
+            className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors text-sm font-medium"
+          >
+            Global HTML Template
+          </button>
+          <div className="text-sm text-neutral-400">
+            {sortedGroups.length} groups, {filteredTemplates.length} of {templates.length} templates
+          </div>
+        </div>
       </div>
 
       {/* Filters and Search - Mobile Optimized */}

@@ -1,5 +1,5 @@
 // Global email template with consistent styling
-export function generateEmailHTML(content: {
+export async function generateEmailHTML(content: {
   subject?: string;
   greeting?: string;
   body: string;
@@ -7,6 +7,8 @@ export function generateEmailHTML(content: {
   ctaLink?: string;
   footer?: string;
   inviteToken?: string;
+  businessName?: string;
+  businessId?: string;
 }) {
   const {
     subject = '',
@@ -15,162 +17,152 @@ export function generateEmailHTML(content: {
     ctaText = 'View details & RSVP',
     ctaLink = '#',
     footer = 'Looking forward to seeing you,<br />Gabriel Lacroix<br />Evergreen Web Solutions',
-    inviteToken
+    inviteToken,
+    businessName = 'Valued Customer',
+    businessId = ''
   } = content;
+
+  // Get global template from API
+  let globalTemplate = '';
+  try {
+    const response = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000'}/api/admin/global-template`);
+    if (response.ok) {
+      const data = await response.json();
+      globalTemplate = data.html;
+    }
+  } catch (error) {
+    console.error('Failed to fetch global template:', error);
+  }
+
+  // Fallback to default template if API fails
+  if (!globalTemplate) {
+    globalTemplate = getDefaultTemplate();
+  }
 
   // Add tracking pixel if inviteToken is provided
   const trackingPixel = inviteToken 
     ? `<img src="/api/__pixel?token=${inviteToken}&eid=biz_${inviteToken}" width="1" height="1" style="display:none;" />`
     : '';
 
-  return `
-<!DOCTYPE html>
+  // Replace variables in global template
+  const finalHTML = globalTemplate
+    .replace(/\{\{subject\}\}/g, subject)
+    .replace(/\{\{greeting_title\}\}/g, 'Welcome to Evergreen AI!')
+    .replace(/\{\{greeting_message\}\}/g, greeting || 'Thank you for your interest in our upcoming informational session about practical AI tools for Northern BC businesses.')
+    .replace(/\{\{signature_name\}\}/g, 'Gabriel Lacroix')
+    .replace(/\{\{signature_title\}\}/g, 'AI Solutions Specialist')
+    .replace(/\{\{signature_company\}\}/g, 'Evergreen Web Solutions')
+    .replace(/\{\{signature_location\}\}/g, 'Terrace, BC')
+    .replace(/\{\{main_content_title\}\}/g, 'What You\'ll Learn')
+    .replace(/\{\{main_content_body\}\}/g, body)
+    .replace(/\{\{button_text\}\}/g, ctaText)
+    .replace(/\{\{button_link\}\}/g, ctaLink)
+    .replace(/\{\{additional_info_title\}\}/g, 'Event Details')
+    .replace(/\{\{additional_info_body\}\}/g, 'Date: October 23rd, 2025<br>Time: 6:00 PM - 8:00 PM<br>Location: Terrace, BC<br>Cost: Free (includes coffee & refreshments)<br>Networking: Yes')
+    .replace(/\{\{closing_title\}\}/g, 'Looking Forward')
+    .replace(/\{\{closing_message\}\}/g, 'We\'re excited to share these practical AI solutions with you and help your business grow.')
+    .replace(/\{\{closing_signature\}\}/g, 'Gabriel Lacroix<br>Evergreen Web Solutions<br>Terrace, BC')
+    .replace(/\{\{business_name\}\}/g, businessName)
+    .replace(/\{\{business_id\}\}/g, businessId)
+    .replace(/\{\{invite_link\}\}/g, ctaLink)
+    .replace(/\{\{unsubscribe_link\}\}/g, `/unsubscribe?token=${inviteToken || ''}`);
+
+  // Add tracking pixel to the end
+  return finalHTML + trackingPixel;
+}
+
+// Fallback default template
+function getDefaultTemplate() {
+  return `<!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>${subject}</title>
-  <style>
-    body {
-      margin: 0;
-      padding: 0;
-      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
-      line-height: 1.6;
-      color: #374151;
-      background-color: #f9fafb;
-    }
-    .email-container {
-      max-width: 600px;
-      margin: 0 auto;
-      background-color: #ffffff;
-      border-radius: 8px;
-      overflow: hidden;
-      box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
-    }
-    .header {
-      background: linear-gradient(135deg, #059669 0%, #047857 100%);
-      color: white;
-      padding: 32px 24px;
-      text-align: center;
-    }
-    .header h1 {
-      margin: 0;
-      font-size: 24px;
-      font-weight: 600;
-    }
-    .header p {
-      margin: 8px 0 0 0;
-      font-size: 14px;
-      opacity: 0.9;
-    }
-    .content {
-      padding: 32px 24px;
-    }
-    .greeting {
-      font-size: 16px;
-      font-weight: 500;
-      margin-bottom: 16px;
-      color: #111827;
-    }
-    .body {
-      font-size: 15px;
-      color: #374151;
-      margin-bottom: 24px;
-    }
-    .body p {
-      margin: 0 0 16px 0;
-    }
-    .body p:last-child {
-      margin-bottom: 0;
-    }
-    .cta-button {
-      display: inline-block;
-      background: linear-gradient(135deg, #059669 0%, #047857 100%);
-      color: white;
-      text-decoration: none;
-      padding: 12px 24px;
-      border-radius: 6px;
-      font-weight: 600;
-      font-size: 15px;
-      text-align: center;
-      margin: 16px 0;
-      transition: all 0.2s ease;
-    }
-    .cta-button:hover {
-      background: linear-gradient(135deg, #047857 0%, #065f46 100%);
-      transform: translateY(-1px);
-      box-shadow: 0 4px 8px rgba(5, 150, 105, 0.3);
-    }
-    .footer {
-      padding: 24px;
-      background-color: #f9fafb;
-      border-top: 1px solid #e5e7eb;
-      text-align: center;
-      font-size: 14px;
-      color: #6b7280;
-    }
-    .footer p {
-      margin: 0;
-    }
-    .unsubscribe {
-      margin-top: 16px;
-      font-size: 12px;
-    }
-    .unsubscribe a {
-      color: #6b7280;
-      text-decoration: none;
-    }
-    .unsubscribe a:hover {
-      color: #374151;
-    }
-    @media (max-width: 600px) {
-      .email-container {
-        margin: 0;
-        border-radius: 0;
-      }
-      .header, .content, .footer {
-        padding: 24px 16px;
-      }
-      .header h1 {
-        font-size: 20px;
-      }
-      .cta-button {
-        display: block;
-        text-align: center;
-        margin: 20px 0;
-      }
-    }
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{subject}}</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            line-height: 1.6;
+            color: #374151;
+            background-color: #f8f8f8;
+            margin: 0;
+            padding: 0;
+        }
+        .container {
+            max-width: 600px;
+            margin: 20px auto;
+            background-color: #ffffff;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        .header {
+            background: linear-gradient(to right, #10b981, #059669);
+            color: #ffffff;
+            padding: 30px;
+            text-align: center;
+        }
+        .header h1 {
+            margin: 0;
+            font-size: 28px;
+        }
+        .content {
+            padding: 30px;
+            color: #374151;
+        }
+        .content p {
+            margin-bottom: 15px;
+            color: #374151;
+        }
+        .button-container {
+            text-align: center;
+            margin: 30px 0;
+        }
+        .button {
+            display: inline-block;
+            background-color: #10b981;
+            color: #ffffff;
+            padding: 12px 25px;
+            border-radius: 50px;
+            text-decoration: none;
+            font-weight: bold;
+            font-size: 16px;
+        }
+        .footer {
+            background-color: #f1f1f1;
+            color: #6b7280;
+            padding: 20px 30px;
+            font-size: 12px;
+            text-align: center;
+            border-top: 1px solid #e5e7eb;
+        }
+        .footer a {
+            color: #10b981;
+            text-decoration: none;
+        }
+    </style>
 </head>
 <body>
-  <div class="email-container">
-    <div class="header">
-      <h1>Evergreen AI Seminar</h1>
-      <p>Practical AI Tools for Northern BC Businesses</p>
+    <div class="container">
+        <div class="header">
+            <h1>Evergreen AI Seminar</h1>
+        </div>
+        <div class="content">
+            {{content}}
+            <div class="button-container">
+                <a href="{{button_link}}" class="button">{{button_text}}</a>
+            </div>
+            <p>Looking forward to seeing you,</p>
+            <p>Gabriel Lacroix<br>Evergreen Web Solutions</p>
+        </div>
+        <div class="footer">
+            <p>You are receiving this email because you are a valued business in Northern BC.</p>
+            <p>&copy; 2025 Evergreen Web Solutions. All rights reserved.</p>
+            <p><a href="{{unsubscribe_link}}">Unsubscribe</a></p>
+        </div>
     </div>
-    
-    <div class="content">
-      <div class="greeting">${greeting}</div>
-      
-      <div class="body">
-        ${body}
-      </div>
-      
-      ${ctaLink !== '#' ? `<a href="${ctaLink}" class="cta-button">${ctaText}</a>` : ''}
-    </div>
-    
-    <div class="footer">
-      <p>${footer}</p>
-      <div class="unsubscribe">
-        <a href="/unsubscribe">Unsubscribe</a> | 
-        <a href="mailto:gabriel@evergreenwebsolutions.ca">Contact Us</a>
-      </div>
-    </div>
-  </div>
-  
-  ${trackingPixel}
 </body>
-</html>`.trim();
+</html>`;
 }
 
 // Generate plain text version
