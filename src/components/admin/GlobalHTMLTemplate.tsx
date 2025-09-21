@@ -215,23 +215,24 @@ export default function GlobalHTMLTemplate({ onSave, onCancel }: GlobalHTMLTempl
   const getPreviewHTML = () => {
     return html
       .replace(/\{\{subject\}\}/g, 'Free AI Tools Session - October 23rd')
-      .replace(/\{\{greeting_title\}\}/g, 'Welcome to Evergreen AI!')
-      .replace(/\{\{greeting_message\}\}/g, 'Thank you for your interest in our upcoming informational session about practical AI tools for Northern BC businesses.')
-      .replace(/\{\{signature_name\}\}/g, 'Gabriel Lacroix')
-      .replace(/\{\{signature_title\}\}/g, 'AI Solutions Specialist')
-      .replace(/\{\{signature_company\}\}/g, 'Evergreen Web Solutions')
-      .replace(/\{\{signature_location\}\}/g, 'Terrace, BC')
+      // Individual template variables (these should be empty or minimal to avoid duplication)
+      .replace(/\{\{greeting_title\}\}/g, '') // Empty to avoid duplication with global_hero_title
+      .replace(/\{\{greeting_message\}\}/g, '') // Empty to avoid duplication with global_hero_message
+      .replace(/\{\{signature_name\}\}/g, '') // Empty to avoid duplication with global_signature_name
+      .replace(/\{\{signature_title\}\}/g, '') // Empty to avoid duplication with global_signature_title
+      .replace(/\{\{signature_company\}\}/g, '') // Empty to avoid duplication with global_signature_company
+      .replace(/\{\{signature_location\}\}/g, '') // Empty to avoid duplication with global_signature_location
       .replace(/\{\{main_content_title\}\}/g, 'What You\'ll Learn')
       .replace(/\{\{main_content_body\}\}/g, 'We\'ll cover practical AI tools that can help streamline your business operations, including spreadsheet automation, data analysis, and process optimization. All tools discussed are immediately actionable and cost-effective.')
       .replace(/\{\{button_text\}\}/g, 'RSVP for Free Session')
       .replace(/\{\{button_link\}\}/g, 'https://rsvp.evergreenwebsolutions.ca/rsvp?token=sample')
-      .replace(/\{\{additional_info_title\}\}/g, 'Event Details')
-      .replace(/\{\{additional_info_body\}\}/g, 'Date: October 23rd, 2025<br>Time: 6:00 PM - 8:00 PM<br>Location: Terrace, BC<br>Cost: Free (includes coffee & refreshments)<br>Networking: Yes')
+      .replace(/\{\{additional_info_title\}\}/g, '') // Empty to avoid duplication with global_event_title
+      .replace(/\{\{additional_info_body\}\}/g, '') // Empty to avoid duplication with global event details
       .replace(/\{\{closing_title\}\}/g, 'Looking Forward')
       .replace(/\{\{closing_message\}\}/g, 'We\'re excited to share these practical AI solutions with you and help your business grow.')
-      .replace(/\{\{closing_signature\}\}/g, 'Gabriel Lacroix<br>Evergreen Web Solutions<br>Terrace, BC')
+      .replace(/\{\{closing_signature\}\}/g, '') // Empty to avoid duplication with global signature
       .replace(/\{\{unsubscribe_link\}\}/g, 'https://rsvp.evergreenwebsolutions.ca/unsubscribe?token=sample')
-      // Global template variables
+      // Global template variables (these are the primary content now)
       .replace(/\{\{global_hero_title\}\}/g, 'Welcome to Evergreen AI')
       .replace(/\{\{global_hero_message\}\}/g, 'Thank you for your interest in our upcoming informational session about practical AI tools for Northern BC businesses.')
       .replace(/\{\{global_signature_name\}\}/g, 'Gabriel Lacroix')
@@ -248,7 +249,7 @@ export default function GlobalHTMLTemplate({ onSave, onCancel }: GlobalHTMLTempl
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-start justify-center p-2 sm:p-4 z-50 overflow-y-auto">
-      <div className="bg-white rounded-lg max-w-7xl w-full max-h-[98vh] sm:max-h-[95vh] overflow-hidden flex flex-col my-4 sm:my-8">
+      <div className="bg-white rounded-lg max-w-7xl w-full max-h-[98vh] sm:max-h-[95vh] overflow-y-auto flex flex-col my-4 sm:my-8">
         {/* Header */}
         <div className="p-4 border-b border-gray-200 bg-gray-50 flex justify-between items-center flex-shrink-0">
           <div>
@@ -300,7 +301,7 @@ export default function GlobalHTMLTemplate({ onSave, onCancel }: GlobalHTMLTempl
         </div>
 
         {/* Main Content */}
-        <div className="flex-1 flex min-h-0">
+        <div className="flex-1 flex min-h-0 overflow-y-auto">
           {activeTab === 'html' ? (
             <>
               {/* Left Panel - HTML Editor */}
