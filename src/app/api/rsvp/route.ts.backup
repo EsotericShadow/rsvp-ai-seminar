@@ -4,7 +4,7 @@ import prisma from '@/lib/prisma';
 import { Resend } from 'resend';
 import { createEvent } from 'ics';
 import { cookies, headers } from 'next/headers';
-import * as crypto from 'crypto';
+import crypto from 'crypto';
 import { UAParser } from 'ua-parser-js';
 import { postLeadMineEvent } from '@/lib/leadMine';
 import { recordSendEngagement } from '@/lib/campaigns';
