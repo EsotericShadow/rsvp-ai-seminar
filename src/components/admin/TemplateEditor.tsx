@@ -34,11 +34,11 @@ export default function TemplateEditor({ template, onSave, onCancel }: TemplateE
     content = content.replace(/\{\{invite_link\}\}/g, 'https://rsvp.evergreenwebsolutions.ca/rsvp/sample-business-123');
     content = content.replace(/\{\{.*?\}\}/g, 'Sample Data');
     
-    // Generate preview using global template
+    // Generate preview using global template with the individual template's content
     return await generateEmailHTML({
       subject: formData.subject,
       greeting: 'Hi Sample Business Name,',
-      body: content,
+      body: content, // This is the individual template's htmlBody content
       ctaText: 'View details & RSVP',
       ctaLink: 'https://rsvp.evergreenwebsolutions.ca/rsvp/sample-business-123',
       businessName: 'Sample Business Name',
