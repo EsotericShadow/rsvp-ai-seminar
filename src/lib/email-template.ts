@@ -21,7 +21,6 @@ export async function generateEmailHTML(content: {
   additional_info_body?: string;
   closing_title?: string;
   closing_message?: string;
-  closing_signature?: string;
   // Global template variables
   global_hero_title?: string;
   global_hero_message?: string;
@@ -58,7 +57,6 @@ export async function generateEmailHTML(content: {
     additional_info_body = '',
     closing_title = '',
     closing_message = '',
-    closing_signature = 'Gabriel Lacroix<br>Evergreen Web Solutions<br>Terrace, BC',
     // Global template variables with defaults
     global_hero_title = 'Welcome to Evergreen AI',
     global_hero_message = 'Thank you for your interest in our upcoming informational session about practical AI tools for Northern BC businesses.',
@@ -116,7 +114,6 @@ export async function generateEmailHTML(content: {
     .replace(/\{\{additional_info_body\}\}/g, additional_info_body)
     .replace(/\{\{closing_title\}\}/g, closing_title)
     .replace(/\{\{closing_message\}\}/g, closing_message)
-    .replace(/\{\{closing_signature\}\}/g, closing_signature)
     .replace(/\{\{business_name\}\}/g, businessName)
     .replace(/\{\{business_id\}\}/g, businessId)
     .replace(/\{\{invite_link\}\}/g, ctaLink)
