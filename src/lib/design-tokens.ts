@@ -122,29 +122,29 @@ export const colors = {
     600: '#2563eb',
     700: '#1d4ed8',
   },
-} as const;
+};
 
 // Typography
 export const typography = {
   fontFamily: {
-    sans: ['Inter', 'system-ui', '-apple-system', 'BlinkMacSystemFont', 'Segoe UI', 'Roboto', 'sans-serif'],
-    mono: ['JetBrains Mono', 'Menlo', 'Monaco', 'Consolas', 'Liberation Mono', 'Courier New', 'monospace'],
+    sans: ['Inter', 'system-ui', '-apple-system', 'BlinkMacSystemFont', 'Segoe UI', 'Roboto', 'sans-serif'] as string[],
+    mono: ['JetBrains Mono', 'Menlo', 'Monaco', 'Consolas', 'Liberation Mono', 'Courier New', 'monospace'] as string[],
   },
   
   fontSize: {
-    xs: ['0.75rem', { lineHeight: '1rem' }],      // 12px
-    sm: ['0.875rem', { lineHeight: '1.25rem' }],  // 14px
-    base: ['1rem', { lineHeight: '1.5rem' }],     // 16px
-    lg: ['1.125rem', { lineHeight: '1.75rem' }],  // 18px
-    xl: ['1.25rem', { lineHeight: '1.75rem' }],   // 20px
-    '2xl': ['1.5rem', { lineHeight: '2rem' }],    // 24px
-    '3xl': ['1.875rem', { lineHeight: '2.25rem' }], // 30px
-    '4xl': ['2.25rem', { lineHeight: '2.5rem' }], // 36px
-    '5xl': ['3rem', { lineHeight: '1' }],         // 48px
-    '6xl': ['3.75rem', { lineHeight: '1' }],      // 60px
-    '7xl': ['4.5rem', { lineHeight: '1' }],       // 72px
-    '8xl': ['6rem', { lineHeight: '1' }],         // 96px
-    '9xl': ['8rem', { lineHeight: '1' }],         // 128px
+    xs: ['0.75rem', { lineHeight: '1rem' }] as [string, { lineHeight: string }],
+    sm: ['0.875rem', { lineHeight: '1.25rem' }] as [string, { lineHeight: string }],
+    base: ['1rem', { lineHeight: '1.5rem' }] as [string, { lineHeight: string }],
+    lg: ['1.125rem', { lineHeight: '1.75rem' }] as [string, { lineHeight: string }],
+    xl: ['1.25rem', { lineHeight: '1.75rem' }] as [string, { lineHeight: string }],
+    '2xl': ['1.5rem', { lineHeight: '2rem' }] as [string, { lineHeight: string }],
+    '3xl': ['1.875rem', { lineHeight: '2.25rem' }] as [string, { lineHeight: string }],
+    '4xl': ['2.25rem', { lineHeight: '2.5rem' }] as [string, { lineHeight: string }],
+    '5xl': ['3rem', { lineHeight: '1' }] as [string, { lineHeight: string }],
+    '6xl': ['3.75rem', { lineHeight: '1' }] as [string, { lineHeight: string }],
+    '7xl': ['4.5rem', { lineHeight: '1' }] as [string, { lineHeight: string }],
+    '8xl': ['6rem', { lineHeight: '1' }] as [string, { lineHeight: string }],
+    '9xl': ['8rem', { lineHeight: '1' }] as [string, { lineHeight: string }],
   },
   
   fontWeight: {
@@ -167,7 +167,7 @@ export const typography = {
     wider: '0.05em',
     widest: '0.1em',
   },
-} as const;
+};
 
 // Spacing Scale
 export const spacing = {
@@ -201,7 +201,7 @@ export const spacing = {
   72: '18rem',    // 288px
   80: '20rem',    // 320px
   96: '24rem',    // 384px
-} as const;
+};
 
 // Border Radius
 export const borderRadius = {
@@ -214,7 +214,7 @@ export const borderRadius = {
   '2xl': '1rem',    // 16px
   '3xl': '1.5rem',  // 24px
   full: '9999px',
-} as const;
+};
 
 // Shadows
 export const shadows = {
@@ -226,7 +226,7 @@ export const shadows = {
   '2xl': '0 25px 50px -12px rgb(0 0 0 / 0.25)',
   inner: 'inset 0 2px 4px 0 rgb(0 0 0 / 0.05)',
   none: 'none',
-} as const;
+};
 
 // Glass Effect
 export const glassEffect = {
@@ -242,7 +242,7 @@ export const glassEffect = {
     border: '1px solid rgba(255, 255, 255, 0.1)',
     shadow: '0 8px 32px 0 rgba(0, 0, 0, 0.37)',
   },
-} as const;
+};
 
 // Breakpoints
 export const breakpoints = {
@@ -251,24 +251,24 @@ export const breakpoints = {
   lg: '1024px',
   xl: '1280px',
   '2xl': '1536px',
-} as const;
+};
 
 // Z-Index Scale
 export const zIndex = {
-  hide: -1,
+  hide: '-1',
   auto: 'auto',
-  base: 0,
-  docked: 10,
-  dropdown: 1000,
-  sticky: 1100,
-  banner: 1200,
-  overlay: 1300,
-  modal: 1400,
-  popover: 1500,
-  skipLink: 1600,
-  toast: 1700,
-  tooltip: 1800,
-} as const;
+  base: '0',
+  docked: '10',
+  dropdown: '1000',
+  sticky: '1100',
+  banner: '1200',
+  overlay: '1300',
+  modal: '1400',
+  popover: '1500',
+  skipLink: '1600',
+  toast: '1700',
+  tooltip: '1800',
+};
 
 // Animation Durations
 export const durations = {
@@ -280,7 +280,7 @@ export const durations = {
   500: '500ms',
   700: '700ms',
   1000: '1000ms',
-} as const;
+};
 
 // Easing Functions
 export const easings = {
@@ -290,7 +290,7 @@ export const easings = {
   'in-out': 'cubic-bezier(0.4, 0, 0.2, 1)',
   'bounce-in': 'cubic-bezier(0.68, -0.55, 0.265, 1.55)',
   'bounce-out': 'cubic-bezier(0.175, 0.885, 0.32, 1.275)',
-} as const;
+};
 
 // Component Variants
 export const componentVariants = {
@@ -333,7 +333,7 @@ export const componentVariants = {
       dark: 'bg-neutral-900 border border-neutral-800 shadow-lg',
     },
   },
-} as const;
+};
 
 // Brand Assets
 export const brand = {
@@ -351,4 +351,4 @@ export const brand = {
     icon: '🌲',
     text: 'Evergreen',
   },
-} as const;
+};
