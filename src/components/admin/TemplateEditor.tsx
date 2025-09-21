@@ -187,7 +187,7 @@ export default function TemplateEditor({ template, onSave, onCancel }: TemplateE
                       id="htmlBody"
                       value={formData.htmlBody}
                       onChange={(e) => setFormData(prev => ({ ...prev, htmlBody: e.target.value }))}
-                      className="w-full h-full resize-none border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 font-mono text-sm"
+                      className="w-full h-full resize-none border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 font-mono text-sm text-gray-900 bg-white"
                       placeholder="Enter HTML content..."
                     />
                   </div>
@@ -199,7 +199,7 @@ export default function TemplateEditor({ template, onSave, onCancel }: TemplateE
                   <textarea
                     value={formData.textBody}
                     onChange={(e) => setFormData(prev => ({ ...prev, textBody: e.target.value }))}
-                    className="w-full h-full resize-none border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    className="w-full h-full resize-none border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-900 bg-white"
                     placeholder="Enter plain text content..."
                   />
                 </div>
