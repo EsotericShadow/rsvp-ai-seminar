@@ -9,12 +9,27 @@ import { UAParser } from 'ua-parser-js';
 import { postLeadMineEvent } from '@/lib/leadMine';
 import { recordSendEngagement } from '@/lib/campaigns';
 import { sendRSVPConfirmation } from '@/lib/sendgrid-email';
+import { checkRSVPRateLimit } from '@/lib/rate-limiter';
 
 const resendApiKey = process.env.RESEND_API_KEY;
 const resendClient = resendApiKey ? new Resend(resendApiKey) : null;
 
 export async function POST(req: Request) {
   try {
+    // Rate limiting check
+    const clientIP = headers().get('x-forwarded-for')?.split(',')[0]?.trim() || 'unknown';
+    const rateLimitCheck = checkRSVPRateLimit(clientIP);
+    
+    if (!rateLimitCheck.allowed) {
+      return NextResponse.json(
+        { 
+          message: 'Too many RSVP submissions. Please try again later.',
+          remainingTime: rateLimitCheck.remainingTime 
+        }, 
+        { status: 429 }
+      );
+    }
+
     const body = await req.json();
     const validation = rsvpSchema.safeParse(body);
 
@@ -140,78 +155,97 @@ export async function POST(req: Request) {
       },
     });
 
+    // Handle LeadMine integration asynchronously to avoid blocking RSVP response
     if (campaignToken) {
-      const meta = {
-        rsvpId: rsvp.id,
-        visitorId: vid,
-        sessionId: sid,
-        device,
-        platform: os,
-        browser,
-        country,
-        region,
-        city,
-        capturedAt: new Date().toISOString(),
-        // Comprehensive analytics data for LeadMine
-        analytics: {
-          // Basic device info
-          screenW,
-          screenH,
-          viewportW,
-          viewportH,
-          orientation,
-          dpr,
-          deviceMemory,
-          hardwareConcurrency,
-          maxTouchPoints,
-          // Performance metrics
-          scrollDepth,
-          timeOnPageMs,
-          connection,
-          // Engagement metrics
-          engagementScore,
-          pageViews,
-          sessionDuration,
-          bounceRate,
-          interactionCounts,
-          // Marketing attribution
-          utmSource,
-          utmMedium,
-          utmCampaign,
-          utmTerm,
-          utmContent,
-          referrer: referer,
-          // RSVP specific data
-          attendanceStatus: values.attendanceStatus,
-          attendeeCount: values.attendanceStatus === 'YES' ? (values.attendeeCount ?? 1) : 0,
-          wantsResources: values.wantsResources,
-          wantsAudit: values.wantsAudit,
-          referralSource: values.referralSource,
-        },
-      };
-      postLeadMineEvent({ token: campaignToken, type: 'rsvp', meta }).catch((err) => {
-        console.error('LeadMine RSVP event failed', err);
-      });
-      recordSendEngagement({ inviteToken: campaignToken, type: 'rsvp', at: new Date() }).catch((err) => {
-        console.error('Campaign send RSVP tracking failed', err);
+      // Don't await these calls - let them run in background
+      setImmediate(async () => {
+        try {
+          const meta = {
+            rsvpId: rsvp.id,
+            visitorId: vid,
+            sessionId: sid,
+            device,
+            platform: os,
+            browser,
+            country,
+            region,
+            city,
+            capturedAt: new Date().toISOString(),
+            // Comprehensive analytics data for LeadMine
+            analytics: {
+              // Basic device info
+              screenW,
+              screenH,
+              viewportW,
+              viewportH,
+              orientation,
+              dpr,
+              deviceMemory,
+              hardwareConcurrency,
+              maxTouchPoints,
+              // Performance metrics
+              scrollDepth,
+              timeOnPageMs,
+              connection,
+              // Engagement metrics
+              engagementScore,
+              pageViews,
+              sessionDuration,
+              bounceRate,
+              interactionCounts,
+              // Marketing attribution
+              utmSource,
+              utmMedium,
+              utmCampaign,
+              utmTerm,
+              utmContent,
+              referrer: referer,
+              // RSVP specific data
+              attendanceStatus: values.attendanceStatus,
+              attendeeCount: values.attendanceStatus === 'YES' ? (values.attendeeCount ?? 1) : 0,
+              wantsResources: values.wantsResources,
+              wantsAudit: values.wantsAudit,
+              referralSource: values.referralSource,
+            },
+          };
+
+          // Run LeadMine calls in parallel with timeout
+          const leadMinePromise = postLeadMineEvent({ token: campaignToken, type: 'rsvp', meta });
+          const engagementPromise = recordSendEngagement({ inviteToken: campaignToken, type: 'rsvp', at: new Date() });
+
+          // Set timeout for LeadMine calls (5 seconds max)
+          const timeoutPromise = new Promise((_, reject) => 
+            setTimeout(() => reject(new Error('LeadMine timeout')), 5000)
+          );
+
+          await Promise.race([
+            Promise.allSettled([leadMinePromise, engagementPromise]),
+            timeoutPromise
+          ]);
+
+        } catch (error) {
+          console.error('LeadMine integration failed:', error);
+          // Don't throw - this shouldn't affect RSVP success
+        }
       });
     }
 
-    // Send confirmation email
-    try {
-      const emailResult = await sendRSVPConfirmation({
-        to: values.email,
-        name: fullName,
-        rsvpId: rsvp.id
-      });
+    // Send confirmation email asynchronously to avoid blocking response
+    setImmediate(async () => {
+      try {
+        const emailResult = await sendRSVPConfirmation({
+          to: values.email,
+          name: fullName,
+          rsvpId: rsvp.id
+        });
 
-      if (!emailResult.success) {
-        console.error('Failed to send confirmation email:', emailResult.error);
-        // Don't fail the RSVP if email fails, but log it
+        if (!emailResult.success) {
+          console.error('Failed to send confirmation email:', emailResult.error);
+        }
+      } catch (emailError) {
+        console.error('Email sending error:', emailError);
       }
-    } catch (emailError) {
-      console.error('Email sending error:', emailError);
-    }
+    });
 
     // Generate ICS calendar file
     let icsUrl = null;

@@ -3,7 +3,7 @@
 import { useState } from 'react';
 import { useForm, Controller } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { rsvpSchema, RsvpFormValues } from '@/lib/validators';
+import { coreRsvpFormSchema, RsvpFormValues } from '@/lib/validators';
 
 // PhoneField component
 function PhoneField({
@@ -113,7 +113,7 @@ export function RsvpForm() {
   const [currentStep, setCurrentStep] = useState(0);
 
   const form = useForm<RsvpFormValues>({
-    resolver: zodResolver(rsvpSchema),
+    resolver: zodResolver(coreRsvpFormSchema),
     mode: 'onTouched', // Show errors on blur
     defaultValues: {
       firstName: '',

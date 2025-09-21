@@ -31,7 +31,6 @@ interface TemplateFormData {
   additional_info_body: string;
   closing_title: string;
   closing_message: string;
-  closing_signature: string;
 }
 
 export default function TemplateEditor({ template, onSave, onCancel }: TemplateEditorProps) {
@@ -55,7 +54,6 @@ export default function TemplateEditor({ template, onSave, onCancel }: TemplateE
     additional_info_body: '',
     closing_title: '',
     closing_message: '',
-    closing_signature: 'Gabriel Lacroix<br>Evergreen Web Solutions<br>Terrace, BC',
   });
   
   const [isSaving, setIsSaving] = useState(false);
@@ -91,7 +89,6 @@ export default function TemplateEditor({ template, onSave, onCancel }: TemplateE
       additional_info_body: formData.additional_info_body,
       closing_title: formData.closing_title,
       closing_message: formData.closing_message,
-      closing_signature: formData.closing_signature,
       businessName: 'Sample Business Name',
       businessId: 'sample-business-123',
       // Global template variables (will use defaults from email-template.ts)
@@ -168,7 +165,6 @@ export default function TemplateEditor({ template, onSave, onCancel }: TemplateE
         additional_info_body: formData.additional_info_body,
         closing_title: formData.closing_title,
         closing_message: formData.closing_message,
-        closing_signature: formData.closing_signature,
       });
     } catch (error) {
       console.error('Error saving template:', error);
@@ -406,16 +402,6 @@ export default function TemplateEditor({ template, onSave, onCancel }: TemplateE
                             className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-900 bg-white"
                             rows={2}
                             placeholder="e.g., We're excited to share these practical AI solutions with you..."
-                          />
-                        </div>
-                        <div>
-                          <label className="block text-sm font-medium text-gray-700 mb-1">Closing Signature</label>
-                          <textarea
-                            value={formData.closing_signature}
-                            onChange={(e) => setFormData(prev => ({ ...prev, closing_signature: e.target.value }))}
-                            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-900 bg-white"
-                            rows={2}
-                            placeholder="e.g., Gabriel Lacroix<br>Evergreen Web Solutions<br>Terrace, BC"
                           />
                         </div>
                       </div>
