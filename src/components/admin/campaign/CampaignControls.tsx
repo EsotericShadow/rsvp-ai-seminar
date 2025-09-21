@@ -564,9 +564,13 @@ export default function CampaignControls({ initialData, defaults }: { initialDat
         },
         {
           onSuccess: () => {
+            console.log('Template saved successfully:', updatedTemplate)
             setEditingTemplate(null)
             setNotice('Template updated successfully.')
             refreshDashboard()
+          },
+          onError: (error) => {
+            console.error('Error saving template:', error)
           },
         },
       )
