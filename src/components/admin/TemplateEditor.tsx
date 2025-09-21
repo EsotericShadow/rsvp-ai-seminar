@@ -81,8 +81,9 @@ export default function TemplateEditor({ template, onSave, onCancel }: TemplateE
   };
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-2 sm:p-4 z-50">
-      <div className="bg-white rounded-lg max-w-7xl w-full max-h-[98vh] sm:max-h-[95vh] overflow-hidden flex flex-col">
+    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-start justify-center p-2 sm:p-4 z-50 overflow-y-auto">
+      <div className="bg-white rounded-lg max-w-7xl w-full max-h-[98vh] sm:max-h-[95vh] overflow-hidden flex flex-col my-4 sm:my-8">
+        <form onSubmit={(e) => { e.preventDefault(); handleSave(); }}>
         {/* Header */}
         <div className="p-3 sm:p-6 border-b border-gray-200 flex flex-col sm:flex-row sm:justify-between sm:items-center bg-gray-50 gap-3">
           <h2 className="text-lg sm:text-xl font-semibold">Edit Template</h2>
@@ -95,7 +96,7 @@ export default function TemplateEditor({ template, onSave, onCancel }: TemplateE
               Cancel
             </button>
             <button
-              onClick={handleSave}
+              type="submit"
               disabled={isSaving}
               className="px-3 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed flex items-center space-x-2 text-sm sm:text-base"
             >
@@ -106,9 +107,9 @@ export default function TemplateEditor({ template, onSave, onCancel }: TemplateE
         </div>
 
         {/* Main Content */}
-        <div className="flex-1 flex flex-col lg:flex-row overflow-hidden">
+        <div className="flex-1 flex flex-col lg:flex-row overflow-auto">
           {/* Left Panel - Editor */}
-          <div className="w-full lg:w-1/2 flex flex-col border-b lg:border-b-0 lg:border-r border-gray-200">
+          <div className="w-full lg:w-1/2 flex flex-col border-b lg:border-b-0 lg:border-r border-gray-200 min-h-0">
             {/* Template Info */}
             <div className="p-4 border-b border-gray-200 bg-gray-50">
               <div className="space-y-3">
@@ -162,11 +163,11 @@ export default function TemplateEditor({ template, onSave, onCancel }: TemplateE
             </div>
 
             {/* Editor */}
-            <div className="flex-1 flex flex-col">
+            <div className="flex-1 flex flex-col min-h-0">
               {activeTab === 'html' && (
                 <>
                   {/* Variable Insertion */}
-                  <div className="p-3 border-b border-gray-200 bg-gray-50">
+                  <div className="p-3 border-b border-gray-200 bg-gray-50 flex-shrink-0">
                     <div className="flex flex-wrap gap-2">
                       <span className="text-sm text-gray-600 mr-2">Insert variables:</span>
                       {['{{business_name}}', '{{business_id}}', '{{rsvp_link}}'].map(variable => (
@@ -182,7 +183,7 @@ export default function TemplateEditor({ template, onSave, onCancel }: TemplateE
                   </div>
                   
                   {/* HTML Editor */}
-                  <div className="flex-1 p-4">
+                  <div className="flex-1 p-4 min-h-0">
                     <textarea
                       id="htmlBody"
                       value={formData.htmlBody}
@@ -195,7 +196,7 @@ export default function TemplateEditor({ template, onSave, onCancel }: TemplateE
               )}
 
               {activeTab === 'text' && (
-                <div className="flex-1 p-4">
+                <div className="flex-1 p-4 min-h-0">
                   <textarea
                     value={formData.textBody}
                     onChange={(e) => setFormData(prev => ({ ...prev, textBody: e.target.value }))}
@@ -208,9 +209,9 @@ export default function TemplateEditor({ template, onSave, onCancel }: TemplateE
           </div>
 
           {/* Right Panel - Preview */}
-          <div className="w-full lg:w-1/2 flex flex-col">
+          <div className="w-full lg:w-1/2 flex flex-col min-h-0">
             {/* Preview Header */}
-            <div className="p-4 border-b border-gray-200 bg-gray-50 flex justify-between items-center">
+            <div className="p-4 border-b border-gray-200 bg-gray-50 flex justify-between items-center flex-shrink-0">
               <h3 className="font-medium">Live Preview</h3>
               <div className="flex space-x-2">
                 <button
@@ -237,7 +238,7 @@ export default function TemplateEditor({ template, onSave, onCancel }: TemplateE
             </div>
 
             {/* Preview Content */}
-            <div className="flex-1 p-4 overflow-auto bg-gray-100">
+            <div className="flex-1 p-4 overflow-auto bg-gray-100 min-h-0">
               <div className={`mx-auto bg-white rounded-lg shadow-sm ${
                 previewMode === 'mobile' ? 'max-w-sm' : 'max-w-2xl'
               }`}>
@@ -257,6 +258,7 @@ export default function TemplateEditor({ template, onSave, onCancel }: TemplateE
             </div>
           </div>
         </div>
+        </form>
       </div>
     </div>
   );
