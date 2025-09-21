@@ -1374,29 +1374,58 @@ function TemplatesView({
     return variantMatch ? variantMatch.split(' ')[1] : null
   }).filter(Boolean))].sort()
 
-  // Filter and sort templates
-  const filteredTemplates = templates
-    .filter(template => {
-      const matchesSearch = template.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                           template.subject.toLowerCase().includes(searchTerm.toLowerCase())
-      const matchesIndustry = !industryFilter || template.name.startsWith(industryFilter)
-      const matchesEmail = !emailFilter || template.name.includes(`Email ${emailFilter}`)
-      const matchesVariant = !variantFilter || template.name.includes(`Variant ${variantFilter}`)
-      
-      return matchesSearch && matchesIndustry && matchesEmail && matchesVariant
-    })
-    .sort((a, b) => {
-      switch (sortBy) {
-        case 'name':
-          return a.name.localeCompare(b.name)
-        case 'created':
-          return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
-        case 'updated':
-          return new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime()
-        default:
-          return 0
-      }
-    })
+        // Filter templates
+        const filteredTemplates = templates.filter(template => {
+          const matchesSearch = template.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                               template.subject.toLowerCase().includes(searchTerm.toLowerCase())
+          const matchesIndustry = !industryFilter || template.name.startsWith(industryFilter)
+          const matchesEmail = !emailFilter || template.name.includes(`Email ${emailFilter}`)
+          const matchesVariant = !variantFilter || template.name.includes(`Variant ${variantFilter}`)
+          
+          return matchesSearch && matchesIndustry && matchesEmail && matchesVariant
+        })
+
+        // Group templates by industry and email sequence
+        const groupedTemplates = filteredTemplates.reduce((groups, template) => {
+          const parts = template.name.split(' - ')
+          const industry = parts[0] || 'Unknown'
+          const emailMatch = parts.find(p => p.includes('Email'))
+          const emailNum = emailMatch ? emailMatch.split(' ')[1] || '0' : '0'
+          
+          const groupKey = `${industry} - Email ${emailNum}`
+          
+          if (!groups[groupKey]) {
+            groups[groupKey] = {
+              industry,
+              emailNum: parseInt(emailNum) || 0,
+              templates: []
+            }
+          }
+          
+          groups[groupKey].templates.push(template)
+          return groups
+        }, {} as Record<string, { industry: string; emailNum: number; templates: Template[] }>)
+
+        // Sort groups and templates within groups
+        const sortedGroups = Object.entries(groupedTemplates)
+          .sort(([aKey, aGroup], [bKey, bGroup]) => {
+            // First sort by industry
+            if (aGroup.industry !== bGroup.industry) {
+              return aGroup.industry.localeCompare(bGroup.industry)
+            }
+            // Then by email number
+            return aGroup.emailNum - bGroup.emailNum
+          })
+          .map(([key, group]) => ({
+            key,
+            ...group,
+            templates: group.templates.sort((a, b) => {
+              // Sort variants: A, B, C, then non-variant
+              const aVariant = a.name.includes('Variant A') ? 1 : a.name.includes('Variant B') ? 2 : a.name.includes('Variant C') ? 3 : 4
+              const bVariant = b.name.includes('Variant A') ? 1 : b.name.includes('Variant B') ? 2 : b.name.includes('Variant C') ? 3 : 4
+              return aVariant - bVariant
+            })
+          }))
 
   return (
     <div className="space-y-6">
@@ -1406,9 +1435,9 @@ function TemplatesView({
           <h2 className="text-2xl font-bold text-white">Email Templates</h2>
           <p className="text-sm text-neutral-400">Manage your email templates with advanced filtering and editing</p>
         </div>
-        <div className="text-sm text-neutral-400">
-          {filteredTemplates.length} of {templates.length} templates
-        </div>
+            <div className="text-sm text-neutral-400">
+              {sortedGroups.length} groups, {filteredTemplates.length} of {templates.length} templates
+            </div>
       </div>
 
       {/* Filters and Search - Mobile Optimized */}
@@ -1484,42 +1513,67 @@ function TemplatesView({
         </div>
       </div>
 
-      {/* Templates List - Mobile Optimized */}
-      <div className="space-y-3">
-        {filteredTemplates.map((template) => (
-          <div key={template.id} className="rounded-xl border border-white/10 bg-black/40 p-3 sm:p-4 hover:bg-black/60 transition-colors">
-            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
-              <div className="flex-1 min-w-0">
-                <h3 className="text-sm sm:text-base font-semibold text-white break-words">{template.name}</h3>
-                <p className="text-xs sm:text-sm text-neutral-400 mt-1 break-words">Subject: {template.subject}</p>
-                <p className="text-xs text-neutral-500 mt-1">Created: {new Date(template.createdAt).toLocaleDateString()}</p>
+      {/* Grouped Templates List */}
+      <div className="space-y-6">
+        {sortedGroups.map((group) => (
+          <div key={group.key} className="space-y-3">
+            {/* Group Header */}
+            <div className="flex items-center justify-between">
+              <h3 className="text-lg font-semibold text-white">
+                {group.industry} - Email {group.emailNum}
+              </h3>
+              <div className="text-sm text-neutral-400">
+                {group.templates.length} variant{group.templates.length !== 1 ? 's' : ''}
               </div>
-              <div className="flex flex-wrap gap-2 flex-shrink-0">
-                <button
-                  onClick={() => onEdit(template)}
-                  className="rounded-full border border-white/10 px-2 py-1 sm:px-3 text-xs text-neutral-200 hover:border-emerald-400 hover:text-emerald-200 transition-colors"
-                >
-                  Edit
-                </button>
-                <button
-                  onClick={() => onDuplicate(template)}
-                  className="rounded-full border border-white/10 px-2 py-1 sm:px-3 text-xs text-neutral-200 hover:border-blue-400 hover:text-blue-200 transition-colors"
-                >
-                  Copy
-                </button>
-                <button
-                  onClick={() => onRemove(template.id)}
-                  className="rounded-full border border-white/10 px-2 py-1 sm:px-3 text-xs text-neutral-200 hover:border-red-400 hover:text-red-200 transition-colors"
-                >
-                  Delete
-                </button>
-              </div>
+            </div>
+            
+            {/* Templates in Group */}
+            <div className="space-y-2">
+              {group.templates.map((template) => (
+                <div key={template.id} className="rounded-lg border border-white/10 bg-black/40 p-3 hover:bg-black/60 transition-colors">
+                  <div className="flex items-center justify-between gap-4">
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-center gap-2">
+                        <h4 className="text-sm font-medium text-white truncate">
+                          {template.name.split(' - ').slice(-1)[0]}
+                        </h4>
+                        <span className="text-xs text-neutral-500">
+                          {template.name.includes('Variant A') ? 'A' : 
+                           template.name.includes('Variant B') ? 'B' : 
+                           template.name.includes('Variant C') ? 'C' : 'Base'}
+                        </span>
+                      </div>
+                      <p className="text-xs text-neutral-400 mt-1 truncate">Subject: {template.subject}</p>
+                    </div>
+                    <div className="flex gap-1 flex-shrink-0">
+                      <button
+                        onClick={() => onEdit(template)}
+                        className="rounded-full border border-white/10 px-2 py-1 text-xs text-neutral-200 hover:border-emerald-400 hover:text-emerald-200 transition-colors"
+                      >
+                        Edit
+                      </button>
+                      <button
+                        onClick={() => onDuplicate(template)}
+                        className="rounded-full border border-white/10 px-2 py-1 text-xs text-neutral-200 hover:border-blue-400 hover:text-blue-200 transition-colors"
+                      >
+                        Copy
+                      </button>
+                      <button
+                        onClick={() => onRemove(template.id)}
+                        className="rounded-full border border-white/10 px-2 py-1 text-xs text-neutral-200 hover:border-red-400 hover:text-red-200 transition-colors"
+                      >
+                        Del
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              ))}
             </div>
           </div>
         ))}
       </div>
 
-      {filteredTemplates.length === 0 && (
+      {sortedGroups.length === 0 && (
         <div className="text-center py-12">
           <p className="text-neutral-400">No templates found matching your filters.</p>
         </div>
@@ -1539,3 +1593,4 @@ We're hosting Evergreen AI's private seminar in Terrace and would love to see yo
 
 Looking forward to seeing you,
 Evergreen AI Partnerships Team`
+
