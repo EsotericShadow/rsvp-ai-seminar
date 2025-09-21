@@ -295,6 +295,17 @@ model GlobalTemplateSettings {
   @@map("global_template_settings")
 }
 
+model GlobalHTMLTemplate {
+  id        String   @id @default(cuid())
+  html      String   @db.Text
+  version   Int      @default(1)
+  isActive  Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("global_html_template")
+}
+
 enum CampaignSendStatus {
   PENDING
   SENDING

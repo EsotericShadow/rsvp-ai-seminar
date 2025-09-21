@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
+import prisma from '@/lib/prisma';
 
-// Store global template in memory for now (in production, use database)
-let globalTemplate = `<!DOCTYPE html>
+const defaultGlobalTemplate = `<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="utf-8" />
@@ -215,7 +215,23 @@ let globalTemplate = `<!DOCTYPE html>
 
 export async function GET() {
   try {
-    return NextResponse.json({ html: globalTemplate });
+    // Get the active global HTML template from database
+    let globalTemplate = await prisma.globalHTMLTemplate.findFirst({
+      where: { isActive: true },
+      orderBy: { createdAt: 'desc' }
+    });
+
+    // If no template exists, create the default one
+    if (!globalTemplate) {
+      globalTemplate = await prisma.globalHTMLTemplate.create({
+        data: {
+          html: defaultGlobalTemplate,
+          isActive: true
+        }
+      });
+    }
+
+    return NextResponse.json({ html: globalTemplate.html });
   } catch (error) {
     console.error('Error fetching global template:', error);
     return NextResponse.json({ error: 'Failed to fetch global template' }, { status: 500 });
@@ -230,12 +246,24 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: 'HTML content is required' }, { status: 400 });
     }
 
-    // Update global template
-    globalTemplate = html;
+    // Deactivate all existing templates
+    await prisma.globalHTMLTemplate.updateMany({
+      where: { isActive: true },
+      data: { isActive: false }
+    });
+
+    // Create new active template
+    const newTemplate = await prisma.globalHTMLTemplate.create({
+      data: {
+        html: html,
+        isActive: true
+      }
+    });
 
     return NextResponse.json({ 
       message: 'Global template updated successfully',
-      html: globalTemplate 
+      html: newTemplate.html,
+      id: newTemplate.id
     });
   } catch (error) {
     console.error('Error updating global template:', error);
