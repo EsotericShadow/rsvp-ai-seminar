@@ -2,6 +2,8 @@ import { NextResponse } from "next/server";
 import prisma from "@/lib/prisma";
 import { subDays, startOfDay, endOfDay } from "date-fns";
 
+export const dynamic = 'force-dynamic';
+
 export async function GET(req: Request) {
   try {
     const url = new URL(req.url);
@@ -26,11 +28,11 @@ export async function GET(req: Request) {
 
     // 1. OVERALL CAMPAIGN METRICS
     const [totalJobs, sentJobs, failedJobs, scheduledJobs, processingJobs] = await Promise.all([
-      prisma.emailJob.count({ where: campaignWhereClause }),
-      prisma.emailJob.count({ where: { ...campaignWhereClause, status: "sent" } }),
-      prisma.emailJob.count({ where: { ...campaignWhereClause, status: "failed" } }),
-      prisma.emailJob.count({ where: { ...campaignWhereClause, status: "scheduled" } }),
-      prisma.emailJob.count({ where: { ...campaignWhereClause, status: "processing" } }),
+      prisma.emailJob.count({ where: campaignWhereClause }).catch(() => 0),
+      prisma.emailJob.count({ where: { ...campaignWhereClause, status: "sent" } }).catch(() => 0),
+      prisma.emailJob.count({ where: { ...campaignWhereClause, status: "failed" } }).catch(() => 0),
+      prisma.emailJob.count({ where: { ...campaignWhereClause, status: "scheduled" } }).catch(() => 0),
+      prisma.emailJob.count({ where: { ...campaignWhereClause, status: "processing" } }).catch(() => 0),
     ]);
 
     // 2. EMAIL EVENTS ANALYTICS
@@ -49,7 +51,7 @@ export async function GET(req: Request) {
           }
         }
       }
-    });
+    }).catch(() => []);
 
     // Calculate email engagement metrics
     const opens = emailEvents.filter(e => e.type === 'opened');

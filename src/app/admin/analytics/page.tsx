@@ -4,6 +4,7 @@ import { redirect } from 'next/navigation'
 
 import { getAdminConfig, getSessionCookieName, verifySessionToken } from '@/lib/admin-auth'
 import prisma from '@/lib/prisma'
+import AdminNavigation from '@/components/admin/AdminNavigation'
 import AnalyticsClientWrapper from '@/components/admin/analytics/AnalyticsClientWrapper'
 
 export const dynamic = 'force-dynamic'
@@ -145,11 +146,26 @@ export default async function AdminAnalyticsPage({ searchParams }: { searchParam
   }
 
   return (
-    <AnalyticsClientWrapper
-      initialTab={tab}
-      overviewStats={overviewStats}
-      rsvps={rsvps}
-      visitors={visits}
-    />
+    <div className="min-h-screen bg-neutral-950 text-neutral-100">
+      <AdminNavigation />
+      <div className="mx-auto flex max-w-7xl flex-col gap-6 px-3 py-8 sm:px-4 sm:py-12 lg:px-8">
+        <header className="space-y-2">
+          <p className="text-xs uppercase tracking-[0.35em] text-emerald-300/80">Evergreen Admin</p>
+          <h1 className="text-2xl font-semibold sm:text-3xl lg:text-4xl">Analytics Dashboard</h1>
+          <p className="text-sm text-neutral-400 sm:text-base">
+            Comprehensive analytics and insights for your RSVP campaigns and website performance.
+          </p>
+        </header>
+
+        <div className="overflow-hidden">
+          <AnalyticsClientWrapper
+            initialTab={tab}
+            overviewStats={overviewStats}
+            rsvps={rsvps}
+            visitors={visits}
+          />
+        </div>
+      </div>
+    </div>
   )
 }
