@@ -50,20 +50,20 @@ export async function generateEmailHTML(content: {
   // Replace variables in global template
   const finalHTML = globalTemplate
     .replace(/\{\{subject\}\}/g, subject)
-    .replace(/\{\{greeting_title\}\}/g, 'Welcome to Evergreen AI!')
-    .replace(/\{\{greeting_message\}\}/g, greeting || 'Thank you for your interest in our upcoming informational session about practical AI tools for Northern BC businesses.')
+    .replace(/\{\{greeting_title\}\}/g, '') // Remove duplicate greeting title
+    .replace(/\{\{greeting_message\}\}/g, '') // Remove duplicate greeting message
     .replace(/\{\{signature_name\}\}/g, 'Gabriel Lacroix')
     .replace(/\{\{signature_title\}\}/g, 'AI Solutions Specialist')
     .replace(/\{\{signature_company\}\}/g, 'Evergreen Web Solutions')
     .replace(/\{\{signature_location\}\}/g, 'Terrace, BC')
-    .replace(/\{\{main_content_title\}\}/g, 'What You\'ll Learn')
+    .replace(/\{\{main_content_title\}\}/g, '') // Remove duplicate content title
     .replace(/\{\{main_content_body\}\}/g, body) // This should be the individual template's htmlBody content
     .replace(/\{\{button_text\}\}/g, ctaText)
     .replace(/\{\{button_link\}\}/g, ctaLink)
-    .replace(/\{\{additional_info_title\}\}/g, 'Event Details')
-    .replace(/\{\{additional_info_body\}\}/g, 'Date: October 23rd, 2025<br>Time: 6:00 PM - 8:00 PM<br>Location: Terrace, BC<br>Cost: Free (includes coffee & refreshments)<br>Networking: Yes')
-    .replace(/\{\{closing_title\}\}/g, 'Looking Forward')
-    .replace(/\{\{closing_message\}\}/g, 'We\'re excited to share these practical AI solutions with you and help your business grow.')
+    .replace(/\{\{additional_info_title\}\}/g, '') // Remove duplicate additional info
+    .replace(/\{\{additional_info_body\}\}/g, '') // Remove duplicate additional info
+    .replace(/\{\{closing_title\}\}/g, '') // Remove duplicate closing title
+    .replace(/\{\{closing_message\}\}/g, '') // Remove duplicate closing message
     .replace(/\{\{closing_signature\}\}/g, 'Gabriel Lacroix<br>Evergreen Web Solutions<br>Terrace, BC')
     .replace(/\{\{business_name\}\}/g, businessName)
     .replace(/\{\{business_id\}\}/g, businessId)
