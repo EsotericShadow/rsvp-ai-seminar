@@ -1524,10 +1524,10 @@ function TemplatesView({
   )
 }
 
-const defaultHtml = `<p>Hi {{business_name}},</p>
-<p>We're hosting Evergreen AI's private seminar in Terrace and reserved a seat for your team. The agenda covers practical AI workflows for Northern BC businesses.</p>
-<p><a href="{{invite_link}}" style="display:inline-block;padding:12px 20px;border-radius:999px;background:#22c55e;color:#0f172a;font-weight:600;text-decoration:none;">View details & RSVP</a></p>
-<p>Looking forward to seeing you,<br />Evergreen AI Partnerships Team</p>`
+const defaultHtml = `<p style="color: #374151;">Hi {{business_name}},</p>
+<p style="color: #374151;">We're hosting Evergreen AI's private seminar in Terrace and reserved a seat for your team. The agenda covers practical AI workflows for Northern BC businesses.</p>
+<p><a href="{{invite_link}}" style="display:inline-block;padding:12px 20px;border-radius:999px;background:#22c55e;color:#ffffff;font-weight:600;text-decoration:none;">View details & RSVP</a></p>
+<p style="color: #374151;">Looking forward to seeing you,<br />Evergreen AI Partnerships Team</p>`
 
 const defaultText = `Hi {{business_name}},
 
