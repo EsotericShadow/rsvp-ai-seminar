@@ -10,9 +10,37 @@ export async function GET(req: Request) {
   const { searchParams } = new URL(req.url)
   const eid = searchParams.get('eid') || undefined
   const campaign = searchParams.get('campaign') || undefined
+  const inviteToken = searchParams.get('token') || undefined
 
-  // You can log an "open" Visit or Event here if you want
-  // await prisma.event.create({ data: { type: 'email_open', eid, campaign, ... } })
+  try {
+    // Record email open in Visit table
+    if (eid || inviteToken) {
+      await prisma.visit.create({
+        data: {
+          visitorId: 'email_pixel',
+          sessionId: 'email_pixel',
+          path: '/api/__pixel',
+          query: req.url.split('?')[1] || '',
+          eid,
+          utmCampaign: campaign,
+          userAgent: req.headers.get('user-agent') || undefined,
+          device: 'email_client',
+          platform: 'email',
+        },
+      })
+    }
+
+    // Update CampaignSend openedAt if we have inviteToken
+    if (inviteToken) {
+      await prisma.campaignSend.updateMany({
+        where: { inviteToken },
+        data: { openedAt: new Date() },
+      })
+    }
+  } catch (error) {
+    // Stay silent on errors to not break email rendering
+    console.error('Email pixel tracking error:', error)
+  }
 
   return new NextResponse(PIXEL, {
     headers: {
