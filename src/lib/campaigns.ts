@@ -23,13 +23,13 @@ function assertResendConfigured() {
   }
 }
 
-function inviteLinkFromToken(token: string) {
+export function inviteLinkFromToken(token: string) {
   const url = new URL(linkBase)
   url.searchParams.set('eid', `biz_${token}`)
   return url.toString()
 }
 
-function renderTemplate(
+export function renderTemplate(
   template: { htmlBody: string; textBody: string | null },
   context: Record<string, string>,
 ) {
@@ -39,8 +39,18 @@ function renderTemplate(
       input,
     )
 
+  // Add tracking pixel to HTML if it doesn't exist
+  let html = replaceTokens(template.htmlBody)
+  if (context.inviteToken && !html.includes('/api/__pixel')) {
+    const trackingPixel = `<img src="/api/__pixel?token=${context.inviteToken}&eid=biz_${context.inviteToken}" width="1" height="1" style="display:none;" />`
+    html = html.replace('</body>', `${trackingPixel}</body>`)
+    if (!html.includes('</body>')) {
+      html += trackingPixel
+    }
+  }
+
   return {
-    html: replaceTokens(template.htmlBody),
+    html,
     text: template.textBody ? replaceTokens(template.textBody) : undefined,
   }
 }

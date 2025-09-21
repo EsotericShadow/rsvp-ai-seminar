@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import prisma from "@/lib/prisma";
 import { z } from "zod";
+import { sendCampaignEmail } from "@/lib/email-sender";
 
 const Body = z.object({
   limit: z.number().int().min(1).max(200).default(50),
@@ -60,38 +61,43 @@ async function processCronJobs({ limit = 50, campaignId }: { limit?: number; cam
   // Nothing locked
   if (locked.length === 0) return NextResponse.json({ processed: 0 });
 
-  // 3) Send (call your existing runSchedule)
+  // 3) Send emails using actual email sender
   let sent = 0, failed = 0;
   for (const id of locked) {
     try {
-      // IMPORTANT: replace with your sender abstraction
-      // e.g., await runSchedule(id)
-      // For now, simulate with your existing lib if you have one:
-      // await runSchedule(id);
-
-      // ---- PLACEHOLDER: remove once wired to your sender ----
-      // If you already have a sender, delete this next block.
+      // Create send attempt event
       await prisma.emailEvent.create({
-        data: { jobId: id, type: "send_attempt", meta: { cron: true } },
+        data: { jobId: id, type: "send_attempt", meta: { via: "cron" } },
       });
-      // -------------------------------------------------------
 
-      await prisma.emailJob.update({
-        where: { id },
-        data: { status: "sent", sentAt: new Date(), attempts: { increment: 1 }, error: null },
-      });
-      await prisma.emailEvent.create({
-        data: { jobId: id, type: "sent", meta: { via: "cron" } },
-      });
+      // Send the actual email
+      const result = await sendCampaignEmail(id);
+      
+      console.log(`Email sent successfully for job ${id}:`, result);
       sent++;
     } catch (err: any) {
+      console.error(`Failed to send email for job ${id}:`, err);
+      
       const next = new Date(Date.now() + 10 * 60 * 1000); // 10m backoff
       await prisma.emailJob.update({
         where: { id },
-        data: { status: "scheduled", sendAt: next, attempts: { increment: 1 }, error: String(err?.message ?? err) },
+        data: { 
+          status: "scheduled", 
+          sendAt: next, 
+          attempts: { increment: 1 }, 
+          error: String(err?.message ?? err) 
+        },
       });
       await prisma.emailEvent.create({
-        data: { jobId: id, type: "failed", meta: { via: "cron", error: String(err?.message ?? err) } },
+        data: { 
+          jobId: id, 
+          type: "failed", 
+          meta: { 
+            via: "cron", 
+            error: String(err?.message ?? err),
+            retryAt: next.toISOString(),
+          } 
+        },
       });
       failed++;
     }
