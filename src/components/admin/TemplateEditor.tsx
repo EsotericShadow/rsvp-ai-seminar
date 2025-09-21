@@ -21,6 +21,7 @@ export default function TemplateEditor({ template, onSave, onCancel }: TemplateE
   const [isSaving, setIsSaving] = useState(false);
   const [activeTab, setActiveTab] = useState<'html' | 'text' | 'preview'>('html');
   const [previewMode, setPreviewMode] = useState<'desktop' | 'mobile'>('desktop');
+  const [previewHTML, setPreviewHTML] = useState('');
 
   // Auto-refresh preview when content changes
   const [previewKey, setPreviewKey] = useState(0);
@@ -31,6 +32,20 @@ export default function TemplateEditor({ template, onSave, onCancel }: TemplateE
     }, 300); // Debounce updates
     return () => clearTimeout(timer);
   }, [formData.htmlBody, formData.subject]);
+
+  // Update preview HTML when preview key changes
+  useEffect(() => {
+    const updatePreview = async () => {
+      try {
+        const html = await getPreviewHTML();
+        setPreviewHTML(html);
+      } catch (error) {
+        console.error('Failed to generate preview:', error);
+        setPreviewHTML('<p>Error generating preview</p>');
+      }
+    };
+    updatePreview();
+  }, [previewKey, formData.htmlBody, formData.subject]);
 
   const handleSave = async () => {
     setIsSaving(true);
@@ -72,7 +87,7 @@ export default function TemplateEditor({ template, onSave, onCancel }: TemplateE
     }
   };
 
-  const getPreviewHTML = () => {
+  const getPreviewHTML = async () => {
     // Replace variables with sample data for preview
     let content = formData.htmlBody;
     content = content.replace(/\{\{business_name\}\}/g, 'Sample Business Name');
@@ -81,12 +96,14 @@ export default function TemplateEditor({ template, onSave, onCancel }: TemplateE
     content = content.replace(/\{\{.*?\}\}/g, 'Sample Data');
     
     // Generate preview using global template
-    return generateEmailHTML({
+    return await generateEmailHTML({
       subject: formData.subject,
       greeting: 'Hi Sample Business Name,',
       body: content,
       ctaText: 'View details & RSVP',
       ctaLink: 'https://rsvp.evergreenwebsolutions.ca/rsvp/sample-business-123',
+      businessName: 'Sample Business Name',
+      businessId: 'sample-business-123',
     });
   };
 
@@ -209,14 +226,19 @@ export default function TemplateEditor({ template, onSave, onCancel }: TemplateE
                     </div>
                   </div>
                   
-                  {/* HTML Editor */}
+                  {/* Content Editor */}
                   <div className="flex-1 p-4 min-h-0 overflow-hidden">
+                    <div className="mb-3 p-3 bg-blue-50 border border-blue-200 rounded-md">
+                      <div className="text-sm text-blue-800">
+                        <strong>📝 Content Only Editor:</strong> Write just the message content here. The global template handles all HTML structure, styling, and branding automatically.
+                      </div>
+                    </div>
                     <textarea
                       id="htmlBody"
                       value={formData.htmlBody}
                       onChange={(e) => setFormData(prev => ({ ...prev, htmlBody: e.target.value }))}
-                      className="w-full h-full resize-none border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 font-mono text-sm text-gray-900 bg-white overflow-y-auto"
-                      placeholder="<p>Write your email content here...</p><p>You can use HTML tags like <strong>bold</strong> and <em>italic</em>.</p>"
+                      className="w-full h-full resize-none border border-gray-300 rounded-md p-3 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-900 bg-white overflow-y-auto"
+                      placeholder="Write your email content here...&#10;&#10;Use variables like {{business_name}} and {{invite_link}} to personalize your emails.&#10;&#10;Tips:&#10;- Write in plain text or simple HTML (p, strong, em, br tags only)&#10;- Focus on the message content, not styling&#10;- The global template handles all design and branding&#10;- Keep paragraphs concise and scannable"
                     />
                   </div>
                 </>
@@ -297,7 +319,7 @@ export default function TemplateEditor({ template, onSave, onCancel }: TemplateE
                   <div 
                     key={previewKey}
                     className="p-3 text-sm"
-                    dangerouslySetInnerHTML={{ __html: getPreviewHTML() }}
+                    dangerouslySetInnerHTML={{ __html: previewHTML }}
                   />
                 </div>
               ) : (
@@ -331,7 +353,7 @@ export default function TemplateEditor({ template, onSave, onCancel }: TemplateE
                   <div 
                     key={previewKey}
                     className="p-6"
-                    dangerouslySetInnerHTML={{ __html: getPreviewHTML() }}
+                    dangerouslySetInnerHTML={{ __html: previewHTML }}
                   />
                 </div>
               )}
