@@ -200,7 +200,13 @@ export default function TemplateEditor({ template, onSave, onCancel }: TemplateE
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-start justify-center p-2 sm:p-4 z-50 overflow-y-auto">
       <div className="bg-white rounded-lg max-w-7xl w-full max-h-[98vh] sm:max-h-[95vh] overflow-y-auto flex flex-col my-4 sm:my-8">
-        <form onSubmit={(e) => { e.preventDefault(); handleSave(); }}>
+        <form onSubmit={(e) => { e.preventDefault(); handleSave(); }} onKeyDown={(e) => {
+          // Prevent Shift+Enter from submitting the form
+          if (e.key === 'Enter' && e.shiftKey) {
+            e.preventDefault();
+            return false;
+          }
+        }}>
         {/* Header */}
         <div className="p-3 sm:p-6 border-b border-gray-200 flex flex-col sm:flex-row sm:justify-between sm:items-center bg-gray-50 gap-3">
           <h2 className="text-lg sm:text-xl font-semibold">Edit Template</h2>
@@ -345,6 +351,13 @@ export default function TemplateEditor({ template, onSave, onCancel }: TemplateE
                           <textarea
                             value={formData.main_content_body}
                             onChange={(e) => setFormData(prev => ({ ...prev, main_content_body: e.target.value }))}
+                            onKeyDown={(e) => {
+                              // Allow Shift+Enter for new lines, prevent Enter from submitting form
+                              if (e.key === 'Enter' && !e.shiftKey) {
+                                e.preventDefault();
+                                return false;
+                              }
+                            }}
                             className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-900 bg-white"
                             rows={6}
                             placeholder="Write your main message content here..."
@@ -372,6 +385,13 @@ export default function TemplateEditor({ template, onSave, onCancel }: TemplateE
                           <textarea
                             value={formData.additional_info_body}
                             onChange={(e) => setFormData(prev => ({ ...prev, additional_info_body: e.target.value }))}
+                            onKeyDown={(e) => {
+                              // Allow Shift+Enter for new lines, prevent Enter from submitting form
+                              if (e.key === 'Enter' && !e.shiftKey) {
+                                e.preventDefault();
+                                return false;
+                              }
+                            }}
                             className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-900 bg-white"
                             rows={3}
                             placeholder="e.g., Date: October 23rd, 2025<br>Time: 6:00 PM - 8:00 PM<br>Location: Terrace, BC"
@@ -399,6 +419,13 @@ export default function TemplateEditor({ template, onSave, onCancel }: TemplateE
                           <textarea
                             value={formData.closing_message}
                             onChange={(e) => setFormData(prev => ({ ...prev, closing_message: e.target.value }))}
+                            onKeyDown={(e) => {
+                              // Allow Shift+Enter for new lines, prevent Enter from submitting form
+                              if (e.key === 'Enter' && !e.shiftKey) {
+                                e.preventDefault();
+                                return false;
+                              }
+                            }}
                             className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-900 bg-white"
                             rows={2}
                             placeholder="e.g., We're excited to share these practical AI solutions with you..."
@@ -424,6 +451,13 @@ export default function TemplateEditor({ template, onSave, onCancel }: TemplateE
                   <textarea
                     value={formData.textBody}
                     onChange={(e) => setFormData(prev => ({ ...prev, textBody: e.target.value }))}
+                    onKeyDown={(e) => {
+                      // Allow Shift+Enter for new lines, prevent Enter from submitting form
+                      if (e.key === 'Enter' && !e.shiftKey) {
+                        e.preventDefault();
+                        return false;
+                      }
+                    }}
                     className="w-full h-full resize-none border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-900 bg-white overflow-y-auto"
                     placeholder="Enter plain text content..."
                   />
