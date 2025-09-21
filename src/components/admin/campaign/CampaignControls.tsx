@@ -1480,16 +1480,17 @@ function TemplatesView({
         </div>
       </div>
 
-      {/* Templates Grid */}
-      <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
+      {/* Templates List */}
+      <div className="space-y-3">
         {filteredTemplates.map((template) => (
           <div key={template.id} className="rounded-xl border border-white/10 bg-black/40 p-4 hover:bg-black/60 transition-colors">
-            <div className="flex items-start justify-between gap-3 mb-3">
+            <div className="flex items-center justify-between gap-4">
               <div className="flex-1 min-w-0">
-                <h3 className="text-base font-semibold text-white truncate">{template.name}</h3>
-                <p className="text-xs text-neutral-400 mt-1 line-clamp-2">Subject: {template.subject}</p>
+                <h3 className="text-base font-semibold text-white">{template.name}</h3>
+                <p className="text-sm text-neutral-400 mt-1">Subject: {template.subject}</p>
+                <p className="text-xs text-neutral-500 mt-1">Created: {new Date(template.createdAt).toLocaleDateString()}</p>
               </div>
-              <div className="flex gap-2">
+              <div className="flex gap-2 flex-shrink-0">
                 <button
                   onClick={() => onEdit(template)}
                   className="rounded-full border border-white/10 px-3 py-1 text-xs text-neutral-200 hover:border-emerald-400 hover:text-emerald-200 transition-colors"
@@ -1502,17 +1503,13 @@ function TemplatesView({
                 >
                   Duplicate
                 </button>
+                <button
+                  onClick={() => onRemove(template.id)}
+                  className="rounded-full border border-white/10 px-3 py-1 text-xs text-neutral-200 hover:border-red-400 hover:text-red-200 transition-colors"
+                >
+                  Delete
+                </button>
               </div>
-            </div>
-            
-            <div className="flex items-center justify-between text-xs text-neutral-500">
-              <span>Created: {new Date(template.createdAt).toLocaleDateString()}</span>
-              <button
-                onClick={() => onRemove(template.id)}
-                className="text-red-400 hover:text-red-300 transition-colors"
-              >
-                Delete
-              </button>
             </div>
           </div>
         ))}
