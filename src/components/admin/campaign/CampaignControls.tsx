@@ -1354,359 +1354,187 @@ function TemplatesView({
   onSubmit: () => Promise<void>
   isSaving: boolean
 }) {
-  // WORKING DEBUG VERSION - DON'T CHANGE THE STRUCTURE
-  return (
-    <div className="flex flex-col gap-6 lg:flex-row">
-      <aside className="w-full lg:max-w-sm lg:flex-none">
-        <div className="flex h-full flex-col gap-3 rounded-2xl border border-white/10 bg-white/5 p-4">
-          <header className="flex flex-wrap items-center justify-between gap-3">
-            <div>
-              <h2 className="font-semibold text-white">Templates</h2>
-              <p className="text-xs text-neutral-400">Create and manage email templates.</p>
-            </div>
-            {draft.id ? (
-              <span className="rounded-full bg-emerald-500/20 px-3 py-1 text-xs font-medium text-emerald-200">Editing {draft.name}</span>
-            ) : null}
-          </header>
+  // State for filtering and search
+  const [searchTerm, setSearchTerm] = useState('')
+  const [industryFilter, setIndustryFilter] = useState('')
+  const [emailFilter, setEmailFilter] = useState('')
+  const [variantFilter, setVariantFilter] = useState('')
+  const [sortBy, setSortBy] = useState<'name' | 'created' | 'updated'>('name')
 
-          <form
-            onSubmit={(event) => {
-              event.preventDefault()
-              onSubmit()
-            }}
-            className="space-y-4"
-          >
-            <div>
-              <label className="text-xs uppercase tracking-wide text-neutral-400">Template name</label>
-              <input
-                required
-                value={draft.name}
-                onChange={(e) => setDraft({ ...draft, name: e.target.value })}
-                className="mt-1 w-full rounded-lg border border-white/10 bg-black/60 px-3 py-2 text-sm text-white focus:border-emerald-400 focus:outline-none"
-                placeholder="AI Seminar Invite"
-              />
-            </div>
+  // Extract unique values for filters
+  const industries = [...new Set(templates.map(t => t.name.split(' - ')[0]))].sort()
+  const emailNumbers = [...new Set(templates.map(t => {
+    const parts = t.name.split(' - ')
+    const emailMatch = parts.find(p => p.includes('Email'))
+    return emailMatch ? emailMatch.split(' ')[1] : null
+  }).filter(Boolean))].sort()
+  const variants = [...new Set(templates.map(t => {
+    const parts = t.name.split(' - ')
+    const variantMatch = parts.find(p => p.includes('Variant'))
+    return variantMatch ? variantMatch.split(' ')[1] : null
+  }).filter(Boolean))].sort()
 
-            <div>
-              <label className="text-xs uppercase tracking-wide text-neutral-400">Subject</label>
-              <input
-                required
-                value={draft.subject}
-                onChange={(e) => setDraft({ ...draft, subject: e.target.value })}
-                className="mt-1 w-full rounded-lg border border-white/10 bg-black/60 px-3 py-2 text-sm text-white focus:border-emerald-400 focus:outline-none"
-                placeholder="Invitation: Evergreen AI Seminar"
-              />
-            </div>
-
-            <div>
-              <label className="text-xs uppercase tracking-wide text-neutral-400">HTML content</label>
-              <textarea
-                required
-                rows={8}
-                value={draft.htmlBody}
-                onChange={(e) => setDraft({ ...draft, htmlBody: e.target.value })}
-                className="mt-1 w-full rounded-lg border border-white/10 bg-black/60 px-3 py-2 font-mono text-xs text-emerald-100 focus:border-emerald-400 focus:outline-none"
-              />
-            </div>
-
-            <div>
-              <label className="text-xs uppercase tracking-wide text-neutral-400">Plain text (optional)</label>
-              <textarea
-                rows={4}
-                value={draft.textBody}
-                onChange={(e) => setDraft({ ...draft, textBody: e.target.value })}
-                className="mt-1 w-full rounded-lg border border-white/10 bg-black/60 px-3 py-2 font-mono text-xs text-neutral-200 focus:border-emerald-400 focus:outline-none"
-              />
-            </div>
-
-            <button
-              type="submit"
-              disabled={isSaving}
-              className="w-full rounded-lg bg-emerald-500 px-4 py-2 text-sm font-semibold text-emerald-950 transition hover:bg-emerald-400 disabled:cursor-not-allowed disabled:opacity-60"
-            >
-              {isSaving ? 'Saving...' : draft.id ? 'Update Template' : 'Create Template'}
-            </button>
-          </form>
-        </div>
-      </aside>
-      <main className="w-full flex-1 min-w-0">
-        <div className="space-y-6">
-          {/* Live Preview Section */}
-          <div className="rounded-xl border border-white/10 bg-black/30 p-4">
-            <header className="flex items-center justify-between mb-4">
-              <div>
-                <p className="text-sm font-semibold text-neutral-200">Live preview</p>
-                <p className="text-xs text-neutral-500">
-                  Rendered with sample data · Subject: <span className="text-neutral-300">{draft.subject || '—'}</span>
-                </p>
-              </div>
-            </header>
-            <div className="prose prose-sm prose-invert max-h-72 overflow-auto rounded-lg border border-white/10 bg-black/40 p-4">
-              <div dangerouslySetInnerHTML={{ __html: draft.htmlBody || '<p>Enter HTML content to see preview...</p>' }} />
-            </div>
-          </div>
-
-          {/* Templates List - Simplified */}
-          <div className="space-y-3">
-            <h3 className="text-sm font-semibold text-neutral-200">Existing Templates</h3>
-            {templates.map((template) => (
-              <article key={template.id} className="rounded-xl border border-white/10 bg-black/40 p-4">
-                <div className="flex items-start justify-between gap-3">
-                  <div>
-                    <h3 className="text-base font-semibold text-white">{template.name}</h3>
-                    <p className="text-xs text-neutral-400">Subject: {template.subject}</p>
-                  </div>
-                  <div className="flex gap-2">
-                    <button
-                      onClick={() => onEdit(template)}
-                      className="rounded-full border border-white/10 px-3 py-1 text-xs text-neutral-200 hover:border-emerald-400 hover:text-emerald-200"
-                    >
-                      Edit
-                    </button>
-                    <button
-                      onClick={() => onDuplicate(template)}
-                      className="rounded-full border border-white/10 px-3 py-1 text-xs text-neutral-200 hover:border-white/30"
-                    >
-                      Duplicate
-                    </button>
-                    <button
-                      onClick={() => onRemove(template.id)}
-                      className="rounded-full border border-red-500/40 px-3 py-1 text-xs text-red-200 hover:bg-red-500/10"
-                    >
-                      Delete
-                    </button>
-                  </div>
-                </div>
-              </article>
-            ))}
-            {templates.length === 0 && (
-              <p className="text-center text-sm text-neutral-500">No templates yet. Create your first template using the form on the left.</p>
-            )}
-          </div>
-        </div>
-      </main>
-    </div>
-  )
-}
-
-function TemplatesSidebar({
-  draft,
-  setDraft,
-  onSubmit,
-  isSaving,
-}: {
-  draft: TemplateDraft
-  setDraft: (draft: TemplateDraft) => void
-  onSubmit: () => Promise<void>
-  isSaving: boolean
-}) {
-  return (
-    <div className="flex h-full flex-col gap-3 rounded-2xl border border-white/10 bg-white/5 p-4">
-      <header className="flex flex-wrap items-center justify-between gap-3">
-        <div>
-          <h2 className="font-semibold text-white">Templates</h2>
-          <p className="text-xs text-neutral-400">Create and manage email templates.</p>
-        </div>
-        {draft.id ? (
-          <span className="rounded-full bg-emerald-500/20 px-3 py-1 text-xs font-medium text-emerald-200">Editing {draft.name}</span>
-        ) : null}
-      </header>
-
-      <form
-        onSubmit={(event) => {
-          event.preventDefault()
-          onSubmit()
-        }}
-        className="space-y-4"
-      >
-        <div>
-          <label className="text-xs uppercase tracking-wide text-neutral-400">Template name</label>
-          <input
-            required
-            value={draft.name}
-            onChange={(e) => setDraft({ ...draft, name: e.target.value })}
-            className="mt-1 w-full rounded-lg border border-white/10 bg-black/60 px-3 py-2 text-sm text-white focus:border-emerald-400 focus:outline-none"
-            placeholder="AI Seminar Invite"
-          />
-        </div>
-
-        <div>
-          <label className="text-xs uppercase tracking-wide text-neutral-400">Subject</label>
-          <input
-            required
-            value={draft.subject}
-            onChange={(e) => setDraft({ ...draft, subject: e.target.value })}
-            className="mt-1 w-full rounded-lg border border-white/10 bg-black/60 px-3 py-2 text-sm text-white focus:border-emerald-400 focus:outline-none"
-            placeholder="Invitation: Evergreen AI Seminar"
-          />
-        </div>
-
-        <div>
-          <label className="text-xs uppercase tracking-wide text-neutral-400">HTML content</label>
-          <textarea
-            required
-            rows={8}
-            value={draft.htmlBody}
-            onChange={(e) => setDraft({ ...draft, htmlBody: e.target.value })}
-            className="mt-1 w-full rounded-lg border border-white/10 bg-black/60 px-3 py-2 font-mono text-xs text-emerald-100 focus:border-emerald-400 focus:outline-none"
-          />
-        </div>
-
-        <div>
-          <label className="text-xs uppercase tracking-wide text-neutral-400">Plain text (optional)</label>
-          <textarea
-            rows={4}
-            value={draft.textBody}
-            onChange={(e) => setDraft({ ...draft, textBody: e.target.value })}
-            className="mt-1 w-full rounded-lg border border-white/10 bg-black/60 px-3 py-2 font-mono text-xs text-neutral-200 focus:border-emerald-400 focus:outline-none"
-          />
-        </div>
-
-        <button
-          type="submit"
-          disabled={isSaving}
-          className="w-full rounded-lg bg-emerald-500 px-4 py-2 text-sm font-semibold text-emerald-950 transition hover:bg-emerald-400 disabled:cursor-not-allowed disabled:opacity-60"
-        >
-          {isSaving ? 'Saving...' : draft.id ? 'Update Template' : 'Create Template'}
-        </button>
-      </form>
-    </div>
-  )
-}
-
-function TemplatesMain({
-  templates,
-  draft,
-  onEdit,
-  onDuplicate,
-  onRemove,
-}: {
-  templates: Template[]
-  draft: TemplateDraft
-  onEdit: (template: Template) => void
-  onDuplicate: (template: Template) => void
-  onRemove: (id: string) => void
-}) {
-  const [previewContext, setPreviewContext] = useState<Record<string, string>>({
-    business_name: 'Sample Business',
-    invite_link: 'https://rsvp.evergreenwebsolutions.ca/rsvp?eid=sample',
-    unsubscribe_link: 'https://rsvp.evergreenwebsolutions.ca/unsubscribe?email=sample@example.com',
-  })
-
-  const renderPreview = (template: string, context: Record<string, string>) =>
-    template.replace(/{{\s*([\w.]+)\s*}}/g, (_, key: string) => {
-      const normalised = key.trim()
-      return context[normalised] ?? `{{${normalised}}}`
+  // Filter and sort templates
+  const filteredTemplates = templates
+    .filter(template => {
+      const matchesSearch = template.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                           template.subject.toLowerCase().includes(searchTerm.toLowerCase())
+      const matchesIndustry = !industryFilter || template.name.startsWith(industryFilter)
+      const matchesEmail = !emailFilter || template.name.includes(`Email ${emailFilter}`)
+      const matchesVariant = !variantFilter || template.name.includes(`Variant ${variantFilter}`)
+      
+      return matchesSearch && matchesIndustry && matchesEmail && matchesVariant
     })
-
-  const renderedHtml = useMemo(() => renderPreview(draft.htmlBody || '', previewContext), [draft.htmlBody, previewContext])
-  const renderedSubject = useMemo(() => renderPreview(draft.subject || '', previewContext), [draft.subject, previewContext])
-
-  const updatePreview = (token: string, value: string) => {
-    setPreviewContext((prev) => ({ ...prev, [token]: value }))
-  }
-
-  const resetPreviewContext = () => setPreviewContext({
-    business_name: 'Sample Business',
-    invite_link: 'https://rsvp.evergreenwebsolutions.ca/rsvp?eid=sample',
-    unsubscribe_link: 'https://rsvp.evergreenwebsolutions.ca/unsubscribe?email=sample@example.com',
-  })
+    .sort((a, b) => {
+      switch (sortBy) {
+        case 'name':
+          return a.name.localeCompare(b.name)
+        case 'created':
+          return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+        case 'updated':
+          return new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime()
+        default:
+          return 0
+      }
+    })
 
   return (
     <div className="space-y-6">
-      {/* Live Preview Section */}
-      <div className="rounded-xl border border-white/10 bg-black/30 p-4">
-        <header className="flex items-center justify-between mb-4">
-          <div>
-            <p className="text-sm font-semibold text-neutral-200">Live preview</p>
-            <p className="text-xs text-neutral-500">
-              Rendered with sample data · Subject: <span className="text-neutral-300">{renderedSubject || '—'}</span>
-            </p>
-          </div>
-          <div className="flex items-center gap-4">
-            <div className="flex flex-col gap-3 rounded-lg border border-white/10 bg-black/20 p-3 text-xs text-neutral-300">
-              <div className="flex items-center justify-between">
-                <span className="font-semibold text-neutral-200">Preview data</span>
-                <button type="button" onClick={resetPreviewContext} className="rounded-full border border-white/10 px-3 py-1 text-[11px] text-neutral-300 hover:border-white/30">
-                  Reset
-                </button>
-              </div>
-              <div className="grid gap-2">
-                {['business_name', 'invite_link', 'unsubscribe_link'].map((token) => (
-                  <label key={token} className="flex flex-col gap-1">
-                    <span className="text-neutral-500">{`{{${token}}}`}</span>
-                    <input
-                      value={previewContext[token] ?? ''}
-                      onChange={(event) => updatePreview(token, event.target.value)}
-                      className="rounded-md border border-white/10 bg-black/40 px-2 py-1 text-white focus:border-emerald-400 focus:outline-none"
-                      placeholder={`Sample ${token.replace('_', ' ')}`}
-                    />
-                  </label>
-                ))}
-              </div>
-            </div>
-          </div>
-        </header>
-        <div className="prose prose-sm prose-invert max-h-72 overflow-auto rounded-lg border border-white/10 bg-black/40 p-4">
-          <div dangerouslySetInnerHTML={{ __html: renderedHtml }} />
+      {/* Header */}
+      <div className="flex items-center justify-between">
+        <div>
+          <h2 className="text-2xl font-bold text-white">Email Templates</h2>
+          <p className="text-sm text-neutral-400">Manage your email templates with advanced filtering and editing</p>
+        </div>
+        <div className="text-sm text-neutral-400">
+          {filteredTemplates.length} of {templates.length} templates
         </div>
       </div>
 
-      {/* Templates List */}
-      <div className="space-y-3">
-        <h3 className="text-sm font-semibold text-neutral-200">Existing Templates</h3>
-        {templates.map((template) => (
-          <article key={template.id} className="rounded-xl border border-white/10 bg-black/40 p-4">
-            <header className="flex flex-wrap items-start justify-between gap-3">
-              <div>
-                <h3 className="text-base font-semibold text-white">{template.name}</h3>
-                <p className="text-xs text-neutral-400">Subject: {template.subject}</p>
+      {/* Filters and Search */}
+      <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-5">
+        <div>
+          <label className="block text-xs font-medium text-neutral-300 mb-1">Search</label>
+          <input
+            type="text"
+            placeholder="Search templates..."
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            className="w-full rounded-lg border border-white/10 bg-black/60 px-3 py-2 text-sm text-white focus:border-emerald-400 focus:outline-none"
+          />
+        </div>
+        
+        <div>
+          <label className="block text-xs font-medium text-neutral-300 mb-1">Industry</label>
+          <select
+            value={industryFilter}
+            onChange={(e) => setIndustryFilter(e.target.value)}
+            className="w-full rounded-lg border border-white/10 bg-black/60 px-3 py-2 text-sm text-white focus:border-emerald-400 focus:outline-none"
+          >
+            <option value="">All Industries</option>
+            {industries.map(industry => (
+              <option key={industry} value={industry}>{industry}</option>
+            ))}
+          </select>
+        </div>
+
+        <div>
+          <label className="block text-xs font-medium text-neutral-300 mb-1">Email #</label>
+          <select
+            value={emailFilter}
+            onChange={(e) => setEmailFilter(e.target.value)}
+            className="w-full rounded-lg border border-white/10 bg-black/60 px-3 py-2 text-sm text-white focus:border-emerald-400 focus:outline-none"
+          >
+            <option value="">All Emails</option>
+            {emailNumbers.map(num => (
+              <option key={num!} value={num!}>Email {num}</option>
+            ))}
+          </select>
+        </div>
+
+        <div>
+          <label className="block text-xs font-medium text-neutral-300 mb-1">Variant</label>
+          <select
+            value={variantFilter}
+            onChange={(e) => setVariantFilter(e.target.value)}
+            className="w-full rounded-lg border border-white/10 bg-black/60 px-3 py-2 text-sm text-white focus:border-emerald-400 focus:outline-none"
+          >
+            <option value="">All Variants</option>
+            {variants.map(variant => (
+              <option key={variant!} value={variant!}>Variant {variant}</option>
+            ))}
+          </select>
+        </div>
+
+        <div>
+          <label className="block text-xs font-medium text-neutral-300 mb-1">Sort By</label>
+          <select
+            value={sortBy}
+            onChange={(e) => setSortBy(e.target.value as 'name' | 'created' | 'updated')}
+            className="w-full rounded-lg border border-white/10 bg-black/60 px-3 py-2 text-sm text-white focus:border-emerald-400 focus:outline-none"
+          >
+            <option value="name">Name</option>
+            <option value="created">Created Date</option>
+            <option value="updated">Updated Date</option>
+          </select>
+        </div>
+      </div>
+
+      {/* Templates Grid */}
+      <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
+        {filteredTemplates.map((template) => (
+          <div key={template.id} className="rounded-xl border border-white/10 bg-black/40 p-4 hover:bg-black/60 transition-colors">
+            <div className="flex items-start justify-between gap-3 mb-3">
+              <div className="flex-1 min-w-0">
+                <h3 className="text-base font-semibold text-white truncate">{template.name}</h3>
+                <p className="text-xs text-neutral-400 mt-1 line-clamp-2">Subject: {template.subject}</p>
               </div>
-              <div className="flex flex-wrap items-center gap-2 text-xs">
+              <div className="flex gap-2">
                 <button
                   onClick={() => onEdit(template)}
-                  className="rounded-full border border-white/10 px-3 py-1 text-neutral-200 hover:border-emerald-400 hover:text-emerald-200"
+                  className="rounded-full border border-white/10 px-3 py-1 text-xs text-neutral-200 hover:border-emerald-400 hover:text-emerald-200 transition-colors"
                 >
                   Edit
                 </button>
                 <button
                   onClick={() => onDuplicate(template)}
-                  className="rounded-full border border-white/10 px-3 py-1 text-neutral-200 hover:border-white/30"
+                  className="rounded-full border border-white/10 px-3 py-1 text-xs text-neutral-200 hover:border-blue-400 hover:text-blue-200 transition-colors"
                 >
                   Duplicate
                 </button>
-                <button
-                  onClick={() => onRemove(template.id)}
-                  className="rounded-full border border-red-500/40 px-3 py-1 text-red-200 hover:bg-red-500/10"
-                >
-                  Delete
-                </button>
               </div>
-            </header>
-            <details className="mt-3 text-xs text-neutral-300">
-              <summary className="cursor-pointer text-neutral-400">Quick preview</summary>
-              <div className="prose prose-invert mt-2 max-w-none rounded-lg border border-white/10 bg-black/30 p-3">
-                <div dangerouslySetInnerHTML={{ __html: template.htmlBody }} />
-              </div>
-            </details>
-          </article>
+            </div>
+            
+            <div className="flex items-center justify-between text-xs text-neutral-500">
+              <span>Created: {new Date(template.createdAt).toLocaleDateString()}</span>
+              <button
+                onClick={() => onRemove(template.id)}
+                className="text-red-400 hover:text-red-300 transition-colors"
+              >
+                Delete
+              </button>
+            </div>
+          </div>
         ))}
-        {templates.length === 0 && (
-          <p className="text-center text-sm text-neutral-500">No templates yet. Create your first template using the form on the left.</p>
-        )}
       </div>
+
+      {filteredTemplates.length === 0 && (
+        <div className="text-center py-12">
+          <p className="text-neutral-400">No templates found matching your filters.</p>
+        </div>
+      )}
     </div>
   )
 }
 
 const defaultHtml = `<p>Hi {{business_name}},</p>
-<p>We’re hosting Evergreen AI’s private seminar in Terrace and reserved a seat for your team. The agenda covers practical AI workflows for Northern BC businesses.</p>
+<p>We're hosting Evergreen AI's private seminar in Terrace and reserved a seat for your team. The agenda covers practical AI workflows for Northern BC businesses.</p>
 <p><a href="{{invite_link}}" style="display:inline-block;padding:12px 20px;border-radius:999px;background:#22c55e;color:#0f172a;font-weight:600;text-decoration:none;">View details & RSVP</a></p>
 <p>Looking forward to seeing you,<br />Evergreen AI Partnerships Team</p>`
 
 const defaultText = `Hi {{business_name}},
 
-We’re hosting Evergreen AI’s private seminar in Terrace and would love to see you there. Review the agenda and RSVP: {{invite_link}}
+We're hosting Evergreen AI's private seminar in Terrace and would love to see you there. Review the agenda and RSVP: {{invite_link}}
 
 Looking forward to seeing you,
 Evergreen AI Partnerships Team`
