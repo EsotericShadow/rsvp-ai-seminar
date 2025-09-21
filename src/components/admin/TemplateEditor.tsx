@@ -10,12 +10,52 @@ interface TemplateEditorProps {
   onCancel: () => void;
 }
 
+// Extended form data interface for all template variables
+interface TemplateFormData {
+  name: string;
+  subject: string;
+  htmlBody: string;
+  textBody: string;
+  // Template variables
+  greeting_title: string;
+  greeting_message: string;
+  signature_name: string;
+  signature_title: string;
+  signature_company: string;
+  signature_location: string;
+  main_content_title: string;
+  main_content_body: string;
+  button_text: string;
+  button_link: string;
+  additional_info_title: string;
+  additional_info_body: string;
+  closing_title: string;
+  closing_message: string;
+  closing_signature: string;
+}
+
 export default function TemplateEditor({ template, onSave, onCancel }: TemplateEditorProps) {
-  const [formData, setFormData] = useState({
+  const [formData, setFormData] = useState<TemplateFormData>({
     name: template.name,
     subject: template.subject,
     htmlBody: template.htmlBody,
     textBody: template.textBody || '',
+    // Initialize template variables with defaults
+    greeting_title: '',
+    greeting_message: '',
+    signature_name: 'Gabriel Lacroix',
+    signature_title: 'AI Solutions Specialist',
+    signature_company: 'Evergreen Web Solutions',
+    signature_location: 'Terrace, BC',
+    main_content_title: '',
+    main_content_body: template.htmlBody, // Use existing htmlBody as main content
+    button_text: 'View details & RSVP',
+    button_link: '{{invite_link}}',
+    additional_info_title: '',
+    additional_info_body: '',
+    closing_title: '',
+    closing_message: '',
+    closing_signature: 'Gabriel Lacroix<br>Evergreen Web Solutions<br>Terrace, BC',
   });
   
   const [isSaving, setIsSaving] = useState(false);
@@ -28,23 +68,34 @@ export default function TemplateEditor({ template, onSave, onCancel }: TemplateE
   
   const getPreviewHTML = useCallback(async () => {
     // Replace variables with sample data for preview
-    let content = formData.htmlBody;
+    let content = formData.main_content_body;
     content = content.replace(/\{\{business_name\}\}/g, 'Sample Business Name');
     content = content.replace(/\{\{business_id\}\}/g, 'sample-business-123');
     content = content.replace(/\{\{invite_link\}\}/g, 'https://rsvp.evergreenwebsolutions.ca/rsvp/sample-business-123');
     content = content.replace(/\{\{.*?\}\}/g, 'Sample Data');
     
-    // Generate preview using global template with the individual template's content
+    // Generate preview using global template with all the individual template variables
     return await generateEmailHTML({
       subject: formData.subject,
-      greeting: 'Hi Sample Business Name,',
-      body: content, // This is the individual template's htmlBody content
-      ctaText: 'View details & RSVP',
-      ctaLink: 'https://rsvp.evergreenwebsolutions.ca/rsvp/sample-business-123',
+      greeting_title: formData.greeting_title,
+      greeting_message: formData.greeting_message,
+      signature_name: formData.signature_name,
+      signature_title: formData.signature_title,
+      signature_company: formData.signature_company,
+      signature_location: formData.signature_location,
+      main_content_title: formData.main_content_title,
+      body: content, // This is the main content body
+      ctaText: formData.button_text,
+      ctaLink: formData.button_link.replace('{{invite_link}}', 'https://rsvp.evergreenwebsolutions.ca/rsvp/sample-business-123'),
+      additional_info_title: formData.additional_info_title,
+      additional_info_body: formData.additional_info_body,
+      closing_title: formData.closing_title,
+      closing_message: formData.closing_message,
+      closing_signature: formData.closing_signature,
       businessName: 'Sample Business Name',
       businessId: 'sample-business-123',
     });
-  }, [formData.htmlBody, formData.subject]);
+  }, [formData]);
 
   useEffect(() => {
     const timer = setTimeout(() => {
@@ -89,6 +140,22 @@ export default function TemplateEditor({ template, onSave, onCancel }: TemplateE
         subject: formData.subject,
         htmlBody: formData.htmlBody,
         textBody: formData.textBody,
+        // Save all template variables
+        greeting_title: formData.greeting_title,
+        greeting_message: formData.greeting_message,
+        signature_name: formData.signature_name,
+        signature_title: formData.signature_title,
+        signature_company: formData.signature_company,
+        signature_location: formData.signature_location,
+        main_content_title: formData.main_content_title,
+        main_content_body: formData.main_content_body,
+        button_text: formData.button_text,
+        button_link: formData.button_link,
+        additional_info_title: formData.additional_info_title,
+        additional_info_body: formData.additional_info_body,
+        closing_title: formData.closing_title,
+        closing_message: formData.closing_message,
+        closing_signature: formData.closing_signature,
       });
     } catch (error) {
       console.error('Error saving template:', error);
@@ -208,43 +275,140 @@ export default function TemplateEditor({ template, onSave, onCancel }: TemplateE
             {/* Editor */}
             <div className="flex-1 flex flex-col min-h-0 overflow-hidden">
               {activeTab === 'html' && (
-                <>
-                  {/* Variable Insertion */}
-                  <div className="p-3 border-b border-gray-200 bg-gray-50 flex-shrink-0">
-                    <div className="text-xs text-gray-500 mb-2">
-                      💡 Write just the message content here. Use HTML tags like &lt;p&gt;, &lt;strong&gt;, &lt;em&gt;, etc. Styling and layout are handled automatically by the global template.
-                    </div>
-                    <div className="flex flex-wrap gap-2">
-                      <span className="text-sm text-gray-600 mr-2">Insert variables:</span>
-                      {['{{business_name}}', '{{business_id}}', '{{invite_link}}'].map(variable => (
-                        <button
-                          key={variable}
-                          type="button"
-                          onClick={() => insertVariable(variable)}
-                          className="px-2 py-1 text-xs bg-blue-100 text-blue-800 rounded hover:bg-blue-200"
-                        >
-                          {variable}
-                        </button>
-                      ))}
-                    </div>
-                  </div>
-                  
-                  {/* Content Editor */}
-                  <div className="flex-1 p-4 min-h-0 overflow-hidden">
-                    <div className="mb-3 p-3 bg-blue-50 border border-blue-200 rounded-md">
-                      <div className="text-sm text-blue-800">
-                        <strong>📝 Content Only Editor:</strong> Write just the message content here. The global template handles all HTML structure, styling, and branding automatically.
+                <div className="flex-1 p-4 min-h-0 overflow-y-auto">
+                  <div className="space-y-6">
+                    {/* Basic Info */}
+                    <div className="bg-gray-50 p-4 rounded-lg">
+                      <h3 className="text-sm font-medium text-gray-900 mb-3">Basic Information</h3>
+                      <div className="space-y-3">
+                        <div>
+                          <label className="block text-sm font-medium text-gray-700 mb-1">Subject Line</label>
+                          <input
+                            type="text"
+                            value={formData.subject}
+                            onChange={(e) => setFormData(prev => ({ ...prev, subject: e.target.value }))}
+                            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-900 bg-white"
+                            placeholder="Email subject line"
+                          />
+                        </div>
+                        <div>
+                          <label className="block text-sm font-medium text-gray-700 mb-1">Button Text</label>
+                          <input
+                            type="text"
+                            value={formData.button_text}
+                            onChange={(e) => setFormData(prev => ({ ...prev, button_text: e.target.value }))}
+                            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-900 bg-white"
+                            placeholder="e.g., View details & RSVP"
+                          />
+                        </div>
+                        <div>
+                          <label className="block text-sm font-medium text-gray-700 mb-1">Button Link</label>
+                          <input
+                            type="text"
+                            value={formData.button_link}
+                            onChange={(e) => setFormData(prev => ({ ...prev, button_link: e.target.value }))}
+                            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-900 bg-white"
+                            placeholder="e.g., {{invite_link}}"
+                          />
+                        </div>
                       </div>
                     </div>
-                    <textarea
-                      id="htmlBody"
-                      value={formData.htmlBody}
-                      onChange={(e) => setFormData(prev => ({ ...prev, htmlBody: e.target.value }))}
-                      className="w-full h-full resize-none border border-gray-300 rounded-md p-3 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-900 bg-white overflow-y-auto"
-                      placeholder="Write your email content here...&#10;&#10;Use variables like {{business_name}} and {{invite_link}} to personalize your emails.&#10;&#10;Tips:&#10;- Write in plain text or simple HTML (p, strong, em, br tags only)&#10;- Focus on the message content, not styling&#10;- The global template handles all design and branding&#10;- Keep paragraphs concise and scannable"
-                    />
+
+                    {/* Main Content */}
+                    <div className="bg-gray-50 p-4 rounded-lg">
+                      <h3 className="text-sm font-medium text-gray-900 mb-3">Main Content</h3>
+                      <div className="space-y-3">
+                        <div>
+                          <label className="block text-sm font-medium text-gray-700 mb-1">Content Title</label>
+                          <input
+                            type="text"
+                            value={formData.main_content_title}
+                            onChange={(e) => setFormData(prev => ({ ...prev, main_content_title: e.target.value }))}
+                            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-900 bg-white"
+                            placeholder="e.g., What You'll Learn"
+                          />
+                        </div>
+                        <div>
+                          <label className="block text-sm font-medium text-gray-700 mb-1">Main Content Body</label>
+                          <div className="text-xs text-gray-500 mb-2">
+                            💡 Use HTML tags like &lt;p&gt;, &lt;strong&gt;, &lt;em&gt;. Available variables: {`{{business_name}}`}, {`{{business_id}}`}, {`{{invite_link}}`}
+                          </div>
+                          <textarea
+                            value={formData.main_content_body}
+                            onChange={(e) => setFormData(prev => ({ ...prev, main_content_body: e.target.value }))}
+                            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-900 bg-white"
+                            rows={6}
+                            placeholder="Write your main message content here..."
+                          />
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Additional Info */}
+                    <div className="bg-gray-50 p-4 rounded-lg">
+                      <h3 className="text-sm font-medium text-gray-900 mb-3">Additional Information</h3>
+                      <div className="space-y-3">
+                        <div>
+                          <label className="block text-sm font-medium text-gray-700 mb-1">Additional Info Title</label>
+                          <input
+                            type="text"
+                            value={formData.additional_info_title}
+                            onChange={(e) => setFormData(prev => ({ ...prev, additional_info_title: e.target.value }))}
+                            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-900 bg-white"
+                            placeholder="e.g., Event Details"
+                          />
+                        </div>
+                        <div>
+                          <label className="block text-sm font-medium text-gray-700 mb-1">Additional Info Body</label>
+                          <textarea
+                            value={formData.additional_info_body}
+                            onChange={(e) => setFormData(prev => ({ ...prev, additional_info_body: e.target.value }))}
+                            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-900 bg-white"
+                            rows={3}
+                            placeholder="e.g., Date: October 23rd, 2025<br>Time: 6:00 PM - 8:00 PM<br>Location: Terrace, BC"
+                          />
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Closing Section */}
+                    <div className="bg-gray-50 p-4 rounded-lg">
+                      <h3 className="text-sm font-medium text-gray-900 mb-3">Closing Section</h3>
+                      <div className="space-y-3">
+                        <div>
+                          <label className="block text-sm font-medium text-gray-700 mb-1">Closing Title</label>
+                          <input
+                            type="text"
+                            value={formData.closing_title}
+                            onChange={(e) => setFormData(prev => ({ ...prev, closing_title: e.target.value }))}
+                            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-900 bg-white"
+                            placeholder="e.g., Looking Forward"
+                          />
+                        </div>
+                        <div>
+                          <label className="block text-sm font-medium text-gray-700 mb-1">Closing Message</label>
+                          <textarea
+                            value={formData.closing_message}
+                            onChange={(e) => setFormData(prev => ({ ...prev, closing_message: e.target.value }))}
+                            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-900 bg-white"
+                            rows={2}
+                            placeholder="e.g., We're excited to share these practical AI solutions with you..."
+                          />
+                        </div>
+                        <div>
+                          <label className="block text-sm font-medium text-gray-700 mb-1">Closing Signature</label>
+                          <textarea
+                            value={formData.closing_signature}
+                            onChange={(e) => setFormData(prev => ({ ...prev, closing_signature: e.target.value }))}
+                            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-900 bg-white"
+                            rows={2}
+                            placeholder="e.g., Gabriel Lacroix<br>Evergreen Web Solutions<br>Terrace, BC"
+                          />
+                        </div>
+                      </div>
+                    </div>
                   </div>
-                </>
+                </div>
               )}
 
               {activeTab === 'text' && (
