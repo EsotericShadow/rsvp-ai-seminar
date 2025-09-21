@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { CampaignTemplate } from '@prisma/client';
 import { generateEmailHTML, generateEmailText } from '@/lib/email-template';
 
@@ -26,6 +26,26 @@ export default function TemplateEditor({ template, onSave, onCancel }: TemplateE
   // Auto-refresh preview when content changes
   const [previewKey, setPreviewKey] = useState(0);
   
+  const getPreviewHTML = useCallback(async () => {
+    // Replace variables with sample data for preview
+    let content = formData.htmlBody;
+    content = content.replace(/\{\{business_name\}\}/g, 'Sample Business Name');
+    content = content.replace(/\{\{business_id\}\}/g, 'sample-business-123');
+    content = content.replace(/\{\{invite_link\}\}/g, 'https://rsvp.evergreenwebsolutions.ca/rsvp/sample-business-123');
+    content = content.replace(/\{\{.*?\}\}/g, 'Sample Data');
+    
+    // Generate preview using global template
+    return await generateEmailHTML({
+      subject: formData.subject,
+      greeting: 'Hi Sample Business Name,',
+      body: content,
+      ctaText: 'View details & RSVP',
+      ctaLink: 'https://rsvp.evergreenwebsolutions.ca/rsvp/sample-business-123',
+      businessName: 'Sample Business Name',
+      businessId: 'sample-business-123',
+    });
+  }, [formData.htmlBody, formData.subject]);
+
   useEffect(() => {
     const timer = setTimeout(() => {
       setPreviewKey(prev => prev + 1); // Force preview re-render
@@ -45,7 +65,7 @@ export default function TemplateEditor({ template, onSave, onCancel }: TemplateE
       }
     };
     updatePreview();
-  }, [previewKey, formData.htmlBody, formData.subject]);
+  }, [previewKey, getPreviewHTML]);
 
   const handleSave = async () => {
     setIsSaving(true);
@@ -85,26 +105,6 @@ export default function TemplateEditor({ template, onSave, onCancel }: TemplateE
         textarea.setSelectionRange(start + variable.length, start + variable.length);
       }, 0);
     }
-  };
-
-  const getPreviewHTML = async () => {
-    // Replace variables with sample data for preview
-    let content = formData.htmlBody;
-    content = content.replace(/\{\{business_name\}\}/g, 'Sample Business Name');
-    content = content.replace(/\{\{business_id\}\}/g, 'sample-business-123');
-    content = content.replace(/\{\{invite_link\}\}/g, 'https://rsvp.evergreenwebsolutions.ca/rsvp/sample-business-123');
-    content = content.replace(/\{\{.*?\}\}/g, 'Sample Data');
-    
-    // Generate preview using global template
-    return await generateEmailHTML({
-      subject: formData.subject,
-      greeting: 'Hi Sample Business Name,',
-      body: content,
-      ctaText: 'View details & RSVP',
-      ctaLink: 'https://rsvp.evergreenwebsolutions.ca/rsvp/sample-business-123',
-      businessName: 'Sample Business Name',
-      businessId: 'sample-business-123',
-    });
   };
 
   return (
