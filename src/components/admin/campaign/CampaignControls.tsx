@@ -777,9 +777,28 @@ export default function CampaignControls({ initialData, defaults }: { initialDat
         {showGlobalTemplateSettings && (
           <GlobalTemplateSettings
             onSave={async (settings) => {
-              // TODO: Implement saving global template settings
-              console.log('Saving global template settings:', settings);
-              setShowGlobalTemplateSettings(false);
+              try {
+                setIsSaving(true);
+                const response = await fetch('/api/admin/global-template-settings', {
+                  method: 'POST',
+                  headers: {
+                    'Content-Type': 'application/json',
+                  },
+                  body: JSON.stringify(settings),
+                });
+
+                if (!response.ok) {
+                  throw new Error('Failed to save global template settings');
+                }
+
+                setNotice('Global template settings saved successfully!');
+                setShowGlobalTemplateSettings(false);
+              } catch (error) {
+                console.error('Error saving global template settings:', error);
+                setError('Failed to save global template settings');
+              } finally {
+                setIsSaving(false);
+              }
             }}
             onCancel={() => setShowGlobalTemplateSettings(false)}
           />
@@ -1459,31 +1478,31 @@ function TemplatesView({
           }))
 
   return (
-    <div className="space-y-6">
+        <div className="space-y-6">
       {/* Header */}
       <div className="flex items-center justify-between">
-        <div>
+              <div>
           <h2 className="text-2xl font-bold text-white">Email Templates</h2>
           <p className="text-sm text-neutral-400">Manage your email templates with advanced filtering and editing</p>
-        </div>
+              </div>
         <div className="flex items-center space-x-4">
-          <button
+                    <button
             onClick={() => setShowGlobalTemplate(true)}
             className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors text-sm font-medium"
-          >
+                    >
             Global HTML Template
-          </button>
-          <button
+                    </button>
+                    <button
             onClick={() => setShowGlobalTemplateSettings(true)}
             className="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors text-sm font-medium"
-          >
+                    >
             Global Template Settings
-          </button>
+                    </button>
           <div className="text-sm text-neutral-400">
             {sortedGroups.length} groups, {filteredTemplates.length} of {templates.length} templates
+                  </div>
+                </div>
           </div>
-        </div>
-      </div>
 
       {/* Filters and Search - Mobile Optimized */}
       <div className="space-y-4">
@@ -1498,10 +1517,10 @@ function TemplatesView({
             className="w-full rounded-lg border border-white/10 bg-black/60 px-3 py-2 text-sm text-white focus:border-emerald-400 focus:outline-none"
           />
         </div>
-        
+
         {/* Filter Row 1 - 2 columns on mobile, 3 on tablet, 4 on desktop */}
         <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4">
-          <div>
+        <div>
             <label className="block text-xs font-medium text-neutral-300 mb-1">Industry</label>
             <select
               value={industryFilter}
@@ -1513,9 +1532,9 @@ function TemplatesView({
                 <option key={industry} value={industry}>{industry}</option>
               ))}
             </select>
-          </div>
+        </div>
 
-          <div>
+        <div>
             <label className="block text-xs font-medium text-neutral-300 mb-1">Email #</label>
             <select
               value={emailFilter}
@@ -1527,9 +1546,9 @@ function TemplatesView({
                 <option key={num!} value={num!}>Email {num}</option>
               ))}
             </select>
-          </div>
+        </div>
 
-          <div>
+        <div>
             <label className="block text-xs font-medium text-neutral-300 mb-1">Variant</label>
             <select
               value={variantFilter}
@@ -1541,7 +1560,7 @@ function TemplatesView({
                 <option key={variant!} value={variant!}>Variant {variant}</option>
               ))}
             </select>
-          </div>
+        </div>
 
           <div>
             <label className="block text-xs font-medium text-neutral-300 mb-1">Sort By</label>
@@ -1554,24 +1573,24 @@ function TemplatesView({
               <option value="created">Created Date</option>
               <option value="updated">Updated Date</option>
             </select>
-          </div>
+    </div>
         </div>
       </div>
 
       {/* Grouped Templates List */}
-      <div className="space-y-6">
+    <div className="space-y-6">
         {sortedGroups.map((group) => (
           <div key={group.key} className="space-y-3">
             {/* Group Header */}
-            <div className="flex items-center justify-between">
+              <div className="flex items-center justify-between">
               <h3 className="text-lg font-semibold text-white">
                 {group.industry} - Email {group.emailNum}
               </h3>
               <div className="text-sm text-neutral-400">
                 {group.templates.length} variant{group.templates.length !== 1 ? 's' : ''}
-              </div>
-            </div>
-            
+        </div>
+      </div>
+
             {/* Templates in Group */}
             <div className="space-y-2">
               {group.templates.map((template) => (
@@ -1587,33 +1606,33 @@ function TemplatesView({
                            template.name.includes('Variant B') ? 'B' : 
                            template.name.includes('Variant C') ? 'C' : 'Base'}
                         </span>
-                      </div>
+              </div>
                       <p className="text-xs text-neutral-400 mt-1 truncate">Subject: {template.subject}</p>
                     </div>
                     <div className="flex gap-1 flex-shrink-0">
-                      <button
-                        onClick={() => onEdit(template)}
+                <button
+                  onClick={() => onEdit(template)}
                         className="rounded-full border border-white/10 px-2 py-1 text-xs text-neutral-200 hover:border-emerald-400 hover:text-emerald-200 transition-colors"
-                      >
-                        Edit
-                      </button>
-                      <button
-                        onClick={() => onDuplicate(template)}
+                >
+                  Edit
+                </button>
+                <button
+                  onClick={() => onDuplicate(template)}
                         className="rounded-full border border-white/10 px-2 py-1 text-xs text-neutral-200 hover:border-blue-400 hover:text-blue-200 transition-colors"
-                      >
+                >
                         Copy
-                      </button>
-                      <button
-                        onClick={() => onRemove(template.id)}
+                </button>
+                <button
+                  onClick={() => onRemove(template.id)}
                         className="rounded-full border border-white/10 px-2 py-1 text-xs text-neutral-200 hover:border-red-400 hover:text-red-200 transition-colors"
-                      >
+                >
                         Del
-                      </button>
-                    </div>
-                  </div>
+                </button>
+              </div>
+              </div>
                 </div>
-              ))}
-            </div>
+        ))}
+      </div>
           </div>
         ))}
       </div>
