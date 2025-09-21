@@ -173,6 +173,41 @@ export function RsvpForm() {
     setCurrentStep((s) => Math.max(s - 1, 0));
   };
 
+  // Helper functions for engagement tracking
+  function getScrollDepth(): number {
+    const doc = document.documentElement;
+    const totalScrollable = doc.scrollHeight - window.innerHeight;
+    if (totalScrollable <= 0) return 100;
+    const current = window.scrollY;
+    return Math.round((current / totalScrollable) * 100);
+  }
+
+  function getInteractionCounts(): Record<string, number> {
+    // This would be tracked by AnalyticsBeacon, but for RSVP we'll use a simplified version
+    return {
+      clicks: 0, // Would be tracked by AnalyticsBeacon
+      keypresses: 0,
+      copies: 0,
+      pointerMoves: 0,
+    };
+  }
+
+  function getVisibilityTimeline(): Array<{ state: string; at: number }> {
+    return [{ state: document.visibilityState, at: Date.now() }];
+  }
+
+  function calculateEngagementScore(): number {
+    // Simple engagement score based on available metrics
+    const scrollDepth = getScrollDepth();
+    const timeOnPage = performance.now();
+    
+    // Weight scroll depth (40%) and time on page (60%)
+    const scrollScore = Math.min(scrollDepth, 100);
+    const timeScore = Math.min(timeOnPage / 1000, 100); // Convert to seconds, cap at 100
+    
+    return Math.round(scrollScore * 0.4 + timeScore * 0.6);
+  }
+
   async function collectClientContext(): Promise<Record<string, unknown>> {
     if (typeof window === 'undefined') return {};
 
@@ -215,6 +250,20 @@ export function RsvpForm() {
           }))
         : undefined;
 
+      // Engagement tracking
+      const engagementInfo = {
+        scrollDepth: getScrollDepth(),
+        timeOnPageMs: Math.round(performance.now()),
+        interactionCounts: getInteractionCounts(),
+        visibility: getVisibilityTimeline(),
+        // Calculate engagement score (0-100)
+        engagementScore: calculateEngagementScore(),
+        // Session metrics
+        pageViews: 1, // RSVP form is typically 1 page view
+        sessionDuration: Math.round(performance.now()),
+        bounceRate: 0, // If user is filling out RSVP form, they're engaged (not bounced)
+      };
+
       return {
         language,
         languages,
@@ -236,6 +285,7 @@ export function RsvpForm() {
           timeOrigin: Math.round(performance.timeOrigin),
           now: Math.round(performance.now()),
         },
+        ...engagementInfo,
       };
     } catch (error) {
       console.error('Failed to collect client context', error);
