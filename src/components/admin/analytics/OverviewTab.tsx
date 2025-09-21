@@ -11,6 +11,8 @@ interface OverviewTabProps {
     bounceRate: number;
     topCountries: Array<{ country: string; count: number }>;
     topBrowsers: Array<{ browser: string; count: number }>;
+    deviceBreakdown: Array<{ name: string; count: number }>;
+    visitsTrend: Array<{ label: string; count: number }>;
   };
 }
 
@@ -106,14 +108,14 @@ export default function OverviewTab({ stats }: OverviewTabProps) {
         <div className="glass rounded-xl p-6">
           <h3 className="text-lg font-semibold text-white mb-4">Visits Trend</h3>
           <Suspense fallback={<div className="h-64 flex items-center justify-center text-neutral-400">Loading chart...</div>}>
-            <VisitsTrendChart data={[]} />
+            <VisitsTrendChart data={stats.visitsTrend} />
           </Suspense>
         </div>
 
         <div className="glass rounded-xl p-6">
           <h3 className="text-lg font-semibold text-white mb-4">Device Breakdown</h3>
           <Suspense fallback={<div className="h-64 flex items-center justify-center text-neutral-400">Loading chart...</div>}>
-            <DeviceBreakdownChart data={[]} />
+            <DeviceBreakdownChart data={stats.deviceBreakdown} />
           </Suspense>
         </div>
       </div>

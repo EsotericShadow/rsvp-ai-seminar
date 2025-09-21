@@ -52,9 +52,18 @@ export default function AnalyticsClientWrapper({
       case 'campaigns':
         return <CampaignsTab />;
       case 'devices':
-        return <DevicesTab />;
+        return <DevicesTab 
+          deviceBreakdown={overviewStats.deviceBreakdown}
+          platformBreakdown={overviewStats.platformBreakdown}
+          topBrowsers={overviewStats.topBrowsers}
+        />;
       case 'timeline':
-        return <TimelineTab />;
+        return <TimelineTab 
+          visitsTrend={overviewStats.visitsTrend}
+          rsvpsTrend={overviewStats.rsvpsTrend}
+          hourlyData={overviewStats.hourlyData}
+          dailyData={overviewStats.dailyData}
+        />;
       case 'settings':
         return <SettingsTab />;
       default:

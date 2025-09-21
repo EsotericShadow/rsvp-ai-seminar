@@ -135,6 +135,79 @@ export default async function AdminAnalyticsPage({ searchParams }: { searchParam
     .slice(0, 10)
     .map(([browser, count]) => ({ browser, count }))
 
+  // Calculate device analytics
+  const deviceCounts = visits.reduce((acc, visit) => {
+    const device = visit.device || 'Unknown'
+    acc[device] = (acc[device] || 0) + 1
+    return acc
+  }, {} as Record<string, number>)
+  
+  const deviceBreakdown = Object.entries(deviceCounts)
+    .sort(([,a], [,b]) => b - a)
+    .map(([device, count]) => ({ name: device, count }))
+
+  // Calculate platform analytics
+  const platformCounts = visits.reduce((acc, visit) => {
+    const platform = visit.platform || 'Unknown'
+    acc[platform] = (acc[platform] || 0) + 1
+    return acc
+  }, {} as Record<string, number>)
+  
+  const platformBreakdown = Object.entries(platformCounts)
+    .sort(([,a], [,b]) => b - a)
+    .map(([platform, count]) => ({ name: platform, count }))
+
+  // Calculate timeline analytics
+  const visitsByDay = visits.reduce((acc, visit) => {
+    const day = visit.createdAt.toISOString().split('T')[0]
+    acc[day] = (acc[day] || 0) + 1
+    return acc
+  }, {} as Record<string, number>)
+
+  const visitsTrend = Object.entries(visitsByDay)
+    .sort(([a], [b]) => a.localeCompare(b))
+    .map(([day, count]) => ({ label: new Date(day).toLocaleDateString(), count }))
+
+  const rsvpsByDay = rsvps.reduce((acc, rsvp) => {
+    const day = rsvp.createdAt.toISOString().split('T')[0]
+    acc[day] = (acc[day] || 0) + 1
+    return acc
+  }, {} as Record<string, number>)
+
+  const rsvpsTrend = Object.entries(rsvpsByDay)
+    .sort(([a], [b]) => a.localeCompare(b))
+    .map(([day, count]) => ({ label: new Date(day).toLocaleDateString(), count }))
+
+  // Calculate hourly patterns
+  const hourlyPatterns = visits.reduce((acc, visit) => {
+    const hour = visit.createdAt.getHours()
+    acc[hour] = (acc[hour] || 0) + 1
+    return acc
+  }, {} as Record<number, number>)
+
+  const hourlyData = Array.from({ length: 24 }, (_, i) => ({
+    hour: i,
+    count: hourlyPatterns[i] || 0,
+    label: `${i}:00`
+  }))
+
+  // Calculate daily patterns (day of week)
+  const dailyPatterns = visits.reduce((acc, visit) => {
+    const day = visit.createdAt.getDay()
+    acc[day] = (acc[day] || 0) + 1
+    return acc
+  }, {} as Record<number, number>)
+
+  const dailyData = [
+    { day: 0, name: 'Sunday', count: dailyPatterns[0] || 0 },
+    { day: 1, name: 'Monday', count: dailyPatterns[1] || 0 },
+    { day: 2, name: 'Tuesday', count: dailyPatterns[2] || 0 },
+    { day: 3, name: 'Wednesday', count: dailyPatterns[3] || 0 },
+    { day: 4, name: 'Thursday', count: dailyPatterns[4] || 0 },
+    { day: 5, name: 'Friday', count: dailyPatterns[5] || 0 },
+    { day: 6, name: 'Saturday', count: dailyPatterns[6] || 0 },
+  ]
+
   const overviewStats = {
     totalVisits,
     totalRSVPs,
@@ -143,6 +216,12 @@ export default async function AdminAnalyticsPage({ searchParams }: { searchParam
     bounceRate,
     topCountries,
     topBrowsers,
+    deviceBreakdown,
+    platformBreakdown,
+    visitsTrend,
+    rsvpsTrend,
+    hourlyData,
+    dailyData,
   }
 
   return (
