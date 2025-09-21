@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import GlobalTemplateContentEditor from './GlobalTemplateContentEditor';
 
 interface GlobalHTMLTemplateProps {
   onSave?: (html: string) => void;
@@ -10,8 +11,41 @@ interface GlobalHTMLTemplateProps {
 export default function GlobalHTMLTemplate({ onSave, onCancel }: GlobalHTMLTemplateProps) {
   const [html, setHtml] = useState('');
   const [previewKey, setPreviewKey] = useState(0);
-  const [activeTab, setActiveTab] = useState<'html' | 'preview'>('html');
+  const [activeTab, setActiveTab] = useState<'html' | 'content' | 'preview'>('html');
   const [previewMode, setPreviewMode] = useState<'desktop' | 'mobile'>('desktop');
+  
+  // State for preview content editing
+  const [previewContent, setPreviewContent] = useState({
+    subject: 'Free AI Tools Session - October 23rd',
+    greeting_title: '',
+    greeting_message: '',
+    signature_name: '',
+    signature_title: '',
+    signature_company: '',
+    signature_location: '',
+    main_content_title: 'What You\'ll Learn',
+    main_content_body: 'We\'ll cover practical AI tools that can help streamline your business operations, including spreadsheet automation, data analysis, and process optimization. All tools discussed are immediately actionable and cost-effective.',
+    button_text: 'RSVP for Free Session',
+    button_link: 'https://rsvp.evergreenwebsolutions.ca/rsvp?token=sample',
+    additional_info_title: '',
+    additional_info_body: '',
+    closing_title: 'Looking Forward',
+    closing_message: 'We\'re excited to share these practical AI solutions with you and help your business grow.',
+    closing_signature: '',
+    // Global template variables
+    global_hero_title: 'Welcome to Evergreen AI',
+    global_hero_message: 'Thank you for your interest in our upcoming informational session about practical AI tools for Northern BC businesses.',
+    global_signature_name: 'Gabriel Lacroix',
+    global_signature_title: 'AI Solutions Specialist',
+    global_signature_company: 'Evergreen Web Solutions',
+    global_signature_location: 'Terrace, BC',
+    global_event_title: 'Event Details',
+    global_event_date: 'October 23rd, 2025',
+    global_event_time: '6:00 PM - 8:00 PM',
+    global_event_location: 'Terrace, BC',
+    global_event_cost: 'Free',
+    global_event_includes: 'Coffee, refreshments, networking, and actionable AI insights',
+  });
 
   // Load current global template on mount
   useEffect(() => {
@@ -39,6 +73,14 @@ export default function GlobalHTMLTemplate({ onSave, onCancel }: GlobalHTMLTempl
     }, 300); // Debounce updates
     return () => clearTimeout(timer);
   }, [html]);
+
+  // Auto-refresh preview when content changes
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setPreviewKey(prev => prev + 1); // Force preview re-render
+    }, 300); // Debounce updates
+    return () => clearTimeout(timer);
+  }, [previewContent]);
 
   const getDefaultTemplate = () => {
     return `<!DOCTYPE html>
@@ -214,37 +256,37 @@ export default function GlobalHTMLTemplate({ onSave, onCancel }: GlobalHTMLTempl
 
   const getPreviewHTML = () => {
     return html
-      .replace(/\{\{subject\}\}/g, 'Free AI Tools Session - October 23rd')
-      // Individual template variables (these should be empty or minimal to avoid duplication)
-      .replace(/\{\{greeting_title\}\}/g, '') // Empty to avoid duplication with global_hero_title
-      .replace(/\{\{greeting_message\}\}/g, '') // Empty to avoid duplication with global_hero_message
-      .replace(/\{\{signature_name\}\}/g, '') // Empty to avoid duplication with global_signature_name
-      .replace(/\{\{signature_title\}\}/g, '') // Empty to avoid duplication with global_signature_title
-      .replace(/\{\{signature_company\}\}/g, '') // Empty to avoid duplication with global_signature_company
-      .replace(/\{\{signature_location\}\}/g, '') // Empty to avoid duplication with global_signature_location
-      .replace(/\{\{main_content_title\}\}/g, 'What You\'ll Learn')
-      .replace(/\{\{main_content_body\}\}/g, 'We\'ll cover practical AI tools that can help streamline your business operations, including spreadsheet automation, data analysis, and process optimization. All tools discussed are immediately actionable and cost-effective.')
-      .replace(/\{\{button_text\}\}/g, 'RSVP for Free Session')
-      .replace(/\{\{button_link\}\}/g, 'https://rsvp.evergreenwebsolutions.ca/rsvp?token=sample')
-      .replace(/\{\{additional_info_title\}\}/g, '') // Empty to avoid duplication with global_event_title
-      .replace(/\{\{additional_info_body\}\}/g, '') // Empty to avoid duplication with global event details
-      .replace(/\{\{closing_title\}\}/g, 'Looking Forward')
-      .replace(/\{\{closing_message\}\}/g, 'We\'re excited to share these practical AI solutions with you and help your business grow.')
-      .replace(/\{\{closing_signature\}\}/g, '') // Empty to avoid duplication with global signature
+      .replace(/\{\{subject\}\}/g, previewContent.subject)
+      // Individual template variables
+      .replace(/\{\{greeting_title\}\}/g, previewContent.greeting_title)
+      .replace(/\{\{greeting_message\}\}/g, previewContent.greeting_message)
+      .replace(/\{\{signature_name\}\}/g, previewContent.signature_name)
+      .replace(/\{\{signature_title\}\}/g, previewContent.signature_title)
+      .replace(/\{\{signature_company\}\}/g, previewContent.signature_company)
+      .replace(/\{\{signature_location\}\}/g, previewContent.signature_location)
+      .replace(/\{\{main_content_title\}\}/g, previewContent.main_content_title)
+      .replace(/\{\{main_content_body\}\}/g, previewContent.main_content_body)
+      .replace(/\{\{button_text\}\}/g, previewContent.button_text)
+      .replace(/\{\{button_link\}\}/g, previewContent.button_link)
+      .replace(/\{\{additional_info_title\}\}/g, previewContent.additional_info_title)
+      .replace(/\{\{additional_info_body\}\}/g, previewContent.additional_info_body)
+      .replace(/\{\{closing_title\}\}/g, previewContent.closing_title)
+      .replace(/\{\{closing_message\}\}/g, previewContent.closing_message)
+      .replace(/\{\{closing_signature\}\}/g, previewContent.closing_signature)
       .replace(/\{\{unsubscribe_link\}\}/g, 'https://rsvp.evergreenwebsolutions.ca/unsubscribe?token=sample')
-      // Global template variables (these are the primary content now)
-      .replace(/\{\{global_hero_title\}\}/g, 'Welcome to Evergreen AI')
-      .replace(/\{\{global_hero_message\}\}/g, 'Thank you for your interest in our upcoming informational session about practical AI tools for Northern BC businesses.')
-      .replace(/\{\{global_signature_name\}\}/g, 'Gabriel Lacroix')
-      .replace(/\{\{global_signature_title\}\}/g, 'AI Solutions Specialist')
-      .replace(/\{\{global_signature_company\}\}/g, 'Evergreen Web Solutions')
-      .replace(/\{\{global_signature_location\}\}/g, 'Terrace, BC')
-      .replace(/\{\{global_event_title\}\}/g, 'Event Details')
-      .replace(/\{\{global_event_date\}\}/g, 'October 23rd, 2025')
-      .replace(/\{\{global_event_time\}\}/g, '6:00 PM - 8:00 PM')
-      .replace(/\{\{global_event_location\}\}/g, 'Terrace, BC')
-      .replace(/\{\{global_event_cost\}\}/g, 'Free')
-      .replace(/\{\{global_event_includes\}\}/g, 'Coffee, refreshments, networking, and actionable AI insights');
+      // Global template variables
+      .replace(/\{\{global_hero_title\}\}/g, previewContent.global_hero_title)
+      .replace(/\{\{global_hero_message\}\}/g, previewContent.global_hero_message)
+      .replace(/\{\{global_signature_name\}\}/g, previewContent.global_signature_name)
+      .replace(/\{\{global_signature_title\}\}/g, previewContent.global_signature_title)
+      .replace(/\{\{global_signature_company\}\}/g, previewContent.global_signature_company)
+      .replace(/\{\{global_signature_location\}\}/g, previewContent.global_signature_location)
+      .replace(/\{\{global_event_title\}\}/g, previewContent.global_event_title)
+      .replace(/\{\{global_event_date\}\}/g, previewContent.global_event_date)
+      .replace(/\{\{global_event_time\}\}/g, previewContent.global_event_time)
+      .replace(/\{\{global_event_location\}\}/g, previewContent.global_event_location)
+      .replace(/\{\{global_event_cost\}\}/g, previewContent.global_event_cost)
+      .replace(/\{\{global_event_includes\}\}/g, previewContent.global_event_includes);
   };
 
   return (
@@ -289,6 +331,17 @@ export default function GlobalHTMLTemplate({ onSave, onCancel }: GlobalHTMLTempl
           </button>
           <button
             type="button"
+            onClick={() => setActiveTab('content')}
+            className={`px-4 py-2 text-sm font-medium ${
+              activeTab === 'content'
+                ? 'text-blue-600 border-b-2 border-blue-600 bg-blue-50'
+                : 'text-gray-600 hover:text-gray-800'
+            }`}
+          >
+            Preview Content
+          </button>
+          <button
+            type="button"
             onClick={() => setActiveTab('preview')}
             className={`px-4 py-2 text-sm font-medium ${
               activeTab === 'preview'
@@ -302,7 +355,12 @@ export default function GlobalHTMLTemplate({ onSave, onCancel }: GlobalHTMLTempl
 
         {/* Main Content */}
         <div className="flex-1 flex min-h-0 overflow-y-auto">
-          {activeTab === 'html' ? (
+          {activeTab === 'content' ? (
+            <GlobalTemplateContentEditor 
+              previewContent={previewContent}
+              setPreviewContent={setPreviewContent}
+            />
+          ) : activeTab === 'html' ? (
             <>
               {/* Left Panel - HTML Editor */}
               <div className="w-full lg:w-1/2 flex flex-col min-h-0">
