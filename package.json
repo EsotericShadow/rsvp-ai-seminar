@@ -20,6 +20,8 @@
     "@types/ua-parser-js": "^0.7.39",
     "@vercel/og": "^0.8.5",
     "bcryptjs": "^3.0.2",
+    "class-variance-authority": "^0.7.1",
+    "clsx": "^2.1.1",
     "date-fns": "^4.1.0",
     "dotenv": "^16.4.5",
     "framer-motion": "^12.23.16",
@@ -31,6 +33,7 @@
     "react-hook-form": "^7.51.3",
     "recharts": "^3.2.1",
     "resend": "^3.2.0",
+    "tailwind-merge": "^3.3.1",
     "ua-parser-js": "^2.0.5",
     "xlsx": "^0.18.5",
     "zod": "^3.22.4"

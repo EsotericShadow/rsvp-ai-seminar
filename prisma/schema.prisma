@@ -276,6 +276,26 @@ enum CampaignStatus {
   CANCELLED
 }
 
+model GlobalTemplateSettings {
+  id                      String   @id @default(cuid())
+  global_hero_title       String   @default("Welcome to Evergreen AI")
+  global_hero_message     String   @default("Thank you for your interest in our upcoming informational session about practical AI tools for Northern BC businesses.")
+  global_signature_name   String   @default("Gabriel Lacroix")
+  global_signature_title  String   @default("AI Solutions Specialist")
+  global_signature_company String  @default("Evergreen Web Solutions")
+  global_signature_location String @default("Terrace, BC")
+  global_event_title      String   @default("Event Details")
+  global_event_date       String   @default("October 23rd, 2025")
+  global_event_time       String   @default("6:00 PM - 8:00 PM")
+  global_event_location   String   @default("Terrace, BC")
+  global_event_cost       String   @default("Free")
+  global_event_includes   String   @default("Coffee, refreshments, networking, and actionable AI insights")
+  createdAt               DateTime @default(now())
+  updatedAt               DateTime @updatedAt
+
+  @@map("global_template_settings")
+}
+
 enum CampaignSendStatus {
   PENDING
   SENDING
