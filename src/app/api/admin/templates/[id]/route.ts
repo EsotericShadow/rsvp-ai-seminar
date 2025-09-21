@@ -27,7 +27,28 @@ export async function PUT(
 ) {
   try {
     const body = await req.json();
-    const { name, subject, htmlBody, textBody } = body;
+    const { 
+      name, 
+      subject, 
+      htmlBody, 
+      textBody,
+      // Template variables
+      greeting_title,
+      greeting_message,
+      signature_name,
+      signature_title,
+      signature_company,
+      signature_location,
+      main_content_title,
+      main_content_body,
+      button_text,
+      button_link,
+      additional_info_title,
+      additional_info_body,
+      closing_title,
+      closing_message,
+      closing_signature
+    } = body;
 
     const template = await prisma.campaignTemplate.update({
       where: { id: params.id },
@@ -36,6 +57,22 @@ export async function PUT(
         subject,
         htmlBody,
         textBody,
+        // Template variables
+        greeting_title,
+        greeting_message,
+        signature_name,
+        signature_title,
+        signature_company,
+        signature_location,
+        main_content_title,
+        main_content_body,
+        button_text,
+        button_link,
+        additional_info_title,
+        additional_info_body,
+        closing_title,
+        closing_message,
+        closing_signature,
         updatedAt: new Date(),
       },
     });
