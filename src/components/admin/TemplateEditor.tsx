@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { CampaignTemplate } from '@prisma/client';
+import { generateEmailHTML, generateEmailText } from '@/lib/email-template';
 
 interface TemplateEditorProps {
   template: CampaignTemplate;
@@ -21,13 +22,15 @@ export default function TemplateEditor({ template, onSave, onCancel }: TemplateE
   const [activeTab, setActiveTab] = useState<'html' | 'text' | 'preview'>('html');
   const [previewMode, setPreviewMode] = useState<'desktop' | 'mobile'>('desktop');
 
-  // Auto-save preview updates
+  // Auto-refresh preview when content changes
+  const [previewKey, setPreviewKey] = useState(0);
+  
   useEffect(() => {
     const timer = setTimeout(() => {
-      // Trigger re-render for preview
-    }, 100);
+      setPreviewKey(prev => prev + 1); // Force preview re-render
+    }, 300); // Debounce updates
     return () => clearTimeout(timer);
-  }, [formData.htmlBody]);
+  }, [formData.htmlBody, formData.subject]);
 
   const handleSave = async () => {
     setIsSaving(true);
@@ -71,13 +74,20 @@ export default function TemplateEditor({ template, onSave, onCancel }: TemplateE
 
   const getPreviewHTML = () => {
     // Replace variables with sample data for preview
-    let previewHTML = formData.htmlBody;
-    previewHTML = previewHTML.replace(/\{\{business_name\}\}/g, 'Sample Business Name');
-    previewHTML = previewHTML.replace(/\{\{business_id\}\}/g, 'sample-business-123');
-    previewHTML = previewHTML.replace(/\{\{rsvp_link\}\}/g, 'https://rsvp.evergreenwebsolutions.ca/rsvp/sample-business-123');
-    previewHTML = previewHTML.replace(/\{\{.*?\}\}/g, 'Sample Data');
+    let content = formData.htmlBody;
+    content = content.replace(/\{\{business_name\}\}/g, 'Sample Business Name');
+    content = content.replace(/\{\{business_id\}\}/g, 'sample-business-123');
+    content = content.replace(/\{\{invite_link\}\}/g, 'https://rsvp.evergreenwebsolutions.ca/rsvp/sample-business-123');
+    content = content.replace(/\{\{.*?\}\}/g, 'Sample Data');
     
-    return previewHTML;
+    // Generate preview using global template
+    return generateEmailHTML({
+      subject: formData.subject,
+      greeting: 'Hi Sample Business Name,',
+      body: content,
+      ctaText: 'View details & RSVP',
+      ctaLink: 'https://rsvp.evergreenwebsolutions.ca/rsvp/sample-business-123',
+    });
   };
 
   return (
@@ -148,7 +158,7 @@ export default function TemplateEditor({ template, onSave, onCancel }: TemplateE
                     : 'text-gray-600 hover:text-gray-800'
                 }`}
               >
-                HTML Content
+                Content Editor
               </button>
               <button
                 onClick={() => setActiveTab('text')}
@@ -158,7 +168,17 @@ export default function TemplateEditor({ template, onSave, onCancel }: TemplateE
                     : 'text-gray-600 hover:text-gray-800'
                 }`}
               >
-                Text Content
+                Text Version
+              </button>
+              <button
+                onClick={() => setActiveTab('preview')}
+                className={`px-4 py-2 text-sm font-medium ${
+                  activeTab === 'preview'
+                    ? 'text-blue-600 border-b-2 border-blue-600 bg-blue-50'
+                    : 'text-gray-600 hover:text-gray-800'
+                }`}
+              >
+                Live Preview
               </button>
             </div>
 
@@ -168,9 +188,12 @@ export default function TemplateEditor({ template, onSave, onCancel }: TemplateE
                 <>
                   {/* Variable Insertion */}
                   <div className="p-3 border-b border-gray-200 bg-gray-50 flex-shrink-0">
+                    <div className="text-xs text-gray-500 mb-2">
+                      💡 Write just the message content here. Use HTML tags like &lt;p&gt;, &lt;strong&gt;, &lt;em&gt;, etc. Styling and layout are handled automatically by the global template.
+                    </div>
                     <div className="flex flex-wrap gap-2">
                       <span className="text-sm text-gray-600 mr-2">Insert variables:</span>
-                      {['{{business_name}}', '{{business_id}}', '{{rsvp_link}}'].map(variable => (
+                      {['{{business_name}}', '{{business_id}}', '{{invite_link}}'].map(variable => (
                         <button
                           key={variable}
                           onClick={() => insertVariable(variable)}
@@ -189,7 +212,7 @@ export default function TemplateEditor({ template, onSave, onCancel }: TemplateE
                       value={formData.htmlBody}
                       onChange={(e) => setFormData(prev => ({ ...prev, htmlBody: e.target.value }))}
                       className="w-full h-full resize-none border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 font-mono text-sm text-gray-900 bg-white overflow-y-auto"
-                      placeholder="Enter HTML content..."
+                      placeholder="<p>Write your email content here...</p><p>You can use HTML tags like <strong>bold</strong> and <em>italic</em>.</p>"
                     />
                   </div>
                 </>
@@ -212,7 +235,13 @@ export default function TemplateEditor({ template, onSave, onCancel }: TemplateE
           <div className="w-full lg:w-1/2 flex flex-col min-h-0">
             {/* Preview Header */}
             <div className="p-4 border-b border-gray-200 bg-gray-50 flex justify-between items-center flex-shrink-0">
-              <h3 className="font-medium">Live Preview</h3>
+              <div className="flex items-center space-x-2">
+                <h3 className="font-medium">Live Preview</h3>
+                <div className="flex items-center space-x-1">
+                  <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
+                  <span className="text-xs text-green-600">Live</span>
+                </div>
+              </div>
               <div className="flex space-x-2">
                 <button
                   onClick={() => setPreviewMode('desktop')}
@@ -251,6 +280,7 @@ export default function TemplateEditor({ template, onSave, onCancel }: TemplateE
                 
                 {/* Email Body Preview */}
                 <div 
+                  key={previewKey}
                   className="p-4"
                   dangerouslySetInnerHTML={{ __html: getPreviewHTML() }}
                 />
