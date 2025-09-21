@@ -67,6 +67,20 @@ export default function TemplateEditor({ template, onSave, onCancel }: TemplateE
     updatePreview();
   }, [previewKey, getPreviewHTML]);
 
+  // Initial preview generation when component mounts
+  useEffect(() => {
+    const generateInitialPreview = async () => {
+      try {
+        const html = await getPreviewHTML();
+        setPreviewHTML(html);
+      } catch (error) {
+        console.error('Failed to generate initial preview:', error);
+        setPreviewHTML('<p>Error generating preview</p>');
+      }
+    };
+    generateInitialPreview();
+  }, [getPreviewHTML]);
+
   const handleSave = async () => {
     setIsSaving(true);
     try {

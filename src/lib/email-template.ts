@@ -25,10 +25,13 @@ export async function generateEmailHTML(content: {
   // Get global template from API
   let globalTemplate = '';
   try {
-    const response = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000'}/api/admin/global-template`);
+    const baseUrl = typeof window !== 'undefined' ? '' : (process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000');
+    const response = await fetch(`${baseUrl}/api/admin/global-template`);
     if (response.ok) {
       const data = await response.json();
       globalTemplate = data.html;
+    } else {
+      console.error('Failed to fetch global template, status:', response.status);
     }
   } catch (error) {
     console.error('Failed to fetch global template:', error);
