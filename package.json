@@ -13,6 +13,7 @@
     "delete-test-rsvps": "tsx scripts/delete-test-rsvps.ts"
   },
   "dependencies": {
+    "@heroicons/react": "^2.2.0",
     "@hookform/resolvers": "^3.3.4",
     "@prisma/client": "^5.12.1",
     "@sendgrid/mail": "^8.1.6",
