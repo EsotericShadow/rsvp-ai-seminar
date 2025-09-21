@@ -33,16 +33,16 @@ export async function POST(req: Request) {
       cookiesToSet.push({ name: 'sid_ts', value: String(now), maxAge: 60 * 60 * 24 })
     }
 
-    // UTM/eid/click IDs from cookies (set in middleware)
-    const utmSource   = c.get('utm_source')?.value
-    const utmMedium   = c.get('utm_medium')?.value
-    const utmCampaign = c.get('utm_campaign')?.value
-    const utmTerm     = c.get('utm_term')?.value
-    const utmContent  = c.get('utm_content')?.value
-    const eid         = c.get('eid')?.value
-    const gclid       = c.get('gclid')?.value
-    const fbclid      = c.get('fbclid')?.value
-    const msclkid     = c.get('msclkid')?.value
+    // UTM/eid/click IDs from cookies (set in middleware) or body
+    const utmSource   = c.get('utm_source')?.value || body.utmSource
+    const utmMedium   = c.get('utm_medium')?.value || body.utmMedium
+    const utmCampaign = c.get('utm_campaign')?.value || body.utmCampaign
+    const utmTerm     = c.get('utm_term')?.value || body.utmTerm
+    const utmContent  = c.get('utm_content')?.value || body.utmContent
+    const eid         = c.get('eid')?.value || body.eid
+    const gclid       = c.get('gclid')?.value || body.gclid
+    const fbclid      = c.get('fbclid')?.value || body.fbclid
+    const msclkid     = c.get('msclkid')?.value || body.msclkid
 
     // Headers
     const ua = h('user-agent') || body.userAgent
@@ -85,6 +85,24 @@ export async function POST(req: Request) {
       visibility,
     } = body
 
+    // Extract UTM parameters from query string if present
+    let queryParams: URLSearchParams | null = null
+    if (typeof query === 'string' && query) {
+      try {
+        queryParams = new URLSearchParams(query)
+      } catch (e) {
+        // Ignore invalid query strings
+      }
+    }
+
+    // Override UTM parameters with query string values if present
+    const finalUtmSource = queryParams?.get('utm_source') || utmSource
+    const finalUtmMedium = queryParams?.get('utm_medium') || utmMedium
+    const finalUtmCampaign = queryParams?.get('utm_campaign') || utmCampaign
+    const finalUtmTerm = queryParams?.get('utm_term') || utmTerm
+    const finalUtmContent = queryParams?.get('utm_content') || utmContent
+    const finalEid = queryParams?.get('eid') || eid
+
     const campaignToken = (() => {
       const raw = c.get('eid')?.value || (typeof query === 'string' && query ? new URLSearchParams(query).get('eid') : null);
       if (raw && raw.startsWith('biz_')) return raw.slice(4)
@@ -94,9 +112,9 @@ export async function POST(req: Request) {
     })()
 
     const parsed = ua ? new UAParser(ua).getResult() : undefined
-    const browser = parsed?.browser?.name
+    const browser = parsed?.browser?.name || 'Unknown'
     const device  = parsed?.device?.type || 'desktop'
-    const platform = platformHint || parsed?.os?.name
+    const platform = platformHint || parsed?.os?.name || 'Unknown'
 
     await prisma.visit.create({
       data: {
@@ -105,7 +123,7 @@ export async function POST(req: Request) {
         path: typeof page === 'string' && page ? page : '/',
         query: typeof query === 'string' && query ? query : undefined,
         referrer: referer || undefined,
-        eid, utmSource, utmMedium, utmCampaign, utmTerm, utmContent,
+        eid: finalEid, utmSource: finalUtmSource, utmMedium: finalUtmMedium, utmCampaign: finalUtmCampaign, utmTerm: finalUtmTerm, utmContent: finalUtmContent,
         gclid, fbclid, msclkid,
         userAgent: ua || undefined,
         language: typeof language === 'string' ? language : undefined,
@@ -128,8 +146,8 @@ export async function POST(req: Request) {
         navigation: navigation ?? undefined,
         paint: paint ?? undefined,
         performance: perf ?? undefined,
-        scrollDepth: typeof scrollDepth === 'number' ? scrollDepth : null,
         timeOnPageMs: typeof timeOnPageMs === 'number' ? Math.round(timeOnPageMs) : null,
+        scrollDepth: typeof scrollDepth === 'number' && !isNaN(scrollDepth) ? scrollDepth : 0,
         interactionCounts: interactionCounts ?? undefined,
         visibility: visibility ?? undefined,
         country,
@@ -155,6 +173,33 @@ export async function POST(req: Request) {
         country,
         region,
         city,
+        // Enhanced business visitor tracking
+        userAgent: ua,
+        language: typeof language === 'string' ? language : undefined,
+        languages: Array.isArray(languages) && languages.length ? languages : undefined,
+        dpr: typeof dpr === 'number' ? dpr : null,
+        deviceMemory: typeof deviceMemory === 'number' ? deviceMemory : null,
+        hardwareConcurrency: typeof hardwareConcurrency === 'number' ? hardwareConcurrency : null,
+        maxTouchPoints: typeof maxTouchPoints === 'number' ? maxTouchPoints : null,
+        scrollDepth: typeof scrollDepth === 'number' ? scrollDepth : null,
+        timeOnPageMs: typeof timeOnPageMs === 'number' ? Math.round(timeOnPageMs) : null,
+        interactionCounts: interactionCounts ?? undefined,
+        connection: connectionInfo ?? undefined,
+        storage: storage ?? undefined,
+        navigation: navigation ?? undefined,
+        paint: paint ?? undefined,
+        performance: perf ?? undefined,
+        visibility: visibility ?? undefined,
+        // Marketing attribution
+        utmSource: finalUtmSource,
+        utmMedium: finalUtmMedium,
+        utmCampaign: finalUtmCampaign,
+        utmTerm: finalUtmTerm,
+        utmContent: finalUtmContent,
+        gclid,
+        fbclid,
+        msclkid,
+        referrer: referer,
         capturedAt: new Date().toISOString(),
       }
 

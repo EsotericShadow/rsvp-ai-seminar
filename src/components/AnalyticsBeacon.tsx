@@ -34,6 +34,12 @@ export default function AnalyticsBeacon() {
     let keypressCount = 0
     let copyCount = 0
     let maxScrollPercent = 0
+    let focusEvents = 0
+    let blurEvents = 0
+    let formInteractions = 0
+    let errorCount = 0
+    let resizeCount = 0
+    let beforeUnloadCount = 0
 
     const startTime = performance.now()
 
