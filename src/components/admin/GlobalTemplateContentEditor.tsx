@@ -108,12 +108,42 @@ export default function GlobalTemplateContentEditor({
               </div>
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">Content Body</label>
+                <div className="text-xs text-gray-500 mb-2">
+                  💡 Use HTML tags like &lt;p&gt;, &lt;strong&gt;, &lt;em&gt;. Available variables: {`{{business_name}}`}, {`{{business_id}}`}, {`{{invite_link}}`}
+                </div>
                 <textarea
                   value={previewContent.main_content_body}
                   onChange={(e) => setPreviewContent(prev => ({ ...prev, main_content_body: e.target.value }))}
                   className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-900 bg-white"
-                  rows={4}
+                  rows={6}
                   placeholder="Write your main message content here..."
+                />
+              </div>
+            </div>
+          </div>
+
+          {/* Additional Information */}
+          <div className="bg-gray-50 p-4 rounded-lg">
+            <h3 className="text-sm font-medium text-gray-900 mb-3">Additional Information</h3>
+            <div className="space-y-3">
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Additional Info Title</label>
+                <input
+                  type="text"
+                  value={previewContent.additional_info_title}
+                  onChange={(e) => setPreviewContent(prev => ({ ...prev, additional_info_title: e.target.value }))}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-900 bg-white"
+                  placeholder="e.g., Event Details"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Additional Info Body</label>
+                <textarea
+                  value={previewContent.additional_info_body}
+                  onChange={(e) => setPreviewContent(prev => ({ ...prev, additional_info_body: e.target.value }))}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-900 bg-white"
+                  rows={3}
+                  placeholder="e.g., Date: October 23rd, 2025<br>Time: 6:00 PM - 8:00 PM<br>Location: Terrace, BC"
                 />
               </div>
             </div>
@@ -143,6 +173,16 @@ export default function GlobalTemplateContentEditor({
                   className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-900 bg-white"
                   rows={2}
                   placeholder="e.g., We're excited to share these practical AI solutions with you..."
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Closing Signature</label>
+                <textarea
+                  value={previewContent.closing_signature}
+                  onChange={(e) => setPreviewContent(prev => ({ ...prev, closing_signature: e.target.value }))}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-900 bg-white"
+                  rows={2}
+                  placeholder="e.g., Gabriel Lacroix<br>Evergreen Web Solutions<br>Terrace, BC"
                 />
               </div>
             </div>
