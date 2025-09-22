@@ -48,7 +48,7 @@ export async function sendCampaignEmail(jobId: string) {
     }
 
     // Find the schedule for this email
-    const schedule = campaign.schedules.find(s => 
+    const schedule = (campaign.schedules || []).find(s => 
       s.group.members.some(m => m.businessId === job.recipientId)
     );
 

@@ -724,7 +724,7 @@ export default function CampaignControls({ initialData, defaults }: { initialDat
       name: `${campaign.name} (Copy)`,
       description: campaign.description,
       status: CampaignStatus.DRAFT,
-      schedules: campaign.schedules.map(schedule => ({
+      schedules: (campaign.schedules || []).map(schedule => ({
         ...schedule,
         id: undefined,
         name: schedule.name ? `${schedule.name} (Copy)` : '',
