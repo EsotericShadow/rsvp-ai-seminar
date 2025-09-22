@@ -1517,8 +1517,8 @@ function TemplatesView({
         <div className="flex items-center space-x-4">
           <button
             onClick={() => {
-              setDraft({
-                id: undefined,
+              const newTemplate: Template = {
+                id: '',
                 name: '',
                 subject: '',
                 htmlBody: '',
@@ -1536,11 +1536,10 @@ function TemplatesView({
                 signature_title: '',
                 signature_company: '',
                 signature_location: '',
-                signature_phone: '',
-                signature_email: '',
-                signature_website: ''
-              })
-              setEditingTemplate(null)
+                createdAt: new Date(),
+                updatedAt: new Date()
+              }
+              setEditingTemplate(newTemplate)
             }}
             className="px-4 py-2 bg-emerald-600 text-white rounded-lg hover:bg-emerald-700 transition-colors text-sm font-medium"
           >

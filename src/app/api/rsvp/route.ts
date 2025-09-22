@@ -11,23 +11,53 @@ import { recordSendEngagement } from '@/lib/campaigns';
 import { sendRSVPConfirmation } from '@/lib/sendgrid-email';
 import { checkRSVPRateLimit } from '@/lib/rate-limiter';
 import { validateRSVPSubmission, getTestDetectionConfig } from '@/lib/test-detection';
+import { createSecureResponse } from '@/lib/security-headers';
+import { logCSRFViolation, logRateLimitViolation, logInvalidInput, logXSSAttempt } from '@/lib/security-logger';
 
 const resendApiKey = process.env.RESEND_API_KEY;
 const resendClient = resendApiKey ? new Resend(resendApiKey) : null;
 
 export async function POST(req: Request) {
   try {
-    // Rate limiting check
+    // Get client IP first for security logging
     const clientIP = headers().get('x-forwarded-for')?.split(',')[0]?.trim() || 'unknown';
-    const rateLimitCheck = checkRSVPRateLimit(clientIP);
+    
+    // CSRF Protection - Check origin and referer headers
+    const origin = headers().get('origin');
+    const referer = headers().get('referer');
+    const allowedOrigins = [
+      'http://localhost:3000',
+      'http://localhost:3001',
+      'https://rsvp.evergreenwebsolutions.ca'
+    ];
+    
+    // Allow requests from allowed origins or if both origin and referer are missing (direct API calls)
+    const isValidOrigin = !origin || allowedOrigins.some(allowed => origin.startsWith(allowed));
+    const isValidReferer = !referer || allowedOrigins.some(allowed => referer.startsWith(allowed));
+    
+    if (!isValidOrigin && !isValidReferer) {
+      logCSRFViolation(clientIP, '/api/rsvp');
+      return createSecureResponse(
+        { message: 'Invalid request origin' }, 
+        403
+      );
+    }
+
+    // Rate limiting check with fingerprinting
+    const userAgent = headers().get('user-agent') || '';
+    const acceptLanguage = headers().get('accept-language') || '';
+    const acceptEncoding = headers().get('accept-encoding') || '';
+    
+    const rateLimitCheck = checkRSVPRateLimit(clientIP, userAgent, acceptLanguage, acceptEncoding);
     
     if (!rateLimitCheck.allowed) {
-      return NextResponse.json(
+      logRateLimitViolation(clientIP, '/api/rsvp', 3);
+      return createSecureResponse(
         { 
           message: 'Too many RSVP submissions. Please try again later.',
           remainingTime: rateLimitCheck.remainingTime 
         }, 
-        { status: 429 }
+        429
       );
     }
 
@@ -35,7 +65,14 @@ export async function POST(req: Request) {
     const validation = rsvpSchema.safeParse(body);
 
     if (!validation.success) {
-      return NextResponse.json({ message: 'Validation Error', errors: validation.error.flatten().fieldErrors }, { status: 400 });
+      // Log invalid input for security monitoring
+      const validationErrors = validation.error?.errors.map(e => e.message) || [];
+      logInvalidInput(clientIP, body, validationErrors);
+      
+      // Don't expose detailed validation errors to prevent information disclosure
+      return createSecureResponse({ 
+        message: 'Invalid form data. Please check your input and try again.' 
+      }, 400);
     }
 
     const values = validation.data;
@@ -48,7 +85,7 @@ export async function POST(req: Request) {
     const vid = c.get('vid')?.value;
     const sid = c.get('sid')?.value;
     const ua = h('user-agent') || undefined;
-    const referer = h('referer') || undefined;
+    const referrer = h('referer') || undefined;
     
     // Detect test submissions
     const testValidation = validateRSVPSubmission({
@@ -57,15 +94,14 @@ export async function POST(req: Request) {
       userAgent: ua,
       visitorId: vid,
       sessionId: sid,
-      referrer: referer,
+      referrer: referrer,
     }, getTestDetectionConfig());
     
     if (testValidation.isTest) {
       console.warn('Test submission blocked:', testValidation.message);
-      return NextResponse.json({ 
-        message: 'Test submissions are not allowed',
-        reason: testValidation.testDetection.reasons.join(', ')
-      }, { status: 400 });
+      return createSecureResponse({ 
+        message: 'Invalid submission. Please use the proper form to submit your RSVP.'
+      }, 400);
     }
     
     // Map validation data to database schema
@@ -141,7 +177,7 @@ export async function POST(req: Request) {
         attendeeCount: values.attendanceStatus === 'YES' ? (values.attendeeCount ?? 1) : 0,
         visitorId: vid,
         sessionId: sid,
-        referrer: referer,
+        referrer: referrer,
         eid,
         utmSource,
         utmMedium,
@@ -235,7 +271,7 @@ export async function POST(req: Request) {
               utmCampaign,
               utmTerm,
               utmContent,
-              referrer: referer,
+              referrer: referrer,
               // RSVP specific data
               attendanceStatus: values.attendanceStatus,
               attendeeCount: values.attendanceStatus === 'YES' ? (values.attendeeCount ?? 1) : 0,
@@ -307,14 +343,14 @@ export async function POST(req: Request) {
       console.error('ICS generation error:', icsError);
     }
 
-    return NextResponse.json({ 
+    return createSecureResponse({ 
       message: 'RSVP submitted successfully', 
       rsvpId: rsvp.id,
       icsUrl: icsUrl
-    }, { status: 200 });
+    }, 200);
 
   } catch (error) {
     console.error('RSVP API Error:', error);
-    return NextResponse.json({ message: 'Internal Server Error' }, { status: 500 });
+    return createSecureResponse({ message: 'Internal Server Error' }, 500);
   }
 }
