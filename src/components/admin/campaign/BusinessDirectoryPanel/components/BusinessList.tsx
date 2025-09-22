@@ -11,6 +11,7 @@ type BusinessListProps = {
   onToggleSelection: (id: string) => void
   onAddMember: (business: LeadMineBusiness) => void
   onLoadMore: () => void
+  showUngroupedOnly?: boolean
 }
 
 export function BusinessList({
@@ -24,6 +25,7 @@ export function BusinessList({
   onToggleSelection,
   onAddMember,
   onLoadMore,
+  showUngroupedOnly = false,
 }: BusinessListProps) {
   if (isLoading) {
     return (
@@ -36,24 +38,42 @@ export function BusinessList({
   if (businesses.length === 0) {
     return (
       <div className="text-center py-8 text-neutral-400">
-        No businesses found matching your criteria.
+        {showUngroupedOnly 
+          ? 'All businesses are already in groups!' 
+          : 'No businesses found matching your criteria.'
+        }
       </div>
     )
   }
 
   return (
     <div className="space-y-4">
+      {/* List Header */}
+      {showUngroupedOnly && (
+        <div className="bg-warning-500/10 border border-warning-500/20 rounded-lg p-3">
+          <div className="flex items-center gap-2">
+            <span className="text-warning-400">⚠️</span>
+            <span className="text-sm font-medium text-warning-200">
+              Showing {businesses.length} ungrouped businesses
+            </span>
+          </div>
+        </div>
+      )}
+
       {businesses.map((business) => {
         const isSelected = selectedIds.includes(business.id)
         const isExistingMember = existingMemberSet.has(business.id)
         const isInOtherGroup = allExistingMemberIds?.has(business.id) && !isExistingMember
+        const isUngrouped = !allExistingMemberIds?.has(business.id)
         
         return (
           <div
             key={business.id}
-            className={`p-4 border rounded-lg ${
+            className={`p-4 border rounded-lg transition-all duration-200 ${
               isSelected ? 'border-primary-500 bg-primary-500/10' : 'border-white/10 bg-black/40'
-            } ${isExistingMember ? 'opacity-50' : ''} ${isInOtherGroup ? 'border-warning-500/50 bg-warning-500/5' : ''}`}
+            } ${isExistingMember ? 'opacity-50' : ''} ${isInOtherGroup ? 'border-warning-500/50 bg-warning-500/5' : ''} ${
+              isUngrouped && showUngroupedOnly ? 'border-warning-400/30 bg-warning-500/5' : ''
+            }`}
           >
             <div className="flex items-start justify-between">
               <div className="flex items-start space-x-3">
@@ -75,6 +95,11 @@ export function BusinessList({
                     {isInOtherGroup && (
                       <span className="px-2 py-1 text-xs bg-warning-500/20 text-warning-200 rounded border border-warning-500/30">
                         In Another Group
+                      </span>
+                    )}
+                    {isUngrouped && showUngroupedOnly && (
+                      <span className="px-2 py-1 text-xs bg-warning-600/20 text-warning-100 rounded border border-warning-500/40">
+                        Not in Any Group
                       </span>
                     )}
                   </div>

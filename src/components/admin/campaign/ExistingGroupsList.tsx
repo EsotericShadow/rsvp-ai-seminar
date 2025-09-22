@@ -75,7 +75,7 @@ export function ExistingGroupsList({
             placeholder="Search groups..."
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
-            className="w-full rounded-lg border border-white/10 bg-black/60 px-3 py-2 text-sm text-white focus:border-emerald-400 focus:outline-none"
+            className="w-full rounded-lg border border-white/10 bg-black/60 px-3 py-2 text-sm text-white focus:border-primary-400 focus:outline-none"
           />
         </div>
         
@@ -83,7 +83,7 @@ export function ExistingGroupsList({
           <select
             value={sortBy}
             onChange={(e) => setSortBy(e.target.value as 'name' | 'members' | 'created')}
-            className="rounded-lg border border-white/10 bg-black/60 px-3 py-2 text-sm text-white focus:border-emerald-400 focus:outline-none"
+            className="rounded-lg border border-white/10 bg-black/60 px-3 py-2 text-sm text-white focus:border-primary-400 focus:outline-none"
           >
             <option value="name">Sort by Name</option>
             <option value="members">Sort by Members</option>
@@ -91,6 +91,13 @@ export function ExistingGroupsList({
           </select>
         </div>
       </div>
+
+      {/* Search Results Counter */}
+      {searchTerm && (
+        <div className="text-sm text-neutral-400">
+          {filteredAndSortedGroups.length} of {groups.length} groups match "{searchTerm}"
+        </div>
+      )}
 
       {/* Groups List */}
       <div className="space-y-4">
