@@ -333,6 +333,12 @@ export default function CampaignControls({ initialData, defaults }: { initialDat
   const [historyIndex, setHistoryIndex] = useState(-1)
   const [canUndo, setCanUndo] = useState(false)
   const [canRedo, setCanRedo] = useState(false)
+  
+  // Mobile UI state
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
+  const [isPerformanceCollapsed, setIsPerformanceCollapsed] = useState(false)
+  const [isQuickActionsCollapsed, setIsQuickActionsCollapsed] = useState(false)
+  const [isHistoryCollapsed, setIsHistoryCollapsed] = useState(false)
 
   // Drafts
   const [campaignDraft, setCampaignDraft] = useState<CampaignDraft>({})
@@ -815,7 +821,23 @@ export default function CampaignControls({ initialData, defaults }: { initialDat
 
   return (
     <div className="space-y-8">
-      <TopBanner defaults={defaults} campaigns={campaigns} schedules={schedules} undo={undo} redo={redo} canUndo={canUndo} canRedo={canRedo} historyLength={history.length} historyIndex={historyIndex} />
+      <TopBanner 
+        defaults={defaults} 
+        campaigns={campaigns} 
+        schedules={schedules} 
+        undo={undo} 
+        redo={redo} 
+        canUndo={canUndo} 
+        canRedo={canRedo} 
+        historyLength={history.length} 
+        historyIndex={historyIndex}
+        isPerformanceCollapsed={isPerformanceCollapsed}
+        setIsPerformanceCollapsed={setIsPerformanceCollapsed}
+        isQuickActionsCollapsed={isQuickActionsCollapsed}
+        setIsQuickActionsCollapsed={setIsQuickActionsCollapsed}
+        isHistoryCollapsed={isHistoryCollapsed}
+        setIsHistoryCollapsed={setIsHistoryCollapsed}
+      />
 
       {error ? (
         <div className="rounded-lg border border-red-500/40 bg-red-500/10 px-4 py-3 text-sm text-red-200">
@@ -829,8 +851,23 @@ export default function CampaignControls({ initialData, defaults }: { initialDat
         </div>
       ) : null}
 
+      {/* Mobile Navigation */}
       <nav className="border-b border-white/10 pb-4">
-        <div className="flex gap-2 overflow-x-auto pb-2 scrollbar-thin scrollbar-track-transparent scrollbar-thumb-white/20 mobile-scroll mobile-touch">
+        {/* Mobile Header */}
+        <div className="flex items-center justify-between lg:hidden mb-4">
+          <h1 className="text-lg font-semibold text-white">Campaign Control</h1>
+          <button
+            onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+            className="p-2 rounded-lg bg-white/5 text-white hover:bg-white/10 transition-colors"
+          >
+            <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
+            </svg>
+          </button>
+        </div>
+
+        {/* Desktop Navigation */}
+        <div className="hidden lg:flex gap-2 overflow-x-auto pb-2 scrollbar-thin scrollbar-track-transparent scrollbar-thumb-white/20 mobile-scroll mobile-touch">
           {tabs.map((tab) => (
             <button
               key={tab.id}
@@ -845,6 +882,28 @@ export default function CampaignControls({ initialData, defaults }: { initialDat
             </button>
           ))}
         </div>
+
+        {/* Mobile Navigation Menu */}
+        {isMobileMenuOpen && (
+          <div className="lg:hidden space-y-2">
+            {tabs.map((tab) => (
+              <button
+                key={tab.id}
+                onClick={() => {
+                  setActiveTab(tab.id)
+                  setIsMobileMenuOpen(false)
+                }}
+                className={`w-full text-left rounded-lg px-4 py-3 text-sm font-medium transition ${
+                  activeTab === tab.id
+                    ? 'bg-emerald-500 text-emerald-950 shadow'
+                    : 'bg-white/5 text-neutral-300 hover:bg-white/10'
+                }`}
+              >
+                {tab.label}
+              </button>
+            ))}
+          </div>
+        )}
       </nav>
 
       <div className="mt-6">
@@ -978,7 +1037,13 @@ function TopBanner({
   canUndo, 
   canRedo, 
   historyLength, 
-  historyIndex 
+  historyIndex,
+  isPerformanceCollapsed,
+  setIsPerformanceCollapsed,
+  isQuickActionsCollapsed,
+  setIsQuickActionsCollapsed,
+  isHistoryCollapsed,
+  setIsHistoryCollapsed
 }: { 
   defaults: AdminDefaults
   campaigns: CampaignWithCounts[]
@@ -989,6 +1054,12 @@ function TopBanner({
   canRedo: boolean
   historyLength: number
   historyIndex: number
+  isPerformanceCollapsed: boolean
+  setIsPerformanceCollapsed: (collapsed: boolean) => void
+  isQuickActionsCollapsed: boolean
+  setIsQuickActionsCollapsed: (collapsed: boolean) => void
+  isHistoryCollapsed: boolean
+  setIsHistoryCollapsed: (collapsed: boolean) => void
 }) {
   const warnings: string[] = []
   if (!defaults.leadMineConfigured) warnings.push('Lead Mine integration is not configured (LEADMINE_API_BASE/KEY).')
@@ -1012,15 +1083,31 @@ function TopBanner({
   }, 0)
 
   return (
-    <section className="rounded-2xl border border-white/10 bg-white/5 p-6">
-      <div className="flex items-center justify-between mb-4">
-        <h2 className="text-lg font-semibold text-white">Campaign Performance</h2>
-        <div className="text-xs text-neutral-400">
-          Last updated: {new Date().toLocaleTimeString()}
-        </div>
-      </div>
-      
-      <div className="grid gap-4 text-sm text-neutral-300 sm:grid-cols-2 lg:grid-cols-4">
+    <section className="rounded-2xl border border-white/10 bg-white/5 p-4 lg:p-6">
+      {/* Performance Section */}
+      <div className="mb-4">
+        <button
+          onClick={() => setIsPerformanceCollapsed(!isPerformanceCollapsed)}
+          className="flex items-center justify-between w-full text-left"
+        >
+          <h2 className="text-lg font-semibold text-white">Campaign Performance</h2>
+          <div className="flex items-center gap-2">
+            <div className="text-xs text-neutral-400 hidden sm:block">
+              Last updated: {new Date().toLocaleTimeString()}
+            </div>
+            <svg 
+              className={`w-5 h-5 text-neutral-400 transition-transform ${isPerformanceCollapsed ? 'rotate-180' : ''}`}
+              fill="none" 
+              stroke="currentColor" 
+              viewBox="0 0 24 24"
+            >
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+            </svg>
+          </div>
+        </button>
+        
+        {!isPerformanceCollapsed && (
+          <div className="mt-4 grid gap-4 text-sm text-neutral-300 sm:grid-cols-2 lg:grid-cols-4">
         <div className="rounded-lg border border-white/10 bg-black/40 p-4">
           <div className="flex items-center justify-between">
             <div>
@@ -1066,13 +1153,29 @@ function TopBanner({
           </div>
           <p className="text-xs text-emerald-400 mt-1">{sentSends} delivered</p>
         </div>
+          </div>
+        )}
       </div>
 
       {/* Quick Actions */}
-      <div className="mt-6 pt-4 border-t border-white/10">
-        <div className="flex items-center justify-between">
+      <div className="mt-4 pt-4 border-t border-white/10">
+        <button
+          onClick={() => setIsQuickActionsCollapsed(!isQuickActionsCollapsed)}
+          className="flex items-center justify-between w-full text-left mb-3"
+        >
           <h3 className="text-sm font-medium text-white">Quick Actions</h3>
-          <div className="flex gap-2">
+          <svg 
+            className={`w-4 h-4 text-neutral-400 transition-transform ${isQuickActionsCollapsed ? 'rotate-180' : ''}`}
+            fill="none" 
+            stroke="currentColor" 
+            viewBox="0 0 24 24"
+          >
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+          </svg>
+        </button>
+        
+        {!isQuickActionsCollapsed && (
+          <div className="flex flex-wrap gap-2">
             <button className="px-3 py-1.5 text-xs bg-emerald-600 text-white rounded-lg hover:bg-emerald-700 transition-colors">
               Send Test
             </button>
@@ -1083,33 +1186,49 @@ function TopBanner({
               Analytics
             </button>
           </div>
-        </div>
+        )}
       </div>
 
       {/* Undo/Redo Controls */}
       <div className="mt-4 pt-4 border-t border-white/10">
-        <div className="flex items-center justify-between">
+        <button
+          onClick={() => setIsHistoryCollapsed(!isHistoryCollapsed)}
+          className="flex items-center justify-between w-full text-left mb-3"
+        >
           <h3 className="text-sm font-medium text-white">Campaign History</h3>
-          <div className="flex gap-2">
-            <button
-              onClick={undo}
-              disabled={!canUndo}
-              className="px-3 py-1.5 text-xs bg-orange-600 text-white rounded-lg hover:bg-orange-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-1"
-            >
-              ↶ Undo
-            </button>
-            <button
-              onClick={redo}
-              disabled={!canRedo}
-              className="px-3 py-1.5 text-xs bg-orange-600 text-white rounded-lg hover:bg-orange-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-1"
-            >
-              ↷ Redo
-            </button>
+          <svg 
+            className={`w-4 h-4 text-neutral-400 transition-transform ${isHistoryCollapsed ? 'rotate-180' : ''}`}
+            fill="none" 
+            stroke="currentColor" 
+            viewBox="0 0 24 24"
+          >
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+          </svg>
+        </button>
+        
+        {!isHistoryCollapsed && (
+          <div className="space-y-3">
+            <div className="flex gap-2">
+              <button
+                onClick={undo}
+                disabled={!canUndo}
+                className="px-3 py-1.5 text-xs bg-orange-600 text-white rounded-lg hover:bg-orange-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-1"
+              >
+                ↶ Undo
+              </button>
+              <button
+                onClick={redo}
+                disabled={!canRedo}
+                className="px-3 py-1.5 text-xs bg-orange-600 text-white rounded-lg hover:bg-orange-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-1"
+              >
+                ↷ Redo
+              </button>
+            </div>
+            <p className="text-xs text-neutral-400">
+              {historyLength > 0 ? `${historyIndex + 1} of ${historyLength} states` : 'No history yet'}
+            </p>
           </div>
-        </div>
-        <p className="text-xs text-neutral-400 mt-1">
-          {historyLength > 0 ? `${historyIndex + 1} of ${historyLength} states` : 'No history yet'}
-        </p>
+        )}
       </div>
 
       {warnings.length ? (
