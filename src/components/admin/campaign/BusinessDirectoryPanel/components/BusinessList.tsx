@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import type { LeadMineBusiness } from '@/lib/leadMine'
+import { SplitButton } from '../../SplitButton'
 
 type BusinessListProps = {
   businesses: LeadMineBusiness[]
@@ -19,8 +20,10 @@ type BusinessListProps = {
     name: string
     description: string | null
     members: Array<{ businessId: string }>
+    color: string | null
   }>
   onMemberMoved?: () => void
+  currentGroupId?: string
 }
 
 export function BusinessList({
@@ -37,6 +40,7 @@ export function BusinessList({
   showUngroupedOnly = false,
   existingGroups = [],
   onMemberMoved,
+  currentGroupId,
 }: BusinessListProps) {
   const [removingIds, setRemovingIds] = useState<Set<string>>(new Set())
   if (isLoading) {
@@ -81,13 +85,14 @@ export function BusinessList({
               business={business}
               isSelected={selectedIds.includes(business.id)}
               isExistingMember={existingMemberSet.has(business.id)}
-              isInOtherGroup={Boolean(allExistingMemberIds?.has(business.id) && !existingMemberSet.has(business.id))}
+              isInOtherGroup={Boolean(allExistingMemberIds?.has(business.id) && !existingMemberSet.has(business.id) && currentGroupId)}
               isUngrouped={Boolean(!allExistingMemberIds?.has(business.id))}
               showUngroupedOnly={showUngroupedOnly}
               onToggleSelection={onToggleSelection}
               onAddMember={onAddMember}
               existingGroups={existingGroups}
               onMemberMoved={onMemberMoved}
+              currentGroupId={currentGroupId}
               isRemoving={removingIds.has(business.id)}
               onStartRemoving={(id) => {
                 setRemovingIds(prev => {
@@ -130,6 +135,7 @@ function BusinessCard({
   onAddMember,
   existingGroups,
   onMemberMoved,
+  currentGroupId,
   isRemoving,
   onStartRemoving,
 }: {
@@ -146,8 +152,10 @@ function BusinessCard({
     name: string
     description: string | null
     members: Array<{ businessId: string }>
+    color: string | null
   }>
   onMemberMoved?: () => void
+  currentGroupId?: string
   isRemoving: boolean
   onStartRemoving: (id: string) => void
 }) {
@@ -323,44 +331,91 @@ function BusinessCard({
           </div>
         </div>
         <div className="business-card-actions">
-          {/* Move to Dropdown - only show if business is in another group */}
-          {isInOtherGroup && availableGroups.length > 0 && (
-            <div className="relative" ref={dropdownRef}>
-              <button
-                onClick={() => setShowMoveDropdown(!showMoveDropdown)}
-                disabled={isMoving}
-                className="business-card-button business-card-button-secondary"
-              >
-                {isMoving ? 'Moving...' : 'Move to'}
-              </button>
-              
-              {showMoveDropdown && (
-                <div className="absolute right-0 top-full mt-1 w-48 rounded-lg border border-white/10 bg-neutral-800 py-1 shadow-lg z-10">
-                  {availableGroups.map((group) => (
-                    <button
-                      key={group.id}
-                      onClick={() => handleMoveToGroup(group.id)}
-                      className="w-full px-3 py-2 text-left text-xs text-neutral-200 hover:bg-neutral-700"
-                    >
-                      {group.name}
-                    </button>
-                  ))}
-                </div>
-              )}
-            </div>
+          {/* Add/Move Split Button */}
+          {isInOtherGroup ? (
+            // Move to split button
+            <SplitButton
+              mainAction={() => {
+                if (currentGroupId) {
+                  handleMoveToGroup(currentGroupId)
+                }
+              }}
+              dropdownActions={availableGroups
+                .filter(group => group.id !== currentGroupId)
+                .map(group => ({
+                  id: group.id,
+                  label: group.name,
+                  onClick: () => handleMoveToGroup(group.id)
+                }))}
+              mainLabel="Move"
+              mainIcon={
+                <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                </svg>
+              }
+              dropdownIcon={
+                <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                </svg>
+              }
+              disabled={isMoving || !currentGroupId}
+              loading={isMoving}
+              mainButtonClassName="business-card-button-secondary"
+              dropdownButtonClassName="business-card-button-secondary"
+            />
+          ) : (
+            // Add to split button
+            <SplitButton
+              mainAction={() => onAddMember(business)}
+              dropdownActions={existingGroups
+                .filter(group => group.id !== currentGroupId)
+                .map(group => ({
+                  id: group.id,
+                  label: group.name,
+                  onClick: async () => {
+                    try {
+                      const response = await fetch('/api/admin/campaign/members/add-to-group', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({
+                          businessId: business.id,
+                          groupId: group.id
+                        })
+                      })
+                      
+                      if (response.ok) {
+                        onMemberMoved?.()
+                      } else {
+                        const error = await response.json()
+                        console.error('Error adding to group:', error.error)
+                      }
+                    } catch (error) {
+                      console.error('Error adding to group:', error)
+                    }
+                  }
+                }))}
+              mainLabel={isExistingMember ? 'Added' : 'Add'}
+              mainIcon={
+                isExistingMember ? (
+                  <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                  </svg>
+                ) : (
+                  <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+                  </svg>
+                )
+              }
+              dropdownIcon={
+                <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                </svg>
+              }
+              disabled={isExistingMember}
+              mainButtonClassName={isExistingMember ? 'business-card-button-secondary' : 'business-card-button-primary'}
+              dropdownButtonClassName={isExistingMember ? 'business-card-button-secondary' : 'business-card-button-primary'}
+            />
           )}
-          
-          <button
-            onClick={() => onAddMember(business)}
-            disabled={isExistingMember}
-            className={`business-card-button ${
-              isExistingMember
-                ? 'business-card-button-secondary'
-                : 'business-card-button-primary'
-            }`}
-          >
-            {isExistingMember ? 'Added' : 'Add'}
-          </button>
         </div>
       </div>
     </motion.div>

@@ -168,6 +168,7 @@ export function AudienceGroupsTab({
                     onRefresh()
                   }
                 }}
+                currentGroupId={draft.id}
               />
             )}
 

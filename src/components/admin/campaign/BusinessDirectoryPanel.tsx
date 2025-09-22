@@ -13,7 +13,8 @@ export function BusinessDirectoryPanel({
   existingMemberIds, 
   allExistingMemberIds,
   existingGroups = [],
-  onMemberMoved
+  onMemberMoved,
+  currentGroupId
 }: BusinessDirectoryPanelProps) {
   const [showUngroupedOnly, setShowUngroupedOnly] = useState(false)
   const {
@@ -205,6 +206,7 @@ export function BusinessDirectoryPanel({
             showUngroupedOnly={showUngroupedOnly}
             existingGroups={existingGroups}
             onMemberMoved={onMemberMoved}
+            currentGroupId={currentGroupId}
           />
         </div>
       </div>
