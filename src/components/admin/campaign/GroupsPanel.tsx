@@ -17,6 +17,7 @@ export type MemberDraft = {
 }
 
 type Group = AudienceGroup & {
+  color?: string | null
   members: Array<{
     id: string
     groupId: string
@@ -52,8 +53,8 @@ export function GroupsPanel({
   onSelectGroup,
   onDeleteGroup,
 }: {
-  draft: { id?: string; name: string; description?: string }
-  setDraft: (value: { id?: string; name: string; description?: string }) => void
+  draft: { id?: string; name: string; description?: string; color?: string }
+  setDraft: (value: { id?: string; name: string; description?: string; color?: string }) => void
   members: MemberDraft[]
   onRemoveMember: (businessId: string) => void
   onAddMember: (business: LeadMineBusiness) => void
@@ -168,7 +169,7 @@ export function GroupsPanel({
             <input
               value={draft.name}
               onChange={(event) => setDraft({ ...draft, name: event.target.value })}
-              className="mt-1 w-full rounded-lg border border-white/10 bg-black/60 px-3 py-2 text-sm text-white focus:border-emerald-400 focus:outline-none"
+              className="admin-input admin-button-sm w-full rounded-lg"
               placeholder="Northern BC invitees"
             />
           </div>
@@ -178,8 +179,27 @@ export function GroupsPanel({
               value={draft.description ?? ''}
               onChange={(event) => setDraft({ ...draft, description: event.target.value })}
               rows={3}
-              className="mt-1 w-full rounded-lg border border-white/10 bg-black/60 px-3 py-2 text-sm text-white focus:border-emerald-400 focus:outline-none"
+              className="admin-textarea admin-button-sm w-full rounded-lg"
             />
+          </div>
+          
+          <div>
+            <label className="text-xs uppercase tracking-wide text-neutral-400">Group Color</label>
+            <div className="flex items-center gap-3 mt-1">
+              <input
+                type="color"
+                value={draft.color ?? '#10b981'}
+                onChange={(event) => setDraft({ ...draft, color: event.target.value })}
+                className="w-12 h-10 rounded-lg border border-white/10 cursor-pointer"
+              />
+              <input
+                type="text"
+                value={draft.color ?? '#10b981'}
+                onChange={(event) => setDraft({ ...draft, color: event.target.value })}
+                className="admin-input admin-button-sm flex-1 rounded-lg"
+                placeholder="#10b981"
+              />
+            </div>
           </div>
 
           <div>
@@ -326,7 +346,7 @@ export function GroupsPanel({
             <button
               type="button"
               onClick={onReset}
-              className="rounded-full border border-white/10 px-4 py-2 text-xs text-neutral-300 hover:border-white/30"
+              className="admin-button admin-button-secondary rounded-full"
             >
               Reset
             </button>
@@ -334,7 +354,7 @@ export function GroupsPanel({
               type="button"
               onClick={onSubmit}
               disabled={isSaving}
-              className="rounded-full bg-emerald-500 px-4 py-2 text-xs font-semibold text-emerald-950 hover:bg-emerald-400 disabled:cursor-not-allowed disabled:opacity-60"
+              className="admin-button admin-button-primary rounded-full disabled:cursor-not-allowed disabled:opacity-60"
             >
               {isSaving ? 'Saving…' : draft.id ? 'Update group' : 'Create group'}
             </button>

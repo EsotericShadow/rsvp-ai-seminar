@@ -1220,7 +1220,7 @@ function SequenceEditor({
                     type="button"
                     onClick={() => moveStep(index, -1)}
                     disabled={isFirst}
-                    className="rounded-full border border-white/10 px-2 py-1 sm:px-3 hover:border-emerald-400 hover:text-emerald-200 disabled:cursor-not-allowed disabled:opacity-50"
+                    className="admin-button admin-button-secondary rounded-full disabled:cursor-not-allowed disabled:opacity-50"
                   >
                     ↑
                   </button>
@@ -1228,21 +1228,21 @@ function SequenceEditor({
                     type="button"
                     onClick={() => moveStep(index, 1)}
                     disabled={isLast}
-                    className="rounded-full border border-white/10 px-2 py-1 sm:px-3 hover:border-emerald-400 hover:text-emerald-200 disabled:cursor-not-allowed disabled:opacity-50"
+                    className="admin-button admin-button-secondary rounded-full disabled:cursor-not-allowed disabled:opacity-50"
                   >
                     ↓
                   </button>
                   <button
                     type="button"
                     onClick={() => duplicateStep(index)}
-                    className="rounded-full border border-white/10 px-2 py-1 sm:px-3 hover:border-white/30"
+                    className="admin-button admin-button-secondary rounded-full"
                   >
                     Copy
                   </button>
                   <button
                     type="button"
                     onClick={() => removeStep(index)}
-                    className="rounded-full border border-red-500/40 px-2 py-1 sm:px-3 text-red-200 hover:bg-red-500/10"
+                    className="admin-button admin-button-danger rounded-full"
                   >
                     Delete
                   </button>
@@ -1255,7 +1255,7 @@ function SequenceEditor({
                   <select
                     value={step.templateId}
                     onChange={(e) => updateStep(index, { templateId: e.target.value })}
-                    className="mt-1 w-full rounded-lg border border-white/10 bg-black/60 px-3 py-2 text-sm text-white focus:border-emerald-400 focus:outline-none"
+                    className="admin-select admin-button-sm w-full rounded-lg"
                   >
                     <option value="">Select template</option>
                     {templates.map((t) => (
@@ -1270,7 +1270,7 @@ function SequenceEditor({
                   <select
                     value={step.groupId}
                     onChange={(e) => updateStep(index, { groupId: e.target.value })}
-                    className="mt-1 w-full rounded-lg border border-white/10 bg-black/60 px-3 py-2 text-sm text-white focus:border-emerald-400 focus:outline-none"
+                    className="admin-select admin-button-sm w-full rounded-lg"
                   >
                     <option value="">Select group</option>
                     {groups.map((g) => (
@@ -1303,7 +1303,7 @@ function SequenceEditor({
                         sendAt: e.target.value ? new Date(e.target.value) : null,
                       })
                     }
-                    className="mt-1 w-full rounded-lg border border-white/10 bg-black/60 px-3 py-2 text-sm text-white focus:border-emerald-400 focus:outline-none"
+                    className="admin-input admin-button-sm w-full rounded-lg"
                   />
                 </div>
                 <div>
@@ -1317,7 +1317,7 @@ function SequenceEditor({
                         throttlePerMinute: e.target.value ? Number(e.target.value) : undefined,
                       })
                     }
-                    className="mt-1 w-full rounded-lg border border-white/10 bg-black/60 px-3 py-2 text-sm text-white focus:border-emerald-400 focus:outline-none"
+                    className="admin-input admin-button-sm w-full rounded-lg"
                     placeholder="60"
                   />
                 </div>
@@ -1329,7 +1329,7 @@ function SequenceEditor({
                   <select
                     value={stepStatus}
                     onChange={(e) => updateStep(index, { status: e.target.value as CampaignStatus })}
-                    className="mt-1 w-full rounded-lg border border-white/10 bg-black/60 px-3 py-2 text-sm text-white focus:border-emerald-400 focus:outline-none"
+                    className="admin-select admin-button-sm w-full rounded-lg"
                   >
                     {statusOptions.map((status) => (
                       <option key={status} value={status}>
@@ -1349,7 +1349,7 @@ function SequenceEditor({
                         repeatIntervalMins: e.target.value ? Number(e.target.value) : null,
                       })
                     }
-                    className="mt-1 w-full rounded-lg border border-white/10 bg-black/60 px-3 py-2 text-sm text-white focus:border-emerald-400 focus:outline-none"
+                    className="admin-select admin-button-sm w-full rounded-lg"
                     placeholder="Leave blank to disable"
                   />
                 </div>
@@ -1360,7 +1360,7 @@ function SequenceEditor({
                     list={TIME_ZONE_DATALIST_ID}
                     value={timeZoneValue}
                     onChange={(e) => updateStep(index, { timeZone: e.target.value.trim() || undefined })}
-                    className="mt-1 w-full rounded-lg border border-white/10 bg-black/60 px-3 py-2 text-sm text-white focus:border-emerald-400 focus:outline-none"
+                    className="admin-select admin-button-sm w-full rounded-lg"
                     placeholder="America/Vancouver"
                   />
                   <p className="mt-1 text-[11px] text-neutral-500">Use an IANA time zone identifier.</p>
@@ -1378,7 +1378,7 @@ function SequenceEditor({
                         smartWindowStart: e.target.value ? new Date(e.target.value) : null,
                       })
                     }
-                    className="mt-1 w-full rounded-lg border border-white/10 bg-black/60 px-3 py-2 text-sm text-white focus:border-emerald-400 focus:outline-none"
+                    className="admin-select admin-button-sm w-full rounded-lg"
                   />
                 </div>
                 <div className="sm:space-y-2">
@@ -1391,7 +1391,7 @@ function SequenceEditor({
                         smartWindowEnd: e.target.value ? new Date(e.target.value) : null,
                       })
                     }
-                    className="mt-1 w-full rounded-lg border border-white/10 bg-black/60 px-3 py-2 text-sm text-white focus:border-emerald-400 focus:outline-none"
+                    className="admin-select admin-button-sm w-full rounded-lg"
                   />
                   <div className="flex justify-end">
                     <button

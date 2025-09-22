@@ -1,6 +1,7 @@
 import type { Metadata, Viewport } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
+import "../styles/admin-ui-fixes.css";
 
 import SiteAnalytics from '@/components/SiteAnalytics'
 import StructuredData from '@/components/StructuredData'

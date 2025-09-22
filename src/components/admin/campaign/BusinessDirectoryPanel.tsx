@@ -111,15 +111,15 @@ export function BusinessDirectoryPanel({
               placeholder="Search businesses..."
               value={searchInput}
               onChange={(e) => setSearchInput(e.target.value)}
-              className="w-full px-3 py-2 border border-white/10 bg-black/60 rounded-lg text-white placeholder-neutral-400 focus:outline-none focus:border-primary-400 focus:ring-primary-400"
+              className="admin-input admin-button-sm w-full rounded-lg"
             />
           </div>
           <button
             onClick={() => setShowUngroupedOnly(!showUngroupedOnly)}
-            className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
+            className={`admin-button admin-button-sm rounded-lg font-medium transition-colors ${
               showUngroupedOnly
-                ? 'bg-warning-600 text-white'
-                : 'bg-neutral-700 text-neutral-300 hover:bg-neutral-600'
+                ? 'admin-button-primary'
+                : 'admin-button-secondary'
             }`}
           >
             {showUngroupedOnly ? 'Show All' : `Show Ungrouped (${ungroupedCount})`}
