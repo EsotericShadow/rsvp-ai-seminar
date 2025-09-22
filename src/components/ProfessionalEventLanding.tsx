@@ -126,7 +126,7 @@ const staggerChildren = {
 
 export default function ProfessionalEventLanding() {
   return (
-    <div className="relative min-h-screen bg-gradient-to-br from-slate-50 via-white to-emerald-50">
+    <div className="relative min-h-screen bg-gradient-to-br from-slate-50 via-white to-emerald-50 scroll-smooth">
       {/* Structured Data */}
       <StructuredData type="event" />
       <StructuredData type="breadcrumb" />
@@ -283,6 +283,8 @@ export default function ProfessionalEventLanding() {
           <motion.div 
             {...fadeInUp}
             className="lg:col-span-2"
+            id="rsvp-form"
+            style={{ scrollMarginTop: '2rem' }}
           >
             <div className="bg-white rounded-2xl shadow-xl border border-gray-100 overflow-hidden">
               <div className="bg-gradient-to-r from-emerald-600 to-teal-600 px-8 py-6">
