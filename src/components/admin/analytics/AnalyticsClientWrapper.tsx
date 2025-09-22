@@ -6,6 +6,8 @@ import AnalyticsDashboard from './AnalyticsDashboard';
 import OverviewTab from './OverviewTab';
 import RSVPsTab from './RSVPsTab';
 import VisitorsTab from './VisitorsTab';
+import VisitorsWithBusiness from './VisitorsWithBusiness';
+import TrackingLinksPerformance from './TrackingLinksPerformance';
 import CampaignsTab from './CampaignsTab';
 import DevicesTab from './DevicesTab';
 import TimelineTab from './TimelineTab';
@@ -53,6 +55,10 @@ export default function AnalyticsClientWrapper({
         return <RSVPsTab rsvps={rsvps} />;
       case 'visitors':
         return <VisitorsTab visitors={visitors} />;
+      case 'visitors-business':
+        return <VisitorsWithBusiness />;
+      case 'tracking-links':
+        return <TrackingLinksPerformance />;
       case 'campaigns':
         return <CampaignsTab campaigns={campaigns} audienceGroups={audienceGroups} />;
       case 'devices':
