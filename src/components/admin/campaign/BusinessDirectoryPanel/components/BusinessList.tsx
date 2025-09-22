@@ -138,6 +138,11 @@ function BusinessCard({
     return !group.members.some(m => m.businessId === business.id)
   })
 
+  // Find which group this business belongs to (if any)
+  const currentGroup = existingGroups.find(group => 
+    group.members.some(m => m.businessId === business.id)
+  )
+
   // Close dropdown when clicking outside
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -212,17 +217,24 @@ function BusinessCard({
         isUngrouped && showUngroupedOnly ? 'border-warning-400/30 bg-warning-500/5' : ''
       }`}
     >
-      <div className="flex items-start justify-between">
-        <div className="flex items-start space-x-3">
+      <div className="flex items-start justify-between gap-4">
+        <div className="flex items-start space-x-3 flex-1 min-w-0">
           <input
             type="checkbox"
             checked={isSelected}
             disabled={isExistingMember || isInOtherGroup}
             onChange={() => onToggleSelection(business.id)}
-            className="mt-1 rounded border-white/20 bg-black/60 text-primary-500 focus:border-primary-400 focus:ring-primary-400"
+            className="mt-1 rounded border-white/20 bg-black/60 text-primary-500 focus:border-primary-400 focus:ring-primary-400 flex-shrink-0"
           />
-          <div className="flex-1">
+          <div className="flex-1 min-w-0">
             <div className="flex items-center space-x-2">
+              {currentGroup && (
+                <div 
+                  className="w-3 h-3 rounded-full border border-white/20 flex-shrink-0"
+                  style={{ backgroundColor: (currentGroup as any).color || '#10b981' }}
+                  title={`In group: ${currentGroup.name}`}
+                />
+              )}
               <h3 className="font-medium text-white">{business.name || 'Unnamed Business'}</h3>
               {isExistingMember && (
                 <span className="px-2 py-1 text-xs bg-primary-500/20 text-primary-200 rounded border border-primary-500/30">
@@ -270,14 +282,14 @@ function BusinessCard({
             )}
           </div>
         </div>
-        <div className="flex space-x-2">
+        <div className="business-card-actions">
           {/* Move to Dropdown - only show if business is in another group */}
           {isInOtherGroup && availableGroups.length > 0 && (
             <div className="relative" ref={dropdownRef}>
               <button
                 onClick={() => setShowMoveDropdown(!showMoveDropdown)}
                 disabled={isMoving}
-                className="rounded-lg border border-blue-500/40 px-3 py-1 text-xs text-blue-200 hover:bg-blue-500/10 disabled:opacity-50 disabled:cursor-not-allowed"
+                className="business-card-button business-card-button-secondary"
               >
                 {isMoving ? 'Moving...' : 'Move to'}
               </button>
@@ -301,10 +313,10 @@ function BusinessCard({
           <button
             onClick={() => onAddMember(business)}
             disabled={isExistingMember}
-            className={`px-3 py-1 text-sm rounded transition-colors ${
+            className={`business-card-button ${
               isExistingMember
-                ? 'bg-white/10 text-neutral-400 cursor-not-allowed border border-white/20'
-                : 'bg-emerald-600 text-white hover:bg-emerald-700 border border-emerald-500'
+                ? 'business-card-button-secondary'
+                : 'business-card-button-primary'
             }`}
           >
             {isExistingMember ? 'Added' : 'Add'}

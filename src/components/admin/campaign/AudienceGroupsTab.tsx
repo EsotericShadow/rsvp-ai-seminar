@@ -23,6 +23,7 @@ type Group = {
   id: string
   name: string
   description: string | null
+  color: string | null
   createdAt: Date
   updatedAt: Date
   criteria: any
@@ -298,7 +299,7 @@ function ManualEntryModal({
             <input
               value={manualDraft.businessName}
               onChange={(e) => setManualDraft(prev => ({ ...prev, businessName: e.target.value }))}
-              className="w-full rounded-lg border border-white/10 bg-black/60 px-3 py-2 text-sm text-white focus:border-primary-400 focus:outline-none"
+              className="admin-input admin-button-sm w-full rounded-lg"
               placeholder="Enter business name"
             />
           </div>
@@ -310,7 +311,7 @@ function ManualEntryModal({
               type="email"
               value={manualDraft.primaryEmail}
               onChange={(e) => setManualDraft(prev => ({ ...prev, primaryEmail: e.target.value }))}
-              className="w-full rounded-lg border border-white/10 bg-black/60 px-3 py-2 text-sm text-white focus:border-primary-400 focus:outline-none"
+              className="admin-input admin-button-sm w-full rounded-lg"
               placeholder="business@example.com"
             />
           </div>
@@ -322,7 +323,7 @@ function ManualEntryModal({
               type="email"
               value={manualDraft.secondaryEmail}
               onChange={(e) => setManualDraft(prev => ({ ...prev, secondaryEmail: e.target.value }))}
-              className="w-full rounded-lg border border-white/10 bg-black/60 px-3 py-2 text-sm text-white focus:border-primary-400 focus:outline-none"
+              className="admin-input admin-button-sm w-full rounded-lg"
               placeholder="Optional secondary email"
             />
           </div>
@@ -333,7 +334,7 @@ function ManualEntryModal({
             <input
               value={manualDraft.contactPerson}
               onChange={(e) => setManualDraft(prev => ({ ...prev, contactPerson: e.target.value }))}
-              className="w-full rounded-lg border border-white/10 bg-black/60 px-3 py-2 text-sm text-white focus:border-primary-400 focus:outline-none"
+              className="admin-input admin-button-sm w-full rounded-lg"
               placeholder="Contact person name"
             />
           </div>
@@ -344,7 +345,7 @@ function ManualEntryModal({
             <input
               value={manualDraft.website}
               onChange={(e) => setManualDraft(prev => ({ ...prev, website: e.target.value }))}
-              className="w-full rounded-lg border border-white/10 bg-black/60 px-3 py-2 text-sm text-white focus:border-primary-400 focus:outline-none"
+              className="admin-input admin-button-sm w-full rounded-lg"
               placeholder="https://example.com"
             />
           </div>
@@ -355,7 +356,7 @@ function ManualEntryModal({
             <input
               value={manualDraft.phone}
               onChange={(e) => setManualDraft(prev => ({ ...prev, phone: e.target.value }))}
-              className="w-full rounded-lg border border-white/10 bg-black/60 px-3 py-2 text-sm text-white focus:border-primary-400 focus:outline-none"
+              className="admin-input admin-button-sm w-full rounded-lg"
               placeholder="Phone number"
             />
           </div>
@@ -368,7 +369,7 @@ function ManualEntryModal({
           <input
             value={manualDraft.tags}
             onChange={(e) => setManualDraft(prev => ({ ...prev, tags: e.target.value }))}
-            className="w-full rounded-lg border border-white/10 bg-black/60 px-3 py-2 text-sm text-white focus:border-primary-400 focus:outline-none"
+            className="admin-textarea admin-button-sm w-full rounded-lg"
             placeholder="e.g., manual, high-priority, local"
           />
         </div>
@@ -381,7 +382,7 @@ function ManualEntryModal({
             value={manualDraft.notes}
             onChange={(e) => setManualDraft(prev => ({ ...prev, notes: e.target.value }))}
             rows={3}
-            className="w-full rounded-lg border border-white/10 bg-black/60 px-3 py-2 text-sm text-white focus:border-primary-400 focus:outline-none"
+            className="admin-textarea admin-button-sm w-full rounded-lg"
             placeholder="Additional notes about this business"
           />
         </div>
@@ -390,14 +391,14 @@ function ManualEntryModal({
           <button
             type="button"
             onClick={onClose}
-            className="rounded-lg border border-white/10 px-4 py-2 text-sm text-neutral-300 hover:border-white/30"
+            className="admin-button admin-button-secondary rounded-lg"
           >
             Cancel
           </button>
           <button
             type="button"
             onClick={handleSubmit}
-            className="rounded-lg bg-primary-500 px-4 py-2 text-sm font-semibold text-primary-950 hover:bg-primary-400"
+            className="admin-button admin-button-primary rounded-lg"
           >
             Add Entry
           </button>

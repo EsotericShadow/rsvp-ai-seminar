@@ -139,6 +139,7 @@ model AudienceGroup {
   id          String             @id @default(cuid())
   name        String
   description String?
+  color       String?            @default("#10b981")
   criteria    Json?
   meta        Json
   createdAt   DateTime           @default(now())

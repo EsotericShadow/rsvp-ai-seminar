@@ -20,9 +20,9 @@ export async function POST(request: NextRequest) {
   }
 
   try {
-    // Verify the member exists
-    const member = await prisma.audienceMember.findUnique({
-      where: { id: memberId },
+    // Find the member by businessId (which is passed as memberId from frontend)
+    const member = await prisma.audienceMember.findFirst({
+      where: { businessId: memberId },
       include: { group: true }
     })
 
