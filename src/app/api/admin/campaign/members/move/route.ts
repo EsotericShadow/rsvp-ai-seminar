@@ -60,7 +60,7 @@ export async function POST(request: NextRequest) {
 
     // Move the member to the target group
     const updatedMember = await prisma.audienceMember.update({
-      where: { id: memberId },
+      where: { id: member.id },
       data: { groupId: targetGroupId },
       include: { group: true }
     })
