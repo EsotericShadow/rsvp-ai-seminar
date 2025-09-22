@@ -13,21 +13,20 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: 'Invalid JSON body' }, { status: 400 })
   }
 
-  const { businessId, groupId } = body
+  const { businessId, groupId, businessData } = body
 
   if (!businessId || !groupId) {
     return NextResponse.json({ error: 'Business ID and group ID are required' }, { status: 400 })
   }
 
   try {
-    // Check if the business exists by looking for any existing member with this businessId
+    // Check if the business exists in any group (to get source data if it exists)
     const sourceMember = await prisma.audienceMember.findFirst({
       where: { businessId: businessId }
     })
 
-    if (!sourceMember) {
-      return NextResponse.json({ error: 'Business not found in any group' }, { status: 404 })
-    }
+    // If business is not in any group, we need to get it from the businesses API
+    // For now, we'll allow adding even if not in any group (the frontend should handle this)
 
     // Check if the group exists
     const group = await prisma.audienceGroup.findUnique({
@@ -65,16 +64,16 @@ export async function POST(request: NextRequest) {
       }, { status: 400 })
     }
 
-    // Add the business to the group using the existing member's data
+    // Add the business to the group
     const newMember = await prisma.audienceMember.create({
       data: {
         businessId: businessId,
         groupId: groupId,
-        businessName: sourceMember.businessName,
-        primaryEmail: sourceMember.primaryEmail,
-        secondaryEmail: sourceMember.secondaryEmail,
-        tagsSnapshot: sourceMember.tagsSnapshot,
-        meta: sourceMember.meta as any
+        businessName: sourceMember?.businessName || businessData?.name || 'Unknown Business',
+        primaryEmail: sourceMember?.primaryEmail || businessData?.primaryEmail || '',
+        secondaryEmail: sourceMember?.secondaryEmail || businessData?.alternateEmail || null,
+        tagsSnapshot: sourceMember?.tagsSnapshot || businessData?.tags || [],
+        meta: sourceMember?.meta as any || {}
       },
       include: { group: true }
     })
