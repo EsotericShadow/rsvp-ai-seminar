@@ -16,13 +16,17 @@ interface AnalyticsClientWrapperProps {
   overviewStats: any;
   rsvps: any[];
   visitors: any[];
+  campaigns: any[];
+  audienceGroups: any[];
 }
 
 export default function AnalyticsClientWrapper({ 
   initialTab, 
   overviewStats, 
   rsvps, 
-  visitors 
+  visitors,
+  campaigns,
+  audienceGroups
 }: AnalyticsClientWrapperProps) {
   const [activeTab, setActiveTab] = useState(initialTab);
   const router = useRouter();
@@ -50,7 +54,7 @@ export default function AnalyticsClientWrapper({
       case 'visitors':
         return <VisitorsTab visitors={visitors} />;
       case 'campaigns':
-        return <CampaignsTab />;
+        return <CampaignsTab campaigns={campaigns} audienceGroups={audienceGroups} />;
       case 'devices':
         return <DevicesTab 
           deviceBreakdown={overviewStats.deviceBreakdown}

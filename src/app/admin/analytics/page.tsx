@@ -76,7 +76,7 @@ export default async function AdminAnalyticsPage({ searchParams }: { searchParam
     : {}
 
   // Fetch data based on current tab
-  const [visits, rsvps] = await Promise.all([
+  const [visits, rsvps, campaigns, audienceGroups] = await Promise.all([
     prisma.visit.findMany({
       where: visitWhere,
       orderBy: { createdAt: 'desc' },
@@ -86,6 +86,33 @@ export default async function AdminAnalyticsPage({ searchParams }: { searchParam
       where: rsvpWhere,
       orderBy: { createdAt: 'desc' },
       take: tab === 'rsvps' ? 1000 : 100,
+    }),
+    prisma.campaign.findMany({
+      include: {
+        schedules: {
+          include: {
+            template: true,
+            group: true,
+          },
+        },
+        _count: {
+          select: {
+            schedules: true,
+          },
+        },
+      },
+      orderBy: { createdAt: 'desc' },
+    }),
+    prisma.audienceGroup.findMany({
+      include: {
+        members: true,
+        _count: {
+          select: {
+            members: true,
+          },
+        },
+      },
+      orderBy: { createdAt: 'desc' },
     }),
   ])
 
@@ -208,6 +235,13 @@ export default async function AdminAnalyticsPage({ searchParams }: { searchParam
     { day: 6, name: 'Saturday', count: dailyPatterns[6] || 0 },
   ]
 
+  // Calculate campaign statistics
+  const totalCampaigns = campaigns.length
+  const activeCampaigns = campaigns.filter(c => c.status === 'SCHEDULED').length
+  const completedCampaigns = campaigns.filter(c => c.status === 'COMPLETED').length
+  const totalSchedules = campaigns.reduce((sum, c) => sum + c._count.schedules, 0)
+  const totalAudienceMembers = audienceGroups.reduce((sum, g) => sum + g._count.members, 0)
+
   const overviewStats = {
     totalVisits,
     totalRSVPs,
@@ -222,6 +256,12 @@ export default async function AdminAnalyticsPage({ searchParams }: { searchParam
     rsvpsTrend,
     hourlyData,
     dailyData,
+    // Campaign stats
+    totalCampaigns,
+    activeCampaigns,
+    completedCampaigns,
+    totalSchedules,
+    totalAudienceMembers,
   }
 
   return (
@@ -235,6 +275,8 @@ export default async function AdminAnalyticsPage({ searchParams }: { searchParam
         overviewStats={overviewStats}
         rsvps={rsvps}
         visitors={visits}
+        campaigns={campaigns}
+        audienceGroups={audienceGroups}
       />
     </AdminLayout>
   )
