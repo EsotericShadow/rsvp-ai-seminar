@@ -7,7 +7,14 @@ import { useBusinessDirectory } from './BusinessDirectoryPanel/hooks/useBusiness
 import { useSelection } from './BusinessDirectoryPanel/hooks/useSelection'
 import type { BusinessDirectoryPanelProps } from './BusinessDirectoryPanel/types'
 
-export function BusinessDirectoryPanel({ onAddMember, onAddMany, existingMemberIds, allExistingMemberIds }: BusinessDirectoryPanelProps) {
+export function BusinessDirectoryPanel({ 
+  onAddMember, 
+  onAddMany, 
+  existingMemberIds, 
+  allExistingMemberIds,
+  existingGroups = [],
+  onMemberMoved
+}: BusinessDirectoryPanelProps) {
   const [showUngroupedOnly, setShowUngroupedOnly] = useState(false)
   const {
     searchInput,
@@ -196,6 +203,8 @@ export function BusinessDirectoryPanel({ onAddMember, onAddMany, existingMemberI
             onAddMember={onAddMember}
             onLoadMore={handleLoadMore}
             showUngroupedOnly={showUngroupedOnly}
+            existingGroups={existingGroups}
+            onMemberMoved={onMemberMoved}
           />
         </div>
       </div>
