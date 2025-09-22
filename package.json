@@ -7,6 +7,8 @@
     "build": "next build",
     "start": "next start",
     "lint": "ESLINT_USE_FLAT_CONFIG=false eslint . --ext .ts,.tsx --max-warnings=0",
+    "type-check": "tsc --noEmit",
+    "pre-push": "./scripts/pre-push-check.sh",
     "postinstall": "prisma generate",
     "cleanup-test-rsvps": "tsx scripts/cleanup-test-rsvps.ts",
     "analyze-rsvp-quality": "tsx scripts/cleanup-test-rsvps.ts --analyze",
