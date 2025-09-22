@@ -173,6 +173,45 @@ function BusinessCard({
     group.members.some(m => m.businessId === business.id)
   )
 
+  const handleMoveToGroup = async (groupId: string) => {
+    if (!onMemberMoved) return
+    
+    setIsMoving(true)
+    setShowMoveDropdown(false)
+    
+    // Start the removal animation
+    onStartRemoving(business.id)
+    
+    try {
+      const response = await fetch('/api/admin/campaign/members/move', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          memberId: business.id,
+          targetGroupId: groupId
+        })
+      })
+      
+      if (response.ok) {
+        // Wait for animation to complete before refreshing
+        setTimeout(() => {
+          onMemberMoved()
+        }, 300)
+      } else {
+        const error = await response.json()
+        console.error('Error moving member:', error.error)
+        // Reset removing state on error
+        onStartRemoving(business.id)
+      }
+    } catch (error) {
+      console.error('Error moving member:', error)
+      // Reset removing state on error
+      onStartRemoving(business.id)
+    } finally {
+      setIsMoving(false)
+    }
+  }
+
   // Close dropdown when clicking outside
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -190,50 +229,6 @@ function BusinessCard({
     }
   }, [showMoveDropdown])
 
-  const handleMoveToGroup = async (targetGroupId: string) => {
-    if (!business.id || isMoving) return
-    
-    setIsMoving(true)
-    setShowMoveDropdown(false)
-    
-    // Start the removal animation
-    onStartRemoving(business.id)
-    
-    try {
-      // Use the move member API instead of the groups API
-      const response = await fetch('/api/admin/campaign/members/move', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          memberId: business.id,
-          targetGroupId: targetGroupId
-        }),
-      })
-
-      if (!response.ok) {
-        const error = await response.json()
-        throw new Error(error.error || 'Failed to move business')
-      }
-
-      // Wait a bit for the animation to complete before refreshing
-      setTimeout(() => {
-        // Call the callback to refresh the data
-        if (onMemberMoved) {
-          onMemberMoved()
-        }
-      }, 300) // Match the animation duration
-      
-    } catch (error) {
-      console.error('Error moving business:', error)
-      alert(error instanceof Error ? error.message : 'Failed to move business')
-      // Reset the removing state on error
-      onStartRemoving(business.id) // This will toggle it back off
-    } finally {
-      setIsMoving(false)
-    }
-  }
 
   return (
     <motion.div
@@ -331,97 +326,90 @@ function BusinessCard({
           </div>
         </div>
         <div className="business-card-actions">
-          {/* Add/Move Split Button */}
-          {isInOtherGroup ? (
-            // Move to split button
-            <SplitButton
-              mainAction={() => {
-                if (currentGroupId) {
-                  handleMoveToGroup(currentGroupId)
-                }
-              }}
-              dropdownActions={availableGroups
-                .filter(group => group.id !== currentGroupId)
-                .map(group => ({
-                  id: group.id,
-                  label: group.name,
-                  onClick: () => handleMoveToGroup(group.id)
-                }))}
-              mainLabel="Move"
-              mainIcon={
-                <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-                </svg>
-              }
-              dropdownIcon={
-                <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-                </svg>
-              }
-              disabled={isMoving || !currentGroupId}
-              loading={isMoving}
-              mainButtonClassName="business-card-button-secondary"
-              dropdownButtonClassName="business-card-button-secondary"
-            />
-          ) : (
-            // Add to split button
-            <SplitButton
-              mainAction={() => onAddMember(business)}
-              dropdownActions={existingGroups
-                .filter(group => group.id !== currentGroupId)
-                .map(group => ({
-                  id: group.id,
-                  label: group.name,
-                  onClick: async () => {
-                    try {
-                      const response = await fetch('/api/admin/campaign/members/add-to-group', {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({
-                          businessId: business.id,
-                          groupId: group.id,
-                          businessData: {
-                            name: business.name,
-                            primaryEmail: business.contact.primaryEmail,
-                            alternateEmail: business.contact.alternateEmail,
-                            tags: business.contact.tags || []
-                          }
-                        })
-                      })
-                      
-                      if (response.ok) {
-                        onMemberMoved?.()
-                      } else {
-                        const error = await response.json()
-                        console.error('Error adding to group:', error.error)
-                      }
-                    } catch (error) {
-                      console.error('Error adding to group:', error)
-                    }
-                  }
-                }))}
-              mainLabel={isExistingMember ? 'Added' : 'Add'}
-              mainIcon={
-                isExistingMember ? (
-                  <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-                  </svg>
-                ) : (
-                  <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
-                  </svg>
-                )
-              }
-              dropdownIcon={
-                <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-                </svg>
-              }
-              disabled={isExistingMember}
-              mainButtonClassName={isExistingMember ? 'business-card-button-secondary' : 'business-card-button-primary'}
-              dropdownButtonClassName={isExistingMember ? 'business-card-button-secondary' : 'business-card-button-primary'}
-            />
+          {/* Move to Dropdown - only show if business is in another group */}
+          {isInOtherGroup && availableGroups.length > 0 && (
+            <div className="relative" ref={dropdownRef}>
+              <button
+                onClick={() => setShowMoveDropdown(!showMoveDropdown)}
+                disabled={isMoving}
+                className="business-card-button business-card-button-secondary"
+              >
+                {isMoving ? 'Moving...' : 'Move to'}
+              </button>
+              
+              {showMoveDropdown && (
+                <div className="absolute right-0 top-full mt-1 w-48 rounded-lg border border-white/10 bg-neutral-800 py-1 shadow-lg z-10">
+                  {availableGroups.map((group) => (
+                    <button
+                      key={group.id}
+                      onClick={() => handleMoveToGroup(group.id)}
+                      className="w-full px-3 py-2 text-left text-xs text-neutral-200 hover:bg-neutral-700"
+                    >
+                      {group.name}
+                    </button>
+                  ))}
+                </div>
+              )}
+            </div>
           )}
+          
+          {/* Add/Add to Split Button */}
+          <SplitButton
+            mainAction={() => onAddMember(business)}
+            dropdownActions={existingGroups
+              .filter(group => group.id !== currentGroupId)
+              .map(group => ({
+                id: group.id,
+                label: group.name,
+                onClick: async () => {
+                  try {
+                    const response = await fetch('/api/admin/campaign/members/add-to-group', {
+                      method: 'POST',
+                      headers: { 'Content-Type': 'application/json' },
+                      body: JSON.stringify({
+                        businessId: business.id,
+                        groupId: group.id,
+                        businessData: {
+                          name: business.name,
+                          primaryEmail: business.contact.primaryEmail,
+                          alternateEmail: business.contact.alternateEmail,
+                          tags: business.contact.tags || []
+                        }
+                      })
+                    })
+                    
+                    if (response.ok) {
+                      onMemberMoved?.()
+                    } else {
+                      const error = await response.json()
+                      console.error('Error adding to group:', error.error)
+                    }
+                  } catch (error) {
+                    console.error('Error adding to group:', error)
+                  }
+                }
+              }))}
+            mainLabel={isExistingMember ? 'Added' : 'Add'}
+            mainIcon={
+              isExistingMember ? (
+                <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                </svg>
+              ) : (
+                <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+                </svg>
+              )
+            }
+            dropdownIcon={
+              <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+              </svg>
+            }
+            disabled={isExistingMember}
+            mainButtonClassName={isExistingMember ? 'business-card-button-secondary' : 'business-card-button-primary'}
+            dropdownButtonClassName={isExistingMember ? 'business-card-button-secondary' : 'business-card-button-primary'}
+          />
         </div>
       </div>
     </motion.div>
