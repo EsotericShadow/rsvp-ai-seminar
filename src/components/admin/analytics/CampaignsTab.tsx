@@ -113,7 +113,7 @@ export default function CampaignsTab({ campaigns, audienceGroups }: CampaignsTab
 
     // REAL data only - no fake metrics
     // We only have 4 audience members, so max 4 emails can be sent
-    const totalEmailsSent = Math.min(totalAudienceMembers, 100); // Respect 100 email limit
+    const totalEmailsSent = 0; // No emails sent yet - only show real data
     const totalOpens = 0; // No real opens yet
     const totalClicks = 0; // No real clicks yet
     const totalRSVPs = 0; // No real RSVPs yet
@@ -313,40 +313,22 @@ export default function CampaignsTab({ campaigns, audienceGroups }: CampaignsTab
               Close
             </button>
           </div>
-          <CampaignAnalytics
-            campaignId={selectedCampaign.id}
-            metrics={{
-              id: selectedCampaign.id,
-              name: selectedCampaign.name,
-              status: selectedCampaign.status.toLowerCase(),
-              totalRecipients: totalAudienceMembers,
-              emailsSent: 0, // No emails sent yet
-              emailsDelivered: 0,
-              emailsOpened: 0,
-              emailsClicked: 0,
-              unsubscribes: 0,
-              bounces: 0,
-              complaints: 0,
-              createdAt: selectedCampaign.createdAt.toISOString(),
-              lastSentAt: null,
-              nextSendAt: null,
-              openRate: 0,
-              clickRate: 0,
-              deliveryRate: 0,
-              unsubscribeRate: 0,
-              bounceRate: 0,
-              complaintRate: 0,
-              trends: {
-                openRate: 0,
-                clickRate: 0,
-                deliveryRate: 0
-              },
-              hourlyData: [], // No data yet
-              topTemplates: [] // No data yet
-            }}
-            onRefresh={() => console.log('Refreshing analytics...')}
-            isRefreshing={false}
-          />
+          <div className="text-center py-8">
+            <div className="text-neutral-400 mb-4">
+              <svg className="mx-auto h-12 w-12 text-neutral-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+              </svg>
+            </div>
+            <h3 className="text-lg font-medium text-white mb-2">No Analytics Data Yet</h3>
+            <p className="text-neutral-400 mb-4">
+              This campaign hasn&apos;t been sent yet. Analytics will appear here once emails are sent.
+            </p>
+            <div className="text-sm text-neutral-500">
+              <p>• Campaign Status: {selectedCampaign.status}</p>
+              <p>• Total Recipients: {totalAudienceMembers}</p>
+              <p>• Emails Sent: 0</p>
+            </div>
+          </div>
         </div>
       )}
 
