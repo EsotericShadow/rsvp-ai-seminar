@@ -96,7 +96,7 @@ export function ExistingGroupsList({
       {/* Search Results Counter */}
       {searchTerm && (
         <div className="text-sm text-neutral-400">
-          {filteredAndSortedGroups.length} of {groups.length} groups match "{searchTerm}"
+          {filteredAndSortedGroups.length} of {groups.length} groups match &quot;{searchTerm}&quot;
         </div>
       )}
 

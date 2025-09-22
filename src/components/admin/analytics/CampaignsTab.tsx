@@ -303,7 +303,7 @@ export default function CampaignsTab({ campaigns, audienceGroups }: CampaignsTab
         <div className="glass rounded-xl p-6">
           <div className="flex items-center justify-between mb-6">
             <h3 className="text-lg font-semibold text-white">
-              Analytics for "{selectedCampaign.name}"
+              Analytics for &quot;{selectedCampaign.name}&quot;
             </h3>
             <button
               onClick={() => setShowDetailedAnalytics(false)}

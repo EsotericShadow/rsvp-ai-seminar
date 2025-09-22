@@ -118,7 +118,7 @@ export function GroupMembersList({
       {/* Search Results Counter */}
       {searchTerm && (
         <div className="text-sm text-neutral-400">
-          {filteredMembers.length} of {members.length} members match "{searchTerm}"
+          {filteredMembers.length} of {members.length} members match &quot;{searchTerm}&quot;
         </div>
       )}
 

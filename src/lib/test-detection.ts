@@ -187,3 +187,4 @@ export const getTestDetectionConfig = (): TestDetectionConfig => {
   // Default for other environments
   return defaultConfig;
 };
+

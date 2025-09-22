@@ -107,3 +107,4 @@ export const FooterBrand = forwardRef<HTMLDivElement, Omit<BrandLogoProps, 'size
 FooterBrand.displayName = 'FooterBrand';
 
 export { BrandLogo };
+

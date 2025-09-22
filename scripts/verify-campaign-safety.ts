@@ -158,3 +158,4 @@ async function verifyCampaignSafety() {
 verifyCampaignSafety().finally(() => {
   prisma.$disconnect()
 })
+

@@ -940,3 +940,4 @@ async function intelligentIndustryCategorization() {
 }
 
 intelligentIndustryCategorization();
+

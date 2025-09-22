@@ -133,3 +133,4 @@ export function createSecureResponse(data: any, status: number = 200, config?: S
   const response = NextResponse.json(data, { status });
   return addSecurityHeaders(response, config);
 }
+

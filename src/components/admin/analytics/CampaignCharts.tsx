@@ -275,3 +275,4 @@ export function PerformanceChart({ data }: PerformanceChartProps) {
     </div>
   );
 }
+
