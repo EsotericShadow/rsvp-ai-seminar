@@ -285,3 +285,4 @@ A: Check the event details in your invitation. Most business events include refr
 *This guide covers everything you need to know about RSVP'ing to events. For technical issues, contact the event organizer or technical support.*
 
 **Need more help?** Contact the event organizer using the information in your invitation email.
+

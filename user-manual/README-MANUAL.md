@@ -137,3 +137,4 @@ The manual is designed to be:
 **Last Updated**: December 2024  
 **Version**: 1.0  
 **Format**: Markdown + HTML + PDF
+

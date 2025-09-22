@@ -376,3 +376,4 @@ console.log('✅ HTML user manual generated successfully!');
 console.log('📱 Mobile-optimized and ready for PDF conversion');
 console.log('📄 Open user-manual.html in your browser to preview');
 console.log('🖨️ Use "Print to PDF" in your browser for the final PDF');
+
