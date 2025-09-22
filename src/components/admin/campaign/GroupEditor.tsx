@@ -62,7 +62,7 @@ export function GroupEditor({
             type="button"
             onClick={onSubmit}
             disabled={isSaving || !draft.name.trim()}
-            className="w-full rounded-lg bg-emerald-500 px-4 py-2 text-sm font-semibold text-emerald-950 hover:bg-emerald-400 disabled:cursor-not-allowed disabled:opacity-60"
+            className="w-full rounded-lg bg-primary-500 px-4 py-2 text-sm font-semibold text-primary-950 hover:bg-primary-400 disabled:cursor-not-allowed disabled:opacity-60"
           >
             {isSaving ? 'Saving...' : draft.id ? 'Update Group' : 'Create Group'}
           </button>
@@ -111,7 +111,7 @@ export function GroupEditor({
           <button
             type="button"
             onClick={onAddManual}
-            className="w-full rounded-lg border border-emerald-400 px-4 py-2 text-sm text-emerald-200 hover:bg-emerald-500/10"
+            className="w-full rounded-lg border border-primary-400 px-4 py-2 text-sm text-primary-200 hover:bg-primary-500/10"
           >
             + Add Manual Entry
           </button>

@@ -105,7 +105,7 @@ export function AudienceGroupsTab({
           </p>
         </div>
         {draft.id && (
-          <span className="rounded-full bg-emerald-500/20 px-3 py-1 text-xs font-medium text-emerald-200">
+          <span className="rounded-full bg-primary-500/20 px-3 py-1 text-xs font-medium text-primary-200">
             Editing {draft.name}
           </span>
         )}
@@ -138,7 +138,7 @@ export function AudienceGroupsTab({
                   onClick={() => setActiveTab(tab.id)}
                   className={`flex flex-1 items-center justify-center gap-2 rounded-md px-3 py-2 text-sm font-medium transition-colors ${
                     activeTab === tab.id
-                      ? 'bg-emerald-500 text-emerald-950'
+                      ? 'bg-primary-500 text-primary-950'
                       : 'text-neutral-300 hover:text-white hover:bg-neutral-800/50'
                   }`}
                 >
@@ -286,7 +286,7 @@ function ManualEntryModal({
             <input
               value={manualDraft.businessName}
               onChange={(e) => setManualDraft(prev => ({ ...prev, businessName: e.target.value }))}
-              className="w-full rounded-lg border border-white/10 bg-black/60 px-3 py-2 text-sm text-white focus:border-emerald-400 focus:outline-none"
+              className="w-full rounded-lg border border-white/10 bg-black/60 px-3 py-2 text-sm text-white focus:border-primary-400 focus:outline-none"
               placeholder="Enter business name"
             />
           </div>
@@ -298,7 +298,7 @@ function ManualEntryModal({
               type="email"
               value={manualDraft.primaryEmail}
               onChange={(e) => setManualDraft(prev => ({ ...prev, primaryEmail: e.target.value }))}
-              className="w-full rounded-lg border border-white/10 bg-black/60 px-3 py-2 text-sm text-white focus:border-emerald-400 focus:outline-none"
+              className="w-full rounded-lg border border-white/10 bg-black/60 px-3 py-2 text-sm text-white focus:border-primary-400 focus:outline-none"
               placeholder="business@example.com"
             />
           </div>
@@ -310,7 +310,7 @@ function ManualEntryModal({
               type="email"
               value={manualDraft.secondaryEmail}
               onChange={(e) => setManualDraft(prev => ({ ...prev, secondaryEmail: e.target.value }))}
-              className="w-full rounded-lg border border-white/10 bg-black/60 px-3 py-2 text-sm text-white focus:border-emerald-400 focus:outline-none"
+              className="w-full rounded-lg border border-white/10 bg-black/60 px-3 py-2 text-sm text-white focus:border-primary-400 focus:outline-none"
               placeholder="Optional secondary email"
             />
           </div>
@@ -321,7 +321,7 @@ function ManualEntryModal({
             <input
               value={manualDraft.contactPerson}
               onChange={(e) => setManualDraft(prev => ({ ...prev, contactPerson: e.target.value }))}
-              className="w-full rounded-lg border border-white/10 bg-black/60 px-3 py-2 text-sm text-white focus:border-emerald-400 focus:outline-none"
+              className="w-full rounded-lg border border-white/10 bg-black/60 px-3 py-2 text-sm text-white focus:border-primary-400 focus:outline-none"
               placeholder="Contact person name"
             />
           </div>
@@ -332,7 +332,7 @@ function ManualEntryModal({
             <input
               value={manualDraft.website}
               onChange={(e) => setManualDraft(prev => ({ ...prev, website: e.target.value }))}
-              className="w-full rounded-lg border border-white/10 bg-black/60 px-3 py-2 text-sm text-white focus:border-emerald-400 focus:outline-none"
+              className="w-full rounded-lg border border-white/10 bg-black/60 px-3 py-2 text-sm text-white focus:border-primary-400 focus:outline-none"
               placeholder="https://example.com"
             />
           </div>
@@ -343,7 +343,7 @@ function ManualEntryModal({
             <input
               value={manualDraft.phone}
               onChange={(e) => setManualDraft(prev => ({ ...prev, phone: e.target.value }))}
-              className="w-full rounded-lg border border-white/10 bg-black/60 px-3 py-2 text-sm text-white focus:border-emerald-400 focus:outline-none"
+              className="w-full rounded-lg border border-white/10 bg-black/60 px-3 py-2 text-sm text-white focus:border-primary-400 focus:outline-none"
               placeholder="Phone number"
             />
           </div>
@@ -356,7 +356,7 @@ function ManualEntryModal({
           <input
             value={manualDraft.tags}
             onChange={(e) => setManualDraft(prev => ({ ...prev, tags: e.target.value }))}
-            className="w-full rounded-lg border border-white/10 bg-black/60 px-3 py-2 text-sm text-white focus:border-emerald-400 focus:outline-none"
+            className="w-full rounded-lg border border-white/10 bg-black/60 px-3 py-2 text-sm text-white focus:border-primary-400 focus:outline-none"
             placeholder="e.g., manual, high-priority, local"
           />
         </div>
@@ -369,7 +369,7 @@ function ManualEntryModal({
             value={manualDraft.notes}
             onChange={(e) => setManualDraft(prev => ({ ...prev, notes: e.target.value }))}
             rows={3}
-            className="w-full rounded-lg border border-white/10 bg-black/60 px-3 py-2 text-sm text-white focus:border-emerald-400 focus:outline-none"
+            className="w-full rounded-lg border border-white/10 bg-black/60 px-3 py-2 text-sm text-white focus:border-primary-400 focus:outline-none"
             placeholder="Additional notes about this business"
           />
         </div>
@@ -385,7 +385,7 @@ function ManualEntryModal({
           <button
             type="button"
             onClick={handleSubmit}
-            className="rounded-lg bg-emerald-500 px-4 py-2 text-sm font-semibold text-emerald-950 hover:bg-emerald-400"
+            className="rounded-lg bg-primary-500 px-4 py-2 text-sm font-semibold text-primary-950 hover:bg-primary-400"
           >
             Add Entry
           </button>

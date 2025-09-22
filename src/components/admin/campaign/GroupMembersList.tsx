@@ -48,7 +48,7 @@ export function GroupMembersList({
         <button
           type="button"
           onClick={onAddManual}
-          className="rounded-lg border border-emerald-400 px-4 py-2 text-sm text-emerald-200 hover:bg-emerald-500/10"
+            className="rounded-lg border border-primary-400 px-4 py-2 text-sm text-primary-200 hover:bg-primary-500/10"
         >
           + Add Manual Entry
         </button>
@@ -71,7 +71,7 @@ export function GroupMembersList({
             onClick={() => setFilterType('all')}
             className={`rounded-lg px-3 py-2 text-sm ${
               filterType === 'all'
-                ? 'bg-emerald-500 text-emerald-950'
+                ? 'bg-primary-500 text-primary-950'
                 : 'border border-white/10 text-neutral-300 hover:border-white/30'
             }`}
           >
@@ -81,7 +81,7 @@ export function GroupMembersList({
             onClick={() => setFilterType('manual')}
             className={`rounded-lg px-3 py-2 text-sm ${
               filterType === 'manual'
-                ? 'bg-emerald-500 text-emerald-950'
+                ? 'bg-primary-500 text-primary-950'
                 : 'border border-white/10 text-neutral-300 hover:border-white/30'
             }`}
           >
@@ -91,7 +91,7 @@ export function GroupMembersList({
             onClick={() => setFilterType('leadmine')}
             className={`rounded-lg px-3 py-2 text-sm ${
               filterType === 'leadmine'
-                ? 'bg-emerald-500 text-emerald-950'
+                ? 'bg-primary-500 text-primary-950'
                 : 'border border-white/10 text-neutral-300 hover:border-white/30'
             }`}
           >
@@ -192,7 +192,7 @@ function MemberCard({
                   href={website.startsWith('http') ? website : `https://${website}`}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="text-emerald-400 hover:text-emerald-300 truncate"
+                  className="text-primary-400 hover:text-primary-300 truncate"
                 >
                   {website}
                 </a>
