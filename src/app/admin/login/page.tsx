@@ -86,8 +86,10 @@ export default function AdminLoginPage({ searchParams }: { searchParams: SearchP
             <input
               id="username"
               name="username"
+              type="text"
               autoComplete="username"
-              className="w-full rounded-lg bg-neutral-900 border border-neutral-800 px-3 py-2 outline-none focus:ring-2 ring-brand-sage"
+              className="w-full rounded-lg bg-neutral-900 border border-neutral-800 px-3 py-3 text-white placeholder:text-neutral-400 outline-none focus:ring-2 ring-brand-sage focus:border-brand-sage transition-colors duration-200 min-h-[44px]"
+              placeholder="Enter username"
               required
             />
           </div>
@@ -98,12 +100,21 @@ export default function AdminLoginPage({ searchParams }: { searchParams: SearchP
               type="password"
               name="password"
               autoComplete="current-password"
-              className="w-full rounded-lg bg-neutral-900 border border-neutral-800 px-3 py-2 outline-none focus:ring-2 ring-brand-sage"
+              className="w-full rounded-lg bg-neutral-900 border border-neutral-800 px-3 py-3 text-white placeholder:text-neutral-400 outline-none focus:ring-2 ring-brand-sage focus:border-brand-sage transition-colors duration-200 min-h-[44px]"
+              placeholder="Enter password"
               required
             />
           </div>
-          <button className="w-full rounded-lg bg-brand-ink hover:bg-brand-mid px-3 py-2 font-medium">
-            Sign in
+          <button 
+            type="submit"
+            className="w-full rounded-lg bg-brand-ink hover:bg-brand-mid active:bg-brand-mid px-3 py-3 font-medium text-white transition-all duration-200 active:scale-95 touch-manipulation min-h-[44px] focus:outline-none focus:ring-2 focus:ring-brand-sage focus:ring-offset-2 focus:ring-offset-neutral-950"
+          >
+            <span className="flex items-center justify-center">
+              <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 16l-4-4m0 0l4-4m-4 4h14m-5 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h7a3 3 0 013 3v1" />
+              </svg>
+              Sign in
+            </span>
           </button>
         </form>
       </div>
