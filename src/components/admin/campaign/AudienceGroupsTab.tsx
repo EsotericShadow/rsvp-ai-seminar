@@ -26,6 +26,7 @@ type Group = {
   createdAt: Date
   updatedAt: Date
   criteria: any
+  meta: any
   members: Array<{
     id: string
     groupId: string

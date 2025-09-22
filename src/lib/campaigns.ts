@@ -125,7 +125,7 @@ export async function listCampaignData() {
   }))
 
   const campaignsWithCounts = campaigns.map((campaign) => {
-    const steps = campaign.schedules.map((schedule) => ({
+    const steps = (campaign.schedules || []).map((schedule) => ({
       ...schedule,
       counts: countsBySchedule.get(schedule.id) ?? emptyCounts(),
     }))
@@ -243,6 +243,7 @@ export async function createCampaign(input: {
         name: input.name,
         description: input.description ?? null,
         status: input.status ?? CampaignStatus.DRAFT,
+        meta: {},
       },
     })
 
@@ -263,6 +264,7 @@ export async function createCampaign(input: {
             smartWindowStart: step.smartWindowStart ?? null,
             smartWindowEnd: step.smartWindowEnd ?? null,
             timeZone: step.timeZone ?? 'America/Vancouver',
+            meta: {},
           },
         })
       }
@@ -339,6 +341,7 @@ export async function updateCampaign(
           smartWindowStart: step.smartWindowStart ?? null,
           smartWindowEnd: step.smartWindowEnd ?? null,
           timeZone: step.timeZone ?? 'America/Vancouver',
+          meta: {},
         }
 
         if (step.id) {
@@ -395,6 +398,7 @@ export async function createTemplate(input: {
       subject: input.subject,
       htmlBody: input.htmlBody,
       textBody: input.textBody ?? null,
+      meta: {},
     },
   })
 }
@@ -435,6 +439,7 @@ export async function createAudienceGroup(input: {
         name: input.name,
         description: input.description ?? null,
         criteria: normalizeJsonInput(input.criteria),
+        meta: {},
       },
     })
 
@@ -540,6 +545,7 @@ export async function createSchedule(input: {
       smartWindowStart: input.smartWindowStart ?? null,
       smartWindowEnd: input.smartWindowEnd ?? null,
       timeZone: input.timeZone ?? 'America/Vancouver',
+      meta: {},
     },
     include: {
       template: true,

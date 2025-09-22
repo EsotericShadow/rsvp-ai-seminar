@@ -1610,6 +1610,7 @@ function TemplatesView({
                 signature_title: '',
                 signature_company: '',
                 signature_location: '',
+                meta: {},
                 createdAt: new Date(),
                 updatedAt: new Date()
               }
