@@ -107,3 +107,4 @@ export function useBusinessDirectory(existingMemberIds: string[]) {
     fetchBusinesses,
   }
 }
+

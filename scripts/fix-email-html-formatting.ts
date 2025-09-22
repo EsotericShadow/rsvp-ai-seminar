@@ -157,3 +157,4 @@ fixEmailHTMLFormatting().catch((e) => {
 }).finally(() => {
   prisma.$disconnect()
 })
+

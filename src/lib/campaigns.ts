@@ -711,6 +711,7 @@ export async function runSchedule(scheduleId: string, options: SendOptions = {})
     recipientId: string
     sendAt: Date
     status: 'scheduled'
+    meta: any
   }> = []
 
   let processed = 0
@@ -745,6 +746,7 @@ export async function runSchedule(scheduleId: string, options: SendOptions = {})
       recipientId: member.businessId,
       sendAt: schedule.sendAt || schedule.nextRunAt || new Date(),
       status: 'scheduled',
+      meta: {},
     })
 
     resultLog.push({ businessId: member.businessId, email: member.primaryEmail, status: 'QUEUED' })

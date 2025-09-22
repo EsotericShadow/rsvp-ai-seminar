@@ -66,3 +66,4 @@ async function addMetaToCampaignSchedule() {
 addMetaToCampaignSchedule().finally(() => {
   prisma.$disconnect()
 })
+

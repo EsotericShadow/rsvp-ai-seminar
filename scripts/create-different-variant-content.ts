@@ -213,3 +213,4 @@ function createIndustrySpecificContent(industry: string, emailNum: number, varia
 }
 
 createDifferentVariantContent();
+

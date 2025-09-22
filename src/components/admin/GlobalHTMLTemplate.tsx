@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import GlobalTemplateContentEditor from './GlobalTemplateContentEditor';
 
 interface GlobalHTMLTemplateProps {
@@ -49,7 +49,7 @@ export default function GlobalHTMLTemplate({ onSave, onCancel, refreshTrigger }:
   });
 
   // Load current global template and settings on mount and when component becomes visible
-  const loadTemplateAndSettings = async () => {
+  const loadTemplateAndSettings = useCallback(async () => {
     try {
       // Load global template
       const templateResponse = await fetch('/api/admin/global-template');
@@ -75,25 +75,25 @@ export default function GlobalHTMLTemplate({ onSave, onCancel, refreshTrigger }:
       console.error('Error loading global template or settings:', error);
       setHtml(getDefaultTemplate());
     }
-  };
+  }, []);
 
   useEffect(() => {
     loadTemplateAndSettings();
-  }, []);
+  }, [loadTemplateAndSettings]);
 
   // Refresh settings when component becomes visible (e.g., after global template settings are saved)
   useEffect(() => {
     if (activeTab === 'preview' || activeTab === 'content') {
       loadTemplateAndSettings();
     }
-  }, [activeTab]);
+  }, [activeTab, loadTemplateAndSettings]);
 
   // Refresh when refreshTrigger changes (e.g., after global template settings are saved)
   useEffect(() => {
     if (refreshTrigger) {
       loadTemplateAndSettings();
     }
-  }, [refreshTrigger]);
+  }, [refreshTrigger, loadTemplateAndSettings]);
 
   // Auto-refresh preview when HTML changes
   useEffect(() => {

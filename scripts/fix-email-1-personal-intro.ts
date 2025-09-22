@@ -201,3 +201,4 @@ fixEmail1PersonalIntro().catch((e) => {
 }).finally(() => {
   prisma.$disconnect()
 })
+

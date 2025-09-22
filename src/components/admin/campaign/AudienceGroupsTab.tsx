@@ -269,7 +269,7 @@ function ManualEntryModal({
         <header className="space-y-2">
           <h3 className="text-xl font-semibold text-white">Add Manual Entry</h3>
           <p className="text-sm text-neutral-400">
-            Add a business that's not in Lead Mine. This entry will be local to this audience group.
+            Add a business that&apos;s not in Lead Mine. This entry will be local to this audience group.
           </p>
         </header>
 

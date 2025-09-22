@@ -25,3 +25,4 @@ export { BrandLogo, HeaderBrand, FooterBrand } from './BrandLogo';
 
 // Re-export utility function
 export { cn } from '@/lib/utils';
+
