@@ -1,5 +1,5 @@
 import type { Metadata } from "next"
-import EventLanding from "@/components/EventLanding"
+import ProfessionalEventLanding from "@/components/ProfessionalEventLanding"
 
 export const metadata: Metadata = {
   title: "AI in Northern BC: Information Session | Event Details",
@@ -39,5 +39,5 @@ export const metadata: Metadata = {
 }
 
 export default function EventPage() {
-  return <EventLanding />
+  return <ProfessionalEventLanding />
 }

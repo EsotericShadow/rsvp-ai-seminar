@@ -156,16 +156,16 @@ export default function ProfessionalEventLanding() {
               href="https://evergreenwebsolutions.ca"
               target="_blank"
               rel="noreferrer"
-              className="block w-full max-w-4xl mx-auto"
+              className="block w-full max-w-5xl mx-auto"
             >
               <Image
                 src="/AI_in_terrace.svg"
                 alt="AI in Northern BC"
-                width={1000}
-                height={500}
+                width={1200}
+                height={600}
                 priority
-                sizes="(max-width: 768px) 100vw, 100vw"
-                className="w-full h-auto object-cover drop-shadow-lg"
+                sizes="(max-width: 768px) 100vw, (max-width: 1200px) 90vw, 80vw"
+                className="w-full h-auto object-contain drop-shadow-xl"
               />
             </Link>
           </motion.header>
@@ -331,13 +331,14 @@ export default function ProfessionalEventLanding() {
             <div className="bg-gradient-to-br from-gray-900 to-gray-800 rounded-2xl shadow-xl overflow-hidden">
               <div className="p-8 text-white">
                 <div className="flex items-center gap-4 mb-6">
-                  <div className="w-16 h-16 rounded-full overflow-hidden border-2 border-emerald-400">
+                  <div className="w-20 h-20 sm:w-24 sm:h-24 rounded-full overflow-hidden border-2 border-emerald-400 flex-shrink-0">
                     <Image
                       src="/gabriel-lacroix.jpg"
                       alt="Gabriel Lacroix"
-                      width={64}
-                      height={64}
+                      width={96}
+                      height={96}
                       className="w-full h-full object-cover"
+                      priority
                     />
                   </div>
                   <div>
@@ -420,11 +421,11 @@ export default function ProfessionalEventLanding() {
                 <Image
                   src="/logo.svg"
                   alt="Evergreen Web Solutions Logo"
-                  width={40}
-                  height={20}
-                  className="w-10 h-5"
+                  width={60}
+                  height={30}
+                  className="w-12 h-6 sm:w-16 sm:h-8"
                 />
-                <span className="text-xl font-bold">Evergreen Web Solutions</span>
+                <span className="text-lg sm:text-xl font-bold">Evergreen Web Solutions</span>
               </div>
               <p className="text-gray-400 mb-4">
                 AI and Digital Strategy for Northern BC

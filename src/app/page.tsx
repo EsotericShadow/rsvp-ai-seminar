@@ -1,5 +1,5 @@
-import EventLanding from "@/components/EventLanding"
+import ProfessionalEventLanding from "@/components/ProfessionalEventLanding"
 
 export default function HomePage() {
-  return <EventLanding />
+  return <ProfessionalEventLanding />
 }
