@@ -38,3 +38,4 @@ export default function HourlyPatternsChart({ data }: HourlyPatternsChartProps) 
   )
 }
 
+

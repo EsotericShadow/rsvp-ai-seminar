@@ -20,3 +20,4 @@ echo "📋 Step 3: Running Next.js build..."
 npm run build
 
 echo "✅ All checks passed! Safe to push."
+

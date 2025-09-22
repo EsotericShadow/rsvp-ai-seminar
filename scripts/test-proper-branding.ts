@@ -463,3 +463,4 @@ testProperBranding()
     console.error('❌ Test failed:', error)
     process.exit(1)
   })
+
