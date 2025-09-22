@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import { ThemeToggle } from '../../ui/ThemeToggle';
 
 interface SettingsTabProps {
   // Add any settings props here
@@ -187,20 +188,7 @@ export default function SettingsTab({}: SettingsTabProps) {
         <div className="glass rounded-xl p-6">
           <h3 className="text-lg font-semibold text-white mb-4">Display Options</h3>
           <div className="space-y-4">
-            <div>
-              <label className="block text-sm font-medium text-gray-300 mb-2">
-                Theme
-              </label>
-              <select
-                value={settings.theme}
-                onChange={(e) => handleSettingChange('theme', e.target.value)}
-                className="w-full px-3 py-2 bg-gray-800 border border-gray-600 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
-              >
-                <option value="dark">Dark</option>
-                <option value="light">Light</option>
-                <option value="auto">Auto</option>
-              </select>
-            </div>
+            <ThemeToggle />
 
             <div className="flex items-center">
               <input

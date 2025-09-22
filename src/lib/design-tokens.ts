@@ -1,9 +1,10 @@
 /**
  * Evergreen Web Solutions Design System
- * Unified design tokens for consistent branding across the application
+ * Clean, modern design inspired by Google/Apple/Microsoft
+ * Supports light and dark modes with thoughtful spacing and UX
  */
 
-// Brand Colors - Evergreen Theme
+// Brand Colors - Clean Evergreen Theme
 export const colors = {
   // Primary Evergreen Colors
   primary: {
@@ -20,7 +21,7 @@ export const colors = {
     950: '#052e16',  // Ultra dark green
   },
   
-  // Secondary Colors (Sage/Neutral)
+  // Secondary Colors (Clean Neutral)
   secondary: {
     50: '#f8faf9',   // Light sage
     100: '#f1f5f0',  // Very light sage
@@ -78,7 +79,7 @@ export const colors = {
     },
   },
   
-  // Neutral Colors
+  // Neutral Colors - Clean and Modern
   neutral: {
     50: '#fafafa',
     100: '#f5f5f5',
@@ -91,6 +92,44 @@ export const colors = {
     800: '#262626',
     900: '#171717',
     950: '#0a0a0a',
+  },
+
+  // Light Mode Colors
+  light: {
+    background: '#ffffff',
+    surface: '#fafafa',
+    surfaceVariant: '#f5f5f5',
+    border: '#e5e5e5',
+    text: {
+      primary: '#1a1a1a',
+      secondary: '#525252',
+      tertiary: '#737373',
+      disabled: '#a3a3a3',
+    },
+    icon: {
+      primary: '#1a1a1a',
+      secondary: '#525252',
+      disabled: '#a3a3a3',
+    },
+  },
+
+  // Dark Mode Colors
+  dark: {
+    background: '#0a0a0a',
+    surface: '#111111',
+    surfaceVariant: '#1a1a1a',
+    border: '#262626',
+    text: {
+      primary: '#ffffff',
+      secondary: '#a3a3a3',
+      tertiary: '#737373',
+      disabled: '#525252',
+    },
+    icon: {
+      primary: '#ffffff',
+      secondary: '#a3a3a3',
+      disabled: '#525252',
+    },
   },
   
   // Semantic Colors
@@ -169,7 +208,7 @@ export const typography = {
   },
 };
 
-// Spacing Scale
+// Spacing Scale - Clean and Spacious
 export const spacing = {
   0: '0px',
   1: '0.25rem',   // 4px
@@ -201,6 +240,43 @@ export const spacing = {
   72: '18rem',    // 288px
   80: '20rem',    // 320px
   96: '24rem',    // 384px
+};
+
+// Layout Tokens - Clean Spacing
+export const layout = {
+  // Container spacing
+  container: {
+    padding: '1.5rem',      // 24px
+    paddingLg: '2rem',      // 32px
+    paddingXl: '3rem',      // 48px
+  },
+  
+  // Section spacing
+  section: {
+    marginBottom: '3rem',   // 48px
+    marginBottomLg: '4rem', // 64px
+    marginBottomXl: '6rem', // 96px
+  },
+  
+  // Card spacing
+  card: {
+    padding: '1.5rem',      // 24px
+    paddingLg: '2rem',      // 32px
+    marginBottom: '1.5rem', // 24px
+  },
+  
+  // Form spacing
+  form: {
+    fieldGap: '1.5rem',     // 24px
+    fieldGapSm: '1rem',     // 16px
+    labelMargin: '0.5rem',  // 8px
+  },
+  
+  // Navigation spacing
+  nav: {
+    itemGap: '0.5rem',      // 8px
+    itemPadding: '0.75rem', // 12px
+  },
 };
 
 // Border Radius
@@ -292,45 +368,47 @@ export const easings = {
   'bounce-out': 'cubic-bezier(0.175, 0.885, 0.32, 1.275)',
 };
 
-// Component Variants
+// Component Variants - Clean Modern Design
 export const componentVariants = {
   button: {
     sizes: {
-      xs: 'px-2 py-1 text-xs',
-      sm: 'px-3 py-1.5 text-sm',
-      md: 'px-4 py-2 text-base',
-      lg: 'px-6 py-3 text-lg',
-      xl: 'px-8 py-4 text-xl',
+      xs: 'px-3 py-1.5 text-xs font-medium',
+      sm: 'px-4 py-2 text-sm font-medium',
+      md: 'px-6 py-3 text-base font-medium',
+      lg: 'px-8 py-4 text-lg font-medium',
+      xl: 'px-10 py-5 text-xl font-medium',
     },
     variants: {
-      primary: 'bg-primary-600 hover:bg-primary-700 text-white',
-      secondary: 'bg-secondary-600 hover:bg-secondary-700 text-white',
-      accent: 'bg-accent-blue-600 hover:bg-accent-blue-700 text-white',
-      outline: 'border border-primary-600 text-primary-600 hover:bg-primary-50',
-      ghost: 'text-primary-600 hover:bg-primary-50',
-      destructive: 'bg-error-600 hover:bg-error-700 text-white',
+      primary: 'bg-primary-600 hover:bg-primary-700 text-white shadow-sm hover:shadow-md transition-all duration-200',
+      secondary: 'bg-neutral-100 hover:bg-neutral-200 text-neutral-900 dark:bg-neutral-800 dark:hover:bg-neutral-700 dark:text-neutral-100 shadow-sm hover:shadow-md transition-all duration-200',
+      accent: 'bg-accent-blue-600 hover:bg-accent-blue-700 text-white shadow-sm hover:shadow-md transition-all duration-200',
+      outline: 'border border-neutral-300 text-neutral-700 hover:bg-neutral-50 dark:border-neutral-600 dark:text-neutral-300 dark:hover:bg-neutral-800 transition-all duration-200',
+      ghost: 'text-neutral-700 hover:bg-neutral-100 dark:text-neutral-300 dark:hover:bg-neutral-800 transition-all duration-200',
+      destructive: 'bg-error-600 hover:bg-error-700 text-white shadow-sm hover:shadow-md transition-all duration-200',
+      success: 'bg-success-600 hover:bg-success-700 text-white shadow-sm hover:shadow-md transition-all duration-200',
+      warning: 'bg-warning-600 hover:bg-warning-700 text-white shadow-sm hover:shadow-md transition-all duration-200',
     },
   },
   
   input: {
     sizes: {
-      sm: 'px-3 py-1.5 text-sm',
-      md: 'px-4 py-2 text-base',
-      lg: 'px-6 py-3 text-lg',
+      sm: 'px-3 py-2 text-sm',
+      md: 'px-4 py-3 text-base',
+      lg: 'px-6 py-4 text-lg',
     },
     variants: {
-      default: 'border border-neutral-300 focus:border-primary-500 focus:ring-primary-500',
-      error: 'border border-error-500 focus:border-error-500 focus:ring-error-500',
-      success: 'border border-success-500 focus:border-success-500 focus:ring-success-500',
+      default: 'border border-neutral-300 focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20 dark:border-neutral-600 dark:bg-neutral-800 dark:text-neutral-100 dark:focus:border-primary-400 transition-all duration-200',
+      error: 'border border-error-500 focus:border-error-500 focus:ring-2 focus:ring-error-500/20 dark:border-error-400 dark:bg-neutral-800 dark:text-neutral-100 transition-all duration-200',
+      success: 'border border-success-500 focus:border-success-500 focus:ring-2 focus:ring-success-500/20 dark:border-success-400 dark:bg-neutral-800 dark:text-neutral-100 transition-all duration-200',
     },
   },
   
   card: {
     variants: {
-      default: 'bg-white border border-neutral-200 shadow-sm',
-      elevated: 'bg-white border border-neutral-200 shadow-md',
-      glass: 'bg-white/10 backdrop-blur-xl border border-white/20 shadow-2xl ring-1 ring-white/10',
-      dark: 'bg-neutral-900 border border-neutral-800 shadow-lg',
+      default: 'bg-white border border-neutral-200 shadow-sm dark:bg-neutral-900 dark:border-neutral-800',
+      elevated: 'bg-white border border-neutral-200 shadow-lg dark:bg-neutral-900 dark:border-neutral-800',
+      glass: 'bg-white/80 backdrop-blur-xl border border-white/20 shadow-2xl dark:bg-neutral-900/80 dark:border-neutral-700/50',
+      surface: 'bg-neutral-50 border border-neutral-200 dark:bg-neutral-800 dark:border-neutral-700',
     },
   },
 };
