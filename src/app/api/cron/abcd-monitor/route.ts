@@ -1,7 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { PrismaClient } from '@prisma/client';
-
-const prisma = new PrismaClient();
+import prisma from '@/lib/prisma';
 
 // Cron job endpoint that runs every 6 hours to monitor A/B/C tests
 export async function GET(request: NextRequest) {
@@ -10,29 +8,34 @@ export async function GET(request: NextRequest) {
     
     // Verify this is a cron request
     const authHeader = request.headers.get('authorization');
-    if (authHeader !== `Bearer ${process.env.CRON_SECRET}`) {
+    if (authHeader !== `Bearer ${process.env.CAMPAIGN_CRON_SECRET}`) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    // Get all active A/B/C tests
-    const activeTests = await prisma.campaignSchedule.findMany({
+    // Get all active A/B/C tests by looking for templates with variant names
+    const variantTemplates = await prisma.campaignTemplate.findMany({
       where: {
-        status: 'SCHEDULED',
-        timeZone: {
-          contains: 'A/B/C Test'
-        }
+        OR: [
+          { name: { contains: 'Variant A' } },
+          { name: { contains: 'Variant B' } },
+          { name: { contains: 'Variant C' } }
+        ]
       },
       include: {
-        template: true,
-        campaign: true,
-        sends: true
+        schedules: {
+          where: { status: 'SCHEDULED' },
+          include: {
+            campaign: true,
+            sends: true
+          }
+        }
       }
     });
 
-    console.log(`📊 Found ${activeTests.length} active A/B/C test variants`);
+    console.log(`📊 Found ${variantTemplates.length} templates with variants`);
 
-    // Group by campaign and email
-    const testGroups = groupTestsByCampaignAndEmail(activeTests);
+    // Group by campaign and email number
+    const testGroups = groupTestsByCampaignAndEmail(variantTemplates);
     
     let adjustmentsMade = 0;
     
@@ -47,7 +50,7 @@ export async function GET(request: NextRequest) {
 
     return NextResponse.json({ 
       success: true,
-      testsMonitored: activeTests.length,
+      testsMonitored: variantTemplates.length,
       adjustmentsMade,
       timestamp: new Date().toISOString()
     });
@@ -81,7 +84,7 @@ async function analyzeTestGroup(key: string, tests: any[]): Promise<{ adjusted: 
     return { adjusted: false };
   }
   
-  // Check if enough time has passed
+  // Check if enough time has passed (48 hours minimum)
   const testStartTime = getTestStartTime(tests);
   const hoursElapsed = (Date.now() - testStartTime.getTime()) / (1000 * 60 * 60);
   
@@ -110,11 +113,11 @@ async function getPerformanceMetrics(tests: any[]): Promise<any[]> {
     const sends = test.sends || [];
     const opens = sends.filter((s: any) => s.openedAt).length;
     const clicks = sends.filter((s: any) => s.clickedAt).length;
-    const rsvps = sends.filter((s: any) => s.rsvpedAt).length;
+    const rsvps = sends.filter((s: any) => s.rsvpAt).length;
     
     return {
-      variant: extractVariant(test.template.name),
-      scheduleId: test.id,
+      variant: extractVariant(test.name),
+      templateId: test.id,
       opens,
       clicks,
       rsvps,
@@ -177,7 +180,7 @@ async function adjustSplit(tests: any[], winnerVariant: string) {
   
   // Assign 15% to each non-winner variant
   const otherVariants = tests
-    .map(t => extractVariant(t.template.name))
+    .map(t => extractVariant(t.name))
     .filter(v => v !== winnerVariant);
   
   otherVariants.forEach(variant => {
@@ -186,23 +189,20 @@ async function adjustSplit(tests: any[], winnerVariant: string) {
   
   // Update schedule statuses based on new split
   for (const test of tests) {
-    const variant = extractVariant(test.template.name);
+    const variant = extractVariant(test.name);
     const split = newSplit[variant] || 0;
     
-    // Randomly assign based on split (in production, use proper random assignment)
-    const shouldSend = Math.random() * 100 < split;
-    
-    await prisma.campaignSchedule.update({
-      where: { id: test.id },
+    // Update the meta field with A/B/C test info
+    await prisma.campaignSchedule.updateMany({
+      where: { templateId: test.id },
       data: {
-        status: shouldSend ? 'SCHEDULED' : 'DRAFT',
-        // Store A/B/C test info in meta field instead of timeZone
         meta: {
           abTest: {
             variant: variant,
             split: split,
             testGroup: test.id,
-            lastUpdated: new Date().toISOString()
+            lastUpdated: new Date().toISOString(),
+            winner: variant === winnerVariant
           }
         }
       }
@@ -213,8 +213,10 @@ async function adjustSplit(tests: any[], winnerVariant: string) {
 }
 
 function extractVariant(templateName: string): string {
-  const match = templateName.match(/Variant ([ABC])/);
-  return match ? match[1] : 'Original';
+  if (templateName.includes('Variant A')) return 'A';
+  if (templateName.includes('Variant B')) return 'B';
+  if (templateName.includes('Variant C')) return 'C';
+  return 'Original';
 }
 
 function calculateConfidence(sampleSize: number, successRate: number): number {
@@ -228,7 +230,7 @@ function calculateConfidence(sampleSize: number, successRate: number): number {
 
 function getTestStartTime(tests: any[]): Date {
   // Get the earliest send time from the tests
-  const sendTimes = tests.map(t => t.sendAt).filter(Boolean);
+  const sendTimes = tests.map(t => t.schedules?.[0]?.sendAt).filter(Boolean);
   return sendTimes.length > 0 ? new Date(Math.min(...sendTimes.map(d => new Date(d).getTime()))) : new Date();
 }
 
@@ -236,7 +238,11 @@ function groupTestsByCampaignAndEmail(tests: any[]): Map<string, any[]> {
   const groups = new Map();
   
   for (const test of tests) {
-    const key = `${test.campaign.name}|${test.stepOrder}`;
+    const campaignName = test.schedules?.[0]?.campaign?.name || 'Unknown Campaign';
+    const emailMatch = test.name.match(/Email (\d+)/);
+    const emailNumber = emailMatch ? emailMatch[1] : '1';
+    
+    const key = `${campaignName}|${emailNumber}`;
     if (!groups.has(key)) {
       groups.set(key, []);
     }
