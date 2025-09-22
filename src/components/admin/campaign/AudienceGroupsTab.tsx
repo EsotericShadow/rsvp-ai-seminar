@@ -57,6 +57,7 @@ export function AudienceGroupsTab({
   existingGroups,
   onSelectGroup,
   onDeleteGroup,
+  onRefresh,
 }: {
   draft: { id?: string; name: string; description?: string }
   setDraft: (value: { id?: string; name: string; description?: string }) => void
@@ -71,6 +72,7 @@ export function AudienceGroupsTab({
   existingGroups: Group[]
   onSelectGroup: (group: Group) => void
   onDeleteGroup: (id: string) => void
+  onRefresh?: () => void
 }) {
   const [activeTab, setActiveTab] = useState<TabKey>('browse')
   const [isManualOpen, setManualOpen] = useState(false)
@@ -161,8 +163,10 @@ export function AudienceGroupsTab({
                 allExistingMemberIds={allExistingMemberIds}
                 existingGroups={existingGroups}
                 onMemberMoved={() => {
-                  // Refresh the data by calling the parent's refresh function
-                  // This will be handled by the parent component
+                  // Refresh the data after moving a member
+                  if (onRefresh) {
+                    onRefresh()
+                  }
                 }}
               />
             )}
@@ -175,8 +179,10 @@ export function AudienceGroupsTab({
                 existingGroups={existingGroups}
                 currentGroupId={draft.id}
                 onMemberMoved={() => {
-                  // Refresh the data by calling the parent's refresh function
-                  // This will be handled by the parent component
+                  // Refresh the data after moving a member
+                  if (onRefresh) {
+                    onRefresh()
+                  }
                 }}
               />
             )}

@@ -821,6 +821,7 @@ export default function CampaignControls({ initialData, defaults }: { initialDat
             existingGroups={groups}
             onSelectGroup={loadGroup}
             onDeleteGroup={deleteGroup}
+            onRefresh={refreshDashboard}
           />
         )}
         {activeTab === 'templates' && (
