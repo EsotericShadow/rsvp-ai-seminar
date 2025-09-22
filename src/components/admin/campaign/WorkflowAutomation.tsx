@@ -133,6 +133,7 @@ export function WorkflowAutomation({
   const [showCreateForm, setShowCreateForm] = useState(false)
   const [selectedTrigger, setSelectedTrigger] = useState<string>('')
   const [filterStatus, setFilterStatus] = useState<'all' | 'active' | 'inactive'>('all')
+  const [showGlobalSettings, setShowGlobalSettings] = useState(false)
 
   const filteredWorkflows = useMemo(() => {
     return workflows.filter(workflow => {
@@ -181,19 +182,33 @@ export function WorkflowAutomation({
             <Cog6ToothIcon className="h-6 w-6 text-primary-400" />
           </div>
           <div>
-            <h3 className="text-lg font-semibold text-white">Workflow Automation</h3>
+            <h3 className="text-lg font-semibold text-white">
+              {campaignId === 'global' ? 'Global Workflow Automation' : 'Campaign Automation'}
+            </h3>
             <p className="text-sm text-neutral-400">
               {activeWorkflows} of {totalWorkflows} workflows active
+              {campaignId === 'global' && ' • Global automation rules'}
             </p>
           </div>
         </div>
-        <button
-          onClick={() => setShowCreateForm(true)}
-          className="px-4 py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700 flex items-center gap-2"
-        >
-          <PlusIcon className="h-4 w-4" />
-          New Workflow
-        </button>
+        <div className="flex items-center gap-2">
+          {campaignId === 'global' && (
+            <button
+              onClick={() => setShowGlobalSettings(true)}
+              className="px-3 py-2 bg-neutral-600 text-white rounded-lg hover:bg-neutral-700 flex items-center gap-2"
+            >
+              <Cog6ToothIcon className="h-4 w-4" />
+              Settings
+            </button>
+          )}
+          <button
+            onClick={() => setShowCreateForm(true)}
+            className="px-4 py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700 flex items-center gap-2"
+          >
+            <PlusIcon className="h-4 w-4" />
+            New Workflow
+          </button>
+        </div>
       </div>
 
       {/* Stats */}
@@ -250,6 +265,47 @@ export function WorkflowAutomation({
         </div>
       </div>
 
+      {/* Global Automation Features */}
+      {campaignId === 'global' && (
+        <div className="bg-neutral-800/50 rounded-lg p-6 border border-neutral-700">
+          <h4 className="text-lg font-semibold text-white mb-4">Global Automation Features</h4>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="space-y-3">
+              <h5 className="font-medium text-white">Smart Scheduling</h5>
+              <ul className="text-sm text-neutral-300 space-y-1">
+                <li>• Auto-optimize send times based on audience engagement</li>
+                <li>• Intelligent throttling to prevent spam detection</li>
+                <li>• Timezone-aware delivery scheduling</li>
+              </ul>
+            </div>
+            <div className="space-y-3">
+              <h5 className="font-medium text-white">Audience Management</h5>
+              <ul className="text-sm text-neutral-300 space-y-1">
+                <li>• Auto-segment audiences based on behavior</li>
+                <li>• Dynamic list cleaning and maintenance</li>
+                <li>• Engagement-based audience scoring</li>
+              </ul>
+            </div>
+            <div className="space-y-3">
+              <h5 className="font-medium text-white">Performance Monitoring</h5>
+              <ul className="text-sm text-neutral-300 space-y-1">
+                <li>• Real-time performance alerts</li>
+                <li>• Automatic A/B testing optimization</li>
+                <li>• Deliverability monitoring and recovery</li>
+              </ul>
+            </div>
+            <div className="space-y-3">
+              <h5 className="font-medium text-white">Compliance & Safety</h5>
+              <ul className="text-sm text-neutral-300 space-y-1">
+                <li>• Automatic unsubscribe handling</li>
+                <li>• Bounce management and list hygiene</li>
+                <li>• Compliance monitoring and reporting</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* Workflows List */}
       <div className="space-y-4">
         {filteredWorkflows.length === 0 ? (
@@ -258,7 +314,9 @@ export function WorkflowAutomation({
             <h3 className="text-lg font-semibold text-white mb-2">No workflows found</h3>
             <p className="text-neutral-400 mb-4">
               {filterStatus === 'all' 
-                ? 'Create your first workflow to automate your campaigns'
+                ? campaignId === 'global' 
+                  ? 'Create your first global automation workflow'
+                  : 'Create your first workflow to automate your campaigns'
                 : `No ${filterStatus} workflows found`
               }
             </p>
@@ -297,6 +355,199 @@ export function WorkflowAutomation({
           }}
         />
       )}
+
+      {/* Global Settings Modal */}
+      {showGlobalSettings && (
+        <GlobalSettingsModal
+          onClose={() => setShowGlobalSettings(false)}
+        />
+      )}
+    </div>
+  )
+}
+
+function GlobalSettingsModal({ onClose }: { onClose: () => void }) {
+  const [settings, setSettings] = useState({
+    autoOptimizeSendTimes: true,
+    intelligentThrottling: true,
+    timezoneAwareDelivery: true,
+    autoSegmentAudiences: false,
+    dynamicListCleaning: true,
+    engagementScoring: true,
+    performanceAlerts: true,
+    autoABTesting: false,
+    deliverabilityMonitoring: true,
+    autoUnsubscribeHandling: true,
+    bounceManagement: true,
+    complianceMonitoring: true,
+  })
+
+  const handleSave = () => {
+    // Save settings logic here
+    console.log('Saving global automation settings:', settings)
+    onClose()
+  }
+
+  return (
+    <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
+      <div className="bg-neutral-900 rounded-2xl border border-neutral-700 w-full max-w-2xl max-h-[90vh] overflow-hidden">
+        <div className="p-6 border-b border-neutral-700">
+          <div className="flex items-center justify-between">
+            <h3 className="text-lg font-semibold text-white">Global Automation Settings</h3>
+            <button
+              onClick={onClose}
+              className="p-2 text-neutral-400 hover:text-white hover:bg-neutral-700 rounded-lg"
+            >
+              ✕
+            </button>
+          </div>
+        </div>
+        
+        <div className="p-6 overflow-y-auto max-h-[calc(90vh-120px)]">
+          <div className="space-y-6">
+            <div>
+              <h4 className="font-semibold text-white mb-3">Smart Scheduling</h4>
+              <div className="space-y-3">
+                <label className="flex items-center justify-between">
+                  <span className="text-neutral-300">Auto-optimize send times</span>
+                  <input
+                    type="checkbox"
+                    checked={settings.autoOptimizeSendTimes}
+                    onChange={(e) => setSettings(prev => ({ ...prev, autoOptimizeSendTimes: e.target.checked }))}
+                    className="w-4 h-4 text-primary-600 bg-neutral-700 border-neutral-600 rounded focus:ring-primary-500"
+                  />
+                </label>
+                <label className="flex items-center justify-between">
+                  <span className="text-neutral-300">Intelligent throttling</span>
+                  <input
+                    type="checkbox"
+                    checked={settings.intelligentThrottling}
+                    onChange={(e) => setSettings(prev => ({ ...prev, intelligentThrottling: e.target.checked }))}
+                    className="w-4 h-4 text-primary-600 bg-neutral-700 border-neutral-600 rounded focus:ring-primary-500"
+                  />
+                </label>
+                <label className="flex items-center justify-between">
+                  <span className="text-neutral-300">Timezone-aware delivery</span>
+                  <input
+                    type="checkbox"
+                    checked={settings.timezoneAwareDelivery}
+                    onChange={(e) => setSettings(prev => ({ ...prev, timezoneAwareDelivery: e.target.checked }))}
+                    className="w-4 h-4 text-primary-600 bg-neutral-700 border-neutral-600 rounded focus:ring-primary-500"
+                  />
+                </label>
+              </div>
+            </div>
+
+            <div>
+              <h4 className="font-semibold text-white mb-3">Audience Management</h4>
+              <div className="space-y-3">
+                <label className="flex items-center justify-between">
+                  <span className="text-neutral-300">Auto-segment audiences</span>
+                  <input
+                    type="checkbox"
+                    checked={settings.autoSegmentAudiences}
+                    onChange={(e) => setSettings(prev => ({ ...prev, autoSegmentAudiences: e.target.checked }))}
+                    className="w-4 h-4 text-primary-600 bg-neutral-700 border-neutral-600 rounded focus:ring-primary-500"
+                  />
+                </label>
+                <label className="flex items-center justify-between">
+                  <span className="text-neutral-300">Dynamic list cleaning</span>
+                  <input
+                    type="checkbox"
+                    checked={settings.dynamicListCleaning}
+                    onChange={(e) => setSettings(prev => ({ ...prev, dynamicListCleaning: e.target.checked }))}
+                    className="w-4 h-4 text-primary-600 bg-neutral-700 border-neutral-600 rounded focus:ring-primary-500"
+                  />
+                </label>
+                <label className="flex items-center justify-between">
+                  <span className="text-neutral-300">Engagement scoring</span>
+                  <input
+                    type="checkbox"
+                    checked={settings.engagementScoring}
+                    onChange={(e) => setSettings(prev => ({ ...prev, engagementScoring: e.target.checked }))}
+                    className="w-4 h-4 text-primary-600 bg-neutral-700 border-neutral-600 rounded focus:ring-primary-500"
+                  />
+                </label>
+              </div>
+            </div>
+
+            <div>
+              <h4 className="font-semibold text-white mb-3">Performance & Compliance</h4>
+              <div className="space-y-3">
+                <label className="flex items-center justify-between">
+                  <span className="text-neutral-300">Performance alerts</span>
+                  <input
+                    type="checkbox"
+                    checked={settings.performanceAlerts}
+                    onChange={(e) => setSettings(prev => ({ ...prev, performanceAlerts: e.target.checked }))}
+                    className="w-4 h-4 text-primary-600 bg-neutral-700 border-neutral-600 rounded focus:ring-primary-500"
+                  />
+                </label>
+                <label className="flex items-center justify-between">
+                  <span className="text-neutral-300">Auto A/B testing</span>
+                  <input
+                    type="checkbox"
+                    checked={settings.autoABTesting}
+                    onChange={(e) => setSettings(prev => ({ ...prev, autoABTesting: e.target.checked }))}
+                    className="w-4 h-4 text-primary-600 bg-neutral-700 border-neutral-600 rounded focus:ring-primary-500"
+                  />
+                </label>
+                <label className="flex items-center justify-between">
+                  <span className="text-neutral-300">Deliverability monitoring</span>
+                  <input
+                    type="checkbox"
+                    checked={settings.deliverabilityMonitoring}
+                    onChange={(e) => setSettings(prev => ({ ...prev, deliverabilityMonitoring: e.target.checked }))}
+                    className="w-4 h-4 text-primary-600 bg-neutral-700 border-neutral-600 rounded focus:ring-primary-500"
+                  />
+                </label>
+                <label className="flex items-center justify-between">
+                  <span className="text-neutral-300">Auto unsubscribe handling</span>
+                  <input
+                    type="checkbox"
+                    checked={settings.autoUnsubscribeHandling}
+                    onChange={(e) => setSettings(prev => ({ ...prev, autoUnsubscribeHandling: e.target.checked }))}
+                    className="w-4 h-4 text-primary-600 bg-neutral-700 border-neutral-600 rounded focus:ring-primary-500"
+                  />
+                </label>
+                <label className="flex items-center justify-between">
+                  <span className="text-neutral-300">Bounce management</span>
+                  <input
+                    type="checkbox"
+                    checked={settings.bounceManagement}
+                    onChange={(e) => setSettings(prev => ({ ...prev, bounceManagement: e.target.checked }))}
+                    className="w-4 h-4 text-primary-600 bg-neutral-700 border-neutral-600 rounded focus:ring-primary-500"
+                  />
+                </label>
+                <label className="flex items-center justify-between">
+                  <span className="text-neutral-300">Compliance monitoring</span>
+                  <input
+                    type="checkbox"
+                    checked={settings.complianceMonitoring}
+                    onChange={(e) => setSettings(prev => ({ ...prev, complianceMonitoring: e.target.checked }))}
+                    className="w-4 h-4 text-primary-600 bg-neutral-700 border-neutral-600 rounded focus:ring-primary-500"
+                  />
+                </label>
+              </div>
+            </div>
+          </div>
+          
+          <div className="flex items-center justify-end gap-3 mt-6">
+            <button
+              onClick={onClose}
+              className="px-4 py-2 text-neutral-300 hover:text-white"
+            >
+              Cancel
+            </button>
+            <button
+              onClick={handleSave}
+              className="px-4 py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700"
+            >
+              Save Settings
+            </button>
+          </div>
+        </div>
+      </div>
     </div>
   )
 }

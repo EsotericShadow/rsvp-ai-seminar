@@ -13,8 +13,6 @@ import TextEditor from '../TextEditor'
 import { AudienceGroupsTab } from './AudienceGroupsTab'
 import { CampaignDashboard } from './CampaignDashboard'
 import { CampaignTemplates } from './CampaignTemplates'
-import { SmartScheduler } from './SmartScheduler'
-import { CampaignAnalytics } from './CampaignAnalytics'
 import { WorkflowAutomation } from './WorkflowAutomation'
 
 // ### TYPES ###
@@ -303,7 +301,6 @@ const tabs = [
   { id: 'campaigns', label: 'Campaigns' },
   { id: 'groups', label: 'Audience Groups' },
   { id: 'templates', label: 'Templates' },
-  { id: 'analytics', label: 'Analytics' },
   { id: 'automation', label: 'Automation' },
 ] as const
 
@@ -325,8 +322,6 @@ export default function CampaignControls({ initialData, defaults }: { initialDat
   const [showGlobalTemplateSettings, setShowGlobalTemplateSettings] = useState(false)
   const [globalTemplateRefreshTrigger, setGlobalTemplateRefreshTrigger] = useState(0)
   const [showTemplates, setShowTemplates] = useState(false)
-  const [selectedCampaign, setSelectedCampaign] = useState<CampaignWithCounts | null>(null)
-  const [showAnalytics, setShowAnalytics] = useState(false)
   const [showAutomation, setShowAutomation] = useState(false)
   const [notice, setNotice] = useState<string | null>(null)
   const [runningStep, setRunningStep] = useState<{ id: string; mode: 'preview' | 'send' } | null>(null)
@@ -720,7 +715,8 @@ export default function CampaignControls({ initialData, defaults }: { initialDat
   }
 
   const handleSelectCampaignForDashboard = (campaign: CampaignWithCounts) => {
-    setSelectedCampaign(campaign)
+    // Navigate to analytics page with campaign selected
+    window.location.href = `/admin/analytics?tab=campaigns&campaign=${campaign.id}`
   }
 
   const handleDuplicateCampaign = (campaign: CampaignWithCounts) => {
@@ -754,13 +750,7 @@ export default function CampaignControls({ initialData, defaults }: { initialDat
     }
   }
 
-  const handleShowAnalytics = (campaign: CampaignWithCounts) => {
-    setSelectedCampaign(campaign)
-    setShowAnalytics(true)
-  }
-
-  const handleShowAutomation = (campaign: CampaignWithCounts) => {
-    setSelectedCampaign(campaign)
+  const handleShowAutomation = () => {
     setShowAutomation(true)
   }
 
@@ -846,53 +836,9 @@ export default function CampaignControls({ initialData, defaults }: { initialDat
             setEditingTemplate={setEditingTemplate}
           />
         )}
-        {activeTab === 'analytics' && selectedCampaign && (
-          <CampaignAnalytics
-            campaignId={selectedCampaign.id}
-            metrics={{
-              id: selectedCampaign.id,
-              name: selectedCampaign.name,
-              status: selectedCampaign.status as any,
-              totalRecipients: 1000,
-              emailsSent: 850,
-              emailsDelivered: 820,
-              emailsOpened: 245,
-              emailsClicked: 45,
-              unsubscribes: 12,
-              bounces: 8,
-              complaints: 2,
-              createdAt: selectedCampaign.createdAt.toISOString(),
-              lastSentAt: new Date().toISOString(),
-              nextSendAt: new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString(),
-              openRate: 29.9,
-              clickRate: 5.5,
-              deliveryRate: 96.5,
-              unsubscribeRate: 1.4,
-              bounceRate: 0.9,
-              complaintRate: 0.2,
-              trends: {
-                openRate: 2.3,
-                clickRate: -0.8,
-                deliveryRate: 0.5
-              },
-              hourlyData: Array.from({ length: 24 }, (_, i) => ({
-                hour: `${i}:00`,
-                opens: Math.floor(Math.random() * 20),
-                clicks: Math.floor(Math.random() * 5),
-                deliveries: Math.floor(Math.random() * 30)
-              })),
-              topTemplates: [
-                { id: '1', name: 'Welcome Email', openRate: 35.2, clickRate: 8.1 },
-                { id: '2', name: 'Follow-up', openRate: 28.7, clickRate: 6.3 }
-              ]
-            }}
-            onRefresh={() => console.log('Refreshing analytics...')}
-            isRefreshing={false}
-          />
-        )}
-        {activeTab === 'automation' && selectedCampaign && (
+        {activeTab === 'automation' && (
           <WorkflowAutomation
-            campaignId={selectedCampaign.id}
+            campaignId="global"
             workflows={[]}
             onUpdateWorkflow={(workflow) => console.log('Update workflow:', workflow)}
             onCreateWorkflow={(workflow) => console.log('Create workflow:', workflow)}
