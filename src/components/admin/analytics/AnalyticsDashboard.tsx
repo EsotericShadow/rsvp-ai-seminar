@@ -9,7 +9,9 @@ import {
   CalendarIcon,
   DevicePhoneMobileIcon,
   GlobeAltIcon,
-  ClockIcon
+  ClockIcon,
+  LinkIcon,
+  BuildingOfficeIcon
 } from '@heroicons/react/24/outline';
 
 interface Tab {
@@ -37,6 +39,18 @@ const tabs: Tab[] = [
     name: 'Visitors',
     icon: GlobeAltIcon,
     description: 'Website traffic and visitor analytics'
+  },
+  {
+    id: 'visitors-business',
+    name: 'Visitors + Business',
+    icon: BuildingOfficeIcon,
+    description: 'Visitors connected to businesses and tracking'
+  },
+  {
+    id: 'tracking-links',
+    name: 'Tracking Links',
+    icon: LinkIcon,
+    description: 'Email tracking links and performance metrics'
   },
   {
     id: 'campaigns',
