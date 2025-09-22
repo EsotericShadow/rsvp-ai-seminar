@@ -45,13 +45,28 @@ export function GroupMembersList({
           </p>
         </div>
         
-        <button
-          type="button"
-          onClick={onAddManual}
+        <div className="flex gap-2">
+          <button
+            type="button"
+            onClick={onAddManual}
             className="rounded-lg border border-primary-400 px-4 py-2 text-sm text-primary-200 hover:bg-primary-500/10"
-        >
-          + Add Manual Entry
-        </button>
+          >
+            + Add Manual Entry
+          </button>
+          {members.length > 0 && (
+            <button
+              type="button"
+              onClick={() => {
+                if (confirm(`Remove all ${members.length} members from this group?`)) {
+                  members.forEach(member => onRemoveMember(member.businessId))
+                }
+              }}
+              className="rounded-lg border border-error-500/40 px-4 py-2 text-sm text-error-200 hover:bg-error-500/10"
+            >
+              Clear All
+            </button>
+          )}
+        </div>
       </div>
 
       {/* Filters */}
@@ -69,7 +84,7 @@ export function GroupMembersList({
         <div className="flex gap-2">
           <button
             onClick={() => setFilterType('all')}
-            className={`rounded-lg px-3 py-2 text-sm ${
+            className={`rounded-lg px-3 py-2 text-sm transition-colors ${
               filterType === 'all'
                 ? 'bg-primary-500 text-primary-950'
                 : 'border border-white/10 text-neutral-300 hover:border-white/30'
@@ -100,6 +115,13 @@ export function GroupMembersList({
         </div>
       </div>
 
+      {/* Search Results Counter */}
+      {searchTerm && (
+        <div className="text-sm text-neutral-400">
+          {filteredMembers.length} of {members.length} members match "{searchTerm}"
+        </div>
+      )}
+
       {/* Members List */}
       <div className="space-y-3">
         {filteredMembers.length === 0 ? (
@@ -108,13 +130,25 @@ export function GroupMembersList({
             <p className="text-sm text-neutral-400 mb-2">
               {members.length === 0 
                 ? 'No members selected yet' 
-                : 'No members match your search'
+                : searchTerm
+                ? 'No members match your search'
+                : filterType !== 'all'
+                ? `No ${filterType} members found`
+                : 'No members found'
               }
             </p>
             {members.length === 0 && (
               <p className="text-xs text-neutral-500">
                 Browse businesses or add manual entries to get started
               </p>
+            )}
+            {searchTerm && members.length > 0 && (
+              <button
+                onClick={() => setSearchTerm('')}
+                className="text-xs text-primary-400 hover:text-primary-300 underline"
+              >
+                Clear search
+              </button>
             )}
           </div>
         ) : (
