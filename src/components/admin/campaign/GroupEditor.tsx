@@ -36,7 +36,7 @@ export function GroupEditor({
             </label>
             <input
               value={draft.name}
-              onChange={(e) => setDraft({ ...draft, name: e.target.value })}
+              onChange={(e) => setDraft((prev: any) => ({ ...prev, name: e.target.value }))}
               className="w-full rounded-lg border border-white/10 bg-black/60 px-3 py-2 text-sm text-white focus:border-emerald-400 focus:outline-none"
               placeholder="e.g., Northern BC Construction"
             />
@@ -48,7 +48,7 @@ export function GroupEditor({
             </label>
             <textarea
               value={draft.description ?? ''}
-              onChange={(e) => setDraft({ ...draft, description: e.target.value })}
+              onChange={(e) => setDraft((prev: any) => ({ ...prev, description: e.target.value }))}
               rows={3}
               className="w-full rounded-lg border border-white/10 bg-black/60 px-3 py-2 text-sm text-white focus:border-emerald-400 focus:outline-none"
               placeholder="Optional description of this group"

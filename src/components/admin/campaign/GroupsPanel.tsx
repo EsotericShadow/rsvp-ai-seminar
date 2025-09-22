@@ -168,7 +168,7 @@ export function GroupsPanel({
             <label className="text-xs uppercase tracking-wide text-neutral-400">Group name</label>
             <input
               value={draft.name}
-              onChange={(event) => setDraft({ ...draft, name: event.target.value })}
+              onChange={(event) => setDraft((prev: any) => ({ ...prev, name: event.target.value }))}
               className="admin-input admin-button-sm w-full rounded-lg"
               placeholder="Northern BC invitees"
             />
@@ -177,7 +177,7 @@ export function GroupsPanel({
             <label className="text-xs uppercase tracking-wide text-neutral-400">Notes (optional)</label>
             <textarea
               value={draft.description ?? ''}
-              onChange={(event) => setDraft({ ...draft, description: event.target.value })}
+              onChange={(event) => setDraft((prev: any) => ({ ...prev, description: event.target.value }))}
               rows={3}
               className="admin-textarea admin-button-sm w-full rounded-lg"
             />
@@ -189,13 +189,13 @@ export function GroupsPanel({
               <input
                 type="color"
                 value={draft.color ?? '#10b981'}
-                onChange={(event) => setDraft({ ...draft, color: event.target.value })}
+                onChange={(event) => setDraft((prev: any) => ({ ...prev, color: event.target.value }))}
                 className="w-12 h-10 rounded-lg border border-white/10 cursor-pointer"
               />
               <input
                 type="text"
                 value={draft.color ?? '#10b981'}
-                onChange={(event) => setDraft({ ...draft, color: event.target.value })}
+                onChange={(event) => setDraft((prev: any) => ({ ...prev, color: event.target.value }))}
                 className="admin-input admin-button-sm flex-1 rounded-lg"
                 placeholder="#10b981"
               />
