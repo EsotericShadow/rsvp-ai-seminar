@@ -13,6 +13,12 @@ interface OverviewTabProps {
     topBrowsers: Array<{ browser: string; count: number }>;
     deviceBreakdown: Array<{ name: string; count: number }>;
     visitsTrend: Array<{ label: string; count: number }>;
+    // Campaign stats
+    totalCampaigns?: number;
+    activeCampaigns?: number;
+    completedCampaigns?: number;
+    totalSchedules?: number;
+    totalAudienceMembers?: number;
   };
 }
 
@@ -102,6 +108,91 @@ export default function OverviewTab({ stats }: OverviewTabProps) {
           </div>
         </div>
       </div>
+
+      {/* Campaign Metrics */}
+      {stats.totalCampaigns !== undefined && (
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-6">
+          <div className="glass rounded-xl p-6">
+            <div className="flex items-center">
+              <div className="flex-shrink-0">
+                <div className="w-8 h-8 bg-primary-500/20 rounded-lg flex items-center justify-center">
+                  <svg className="w-5 h-5 text-primary-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                  </svg>
+                </div>
+              </div>
+              <div className="ml-4">
+                <p className="text-sm font-medium text-neutral-300">Total Campaigns</p>
+                <p className="text-2xl font-bold text-white">{stats.totalCampaigns}</p>
+              </div>
+            </div>
+          </div>
+
+          <div className="glass rounded-xl p-6">
+            <div className="flex items-center">
+              <div className="flex-shrink-0">
+                <div className="w-8 h-8 bg-success-500/20 rounded-lg flex items-center justify-center">
+                  <svg className="w-5 h-5 text-success-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14.828 14.828a4 4 0 01-5.656 0M9 10h1m4 0h1m-6 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                  </svg>
+                </div>
+              </div>
+              <div className="ml-4">
+                <p className="text-sm font-medium text-neutral-300">Active Campaigns</p>
+                <p className="text-2xl font-bold text-white">{stats.activeCampaigns}</p>
+              </div>
+            </div>
+          </div>
+
+          <div className="glass rounded-xl p-6">
+            <div className="flex items-center">
+              <div className="flex-shrink-0">
+                <div className="w-8 h-8 bg-info-500/20 rounded-lg flex items-center justify-center">
+                  <svg className="w-5 h-5 text-info-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
+                  </svg>
+                </div>
+              </div>
+              <div className="ml-4">
+                <p className="text-sm font-medium text-neutral-300">Completed</p>
+                <p className="text-2xl font-bold text-white">{stats.completedCampaigns}</p>
+              </div>
+            </div>
+          </div>
+
+          <div className="glass rounded-xl p-6">
+            <div className="flex items-center">
+              <div className="flex-shrink-0">
+                <div className="w-8 h-8 bg-warning-500/20 rounded-lg flex items-center justify-center">
+                  <svg className="w-5 h-5 text-warning-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                  </svg>
+                </div>
+              </div>
+              <div className="ml-4">
+                <p className="text-sm font-medium text-neutral-300">Total Schedules</p>
+                <p className="text-2xl font-bold text-white">{stats.totalSchedules}</p>
+              </div>
+            </div>
+          </div>
+
+          <div className="glass rounded-xl p-6">
+            <div className="flex items-center">
+              <div className="flex-shrink-0">
+                <div className="w-8 h-8 bg-purple-500/20 rounded-lg flex items-center justify-center">
+                  <svg className="w-5 h-5 text-purple-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
+                  </svg>
+                </div>
+              </div>
+              <div className="ml-4">
+                <p className="text-sm font-medium text-neutral-300">Audience Members</p>
+                <p className="text-2xl font-bold text-white">{stats.totalAudienceMembers?.toLocaleString()}</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Charts Row */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
