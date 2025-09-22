@@ -23,6 +23,23 @@ type TemplateDraft = {
   subject: string
   htmlBody: string
   textBody: string
+  // Template variables
+  greeting_title?: string
+  greeting_message?: string
+  signature_name?: string
+  signature_title?: string
+  signature_company?: string
+  signature_location?: string
+  signature_phone?: string
+  signature_email?: string
+  signature_website?: string
+  main_content_title?: string
+  main_content_body?: string
+  button_text?: string
+  additional_info_title?: string
+  additional_info_body?: string
+  closing_title?: string
+  closing_message?: string
 }
 
 type Group = AudienceGroup & {
@@ -759,6 +776,7 @@ export default function CampaignControls({ initialData, defaults }: { initialDat
             isSaving={isSaving}
             setShowGlobalTemplate={setShowGlobalTemplate}
             setShowGlobalTemplateSettings={setShowGlobalTemplateSettings}
+            setEditingTemplate={setEditingTemplate}
           />
         )}
 
@@ -1401,6 +1419,7 @@ function TemplatesView({
   isSaving,
   setShowGlobalTemplate,
   setShowGlobalTemplateSettings,
+  setEditingTemplate,
 }: {
   templates: Template[]
   draft: TemplateDraft
@@ -1412,6 +1431,7 @@ function TemplatesView({
   isSaving: boolean
   setShowGlobalTemplate: (show: boolean) => void
   setShowGlobalTemplateSettings: (show: boolean) => void
+  setEditingTemplate: (template: Template | null) => void
 }) {
   // State for filtering and search
   const [searchTerm, setSearchTerm] = useState('')
@@ -1495,18 +1515,49 @@ function TemplatesView({
           <p className="text-sm text-neutral-400">Manage your email templates with advanced filtering and editing</p>
               </div>
         <div className="flex items-center space-x-4">
-                    <button
+          <button
+            onClick={() => {
+              setDraft({
+                id: undefined,
+                name: '',
+                subject: '',
+                htmlBody: '',
+                textBody: '',
+                greeting_title: '',
+                greeting_message: '',
+                main_content_title: '',
+                main_content_body: '',
+                additional_info_title: '',
+                additional_info_body: '',
+                closing_title: '',
+                closing_message: '',
+                button_text: '',
+                signature_name: '',
+                signature_title: '',
+                signature_company: '',
+                signature_location: '',
+                signature_phone: '',
+                signature_email: '',
+                signature_website: ''
+              })
+              setEditingTemplate(null)
+            }}
+            className="px-4 py-2 bg-emerald-600 text-white rounded-lg hover:bg-emerald-700 transition-colors text-sm font-medium"
+          >
+            + Create New Template
+          </button>
+          <button
             onClick={() => setShowGlobalTemplate(true)}
             className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors text-sm font-medium"
-                    >
+          >
             Global HTML Template
-                    </button>
-                    <button
+          </button>
+          <button
             onClick={() => setShowGlobalTemplateSettings(true)}
             className="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors text-sm font-medium"
-                    >
+          >
             Global Template Settings
-                    </button>
+          </button>
           <div className="text-sm text-neutral-400">
             {sortedGroups.length} groups, {filteredTemplates.length} of {templates.length} templates
                   </div>
