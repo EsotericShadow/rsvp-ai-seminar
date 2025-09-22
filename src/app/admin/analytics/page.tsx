@@ -239,7 +239,7 @@ export default async function AdminAnalyticsPage({ searchParams }: { searchParam
   const totalCampaigns = campaigns.length
   const activeCampaigns = campaigns.filter(c => c.status === 'SCHEDULED').length
   const completedCampaigns = campaigns.filter(c => c.status === 'COMPLETED').length
-  const totalSchedules = campaigns.reduce((sum, c) => sum + c._count.schedules, 0)
+  const totalSchedules = campaigns.reduce((sum, c) => sum + (c.schedules || []).length, 0)
   const totalAudienceMembers = audienceGroups.reduce((sum, g) => sum + g._count.members, 0)
 
   const overviewStats = {

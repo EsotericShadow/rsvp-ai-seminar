@@ -58,7 +58,7 @@ export function CampaignDashboard({
     const completed = campaigns.filter(c => c.status === CampaignStatus.COMPLETED).length
     const paused = campaigns.filter(c => c.status === CampaignStatus.PAUSED).length
     const draft = campaigns.filter(c => c.status === CampaignStatus.DRAFT).length
-    const totalSchedules = campaigns.reduce((sum, c) => sum + c._count.schedules, 0)
+    const totalSchedules = campaigns.reduce((sum, c) => sum + (c.schedules || []).length, 0)
     
     return {
       total,
@@ -87,7 +87,7 @@ export function CampaignDashboard({
         case 'status':
           return a.status.localeCompare(b.status)
         case 'schedules':
-          return b._count.schedules - a._count.schedules
+          return (b.schedules || []).length - (a.schedules || []).length
         case 'created':
         default:
           return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
