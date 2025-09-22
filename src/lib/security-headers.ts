@@ -45,10 +45,10 @@ const defaultSecurityHeaders: SecurityHeadersConfig = {
   xXSSProtection: true,
   referrerPolicy: 'strict-origin-when-cross-origin',
   permissionsPolicy: {
-    camera: [],
-    microphone: [],
-    geolocation: [],
-    interestCohort: []
+    camera: ['()'],
+    microphone: ['()'],
+    geolocation: ['()'],
+    interestCohort: ['()']
   }
 };
 
