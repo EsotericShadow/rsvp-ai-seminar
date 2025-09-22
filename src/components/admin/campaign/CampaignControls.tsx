@@ -959,78 +959,14 @@ export default function CampaignControls({ initialData, defaults }: { initialDat
         {activeTab === 'automation' && (
           <WorkflowAutomation
             campaignId="global"
-            workflows={[
-              {
-                id: '1',
-                name: 'RSVP Reminder - 3 Days',
-                trigger: {
-                  id: 'rsvp-reminder',
-                  name: 'RSVP Reminder',
-                  type: 'time' as const,
-                  description: 'Send reminder emails to non-responders',
-                  isActive: true,
-                  conditions: ['3 days before event'],
-                  actions: ['Send reminder email'],
-                  icon: <ClockIcon className="h-5 w-5" />,
-                  color: 'text-primary-400'
-                },
-                conditions: [],
-                actions: [],
-                isEnabled: true,
-                runCount: 12,
-                lastRun: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000).toISOString(),
-                nextRun: new Date(Date.now() + 1 * 24 * 60 * 60 * 1000).toISOString()
-              },
-              {
-                id: '2',
-                name: 'Auto-Confirm RSVPs',
-                trigger: {
-                  id: 'rsvp-received',
-                  name: 'RSVP Received',
-                  type: 'event' as const,
-                  description: 'Trigger when someone RSVPs',
-                  isActive: true,
-                  conditions: ['RSVP confirmed'],
-                  actions: ['Send confirmation email'],
-                  icon: <CheckCircleIcon className="h-5 w-5" />,
-                  color: 'text-success-400'
-                },
-                conditions: [],
-                actions: [],
-                isEnabled: true,
-                runCount: 45,
-                lastRun: new Date(Date.now() - 1 * 60 * 60 * 1000).toISOString()
-              },
-              {
-                id: '3',
-                name: 'Capacity Alert',
-                trigger: {
-                  id: 'capacity-reached',
-                  name: 'Capacity Reached',
-                  type: 'condition' as const,
-                  description: 'Trigger when event reaches capacity',
-                  isActive: true,
-                  conditions: ['Max attendees reached'],
-                  actions: ['Close RSVP'],
-                  icon: <UsersIcon className="h-5 w-5" />,
-                  color: 'text-warning-400'
-                },
-                conditions: [],
-                actions: [],
-                isEnabled: false,
-                runCount: 0
-              }
-            ]}
+            workflows={[]}
             onUpdateWorkflow={(workflow) => {
-              console.log('Update workflow:', workflow)
               setNotice(`Workflow "${workflow.name}" updated successfully!`)
             }}
             onCreateWorkflow={(workflow) => {
-              console.log('Create workflow:', workflow)
               setNotice(`Workflow "${workflow.name}" created successfully!`)
             }}
             onDeleteWorkflow={(id) => {
-              console.log('Delete workflow:', id)
               setNotice('Workflow deleted successfully!')
             }}
           />
