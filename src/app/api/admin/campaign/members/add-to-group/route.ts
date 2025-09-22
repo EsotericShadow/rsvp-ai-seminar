@@ -15,6 +15,8 @@ export async function POST(request: NextRequest) {
 
   const { businessId, groupId, businessData } = body
 
+  console.log('Add to group request:', { businessId, groupId, businessData })
+
   if (!businessId || !groupId) {
     return NextResponse.json({ error: 'Business ID and group ID are required' }, { status: 400 })
   }
