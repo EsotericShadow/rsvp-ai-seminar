@@ -66,6 +66,30 @@ function TemplateEditor({ template, onSave, onCancel, refreshTrigger }: Template
   const [previewHTML, setPreviewHTML] = useState('');
   const [globalSettings, setGlobalSettings] = useState<any>(null);
 
+  // Helper function to handle Enter key navigation
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+    if (e.key === 'Enter' && !e.shiftKey) {
+      e.preventDefault();
+      
+      // Find the next input/textarea element
+      const currentElement = e.currentTarget;
+      const form = currentElement.closest('form');
+      if (!form) return;
+      
+      const inputs = Array.from(form.querySelectorAll('input, textarea')) as (HTMLInputElement | HTMLTextAreaElement)[];
+      const currentIndex = inputs.indexOf(currentElement);
+      
+      if (currentIndex < inputs.length - 1) {
+        // Focus next input
+        inputs[currentIndex + 1].focus();
+      } else {
+        // If at last input, focus the first input (wrap around)
+        inputs[0].focus();
+      }
+    }
+    // For textareas, Shift+Enter is handled by the browser for new lines
+  };
+
   // Auto-refresh preview when content changes
   const [previewKey, setPreviewKey] = useState(0);
 
@@ -271,6 +295,7 @@ function TemplateEditor({ template, onSave, onCancel, refreshTrigger }: Template
                     type="text"
                     value={formData.name}
                     onChange={(e) => setFormData(prev => ({ ...prev, name: e.target.value }))}
+                    onKeyDown={handleKeyDown}
                     className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                   />
                 </div>
@@ -282,6 +307,7 @@ function TemplateEditor({ template, onSave, onCancel, refreshTrigger }: Template
                     type="text"
                     value={formData.subject}
                     onChange={(e) => setFormData(prev => ({ ...prev, subject: e.target.value }))}
+                    onKeyDown={handleKeyDown}
                     className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                   />
                 </div>
@@ -329,6 +355,7 @@ function TemplateEditor({ template, onSave, onCancel, refreshTrigger }: Template
                             type="text"
                             value={formData.subject}
                             onChange={(e) => setFormData(prev => ({ ...prev, subject: e.target.value }))}
+                            onKeyDown={handleKeyDown}
                             className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-900 bg-white"
                             placeholder="Email subject line"
                           />
@@ -339,6 +366,7 @@ function TemplateEditor({ template, onSave, onCancel, refreshTrigger }: Template
                             type="text"
                             value={formData.button_text}
                             onChange={(e) => setFormData(prev => ({ ...prev, button_text: e.target.value }))}
+                            onKeyDown={handleKeyDown}
                             className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-900 bg-white"
                             placeholder="e.g., View details & RSVP"
                           />
@@ -359,6 +387,7 @@ function TemplateEditor({ template, onSave, onCancel, refreshTrigger }: Template
                             type="text"
                             value={formData.main_content_title}
                             onChange={(e) => setFormData(prev => ({ ...prev, main_content_title: e.target.value }))}
+                            onKeyDown={handleKeyDown}
                             className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-900 bg-white"
                             placeholder="e.g., What You'll Learn"
                           />
@@ -371,6 +400,7 @@ function TemplateEditor({ template, onSave, onCancel, refreshTrigger }: Template
                           <textarea
                             value={formData.main_content_body}
                             onChange={(e) => setFormData(prev => ({ ...prev, main_content_body: e.target.value }))}
+                            onKeyDown={handleKeyDown}
                             className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-900 bg-white"
                             rows={6}
                             placeholder="Write your main message content here..."
@@ -389,6 +419,7 @@ function TemplateEditor({ template, onSave, onCancel, refreshTrigger }: Template
                             type="text"
                             value={formData.additional_info_title}
                             onChange={(e) => setFormData(prev => ({ ...prev, additional_info_title: e.target.value }))}
+                            onKeyDown={handleKeyDown}
                             className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-900 bg-white"
                             placeholder="e.g., Event Details"
                           />
@@ -398,6 +429,7 @@ function TemplateEditor({ template, onSave, onCancel, refreshTrigger }: Template
                           <textarea
                             value={formData.additional_info_body}
                             onChange={(e) => setFormData(prev => ({ ...prev, additional_info_body: e.target.value }))}
+                            onKeyDown={handleKeyDown}
                             className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-900 bg-white"
                             rows={3}
                             placeholder="e.g., Date: October 23rd, 2025<br>Time: 6:00 PM - 8:00 PM<br>Location: Terrace, BC"
@@ -416,6 +448,7 @@ function TemplateEditor({ template, onSave, onCancel, refreshTrigger }: Template
                             type="text"
                             value={formData.closing_title}
                             onChange={(e) => setFormData(prev => ({ ...prev, closing_title: e.target.value }))}
+                            onKeyDown={handleKeyDown}
                             className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-900 bg-white"
                             placeholder="e.g., Looking Forward"
                           />
@@ -425,6 +458,7 @@ function TemplateEditor({ template, onSave, onCancel, refreshTrigger }: Template
                           <textarea
                             value={formData.closing_message}
                             onChange={(e) => setFormData(prev => ({ ...prev, closing_message: e.target.value }))}
+                            onKeyDown={handleKeyDown}
                             className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-900 bg-white"
                             rows={2}
                             placeholder="e.g., We're excited to share these practical AI solutions with you..."
@@ -450,13 +484,7 @@ function TemplateEditor({ template, onSave, onCancel, refreshTrigger }: Template
                   <textarea
                     value={formData.textBody}
                     onChange={(e) => setFormData(prev => ({ ...prev, textBody: e.target.value }))}
-                    onKeyDown={(e) => {
-                      // Allow Shift+Enter for new lines, prevent Enter from submitting form
-                      if (e.key === 'Enter' && !e.shiftKey) {
-                        e.preventDefault();
-                        return false;
-                      }
-                    }}
+                    onKeyDown={handleKeyDown}
                     className="w-full h-full resize-none border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-900 bg-white overflow-y-auto"
                     placeholder="Enter plain text content..."
                   />
