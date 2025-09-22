@@ -128,3 +128,4 @@ analyzeBusinessData()
     console.error('❌ Analysis failed:', error)
     process.exit(1)
   })
+

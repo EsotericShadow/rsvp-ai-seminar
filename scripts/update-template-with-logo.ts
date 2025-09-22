@@ -267,3 +267,4 @@ updateTemplateWithLogo()
     console.error('❌ Update failed:', error)
     process.exit(1)
   })
+

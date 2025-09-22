@@ -77,3 +77,4 @@ checkExistingData()
     console.error('❌ Data check failed:', error)
     process.exit(1)
   })
+
