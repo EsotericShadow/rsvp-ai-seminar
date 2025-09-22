@@ -12,20 +12,16 @@ export default function AdminNavigation() {
   ];
 
   return (
-    <nav className="bg-secondary-900/50 backdrop-blur-xl border-b border-secondary-700/50 shadow-lg">
-      <div className="mx-auto max-w-7xl px-3 sm:px-4 lg:px-8">
-        <div className="flex space-x-8">
+    <nav className="bg-white border-b border-neutral-200 dark:bg-neutral-900 dark:border-neutral-800 shadow-sm">
+      <div className="container mx-auto">
+        <div className="flex space-x-1">
           {navItems.map((item) => {
             const isActive = pathname === item.href;
             return (
               <Link
                 key={item.href}
                 href={item.href}
-                className={`flex items-center space-x-2 px-3 py-4 text-sm font-medium border-b-2 transition-all duration-200 ${
-                  isActive
-                    ? 'border-primary-500 text-primary-400 bg-primary-900/20'
-                    : 'border-transparent text-neutral-300 hover:text-white hover:border-secondary-500 hover:bg-secondary-800/30'
-                }`}
+                className={`nav-item ${isActive ? 'nav-item-active' : ''}`}
               >
                 <span className="text-base">{item.icon}</span>
                 <span>{item.label}</span>

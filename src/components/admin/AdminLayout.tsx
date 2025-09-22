@@ -10,16 +10,16 @@ interface AdminLayoutProps {
 
 export default function AdminLayout({ children, title, subtitle, badge }: AdminLayoutProps) {
   return (
-    <div className="min-h-screen bg-gradient-to-br from-secondary-950 via-secondary-900 to-primary-950 text-neutral-100">
+    <div className="min-h-screen bg-white text-neutral-900 dark:bg-neutral-950 dark:text-neutral-100 transition-colors duration-200">
       <AdminNavigation />
-      <div className="mx-auto flex max-w-7xl flex-col gap-6 px-3 py-8 sm:px-4 sm:py-12 lg:px-8">
-        <header className="space-y-2">
+      <div className="container mx-auto flex flex-col gap-8 py-8">
+        <header className="space-y-3">
           {badge && (
-            <p className="text-xs uppercase tracking-[0.35em] text-primary-300/80">{badge}</p>
+            <p className="text-xs uppercase tracking-wider text-primary-600 dark:text-primary-400 font-medium">{badge}</p>
           )}
-          <h1 className="text-2xl font-semibold text-white sm:text-3xl lg:text-4xl">{title}</h1>
+          <h1 className="heading-1">{title}</h1>
           {subtitle && (
-            <p className="text-sm text-neutral-300 sm:text-base">{subtitle}</p>
+            <p className="text-body text-neutral-600 dark:text-neutral-400">{subtitle}</p>
           )}
         </header>
 

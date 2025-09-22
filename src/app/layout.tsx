@@ -4,6 +4,7 @@ import "./globals.css";
 
 import SiteAnalytics from '@/components/SiteAnalytics'
 import StructuredData from '@/components/StructuredData'
+import { ThemeProvider } from '@/contexts/ThemeContext'
 
 const inter = Inter({ subsets: ["latin"], variable: "--font-sans" });
 
@@ -162,9 +163,11 @@ export default function RootLayout({
         <meta name="mobile-web-app-capable" content="yes" />
       </head>
       <body className={`min-h-screen bg-white font-sans antialiased ${inter.variable}`}>
-        {children}
-        <SiteAnalytics />
-        <StructuredData type="organization" />
+        <ThemeProvider>
+          {children}
+          <SiteAnalytics />
+          <StructuredData type="organization" />
+        </ThemeProvider>
       </body>
     </html>
   );
