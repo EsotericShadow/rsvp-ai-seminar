@@ -103,6 +103,7 @@ model CampaignTemplate {
   subject   String
   htmlBody  String
   textBody  String?
+  meta      Json
   // Template variables
   greeting_title      String?
   greeting_message    String?
@@ -127,6 +128,7 @@ model Campaign {
   name        String
   description String?
   status      CampaignStatus     @default(DRAFT)
+  meta        Json
   createdAt   DateTime           @default(now())
   updatedAt   DateTime           @updatedAt
   schedules   CampaignSchedule[]
@@ -138,6 +140,7 @@ model AudienceGroup {
   name        String
   description String?
   criteria    Json?
+  meta        Json
   createdAt   DateTime           @default(now())
   updatedAt   DateTime           @updatedAt
   members     AudienceMember[]
@@ -153,7 +156,7 @@ model AudienceMember {
   secondaryEmail String?
   tagsSnapshot   String[]
   inviteToken    String?
-  meta           Json?
+  meta           Json
   createdAt      DateTime      @default(now())
   unsubscribed   Boolean       @default(false)
   group          AudienceGroup @relation(fields: [groupId], references: [id], onDelete: Cascade)
@@ -181,7 +184,7 @@ model CampaignSchedule {
   smartWindowEnd     DateTime?
   smartWindowStart   DateTime?
   stepOrder          Int              @default(1)
-  meta               Json?
+  meta               Json
   campaign           Campaign?        @relation(fields: [campaignId], references: [id])
   group              AudienceGroup    @relation(fields: [groupId], references: [id])
   template           CampaignTemplate @relation(fields: [templateId], references: [id])
@@ -207,7 +210,7 @@ model CampaignSend {
   resendMessageId String?
   status          CampaignSendStatus @default(PENDING)
   error           String?
-  meta            Json?
+  meta            Json
   sentAt          DateTime?
   openedAt        DateTime?
   visitedAt       DateTime?
@@ -259,7 +262,7 @@ model EmailEvent {
   id        String         @id @default(cuid())
   jobId     String
   type      EmailEventType
-  meta      Json?
+  meta      Json
   createdAt DateTime       @default(now())
   job       EmailJob       @relation(fields: [jobId], references: [id], onDelete: Cascade)
 
