@@ -26,14 +26,14 @@ export function BusinessList({
   if (isLoading) {
     return (
       <div className="flex items-center justify-center py-8">
-        <div className="text-gray-500">Loading businesses...</div>
+        <div className="text-neutral-400">Loading businesses...</div>
       </div>
     )
   }
 
   if (businesses.length === 0) {
     return (
-      <div className="text-center py-8 text-gray-500">
+      <div className="text-center py-8 text-neutral-400">
         No businesses found matching your criteria.
       </div>
     )
@@ -49,7 +49,7 @@ export function BusinessList({
           <div
             key={business.id}
             className={`p-4 border rounded-lg ${
-              isSelected ? 'border-blue-500 bg-blue-50' : 'border-gray-200'
+              isSelected ? 'border-emerald-500 bg-emerald-500/10' : 'border-white/10 bg-black/40'
             } ${isExistingMember ? 'opacity-50' : ''}`}
           >
             <div className="flex items-start justify-between">
@@ -59,18 +59,18 @@ export function BusinessList({
                   checked={isSelected}
                   disabled={isExistingMember}
                   onChange={() => onToggleSelection(business.id)}
-                  className="mt-1 rounded border-gray-300"
+                  className="mt-1 rounded border-white/20 bg-black/60 text-emerald-500 focus:border-emerald-400 focus:ring-emerald-400"
                 />
                 <div className="flex-1">
                   <div className="flex items-center space-x-2">
-                    <h3 className="font-medium text-gray-900">{business.name || 'Unnamed Business'}</h3>
+                    <h3 className="font-medium text-white">{business.name || 'Unnamed Business'}</h3>
                     {isExistingMember && (
-                      <span className="px-2 py-1 text-xs bg-green-100 text-green-800 rounded">
+                      <span className="px-2 py-1 text-xs bg-emerald-500/20 text-emerald-200 rounded border border-emerald-500/30">
                         Already Added
                       </span>
                     )}
                   </div>
-                  <div className="mt-1 text-sm text-gray-600">
+                  <div className="mt-1 text-sm text-neutral-300">
                     {business.contact.primaryEmail && (
                       <div>Email: {business.contact.primaryEmail}</div>
                     )}
@@ -85,14 +85,14 @@ export function BusinessList({
                     {business.contact.tags.map((tag) => (
                       <span
                         key={tag}
-                        className="px-2 py-1 text-xs bg-gray-100 text-gray-700 rounded"
+                        className="px-2 py-1 text-xs bg-white/10 text-neutral-200 rounded border border-white/20"
                       >
                         {tag}
                       </span>
                     ))}
                   </div>
                   {business.invite && (
-                    <div className="mt-2 text-xs text-gray-500">
+                    <div className="mt-2 text-xs text-neutral-400">
                       Emails: {business.invite.emailsSent} | 
                       Visits: {business.invite.visitsCount} | 
                       RSVPs: {business.invite.rsvpsCount}
@@ -104,10 +104,10 @@ export function BusinessList({
                 <button
                   onClick={() => onAddMember(business)}
                   disabled={isExistingMember}
-                  className={`px-3 py-1 text-sm rounded ${
+                  className={`px-3 py-1 text-sm rounded transition-colors ${
                     isExistingMember
-                      ? 'bg-gray-100 text-gray-400 cursor-not-allowed'
-                      : 'bg-blue-600 text-white hover:bg-blue-700'
+                      ? 'bg-white/10 text-neutral-400 cursor-not-allowed border border-white/20'
+                      : 'bg-emerald-600 text-white hover:bg-emerald-700 border border-emerald-500'
                   }`}
                 >
                   {isExistingMember ? 'Added' : 'Add'}
@@ -123,7 +123,7 @@ export function BusinessList({
           <button
             onClick={onLoadMore}
             disabled={isLoadingMore}
-            className="px-4 py-2 bg-gray-600 text-white rounded hover:bg-gray-700 disabled:opacity-50"
+            className="px-4 py-2 bg-secondary-700/50 text-white rounded-lg hover:bg-secondary-600/50 disabled:opacity-50 transition-colors border border-secondary-600/50"
           >
             {isLoadingMore ? 'Loading...' : 'Load More'}
           </button>
