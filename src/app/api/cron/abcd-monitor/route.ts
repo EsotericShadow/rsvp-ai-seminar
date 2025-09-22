@@ -230,7 +230,7 @@ function calculateConfidence(sampleSize: number, successRate: number): number {
 
 function getTestStartTime(tests: any[]): Date {
   // Get the earliest send time from the tests
-  const sendTimes = tests.map(t => t.schedules?.[0]?.sendAt).filter(Boolean);
+  const sendTimes = tests.map(t => (t.schedules || [])[0]?.sendAt).filter(Boolean);
   return sendTimes.length > 0 ? new Date(Math.min(...sendTimes.map(d => new Date(d).getTime()))) : new Date();
 }
 
@@ -238,7 +238,7 @@ function groupTestsByCampaignAndEmail(tests: any[]): Map<string, any[]> {
   const groups = new Map();
   
   for (const test of tests) {
-    const campaignName = test.schedules?.[0]?.campaign?.name || 'Unknown Campaign';
+    const campaignName = (test.schedules || [])[0]?.campaign?.name || 'Unknown Campaign';
     const emailMatch = test.name.match(/Email (\d+)/);
     const emailNumber = emailMatch ? emailMatch[1] : '1';
     

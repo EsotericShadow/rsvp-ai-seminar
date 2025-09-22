@@ -365,7 +365,7 @@ export async function GET(req: Request) {
           name: group.name,
           description: group.description,
           memberCount: group.members.length,
-          scheduleCount: group.schedules.length
+          scheduleCount: (group.schedules || []).length
         }))
       },
 
