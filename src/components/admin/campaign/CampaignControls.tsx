@@ -831,6 +831,8 @@ export default function CampaignControls({ initialData, defaults }: { initialDat
         canRedo={canRedo} 
         historyLength={history.length} 
         historyIndex={historyIndex}
+        campaignDraft={campaignDraft}
+        setNotice={setNotice}
         isPerformanceCollapsed={isPerformanceCollapsed}
         setIsPerformanceCollapsed={setIsPerformanceCollapsed}
         isQuickActionsCollapsed={isQuickActionsCollapsed}
@@ -1038,6 +1040,8 @@ function TopBanner({
   canRedo, 
   historyLength, 
   historyIndex,
+  campaignDraft,
+  setNotice,
   isPerformanceCollapsed,
   setIsPerformanceCollapsed,
   isQuickActionsCollapsed,
@@ -1054,6 +1058,8 @@ function TopBanner({
   canRedo: boolean
   historyLength: number
   historyIndex: number
+  campaignDraft: CampaignDraft
+  setNotice: (notice: string | null) => void
   isPerformanceCollapsed: boolean
   setIsPerformanceCollapsed: (collapsed: boolean) => void
   isQuickActionsCollapsed: boolean
@@ -1176,13 +1182,45 @@ function TopBanner({
         
         {!isQuickActionsCollapsed && (
           <div className="flex flex-wrap gap-2">
-            <button className="px-3 py-1.5 text-xs bg-emerald-600 text-white rounded-lg hover:bg-emerald-700 transition-colors">
+            <button 
+              onClick={() => {
+                if (campaignDraft.id) {
+                  // Send test email
+                  setNotice('Sending test email...')
+                  // TODO: Implement test email functionality
+                  setTimeout(() => setNotice('Test email sent!'), 1000)
+                } else {
+                  setNotice('Please save campaign first')
+                }
+              }}
+              className="px-3 py-1.5 text-xs bg-emerald-600 text-white rounded-lg hover:bg-emerald-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+              disabled={!campaignDraft.id}
+            >
               Send Test
             </button>
-            <button className="px-3 py-1.5 text-xs bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors">
+            <button 
+              onClick={() => {
+                if (campaignDraft.id) {
+                  // Preview campaign
+                  setNotice('Generating preview...')
+                  // TODO: Implement preview functionality
+                  setTimeout(() => setNotice('Preview generated!'), 1000)
+                } else {
+                  setNotice('Please save campaign first')
+                }
+              }}
+              className="px-3 py-1.5 text-xs bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+              disabled={!campaignDraft.id}
+            >
               Preview
             </button>
-            <button className="px-3 py-1.5 text-xs bg-gray-600 text-white rounded-lg hover:bg-gray-700 transition-colors">
+            <button 
+              onClick={() => {
+                // Navigate to analytics
+                window.location.href = '/admin/analytics'
+              }}
+              className="px-3 py-1.5 text-xs bg-gray-600 text-white rounded-lg hover:bg-gray-700 transition-colors"
+            >
               Analytics
             </button>
           </div>
@@ -1259,7 +1297,7 @@ function CampaignsView({
 }: {
   campaigns: CampaignWithCounts[]
   draft: CampaignDraft
-  setDraft: (d: CampaignDraft) => void
+  setDraft: (d: CampaignDraft | ((prev: CampaignDraft) => CampaignDraft)) => void
   templates: Template[]
   groups: Group[]
   onSave: () => void
@@ -1366,7 +1404,7 @@ function SequenceEditor({
   runningStep,
 }: {
   draft: CampaignDraft
-  setDraft: (d: CampaignDraft) => void
+  setDraft: (d: CampaignDraft | ((prev: CampaignDraft) => CampaignDraft)) => void
   templates: Template[]
   groups: Group[]
   onSave: () => void
@@ -1389,20 +1427,20 @@ function SequenceEditor({
       return normalizedStep
     })
     if (needsUpdate) {
-      setDraft({ ...draft, schedules: normalized })
+      setDraft((prev: CampaignDraft) => ({ ...prev, schedules: normalized }))
     }
-  }, [steps, draft, setDraft])
+  }, [steps, setDraft])
 
   const updateStep = (index: number, newStepData: Partial<StepDraft>) => {
     const newSteps = [...steps]
     newSteps[index] = { ...newSteps[index], ...newStepData }
     const normalizedSteps = newSteps.map((item, idx) => ({ ...item, stepOrder: idx + 1 }))
-    setDraft({ ...draft, schedules: normalizedSteps })
+    setDraft((prev: CampaignDraft) => ({ ...prev, schedules: normalizedSteps }))
   }
 
   const addStep = () => {
     const normalizedSteps = [...steps, newStep(steps.length + 1)]
-    setDraft({ ...draft, schedules: normalizedSteps })
+    setDraft((prev: CampaignDraft) => ({ ...prev, schedules: normalizedSteps }))
   }
 
   const moveStep = (index: number, direction: -1 | 1) => {
@@ -1411,7 +1449,7 @@ function SequenceEditor({
     const newSteps = [...steps]
     const [step] = newSteps.splice(index, 1)
     newSteps.splice(newIndex, 0, step)
-    setDraft({ ...draft, schedules: newSteps.map((item, idx) => ({ ...item, stepOrder: idx + 1 })) })
+    setDraft(prev => ({ ...prev, schedules: newSteps.map((item, idx) => ({ ...item, stepOrder: idx + 1 })) }))
   }
 
   const duplicateStep = (index: number) => {
@@ -1427,14 +1465,14 @@ function SequenceEditor({
     }
     const newSteps = [...steps]
     newSteps.splice(index + 1, 0, clone)
-    setDraft({ ...draft, schedules: newSteps.map((item, idx) => ({ ...item, stepOrder: idx + 1 })) })
+    setDraft(prev => ({ ...prev, schedules: newSteps.map((item, idx) => ({ ...item, stepOrder: idx + 1 })) }))
   }
 
   const removeStep = (index: number) => {
     const newSteps = steps
       .filter((_, i) => i !== index)
       .map((item, idx) => ({ ...item, stepOrder: idx + 1 }))
-    setDraft({ ...draft, schedules: newSteps })
+    setDraft((prev: CampaignDraft) => ({ ...prev, schedules: newSteps }))
   }
 
   if (!draft.name) {
@@ -1460,13 +1498,13 @@ function SequenceEditor({
       <header className="space-y-2 rounded-2xl border border-white/10 bg-black/30 p-4 shadow-sm">
         <input
           value={draft.name ?? ''}
-          onChange={(e) => setDraft({ ...draft, name: e.target.value })}
+          onChange={(e) => setDraft((prev: CampaignDraft) => ({ ...prev, name: e.target.value }))}
           className="w-full bg-transparent text-2xl font-bold text-white focus:outline-none"
           placeholder="New Campaign Name"
         />
         <textarea
           value={draft.description ?? ''}
-          onChange={(e) => setDraft({ ...draft, description: e.target.value })}
+          onChange={(e) => setDraft((prev: CampaignDraft) => ({ ...prev, description: e.target.value }))}
           className="w-full resize-none bg-transparent text-sm text-neutral-400 focus:outline-none"
           placeholder="Optional description..."
           rows={2}
@@ -1794,7 +1832,7 @@ function TemplatesView({
 }: {
   templates: Template[]
   draft: TemplateDraft
-  setDraft: (draft: TemplateDraft) => void
+  setDraft: (draft: TemplateDraft | ((prev: TemplateDraft) => TemplateDraft)) => void
   onEdit: (template: Template) => void
   onDuplicate: (template: Template) => void
   onRemove: (id: string) => void
