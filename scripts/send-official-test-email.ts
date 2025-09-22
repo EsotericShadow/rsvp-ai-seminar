@@ -305,7 +305,7 @@ async function sendOfficialTestEmail() {
       tracking_pixel: trackingPixel,
       
         // Template content variables (no event details - handled by global template)
-        greeting_title: 'Hello Sarah!',
+        greeting_title: 'Hello!',
         main_content_title: 'What You\'ll Learn',
         main_content_body: 'We\'ll cover practical AI tools that can help streamline your business operations, including spreadsheet automation, data analysis, and process optimization. All tools discussed are immediately actionable and cost-effective.',
         additional_info_title: 'Why This Matters',

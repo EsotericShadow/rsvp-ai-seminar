@@ -15,16 +15,18 @@ async function updateTemplateNoDuplicates() {
       throw new Error('Official template not found')
     }
 
-    // Update the template to remove duplicate event information
+    // Update the template to remove duplicate event information and use generic greeting
     await prisma.campaignTemplate.update({
       where: { id: template.id },
       data: {
+        greeting_title: 'Hello!',
         additional_info_title: 'Why This Matters',
         additional_info_body: 'These AI tools can save your business hours of manual work each week, giving you more time to focus on growing your business and serving your customers better.',
         meta: {
           ...template.meta as any,
           updatedBy: 'remove-duplicates',
-          noEventDuplicates: true
+          noEventDuplicates: true,
+          genericGreeting: true
         }
       }
     })
