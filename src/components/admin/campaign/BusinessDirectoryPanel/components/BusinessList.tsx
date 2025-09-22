@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef } from 'react'
+import { motion, AnimatePresence } from 'framer-motion'
 import type { LeadMineBusiness } from '@/lib/leadMine'
 
 type BusinessListProps = {
@@ -37,6 +38,7 @@ export function BusinessList({
   existingGroups = [],
   onMemberMoved,
 }: BusinessListProps) {
+  const [removingIds, setRemovingIds] = useState<Set<string>>(new Set())
   if (isLoading) {
     return (
       <div className="flex items-center justify-center py-8">
@@ -70,21 +72,37 @@ export function BusinessList({
         </div>
       )}
 
-      {businesses.map((business) => (
-        <BusinessCard
-          key={business.id}
-          business={business}
-          isSelected={selectedIds.includes(business.id)}
-          isExistingMember={existingMemberSet.has(business.id)}
-          isInOtherGroup={Boolean(allExistingMemberIds?.has(business.id) && !existingMemberSet.has(business.id))}
-          isUngrouped={Boolean(!allExistingMemberIds?.has(business.id))}
-          showUngroupedOnly={showUngroupedOnly}
-          onToggleSelection={onToggleSelection}
-          onAddMember={onAddMember}
-          existingGroups={existingGroups}
-          onMemberMoved={onMemberMoved}
-        />
-      ))}
+      <AnimatePresence mode="popLayout">
+        {businesses
+          .filter(business => !removingIds.has(business.id))
+          .map((business) => (
+            <BusinessCard
+              key={business.id}
+              business={business}
+              isSelected={selectedIds.includes(business.id)}
+              isExistingMember={existingMemberSet.has(business.id)}
+              isInOtherGroup={Boolean(allExistingMemberIds?.has(business.id) && !existingMemberSet.has(business.id))}
+              isUngrouped={Boolean(!allExistingMemberIds?.has(business.id))}
+              showUngroupedOnly={showUngroupedOnly}
+              onToggleSelection={onToggleSelection}
+              onAddMember={onAddMember}
+              existingGroups={existingGroups}
+              onMemberMoved={onMemberMoved}
+              isRemoving={removingIds.has(business.id)}
+              onStartRemoving={(id) => {
+                setRemovingIds(prev => {
+                  const newSet = new Set(prev)
+                  if (newSet.has(id)) {
+                    newSet.delete(id)
+                  } else {
+                    newSet.add(id)
+                  }
+                  return newSet
+                })
+              }}
+            />
+          ))}
+      </AnimatePresence>
       
       {hasMore && (
         <div className="text-center py-4">
@@ -112,6 +130,8 @@ function BusinessCard({
   onAddMember,
   existingGroups,
   onMemberMoved,
+  isRemoving,
+  onStartRemoving,
 }: {
   business: LeadMineBusiness
   isSelected: boolean
@@ -128,6 +148,8 @@ function BusinessCard({
     members: Array<{ businessId: string }>
   }>
   onMemberMoved?: () => void
+  isRemoving: boolean
+  onStartRemoving: (id: string) => void
 }) {
   const [isMoving, setIsMoving] = useState(false)
   const [showMoveDropdown, setShowMoveDropdown] = useState(false)
@@ -166,25 +188,19 @@ function BusinessCard({
     setIsMoving(true)
     setShowMoveDropdown(false)
     
+    // Start the removal animation
+    onStartRemoving(business.id)
+    
     try {
-      // First, we need to add the business to the target group
-      // Since we don't have a direct move API for LeadMine businesses,
-      // we'll need to create a member in the target group
-      const response = await fetch('/api/admin/campaign/groups', {
-        method: 'PUT',
+      // Use the move member API instead of the groups API
+      const response = await fetch('/api/admin/campaign/members/move', {
+        method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          id: targetGroupId,
-          members: [{
-            businessId: business.id,
-            businessName: business.name,
-            primaryEmail: business.contact.primaryEmail,
-            secondaryEmail: business.contact.alternateEmail,
-            tags: business.contact.tags,
-            meta: {}
-          }]
+          memberId: business.id,
+          targetGroupId: targetGroupId
         }),
       })
 
@@ -193,29 +209,53 @@ function BusinessCard({
         throw new Error(error.error || 'Failed to move business')
       }
 
-      // Call the callback to refresh the data
-      if (onMemberMoved) {
-        onMemberMoved()
-      }
-      
-      // Show success message
-      alert(`Business moved to group successfully`)
+      // Wait a bit for the animation to complete before refreshing
+      setTimeout(() => {
+        // Call the callback to refresh the data
+        if (onMemberMoved) {
+          onMemberMoved()
+        }
+      }, 300) // Match the animation duration
       
     } catch (error) {
       console.error('Error moving business:', error)
       alert(error instanceof Error ? error.message : 'Failed to move business')
+      // Reset the removing state on error
+      onStartRemoving(business.id) // This will toggle it back off
     } finally {
       setIsMoving(false)
     }
   }
 
   return (
-    <div
+    <motion.div
+      layout
+      initial={{ opacity: 1, scale: 1, y: 0 }}
+      animate={isRemoving ? 
+        { 
+          opacity: 0, 
+          scale: 0.8, 
+          y: -20,
+          transition: { duration: 0.3, ease: "easeInOut" }
+        } : 
+        { 
+          opacity: 1, 
+          scale: 1, 
+          y: 0,
+          transition: { duration: 0.3, ease: "easeInOut" }
+        }
+      }
+      exit={{ 
+        opacity: 0, 
+        scale: 0.8, 
+        y: -20,
+        transition: { duration: 0.3, ease: "easeInOut" }
+      }}
       className={`p-4 border rounded-lg transition-all duration-200 ${
         isSelected ? 'border-primary-500 bg-primary-500/10' : 'border-white/10 bg-black/40'
       } ${isExistingMember ? 'opacity-50' : ''} ${isInOtherGroup ? 'border-warning-500/50 bg-warning-500/5' : ''} ${
         isUngrouped && showUngroupedOnly ? 'border-warning-400/30 bg-warning-500/5' : ''
-      }`}
+      } ${isRemoving ? 'pointer-events-none' : ''}`}
     >
       <div className="flex items-start justify-between gap-4">
         <div className="flex items-start space-x-3 flex-1 min-w-0">
@@ -323,6 +363,6 @@ function BusinessCard({
           </button>
         </div>
       </div>
-    </div>
+    </motion.div>
   )
 }

@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useEffect, useRef } from 'react'
+import { motion, AnimatePresence } from 'framer-motion'
 import type { MemberDraft } from './AudienceGroupsTab'
 
 interface GroupMembersListProps {
@@ -28,6 +29,7 @@ export function GroupMembersList({
 }: GroupMembersListProps) {
   const [searchTerm, setSearchTerm] = useState('')
   const [filterType, setFilterType] = useState<'all' | 'manual' | 'leadmine'>('all')
+  const [removingIds, setRemovingIds] = useState<Set<string>>(new Set())
 
   const filteredMembers = members.filter(member => {
     const matchesSearch = 
@@ -164,16 +166,42 @@ export function GroupMembersList({
             )}
           </div>
         ) : (
-          filteredMembers.map((member) => (
-            <MemberCard
-              key={member.businessId}
-              member={member}
-              onRemove={() => onRemoveMember(member.businessId)}
-              existingGroups={existingGroups}
-              currentGroupId={currentGroupId}
-              onMemberMoved={onMemberMoved}
-            />
-          ))
+          <AnimatePresence mode="popLayout">
+            {filteredMembers
+              .filter(member => !removingIds.has(member.businessId))
+              .map((member) => (
+                <MemberCard
+                  key={member.businessId}
+                  member={member}
+                  onRemove={() => {
+                    setRemovingIds(prev => new Set([...prev, member.businessId]))
+                    setTimeout(() => {
+                      onRemoveMember(member.businessId)
+                      setRemovingIds(prev => {
+                        const newSet = new Set(prev)
+                        newSet.delete(member.businessId)
+                        return newSet
+                      })
+                    }, 300)
+                  }}
+                  existingGroups={existingGroups}
+                  currentGroupId={currentGroupId}
+                  onMemberMoved={onMemberMoved}
+                  isRemoving={removingIds.has(member.businessId)}
+                  onStartRemoving={(id) => {
+                    setRemovingIds(prev => {
+                      const newSet = new Set(prev)
+                      if (newSet.has(id)) {
+                        newSet.delete(id)
+                      } else {
+                        newSet.add(id)
+                      }
+                      return newSet
+                    })
+                  }}
+                />
+              ))}
+          </AnimatePresence>
         )}
       </div>
     </div>
@@ -186,6 +214,8 @@ function MemberCard({
   existingGroups,
   currentGroupId,
   onMemberMoved,
+  isRemoving,
+  onStartRemoving,
 }: {
   member: MemberDraft
   onRemove: () => void
@@ -198,6 +228,8 @@ function MemberCard({
   }>
   currentGroupId?: string
   onMemberMoved?: () => void
+  isRemoving: boolean
+  onStartRemoving: (id: string) => void
 }) {
   const [isMoving, setIsMoving] = useState(false)
   const [showMoveDropdown, setShowMoveDropdown] = useState(false)
@@ -244,6 +276,9 @@ function MemberCard({
     setIsMoving(true)
     setShowMoveDropdown(false)
     
+    // Start the removal animation
+    onStartRemoving(member.businessId)
+    
     try {
       const response = await fetch('/api/admin/campaign/members/move', {
         method: 'POST',
@@ -263,24 +298,50 @@ function MemberCard({
 
       const result = await response.json()
       
-      // Call the callback to refresh the data
-      if (onMemberMoved) {
-        onMemberMoved()
-      }
-      
-      // Show success message
-      alert(result.message || 'Member moved successfully')
+      // Wait a bit for the animation to complete before refreshing
+      setTimeout(() => {
+        // Call the callback to refresh the data
+        if (onMemberMoved) {
+          onMemberMoved()
+        }
+      }, 300) // Match the animation duration
       
     } catch (error) {
       console.error('Error moving member:', error)
       alert(error instanceof Error ? error.message : 'Failed to move member')
+      // Reset the removing state on error
+      onStartRemoving(member.businessId) // This will toggle it back off
     } finally {
       setIsMoving(false)
     }
   }
 
   return (
-    <div className="rounded-lg border border-white/10 bg-black/40 p-4">
+    <motion.div
+      layout
+      initial={{ opacity: 1, scale: 1, y: 0 }}
+      animate={isRemoving ? 
+        { 
+          opacity: 0, 
+          scale: 0.8, 
+          y: -20,
+          transition: { duration: 0.3, ease: "easeInOut" }
+        } : 
+        { 
+          opacity: 1, 
+          scale: 1, 
+          y: 0,
+          transition: { duration: 0.3, ease: "easeInOut" }
+        }
+      }
+      exit={{ 
+        opacity: 0, 
+        scale: 0.8, 
+        y: -20,
+        transition: { duration: 0.3, ease: "easeInOut" }
+      }}
+      className={`rounded-lg border border-white/10 bg-black/40 p-4 ${isRemoving ? 'pointer-events-none' : ''}`}
+    >
       <div className="flex items-start justify-between gap-4">
         <div className="flex-1 min-w-0">
           <div className="flex items-center gap-2 mb-1">
@@ -387,6 +448,6 @@ function MemberCard({
           </button>
         </div>
       </div>
-    </div>
+    </motion.div>
   )
 }
