@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useMemo } from 'react'
+import { useState, useMemo, useEffect } from 'react'
 import { 
   Cog6ToothIcon, 
   PlayIcon, 
@@ -30,20 +30,25 @@ type WorkflowTrigger = {
 type WorkflowRule = {
   id: string
   name: string
-  trigger: WorkflowTrigger
-  conditions: Array<{
-    field: string
-    operator: string
-    value: string
-  }>
-  actions: Array<{
-    type: string
-    config: any
-  }>
+  description?: string
+  triggerType: string
+  triggerConfig: any
+  conditions: any[]
+  actions: any[]
   isEnabled: boolean
   lastRun?: string
   nextRun?: string
   runCount: number
+  createdAt: string
+  updatedAt: string
+  campaignId?: string
+  executions?: Array<{
+    id: string
+    status: string
+    startedAt: string
+    completedAt?: string
+    error?: string
+  }>
 }
 
 type WorkflowAutomationProps = {
@@ -125,15 +130,37 @@ const availableTriggers: WorkflowTrigger[] = [
 
 export function WorkflowAutomation({
   campaignId,
-  workflows,
+  workflows: initialWorkflows,
   onUpdateWorkflow,
   onCreateWorkflow,
   onDeleteWorkflow
 }: WorkflowAutomationProps) {
+  const [workflows, setWorkflows] = useState<WorkflowRule[]>(initialWorkflows)
+  const [loading, setLoading] = useState(false)
   const [showCreateForm, setShowCreateForm] = useState(false)
   const [selectedTrigger, setSelectedTrigger] = useState<string>('')
   const [filterStatus, setFilterStatus] = useState<'all' | 'active' | 'inactive'>('all')
   const [showGlobalSettings, setShowGlobalSettings] = useState(false)
+
+  // Fetch workflows on mount
+  useEffect(() => {
+    fetchWorkflows()
+  }, [])
+
+  const fetchWorkflows = async () => {
+    try {
+      setLoading(true)
+      const response = await fetch('/api/admin/workflows')
+      if (response.ok) {
+        const data = await response.json()
+        setWorkflows(data.workflows)
+      }
+    } catch (error) {
+      console.error('Error fetching workflows:', error)
+    } finally {
+      setLoading(false)
+    }
+  }
 
   const filteredWorkflows = useMemo(() => {
     return workflows.filter(workflow => {
@@ -147,24 +174,79 @@ export function WorkflowAutomation({
   const activeWorkflows = workflows.filter(w => w.isEnabled).length
   const totalWorkflows = workflows.length
 
-  const handleCreateWorkflow = () => {
+  const handleCreateWorkflow = async () => {
     if (!selectedTrigger) return
     
     const trigger = availableTriggers.find(t => t.id === selectedTrigger)
     if (!trigger) return
 
-    const newWorkflow: Omit<WorkflowRule, 'id'> = {
-      name: `New ${trigger.name} Workflow`,
-      trigger,
-      conditions: [],
-      actions: [],
-      isEnabled: false,
-      runCount: 0
-    }
+    try {
+      setLoading(true)
+      const response = await fetch('/api/admin/workflows', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          name: `New ${trigger.name} Workflow`,
+          description: trigger.description,
+          triggerType: trigger.type,
+          triggerConfig: { triggerId: trigger.id },
+          conditions: [],
+          actions: [],
+          campaignId: campaignId === 'global' ? null : campaignId
+        })
+      })
 
-    onCreateWorkflow(newWorkflow)
-    setShowCreateForm(false)
-    setSelectedTrigger('')
+      if (response.ok) {
+        const data = await response.json()
+        setWorkflows(prev => [data.workflow, ...prev])
+        onCreateWorkflow(data.workflow)
+        setShowCreateForm(false)
+        setSelectedTrigger('')
+      }
+    } catch (error) {
+      console.error('Error creating workflow:', error)
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  const handleToggleWorkflow = async (workflow: WorkflowRule) => {
+    try {
+      setLoading(true)
+      const response = await fetch(`/api/admin/workflows/${workflow.id}/toggle`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ isEnabled: !workflow.isEnabled })
+      })
+
+      if (response.ok) {
+        const data = await response.json()
+        setWorkflows(prev => prev.map(w => w.id === workflow.id ? data.workflow : w))
+        onUpdateWorkflow(data.workflow)
+      }
+    } catch (error) {
+      console.error('Error toggling workflow:', error)
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  const handleDeleteWorkflow = async (workflowId: string) => {
+    try {
+      setLoading(true)
+      const response = await fetch(`/api/admin/workflows/${workflowId}`, {
+        method: 'DELETE'
+      })
+
+      if (response.ok) {
+        setWorkflows(prev => prev.filter(w => w.id !== workflowId))
+        onDeleteWorkflow(workflowId)
+      }
+    } catch (error) {
+      console.error('Error deleting workflow:', error)
+    } finally {
+      setLoading(false)
+    }
   }
 
   const getStatusColor = (isEnabled: boolean) => {
@@ -334,9 +416,10 @@ export function WorkflowAutomation({
             <WorkflowCard
               key={workflow.id}
               workflow={workflow}
-              onUpdate={onUpdateWorkflow}
-              onDelete={onDeleteWorkflow}
+              onToggle={handleToggleWorkflow}
+              onDelete={handleDeleteWorkflow}
               getStatusColor={getStatusColor}
+              loading={loading}
             />
           ))
         )}
@@ -556,25 +639,41 @@ function GlobalSettingsModal({ onClose }: { onClose: () => void }) {
 
 function WorkflowCard({
   workflow,
-  onUpdate,
+  onToggle,
   onDelete,
-  getStatusColor
+  getStatusColor,
+  loading
 }: {
   workflow: WorkflowRule
-  onUpdate: (workflow: WorkflowRule) => void
+  onToggle: (workflow: WorkflowRule) => void
   onDelete: (id: string) => void
   getStatusColor: (isEnabled: boolean) => string
+  loading: boolean
 }) {
   const handleToggle = () => {
-    onUpdate({ ...workflow, isEnabled: !workflow.isEnabled })
+    onToggle(workflow)
+  }
+
+  const handleDelete = () => {
+    if (confirm(`Are you sure you want to delete "${workflow.name}"?`)) {
+      onDelete(workflow.id)
+    }
+  }
+
+  // Get trigger info from available triggers
+  const triggerInfo = availableTriggers.find(t => t.id === workflow.triggerConfig?.triggerId) || {
+    name: workflow.triggerType,
+    description: workflow.description || 'Custom trigger',
+    icon: <Cog6ToothIcon className="h-5 w-5" />,
+    color: 'text-neutral-400'
   }
 
   return (
     <div className="border border-white/10 rounded-lg p-4 hover:border-primary-400 transition-colors">
       <div className="flex items-start justify-between">
         <div className="flex items-start gap-3">
-          <div className={`p-2 rounded-lg ${workflow.trigger.color}`}>
-            {workflow.trigger.icon}
+          <div className={`p-2 rounded-lg ${triggerInfo.color}`}>
+            {triggerInfo.icon}
           </div>
           <div className="flex-1">
             <div className="flex items-center gap-2 mb-2">
@@ -583,7 +682,7 @@ function WorkflowCard({
                 {workflow.isEnabled ? 'Active' : 'Inactive'}
               </span>
             </div>
-            <p className="text-sm text-neutral-400 mb-2">{workflow.trigger.description}</p>
+            <p className="text-sm text-neutral-400 mb-2">{triggerInfo.description}</p>
             
             <div className="flex items-center gap-4 text-xs text-neutral-500">
               <span>Runs: {workflow.runCount}</span>
@@ -600,18 +699,29 @@ function WorkflowCard({
         <div className="flex items-center gap-2">
           <button
             onClick={handleToggle}
+            disabled={loading}
             className={`p-2 rounded-lg ${
               workflow.isEnabled 
                 ? 'text-warning-400 hover:bg-warning-500/10' 
                 : 'text-success-400 hover:bg-success-500/10'
-            }`}
+            } ${loading ? 'opacity-50 cursor-not-allowed' : ''}`}
             title={workflow.isEnabled ? 'Pause workflow' : 'Activate workflow'}
           >
-            {workflow.isEnabled ? <PauseIcon className="h-4 w-4" /> : <PlayIcon className="h-4 w-4" />}
+            {loading ? (
+              <svg className="animate-spin h-4 w-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+              </svg>
+            ) : workflow.isEnabled ? (
+              <PauseIcon className="h-4 w-4" />
+            ) : (
+              <PlayIcon className="h-4 w-4" />
+            )}
           </button>
           <button
-            onClick={() => onDelete(workflow.id)}
-            className="p-2 text-error-400 hover:bg-error-500/10 rounded-lg"
+            onClick={handleDelete}
+            disabled={loading}
+            className={`p-2 text-error-400 hover:bg-error-500/10 rounded-lg ${loading ? 'opacity-50 cursor-not-allowed' : ''}`}
             title="Delete workflow"
           >
             <ExclamationTriangleIcon className="h-4 w-4" />

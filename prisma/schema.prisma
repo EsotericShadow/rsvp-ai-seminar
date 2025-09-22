@@ -338,3 +338,37 @@ enum EmailEventType {
   resumed
   schedule_updated
 }
+
+model WorkflowRule {
+  id          String   @id @default(cuid())
+  name        String
+  description String?
+  triggerType String   // 'time' | 'event' | 'condition' | 'manual'
+  triggerConfig Json   // Configuration for the trigger
+  conditions  Json     // Array of condition objects
+  actions     Json     // Array of action objects
+  isEnabled   Boolean  @default(false)
+  runCount    Int      @default(0)
+  lastRun     DateTime?
+  nextRun     DateTime?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  campaignId  String?  // Optional: link to specific campaign
+  
+  executions WorkflowExecution[]
+}
+
+model WorkflowExecution {
+  id         String   @id @default(cuid())
+  workflowId String
+  status     String   // 'running' | 'completed' | 'failed'
+  startedAt  DateTime @default(now())
+  completedAt DateTime?
+  error      String?
+  meta       Json?
+  
+  workflow   WorkflowRule @relation(fields: [workflowId], references: [id], onDelete: Cascade)
+  
+  @@index([workflowId])
+  @@index([startedAt])
+}
