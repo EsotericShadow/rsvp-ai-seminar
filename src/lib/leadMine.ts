@@ -1,10 +1,4 @@
 // src/lib/leadMine.ts
-const baseUrl = process.env.LEADMINE_API_BASE?.replace(/\/$/, '') ?? '';
-const apiKey = process.env.LEADMINE_API_KEY?.trim();
-
-if (!baseUrl || !apiKey) {
-  console.warn('LeadMine integration environment variables are not fully configured.');
-}
 
 export type LeadMineBusiness = {
   id: string;
@@ -47,6 +41,9 @@ export type LeadMineBusinessesResponse = {
 };
 
 async function leadMineFetch<T>(path: string, init?: RequestInit): Promise<T> {
+  const baseUrl = process.env.LEADMINE_API_BASE?.replace(/\/$/, '') ?? '';
+  const apiKey = process.env.LEADMINE_API_KEY?.trim();
+  
   if (!baseUrl || !apiKey) {
     throw new Error('LeadMine integration not configured');
   }
