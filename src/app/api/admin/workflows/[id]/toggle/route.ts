@@ -27,3 +27,4 @@ export async function POST(
     return NextResponse.json({ error: 'Failed to toggle workflow' }, { status: 500 })
   }
 }
+

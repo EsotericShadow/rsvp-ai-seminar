@@ -52,3 +52,4 @@ export async function DELETE(
     return NextResponse.json({ error: 'Failed to delete workflow' }, { status: 500 })
   }
 }
+

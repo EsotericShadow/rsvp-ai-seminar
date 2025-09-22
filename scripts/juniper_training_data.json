@@ -1,0 +1,371 @@
+{
+  "conversations": [
+    {
+      "input": "create a new campaign for healthcare businesses",
+      "output": "Creating healthcare campaign...\n\n✅ Campaign created: 'Healthcare Newsletter Q4 2024'\n✅ Audience: 156 healthcare businesses\n✅ Template: Healthcare Professional v2\n✅ Scheduled: Next Tuesday 10:00 AM\n\nCampaign ID: HC-2024-Q4-001\nStatus: Ready to launch\n\nNext: Review content and launch?",
+      "intent": "create_campaign",
+      "entities": [
+        "campaign",
+        "healthcare",
+        "create"
+      ],
+      "context": "campaign_management"
+    },
+    {
+      "input": "show me campaign performance",
+      "output": "Fetching campaign analytics...\n\n📊 CAMPAIGN PERFORMANCE\n====================\n\nActive Campaigns: 15\nTotal Sends: 12,450\nOpen Rate: 24.5% (+3.2%)\nClick Rate: 3.2% (+0.8%)\n\n🏆 TOP PERFORMERS\n1. Healthcare Newsletter: 31.2% open, 5.1% click\n2. Professional Services: 28.7% open, 4.3% click\n3. Construction News: 26.1% open, 3.9% click\n\n📈 TRENDING UP\n- Tuesday 10 AM sends: +15% engagement\n- Personalized content: +23% clicks\n- Mobile optimization: +8% opens\n\nReady for next command.",
+      "intent": "show_analytics",
+      "entities": [
+        "campaign",
+        "analytics",
+        "performance"
+      ],
+      "context": "analytics"
+    },
+    {
+      "input": "optimize the healthcare campaign",
+      "output": "Analyzing healthcare campaign performance...\n\n🔍 OPTIMIZATION ANALYSIS\n=======================\n\nCurrent Performance:\n- Open Rate: 31.2% (excellent)\n- Click Rate: 5.1% (good)\n- Bounce Rate: 1.3% (low)\n\n🎯 OPTIMIZATIONS APPLIED\n1. Subject line A/B test: 'Healthcare Update' vs 'Medical News'\n2. Send time optimization: Tuesday 10:15 AM (peak engagement)\n3. Content personalization: Added {{specialty}} variable\n4. CTA button: Changed to 'Learn More' (higher CTR)\n\n✅ Optimizations saved to campaign HC-2024-Q4-001\n📅 Next send: Tuesday 10:15 AM\n\nCampaign updated successfully.",
+      "intent": "optimize_campaign",
+      "entities": [
+        "campaign",
+        "optimize",
+        "healthcare"
+      ],
+      "context": "campaign_management"
+    },
+    {
+      "input": "segment audience by engagement level",
+      "output": "Segmenting audience by engagement...\n\n🎯 AUDIENCE SEGMENTATION\n========================\n\nHigh Engagement (30%+): 234 businesses\n├─ Healthcare: 89 businesses\n├─ Professional Services: 67 businesses\n└─ Construction: 78 businesses\n\nMedium Engagement (15-30%): 345 businesses\n├─ Retail: 98 businesses\n├─ Technology: 67 businesses\n└─ Hospitality: 45 businesses\n\nLow Engagement (<15%): 188 businesses\n├─ Manufacturing: 52 businesses\n├─ Financial: 41 businesses\n└─ Other: 95 businesses\n\n✅ Segments created and saved\n📧 Re-engagement campaign queued for low engagement group\n\nSegmentation complete.",
+      "intent": "segment_audience",
+      "entities": [
+        "audience",
+        "segment",
+        "engagement"
+      ],
+      "context": "audience_management"
+    },
+    {
+      "input": "create email template for construction industry",
+      "output": "Creating construction industry template...\n\n📧 TEMPLATE CREATION\n===================\n\nTemplate: 'Construction Industry Update'\nSubject: '{{company_name}} - Industry News & Updates'\n\n✅ Design Elements:\n- Construction imagery header\n- Industry-specific content blocks\n- Safety compliance footer\n- Mobile-responsive layout\n\n✅ Personalization Variables:\n- {{company_name}} - Business name\n- {{industry}} - Construction specialty\n- {{location}} - Geographic location\n- {{last_project}} - Recent project type\n\n✅ Template saved: CONSTRUCTION-2024-v1\n📝 Preview generated\n📊 A/B test variants created\n\nTemplate ready for use.",
+      "intent": "create_template",
+      "entities": [
+        "template",
+        "construction",
+        "email"
+      ],
+      "context": "template_management"
+    },
+    {
+      "input": "send test email to healthcare segment",
+      "output": "Sending test email to healthcare segment...\n\n📧 TEST EMAIL SENT\n=================\n\nRecipients: 5 healthcare businesses\nTemplate: Healthcare Professional v2\nSubject: 'Healthcare Update - Test Send'\n\n✅ Delivery Status:\n- Sent: 5/5 (100%)\n- Delivered: 5/5 (100%)\n- Opened: 3/5 (60%)\n- Clicked: 1/5 (20%)\n\n📊 Test Results:\n- Open Rate: 60% (excellent)\n- Click Rate: 20% (good)\n- Bounce Rate: 0% (perfect)\n- Spam Score: 0/10 (excellent)\n\n✅ Test email successful\n📈 Performance above average\n\nReady to launch full campaign.",
+      "intent": "send_test_email",
+      "entities": [
+        "test",
+        "email",
+        "healthcare"
+      ],
+      "context": "email_management"
+    },
+    {
+      "input": "analyze deliverability issues",
+      "output": "Analyzing deliverability...\n\n🔍 DELIVERABILITY ANALYSIS\n=========================\n\nOverall Score: 98.7% (Excellent)\n\n✅ Positive Factors:\n- SPF record: Valid\n- DKIM signature: Valid\n- DMARC policy: Enforced\n- Reputation score: 95/100\n- Bounce rate: 1.3% (low)\n\n⚠️ Areas for Improvement:\n- Some emails hitting spam (0.02%)\n- iCloud deliverability: 85% (good)\n- Gmail deliverability: 98% (excellent)\n\n🔧 OPTIMIZATIONS APPLIED\n1. Updated SPF record for better authentication\n2. Improved subject line scoring\n3. Enhanced content filtering\n4. Added unsubscribe compliance\n\n✅ Deliverability optimized\n📈 Expected improvement: +2-3% delivery rate\n\nAnalysis complete.",
+      "intent": "analyze_deliverability",
+      "entities": [
+        "deliverability",
+        "email",
+        "analysis"
+      ],
+      "context": "email_management"
+    },
+    {
+      "input": "schedule campaign for next week",
+      "output": "Scheduling campaign for next week...\n\n📅 CAMPAIGN SCHEDULING\n====================\n\nCampaign: Healthcare Newsletter Q4 2024\nSchedule: Tuesday, October 29, 2024 at 10:15 AM\nAudience: 156 healthcare businesses\nTemplate: Healthcare Professional v2\n\n✅ Schedule Details:\n- Date: October 29, 2024\n- Time: 10:15 AM PST\n- Timezone: Pacific Standard Time\n- Recurring: Weekly\n- End Date: December 31, 2024\n\n✅ Automation Rules:\n- Auto-send on schedule\n- Pause if bounce rate > 5%\n- Stop if unsubscribe rate > 2%\n- Send to high engagement first\n\n📧 Campaign scheduled successfully\n⏰ Next send: October 29, 2024 at 10:15 AM\n\nScheduling complete.",
+      "intent": "schedule_campaign",
+      "entities": [
+        "campaign",
+        "schedule",
+        "next_week"
+      ],
+      "context": "campaign_management"
+    },
+    {
+      "input": "show me audience growth trends",
+      "output": "Analyzing audience growth trends...\n\n📈 AUDIENCE GROWTH ANALYSIS\n===========================\n\nTotal Audience: 767 businesses (+23 this month)\n\n📊 Growth by Segment:\n- Healthcare: +8 businesses (5.1% growth)\n- Professional Services: +6 businesses (4.6% growth)\n- Construction: +4 businesses (4.6% growth)\n- Retail: +3 businesses (3.1% growth)\n- Technology: +2 businesses (3.0% growth)\n\n🎯 Growth Sources:\n- Lead Mine: 15 new businesses\n- Referrals: 5 new businesses\n- Website signups: 3 new businesses\n\n📅 Monthly Trends:\n- September: +18 businesses\n- August: +12 businesses\n- July: +15 businesses\n\n✅ Growth rate: 3.1% monthly average\n📈 Projected annual growth: 37.2%\n\nTrend analysis complete.",
+      "intent": "show_growth_trends",
+      "entities": [
+        "audience",
+        "growth",
+        "trends"
+      ],
+      "context": "analytics"
+    },
+    {
+      "input": "pause all low performing campaigns",
+      "output": "Pausing low performing campaigns...\n\n⏸️ CAMPAIGN PAUSE ANALYSIS\n==========================\n\nCampaigns Analyzed: 15\nLow Performers Identified: 3\n\n🛑 PAUSED CAMPAIGNS\n1. Retail Newsletter (18.2% open rate)\n2. Manufacturing Update (16.8% open rate)\n3. Financial Services (15.1% open rate)\n\n✅ Actions Taken:\n- Paused 3 campaigns\n- Preserved campaign data\n- Notified stakeholders\n- Scheduled optimization review\n\n📊 Impact:\n- Reduced send volume by 20%\n- Improved overall performance metrics\n- Saved 2,400 emails from low engagement\n\n⏰ Next Steps:\n- Optimize paused campaigns\n- A/B test new content\n- Re-launch after improvements\n\nPause complete.",
+      "intent": "pause_campaigns",
+      "entities": [
+        "campaign",
+        "pause",
+        "performance"
+      ],
+      "context": "campaign_management"
+    },
+    {
+      "input": "generate monthly report",
+      "output": "Generating monthly report...\n\n📊 MONTHLY CAMPAIGN REPORT\n=========================\n\nReport Period: October 1-31, 2024\nGenerated: November 1, 2024 at 9:00 AM\n\n📈 KEY METRICS\n- Total Campaigns: 15\n- Total Sends: 12,450\n- Open Rate: 24.5% (+3.2% vs last month)\n- Click Rate: 3.2% (+0.8% vs last month)\n- Bounce Rate: 1.3% (-0.2% vs last month)\n- Unsubscribe Rate: 0.4% (-0.1% vs last month)\n\n🏆 TOP PERFORMERS\n1. Healthcare Newsletter: 31.2% open, 5.1% click\n2. Professional Services: 28.7% open, 4.3% click\n3. Construction News: 26.1% open, 3.9% click\n\n📊 AUDIENCE GROWTH\n- Total Businesses: 767 (+23 this month)\n- New Segments: 1 (Technology)\n- Engagement Improvement: +15% overall\n\n✅ Report saved: monthly-report-2024-10.pdf\n📧 Email sent to stakeholders\n📈 Dashboard updated\n\nReport generation complete.",
+      "intent": "generate_report",
+      "entities": [
+        "report",
+        "monthly",
+        "generate"
+      ],
+      "context": "reporting"
+    },
+    {
+      "input": "what's my system status",
+      "output": "Checking system status...\n\n🖥️ SYSTEM STATUS\n================\n\n✅ Database: Connected (PostgreSQL)\n✅ Email Service: Active (SendGrid)\n✅ AI Agent: Online (Juniper v1.0)\n✅ Vector Store: Connected (Weaviate)\n✅ API Endpoints: 47/47 healthy\n\n📊 PERFORMANCE METRICS\n- Uptime: 99.9%\n- Response Time: 45ms avg\n- Memory Usage: 67%\n- CPU Usage: 23%\n- Storage: 2.3GB used / 10GB total\n\n🔧 RECENT ACTIVITY\n- Last campaign sent: 2 hours ago\n- Last template created: 1 day ago\n- Last audience update: 3 hours ago\n- Last backup: 6 hours ago\n\n✅ All systems operational\n📈 Performance: Excellent\n\nStatus check complete.",
+      "intent": "system_status",
+      "entities": [
+        "system",
+        "status",
+        "health"
+      ],
+      "context": "system_management"
+    }
+  ],
+  "intents": [
+    {
+      "intent": "create_campaign",
+      "keywords": [
+        "create",
+        "new",
+        "campaign",
+        "launch"
+      ]
+    },
+    {
+      "intent": "show_analytics",
+      "keywords": [
+        "show",
+        "analytics",
+        "performance",
+        "stats"
+      ]
+    },
+    {
+      "intent": "optimize_campaign",
+      "keywords": [
+        "optimize",
+        "improve",
+        "enhance",
+        "campaign"
+      ]
+    },
+    {
+      "intent": "segment_audience",
+      "keywords": [
+        "segment",
+        "audience",
+        "group",
+        "categorize"
+      ]
+    },
+    {
+      "intent": "create_template",
+      "keywords": [
+        "create",
+        "template",
+        "email",
+        "design"
+      ]
+    },
+    {
+      "intent": "send_test_email",
+      "keywords": [
+        "send",
+        "test",
+        "email",
+        "sample"
+      ]
+    },
+    {
+      "intent": "analyze_deliverability",
+      "keywords": [
+        "deliverability",
+        "email",
+        "analysis",
+        "spam"
+      ]
+    },
+    {
+      "intent": "schedule_campaign",
+      "keywords": [
+        "schedule",
+        "campaign",
+        "time",
+        "date"
+      ]
+    },
+    {
+      "intent": "show_growth_trends",
+      "keywords": [
+        "growth",
+        "trends",
+        "audience",
+        "analytics"
+      ]
+    },
+    {
+      "intent": "pause_campaigns",
+      "keywords": [
+        "pause",
+        "stop",
+        "campaign",
+        "performance"
+      ]
+    },
+    {
+      "intent": "generate_report",
+      "keywords": [
+        "report",
+        "generate",
+        "monthly",
+        "summary"
+      ]
+    },
+    {
+      "intent": "system_status",
+      "keywords": [
+        "status",
+        "system",
+        "health",
+        "check"
+      ]
+    }
+  ],
+  "entities": [
+    {
+      "entity": "campaign",
+      "patterns": [
+        "campaign",
+        "email campaign",
+        "newsletter"
+      ]
+    },
+    {
+      "entity": "audience",
+      "patterns": [
+        "audience",
+        "segment",
+        "businesses",
+        "contacts"
+      ]
+    },
+    {
+      "entity": "template",
+      "patterns": [
+        "template",
+        "email template",
+        "design"
+      ]
+    },
+    {
+      "entity": "analytics",
+      "patterns": [
+        "analytics",
+        "performance",
+        "metrics",
+        "stats"
+      ]
+    },
+    {
+      "entity": "healthcare",
+      "patterns": [
+        "healthcare",
+        "medical",
+        "health",
+        "wellness"
+      ]
+    },
+    {
+      "entity": "construction",
+      "patterns": [
+        "construction",
+        "trades",
+        "building",
+        "contractor"
+      ]
+    },
+    {
+      "entity": "professional",
+      "patterns": [
+        "professional",
+        "services",
+        "consulting",
+        "legal"
+      ]
+    },
+    {
+      "entity": "retail",
+      "patterns": [
+        "retail",
+        "e-commerce",
+        "store",
+        "shop"
+      ]
+    },
+    {
+      "entity": "technology",
+      "patterns": [
+        "technology",
+        "tech",
+        "software",
+        "IT"
+      ]
+    },
+    {
+      "entity": "performance",
+      "patterns": [
+        "performance",
+        "metrics",
+        "results",
+        "outcomes"
+      ]
+    }
+  ],
+  "responses": [
+    {
+      "intent": "create_campaign",
+      "template": "Creating {campaign_type} campaign...\n\n✅ Campaign created: '{campaign_name}'\n✅ Audience: {audience_count} businesses\n✅ Template: {template_name}\n✅ Scheduled: {schedule_time}\n\nCampaign ID: {campaign_id}\nStatus: {status}\n\nNext: {next_action}?",
+      "variables": [
+        "campaign_type",
+        "campaign_name",
+        "audience_count",
+        "template_name",
+        "schedule_time",
+        "campaign_id",
+        "status",
+        "next_action"
+      ]
+    },
+    {
+      "intent": "show_analytics",
+      "template": "Fetching campaign analytics...\n\n📊 CAMPAIGN PERFORMANCE\n====================\n\n{metrics}\n\n🏆 TOP PERFORMERS\n{top_performers}\n\n📈 TRENDING UP\n{trends}\n\nReady for next command.",
+      "variables": [
+        "metrics",
+        "top_performers",
+        "trends"
+      ]
+    },
+    {
+      "intent": "system_status",
+      "template": "Checking system status...\n\n🖥️ SYSTEM STATUS\n================\n\n{system_health}\n\n📊 PERFORMANCE METRICS\n{performance_metrics}\n\n🔧 RECENT ACTIVITY\n{recent_activity}\n\n✅ All systems operational\n📈 Performance: {performance_status}\n\nStatus check complete.",
+      "variables": [
+        "system_health",
+        "performance_metrics",
+        "recent_activity",
+        "performance_status"
+      ]
+    }
+  ]
+}

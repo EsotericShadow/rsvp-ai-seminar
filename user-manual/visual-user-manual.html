@@ -1,0 +1,1032 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RSVP AI Seminar - Comprehensive Visual Manual</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: {
+                            50: '#f0fdf4',
+                            100: '#dcfce7',
+                            200: '#bbf7d0',
+                            300: '#86efac',
+                            400: '#4ade80',
+                            500: '#22c55e',
+                            600: '#16a34a',
+                            700: '#15803d',
+                            800: '#166534',
+                            900: '#14532d',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        .gradient-bg {
+            background: linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #334155 100%);
+        }
+        .card-hover {
+            transition: all 0.3s ease;
+        }
+        .card-hover:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+        }
+        .step-indicator {
+            position: relative;
+        }
+        .step-indicator::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 100%;
+            width: 100px;
+            height: 2px;
+            background: #e5e7eb;
+            transform: translateY(-50%);
+        }
+        .step-indicator:last-child::after {
+            display: none;
+        }
+        .step-indicator.active::after {
+            background: #22c55e;
+        }
+        .admin-panel {
+            background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
+        }
+        .feature-demo {
+            background: rgba(0, 0, 0, 0.6);
+            backdrop-filter: blur(10px);
+        }
+        .code-block {
+            background: #1a1a1a;
+            border: 1px solid #333;
+            font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+        }
+        .interactive-demo {
+            transition: all 0.3s ease;
+        }
+        .interactive-demo:hover {
+            transform: scale(1.02);
+        }
+    </style>
+</head>
+<body class="gradient-bg min-h-screen">
+    <!-- Header -->
+    <header class="bg-white/10 backdrop-blur-lg border-b border-white/20">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between h-16">
+                <div class="flex items-center space-x-4">
+                    <div class="w-10 h-10 bg-gradient-to-r from-emerald-500 to-teal-500 rounded-lg flex items-center justify-center">
+                        <span class="text-white font-bold text-lg">R</span>
+                    </div>
+                    <h1 class="text-2xl font-bold text-white">RSVP AI Seminar</h1>
+                </div>
+                <nav class="hidden md:flex space-x-8">
+                    <a href="#getting-started" class="text-white/80 hover:text-white transition-colors">Getting Started</a>
+                    <a href="#admin-guide" class="text-white/80 hover:text-white transition-colors">Admin Guide</a>
+                    <a href="#rsvp-guide" class="text-white/80 hover:text-white transition-colors">RSVP Guide</a>
+                    <a href="#troubleshooting" class="text-white/80 hover:text-white transition-colors">Help</a>
+                </nav>
+            </div>
+        </div>
+    </header>
+
+    <!-- Hero Section -->
+    <section class="py-20">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+            <h1 class="text-5xl font-bold text-white mb-6">
+                Complete RSVP AI Seminar Manual
+            </h1>
+            <p class="text-xl text-white/80 mb-8 max-w-4xl mx-auto">
+                Master every feature of the RSVP AI Seminar system with comprehensive guides, 
+                real interface demonstrations, detailed workflows, and advanced configuration options.
+            </p>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-4xl mx-auto mb-8">
+                <div class="bg-white/10 backdrop-blur-lg rounded-xl p-6 border border-white/20">
+                    <div class="text-3xl font-bold text-emerald-400 mb-2">40+</div>
+                    <div class="text-white/80">API Endpoints</div>
+                </div>
+                <div class="bg-white/10 backdrop-blur-lg rounded-xl p-6 border border-white/20">
+                    <div class="text-3xl font-bold text-blue-400 mb-2">8</div>
+                    <div class="text-white/80">Database Models</div>
+                </div>
+                <div class="bg-white/10 backdrop-blur-lg rounded-xl p-6 border border-white/20">
+                    <div class="text-3xl font-bold text-purple-400 mb-2">100%</div>
+                    <div class="text-white/80">Production Ready</div>
+                </div>
+            </div>
+            <div class="flex flex-col sm:flex-row gap-4 justify-center">
+                <button onclick="scrollToSection('admin-guide')" class="bg-gradient-to-r from-emerald-600 to-teal-600 text-white px-8 py-4 rounded-lg font-semibold hover:from-emerald-700 hover:to-teal-700 transition-all duration-200 shadow-lg hover:shadow-xl transform hover:-translate-y-1">
+                    Admin Guide
+                </button>
+                <button onclick="scrollToSection('rsvp-guide')" class="bg-gradient-to-r from-blue-600 to-indigo-600 text-white px-8 py-4 rounded-lg font-semibold hover:from-blue-700 hover:to-indigo-700 transition-all duration-200 shadow-lg hover:shadow-xl transform hover:-translate-y-1">
+                    RSVP Process
+                </button>
+                <button onclick="scrollToSection('advanced-features')" class="border-2 border-white/30 text-white px-8 py-4 rounded-lg font-semibold hover:bg-white/10 transition-all duration-200">
+                    Advanced Features
+                </button>
+            </div>
+        </div>
+    </section>
+
+    <!-- Quick Start Cards -->
+    <section id="getting-started" class="py-16">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <h2 class="text-3xl font-bold text-white mb-12 text-center">Quick Start Guide</h2>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                <!-- Card 1: Admin Login -->
+                <div class="bg-white/10 backdrop-blur-lg rounded-xl p-6 card-hover border border-white/20">
+                    <div class="w-12 h-12 bg-emerald-500/20 rounded-lg flex items-center justify-center mb-4">
+                        <svg class="w-6 h-6 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path>
+                        </svg>
+                    </div>
+                    <h3 class="text-xl font-semibold text-white mb-2">Admin Login</h3>
+                    <p class="text-white/70 mb-4">Access the admin dashboard to manage campaigns and events</p>
+                    <div class="bg-black/40 rounded-lg p-3 mb-4">
+                        <code class="text-emerald-400 text-sm">yoursite.com/admin/login</code>
+                    </div>
+                    <button class="w-full bg-emerald-600 text-white py-2 rounded-lg hover:bg-emerald-700 transition-colors">
+                        Learn More
+                    </button>
+                </div>
+
+                <!-- Card 2: Create Campaign -->
+                <div class="bg-white/10 backdrop-blur-lg rounded-xl p-6 card-hover border border-white/20">
+                    <div class="w-12 h-12 bg-blue-500/20 rounded-lg flex items-center justify-center mb-4">
+                        <svg class="w-6 h-6 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
+                        </svg>
+                    </div>
+                    <h3 class="text-xl font-semibold text-white mb-2">Create Campaign</h3>
+                    <p class="text-white/70 mb-4">Set up email campaigns to invite businesses to events</p>
+                    <div class="space-y-2 text-sm text-white/60">
+                        <div class="flex items-center">
+                            <div class="w-2 h-2 bg-emerald-400 rounded-full mr-2"></div>
+                            Choose audience
+                        </div>
+                        <div class="flex items-center">
+                            <div class="w-2 h-2 bg-emerald-400 rounded-full mr-2"></div>
+                            Design email template
+                        </div>
+                        <div class="flex items-center">
+                            <div class="w-2 h-2 bg-emerald-400 rounded-full mr-2"></div>
+                            Schedule send time
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Card 3: Manage Audience -->
+                <div class="bg-white/10 backdrop-blur-lg rounded-xl p-6 card-hover border border-white/20">
+                    <div class="w-12 h-12 bg-purple-500/20 rounded-lg flex items-center justify-center mb-4">
+                        <svg class="w-6 h-6 text-purple-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path>
+                        </svg>
+                    </div>
+                    <h3 class="text-xl font-semibold text-white mb-2">Manage Audience</h3>
+                    <p class="text-white/70 mb-4">Organize business contacts into targeted groups</p>
+                    <div class="flex flex-wrap gap-2">
+                        <span class="px-2 py-1 bg-emerald-500/20 text-emerald-300 text-xs rounded-full">Healthcare</span>
+                        <span class="px-2 py-1 bg-blue-500/20 text-blue-300 text-xs rounded-full">Food Service</span>
+                        <span class="px-2 py-1 bg-purple-500/20 text-purple-300 text-xs rounded-full">Retail</span>
+                    </div>
+                </div>
+
+                <!-- Card 4: Track Results -->
+                <div class="bg-white/10 backdrop-blur-lg rounded-xl p-6 card-hover border border-white/20">
+                    <div class="w-12 h-12 bg-orange-500/20 rounded-lg flex items-center justify-center mb-4">
+                        <svg class="w-6 h-6 text-orange-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path>
+                        </svg>
+                    </div>
+                    <h3 class="text-xl font-semibold text-white mb-2">Track Results</h3>
+                    <p class="text-white/70 mb-4">Monitor campaign performance and RSVP responses</p>
+                    <div class="grid grid-cols-2 gap-4 text-center">
+                        <div>
+                            <div class="text-2xl font-bold text-emerald-400">85%</div>
+                            <div class="text-xs text-white/60">Open Rate</div>
+                        </div>
+                        <div>
+                            <div class="text-2xl font-bold text-blue-400">42%</div>
+                            <div class="text-xs text-white/60">RSVP Rate</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Admin Guide Section -->
+    <section id="admin-guide" class="py-16">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <h2 class="text-3xl font-bold text-white mb-12 text-center">Complete Admin Features Guide</h2>
+            
+            <!-- Admin Dashboard Overview -->
+            <div class="admin-panel rounded-2xl p-8 mb-12 border border-white/20">
+                <h3 class="text-2xl font-semibold text-white mb-6">Admin Dashboard Overview</h3>
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                    <div class="feature-demo rounded-xl p-6">
+                        <h4 class="text-lg font-semibold text-white mb-4">Campaign Control Center</h4>
+                        <div class="space-y-4">
+                            <div class="bg-black/40 rounded-lg p-4">
+                                <div class="flex items-center justify-between mb-3">
+                                    <span class="text-white font-medium">Campaign Status</span>
+                                    <span class="px-2 py-1 bg-emerald-500/20 text-emerald-300 text-xs rounded-full">Active</span>
+                                </div>
+                                <div class="grid grid-cols-4 gap-4 text-center">
+                                    <div>
+                                        <div class="text-xl font-bold text-emerald-400">12</div>
+                                        <div class="text-xs text-white/60">Total</div>
+                                    </div>
+                                    <div>
+                                        <div class="text-xl font-bold text-blue-400">8</div>
+                                        <div class="text-xs text-white/60">Active</div>
+                                    </div>
+                                    <div>
+                                        <div class="text-xl font-bold text-purple-400">3</div>
+                                        <div class="text-xs text-white/60">Draft</div>
+                                    </div>
+                                    <div>
+                                        <div class="text-xl font-bold text-orange-400">1</div>
+                                        <div class="text-xs text-white/60">Paused</div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="bg-black/40 rounded-lg p-4">
+                                <div class="text-white font-medium mb-2">Email Performance</div>
+                                <div class="space-y-2">
+                                    <div class="flex justify-between text-sm">
+                                        <span class="text-white/70">Total Sent</span>
+                                        <span class="text-white">2,847</span>
+                                    </div>
+                                    <div class="flex justify-between text-sm">
+                                        <span class="text-white/70">Open Rate</span>
+                                        <span class="text-emerald-400">87.3%</span>
+                                    </div>
+                                    <div class="flex justify-between text-sm">
+                                        <span class="text-white/70">Click Rate</span>
+                                        <span class="text-blue-400">23.1%</span>
+                                    </div>
+                                    <div class="flex justify-between text-sm">
+                                        <span class="text-white/70">RSVP Rate</span>
+                                        <span class="text-purple-400">15.7%</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="feature-demo rounded-xl p-6">
+                        <h4 class="text-lg font-semibold text-white mb-4">System Configuration</h4>
+                        <div class="space-y-4">
+                            <div class="bg-black/40 rounded-lg p-4">
+                                <div class="text-white font-medium mb-3">Environment Status</div>
+                                <div class="space-y-2">
+                                    <div class="flex items-center justify-between">
+                                        <span class="text-white/70 text-sm">Resend API</span>
+                                        <span class="px-2 py-1 bg-emerald-500/20 text-emerald-300 text-xs rounded-full">Connected</span>
+                                    </div>
+                                    <div class="flex items-center justify-between">
+                                        <span class="text-white/70 text-sm">LeadMine API</span>
+                                        <span class="px-2 py-1 bg-emerald-500/20 text-emerald-300 text-xs rounded-full">Connected</span>
+                                    </div>
+                                    <div class="flex items-center justify-between">
+                                        <span class="text-white/70 text-sm">Database</span>
+                                        <span class="px-2 py-1 bg-emerald-500/20 text-emerald-300 text-xs rounded-full">Connected</span>
+                                    </div>
+                                    <div class="flex items-center justify-between">
+                                        <span class="text-white/70 text-sm">Cron Jobs</span>
+                                        <span class="px-2 py-1 bg-emerald-500/20 text-emerald-300 text-xs rounded-full">Active</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="bg-black/40 rounded-lg p-4">
+                                <div class="text-white font-medium mb-2">Default Settings</div>
+                                <div class="space-y-1 text-sm text-white/70">
+                                    <div>Batch Size: 50 emails</div>
+                                    <div>Min Hours Between: 72h</div>
+                                    <div>From Email: Evergreen AI</div>
+                                    <div>Link Base: rsvp-ai-seminar.vercel.app</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Detailed Campaign Creation Process -->
+            <div class="admin-panel rounded-2xl p-8 mb-12 border border-white/20">
+                <h3 class="text-2xl font-semibold text-white mb-8">Complete Campaign Creation Workflow</h3>
+                
+                <!-- Step 1: Audience Management -->
+                <div class="mb-12">
+                    <h4 class="text-xl font-semibold text-white mb-6">Step 1: Audience Group Management</h4>
+                    <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                        <div class="feature-demo rounded-xl p-6">
+                            <h5 class="text-lg font-semibold text-white mb-4">Create Audience Group</h5>
+                            <div class="space-y-4">
+                                <div class="bg-black/40 rounded-lg p-4">
+                                    <div class="text-white font-medium mb-3">Group Configuration</div>
+                                    <div class="space-y-3">
+                                        <div>
+                                            <label class="text-white/70 text-sm block mb-1">Group Name</label>
+                                            <input class="w-full px-3 py-2 bg-white/10 border border-white/20 rounded text-white placeholder-white/50 text-sm" placeholder="Healthcare & Wellness" />
+                                        </div>
+                                        <div>
+                                            <label class="text-white/70 text-sm block mb-1">Description</label>
+                                            <textarea class="w-full px-3 py-2 bg-white/10 border border-white/20 rounded text-white placeholder-white/50 text-sm h-20" placeholder="Healthcare providers, clinics, and wellness businesses"></textarea>
+                                        </div>
+                                        <div>
+                                            <label class="text-white/70 text-sm block mb-1">Color</label>
+                                            <div class="flex space-x-2">
+                                                <div class="w-8 h-8 bg-emerald-500 rounded cursor-pointer border-2 border-white"></div>
+                                                <div class="w-8 h-8 bg-blue-500 rounded cursor-pointer"></div>
+                                                <div class="w-8 h-8 bg-purple-500 rounded cursor-pointer"></div>
+                                                <div class="w-8 h-8 bg-orange-500 rounded cursor-pointer"></div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <button class="w-full bg-emerald-600 text-white py-2 rounded-lg hover:bg-emerald-700 transition-colors">
+                                    Create Group
+                                </button>
+                            </div>
+                        </div>
+                        
+                        <div class="feature-demo rounded-xl p-6">
+                            <h5 class="text-lg font-semibold text-white mb-4">Add Businesses to Group</h5>
+                            <div class="space-y-4">
+                                <div class="bg-black/40 rounded-lg p-4">
+                                    <div class="text-white font-medium mb-3">Business Directory</div>
+                                    <div class="space-y-2 max-h-48 overflow-y-auto">
+                                        <div class="flex items-center justify-between p-2 bg-white/5 rounded">
+                                            <div>
+                                                <div class="text-white text-sm font-medium">Terrace Medical Clinic</div>
+                                                <div class="text-white/60 text-xs">terrace@medical.com</div>
+                                            </div>
+                                            <button class="px-2 py-1 bg-emerald-600 text-white text-xs rounded hover:bg-emerald-700">Add</button>
+                                        </div>
+                                        <div class="flex items-center justify-between p-2 bg-white/5 rounded">
+                                            <div>
+                                                <div class="text-white text-sm font-medium">Northern Health Center</div>
+                                                <div class="text-white/60 text-xs">info@northernhealth.ca</div>
+                                            </div>
+                                            <button class="px-2 py-1 bg-emerald-600 text-white text-xs rounded hover:bg-emerald-700">Add</button>
+                                        </div>
+                                        <div class="flex items-center justify-between p-2 bg-white/5 rounded">
+                                            <div>
+                                                <div class="text-white text-sm font-medium">Wellness Plus</div>
+                                                <div class="text-white/60 text-xs">contact@wellnessplus.bc.ca</div>
+                                            </div>
+                                            <button class="px-2 py-1 bg-emerald-600 text-white text-xs rounded hover:bg-emerald-700">Add</button>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="text-center">
+                                    <span class="text-white/60 text-sm">3 businesses selected</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Step 2: Email Template Creation -->
+                <div class="mb-12">
+                    <h4 class="text-xl font-semibold text-white mb-6">Step 2: Advanced Email Template Editor</h4>
+                    <div class="feature-demo rounded-xl p-6">
+                        <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                            <div>
+                                <h5 class="text-lg font-semibold text-white mb-4">Template Configuration</h5>
+                                <div class="space-y-4">
+                                    <div>
+                                        <label class="text-white/70 text-sm block mb-1">Template Name</label>
+                                        <input class="w-full px-3 py-2 bg-white/10 border border-white/20 rounded text-white placeholder-white/50 text-sm" placeholder="AI Seminar Invitation" />
+                                    </div>
+                                    <div>
+                                        <label class="text-white/70 text-sm block mb-1">Subject Line</label>
+                                        <input class="w-full px-3 py-2 bg-white/10 border border-white/20 rounded text-white placeholder-white/50 text-sm" placeholder="Join us for an AI Seminar - {{business_name}}" />
+                                    </div>
+                                    <div>
+                                        <label class="text-white/70 text-sm block mb-1">From Name</label>
+                                        <input class="w-full px-3 py-2 bg-white/10 border border-white/20 rounded text-white placeholder-white/50 text-sm" placeholder="Gabriel Lacroix" />
+                                    </div>
+                                    <div>
+                                        <label class="text-white/70 text-sm block mb-1">From Email</label>
+                                        <input class="w-full px-3 py-2 bg-white/10 border border-white/20 rounded text-white placeholder-white/50 text-sm" placeholder="gabriel@evergreenwebsolutions.ca" />
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div>
+                                <h5 class="text-lg font-semibold text-white mb-4">Template Variables</h5>
+                                <div class="bg-black/40 rounded-lg p-4">
+                                    <div class="text-white font-medium mb-3">Available Variables</div>
+                                    <div class="grid grid-cols-2 gap-2 text-sm">
+                                        <div class="code-block px-2 py-1 rounded text-emerald-400">{{business_name}}</div>
+                                        <div class="code-block px-2 py-1 rounded text-emerald-400">{{contact_person}}</div>
+                                        <div class="code-block px-2 py-1 rounded text-emerald-400">{{event_date}}</div>
+                                        <div class="code-block px-2 py-1 rounded text-emerald-400">{{event_time}}</div>
+                                        <div class="code-block px-2 py-1 rounded text-emerald-400">{{event_location}}</div>
+                                        <div class="code-block px-2 py-1 rounded text-emerald-400">{{event_cost}}</div>
+                                        <div class="code-block px-2 py-1 rounded text-emerald-400">{{rsvp_link}}</div>
+                                        <div class="code-block px-2 py-1 rounded text-emerald-400">{{unsubscribe_link}}</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="mt-6">
+                            <h5 class="text-lg font-semibold text-white mb-4">Email Content Editor</h5>
+                            <div class="bg-white rounded-lg p-4">
+                                <div class="border border-gray-200 rounded-lg p-4 h-64 overflow-y-auto">
+                                    <div class="prose prose-sm max-w-none">
+                                        <h3 class="text-lg font-semibold text-gray-900 mb-2">Dear {{contact_person}},</h3>
+                                        <p class="text-gray-700 mb-4">I hope this email finds you well. I'm excited to invite {{business_name}} to our upcoming AI seminar.</p>
+                                        
+                                        <div class="bg-emerald-50 border border-emerald-200 rounded-lg p-4 mb-4">
+                                            <h4 class="font-semibold text-emerald-900 mb-2">Event Details:</h4>
+                                            <ul class="text-emerald-800 text-sm space-y-1">
+                                                <li>Date: {{event_date}}</li>
+                                                <li>Time: {{event_time}}</li>
+                                                <li>Location: {{event_location}}</li>
+                                                <li>Cost: {{event_cost}}</li>
+                                            </ul>
+                                        </div>
+                                        
+                                        <p class="text-gray-700 mb-4">What You'll Learn:</p>
+                                        <ul class="text-gray-700 text-sm space-y-1 mb-4">
+                                            <li>• Practical AI tools for Northern BC businesses</li>
+                                            <li>• Real-world applications and case studies</li>
+                                            <li>• Hands-on demonstrations</li>
+                                            <li>• Q&A session with AI experts</li>
+                                        </ul>
+                                        
+                                        <div class="text-center mb-4">
+                                            <a href="{{rsvp_link}}" class="inline-block bg-emerald-600 text-white px-6 py-3 rounded-lg font-semibold hover:bg-emerald-700 transition-colors">
+                                                Reserve Your Seat
+                                            </a>
+                                        </div>
+                                        
+                                        <p class="text-gray-700 mb-4">Looking forward to seeing you there!</p>
+                                        <p class="text-gray-700">Best regards,<br>Gabriel Lacroix<br>AI Solutions Specialist<br>Evergreen Web Solutions</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Step 3: Campaign Creation and Scheduling -->
+                <div class="mb-12">
+                    <h4 class="text-xl font-semibold text-white mb-6">Step 3: Campaign Creation & Advanced Scheduling</h4>
+                    <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                        <div class="feature-demo rounded-xl p-6">
+                            <h5 class="text-lg font-semibold text-white mb-4">Campaign Configuration</h5>
+                            <div class="space-y-4">
+                                <div>
+                                    <label class="text-white/70 text-sm block mb-1">Campaign Name</label>
+                                    <input class="w-full px-3 py-2 bg-white/10 border border-white/20 rounded text-white placeholder-white/50 text-sm" placeholder="AI Seminar - October 2025" />
+                                </div>
+                                <div>
+                                    <label class="text-white/70 text-sm block mb-1">Description</label>
+                                    <textarea class="w-full px-3 py-2 bg-white/10 border border-white/20 rounded text-white placeholder-white/50 text-sm h-20" placeholder="Invitation campaign for AI seminar targeting healthcare businesses"></textarea>
+                                </div>
+                                <div>
+                                    <label class="text-white/70 text-sm block mb-1">Status</label>
+                                    <select class="w-full px-3 py-2 bg-white/10 border border-white/20 rounded text-white text-sm">
+                                        <option>Draft</option>
+                                        <option>Scheduled</option>
+                                        <option>Active</option>
+                                        <option>Paused</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="feature-demo rounded-xl p-6">
+                            <h5 class="text-lg font-semibold text-white mb-4">Advanced Scheduling Options</h5>
+                            <div class="space-y-4">
+                                <div>
+                                    <label class="text-white/70 text-sm block mb-1">Send Time</label>
+                                    <div class="space-y-2">
+                                        <label class="flex items-center">
+                                            <input type="radio" name="sendTime" class="mr-2 text-emerald-600" checked />
+                                            <span class="text-white text-sm">Immediate</span>
+                                        </label>
+                                        <label class="flex items-center">
+                                            <input type="radio" name="sendTime" class="mr-2 text-emerald-600" />
+                                            <span class="text-white text-sm">Scheduled</span>
+                                        </label>
+                                        <label class="flex items-center">
+                                            <input type="radio" name="sendTime" class="mr-2 text-emerald-600" />
+                                            <span class="text-white text-sm">Smart Window</span>
+                                        </label>
+                                    </div>
+                                </div>
+                                <div>
+                                    <label class="text-white/70 text-sm block mb-1">Throttling</label>
+                                    <select class="w-full px-3 py-2 bg-white/10 border border-white/20 rounded text-white text-sm">
+                                        <option>60 emails/minute (Recommended)</option>
+                                        <option>30 emails/minute (Conservative)</option>
+                                        <option>120 emails/minute (Aggressive)</option>
+                                    </select>
+                                </div>
+                                <div>
+                                    <label class="text-white/70 text-sm block mb-1">Batch Size</label>
+                                    <input type="number" class="w-full px-3 py-2 bg-white/10 border border-white/20 rounded text-white text-sm" placeholder="50" />
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- RSVP Guide Section -->
+    <section id="rsvp-guide" class="py-16">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <h2 class="text-3xl font-bold text-white mb-12 text-center">RSVP Process Guide</h2>
+            
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                <!-- RSVP Form Steps -->
+                <div class="bg-white/5 backdrop-blur-lg rounded-2xl p-8 border border-white/10">
+                    <h3 class="text-2xl font-semibold text-white mb-6">Multi-Step RSVP Form</h3>
+                    
+                    <div class="space-y-6">
+                        <!-- Step 1 -->
+                        <div class="flex items-start space-x-4">
+                            <div class="w-8 h-8 bg-emerald-600 rounded-full flex items-center justify-center text-white font-bold text-sm">1</div>
+                            <div class="flex-1">
+                                <h4 class="text-lg font-semibold text-white mb-2">Contact Information</h4>
+                                <p class="text-white/70 mb-3">Enter your basic details</p>
+                                <div class="bg-black/40 rounded-lg p-3 space-y-2">
+                                    <div class="flex space-x-2">
+                                        <input class="flex-1 px-3 py-2 bg-white/10 border border-white/20 rounded text-white placeholder-white/50 text-sm" placeholder="First Name" />
+                                        <input class="flex-1 px-3 py-2 bg-white/10 border border-white/20 rounded text-white placeholder-white/50 text-sm" placeholder="Last Name" />
+                                    </div>
+                                    <input class="w-full px-3 py-2 bg-white/10 border border-white/20 rounded text-white placeholder-white/50 text-sm" placeholder="Email Address" />
+                                    <div class="flex space-x-1">
+                                        <input class="w-16 px-2 py-2 bg-white/10 border border-white/20 rounded text-white text-center text-sm" placeholder="555" />
+                                        <span class="text-white/50 self-center">-</span>
+                                        <input class="w-16 px-2 py-2 bg-white/10 border border-white/20 rounded text-white text-center text-sm" placeholder="123" />
+                                        <span class="text-white/50 self-center">-</span>
+                                        <input class="w-20 px-2 py-2 bg-white/10 border border-white/20 rounded text-white text-center text-sm" placeholder="4567" />
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Step 2 -->
+                        <div class="flex items-start space-x-4">
+                            <div class="w-8 h-8 bg-emerald-600 rounded-full flex items-center justify-center text-white font-bold text-sm">2</div>
+                            <div class="flex-1">
+                                <h4 class="text-lg font-semibold text-white mb-2">Attendance Details</h4>
+                                <p class="text-white/70 mb-3">Confirm your attendance</p>
+                                <div class="bg-black/40 rounded-lg p-3 space-y-2">
+                                    <label class="flex items-center p-2 border border-white/20 rounded hover:bg-white/5 cursor-pointer">
+                                        <input type="radio" class="mr-3 text-emerald-600" checked />
+                                        <span class="text-white text-sm">Yes, I'll be there</span>
+                                    </label>
+                                    <label class="flex items-center p-2 border border-white/20 rounded hover:bg-white/5 cursor-pointer">
+                                        <input type="radio" class="mr-3 text-emerald-600" />
+                                        <span class="text-white text-sm">Maybe</span>
+                                    </label>
+                                    <label class="flex items-center p-2 border border-white/20 rounded hover:bg-white/5 cursor-pointer">
+                                        <input type="radio" class="mr-3 text-emerald-600" />
+                                        <span class="text-white text-sm">No, I can't make it</span>
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Step 3 -->
+                        <div class="flex items-start space-x-4">
+                            <div class="w-8 h-8 bg-emerald-600 rounded-full flex items-center justify-center text-white font-bold text-sm">3</div>
+                            <div class="flex-1">
+                                <h4 class="text-lg font-semibold text-white mb-2">Additional Info</h4>
+                                <p class="text-white/70 mb-3">Dietary preferences and accessibility needs</p>
+                                <div class="bg-black/40 rounded-lg p-3">
+                                    <select class="w-full px-3 py-2 bg-white/10 border border-white/20 rounded text-white text-sm">
+                                        <option class="bg-gray-800">No dietary restrictions</option>
+                                        <option class="bg-gray-800">Vegetarian</option>
+                                        <option class="bg-gray-800">Vegan</option>
+                                        <option class="bg-gray-800">Gluten-free</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Success State -->
+                <div class="bg-white/5 backdrop-blur-lg rounded-2xl p-8 border border-white/10">
+                    <h3 class="text-2xl font-semibold text-white mb-6">Confirmation & Next Steps</h3>
+                    
+                    <div class="text-center">
+                        <div class="w-20 h-20 bg-emerald-500/20 rounded-full flex items-center justify-center mx-auto mb-6">
+                            <svg class="w-10 h-10 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                            </svg>
+                        </div>
+                        <h4 class="text-xl font-semibold text-white mb-2">You're all set!</h4>
+                        <p class="text-white/70 mb-6">We've reserved your seat for the AI in Northern BC Information Session.</p>
+                        
+                        <div class="bg-black/40 rounded-lg p-4 space-y-3 text-left">
+                            <div class="flex items-center text-white/80">
+                                <svg class="w-5 h-5 text-emerald-400 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 4.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path>
+                                </svg>
+                                Confirmation email sent
+                            </div>
+                            <div class="flex items-center text-white/80">
+                                <svg class="w-5 h-5 text-emerald-400 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+                                </svg>
+                                Calendar invite added
+                            </div>
+                            <div class="flex items-center text-white/80">
+                                <svg class="w-5 h-5 text-emerald-400 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                                </svg>
+                                Event reminders scheduled
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Troubleshooting Section -->
+    <section id="troubleshooting" class="py-16">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <h2 class="text-3xl font-bold text-white mb-12 text-center">Troubleshooting & Help</h2>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                <!-- Common Issues -->
+                <div class="bg-white/5 backdrop-blur-lg rounded-xl p-6 border border-white/10">
+                    <div class="w-12 h-12 bg-red-500/20 rounded-lg flex items-center justify-center mb-4">
+                        <svg class="w-6 h-6 text-red-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.732 16.5c-.77.833.192 2.5 1.732 2.5z"></path>
+                        </svg>
+                    </div>
+                    <h3 class="text-xl font-semibold text-white mb-2">Common Issues</h3>
+                    <ul class="space-y-2 text-white/70 text-sm">
+                        <li>• Can't access admin panel</li>
+                        <li>• Emails not sending</li>
+                        <li>• RSVP form not working</li>
+                        <li>• Missing business contacts</li>
+                    </ul>
+                </div>
+
+                <!-- Contact Support -->
+                <div class="bg-white/5 backdrop-blur-lg rounded-xl p-6 border border-white/10">
+                    <div class="w-12 h-12 bg-blue-500/20 rounded-lg flex items-center justify-center mb-4">
+                        <svg class="w-6 h-6 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18.364 5.636l-3.536 3.536m0 5.656l3.536 3.536M9.172 9.172L5.636 5.636m3.536 9.192L5.636 18.364M12 2.25a9.75 9.75 0 100 19.5 9.75 9.75 0 000-19.5z"></path>
+                        </svg>
+                    </div>
+                    <h3 class="text-xl font-semibold text-white mb-2">Get Help</h3>
+                    <p class="text-white/70 mb-4">Need assistance? We're here to help.</p>
+                    <button class="w-full bg-blue-600 text-white py-2 rounded-lg hover:bg-blue-700 transition-colors">
+                        Contact Support
+                    </button>
+                </div>
+
+                <!-- FAQ -->
+                <div class="bg-white/5 backdrop-blur-lg rounded-xl p-6 border border-white/10">
+                    <div class="w-12 h-12 bg-purple-500/20 rounded-lg flex items-center justify-center mb-4">
+                        <svg class="w-6 h-6 text-purple-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                        </svg>
+                    </div>
+                    <h3 class="text-xl font-semibold text-white mb-2">FAQ</h3>
+                    <p class="text-white/70 mb-4">Find answers to common questions.</p>
+                    <button class="w-full bg-purple-600 text-white py-2 rounded-lg hover:bg-purple-700 transition-colors">
+                        View FAQ
+                    </button>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="bg-black/20 backdrop-blur-lg border-t border-white/10 py-12">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center">
+                <div class="flex items-center justify-center space-x-4 mb-4">
+                    <div class="w-10 h-10 bg-gradient-to-r from-emerald-500 to-teal-500 rounded-lg flex items-center justify-center">
+                        <span class="text-white font-bold text-lg">R</span>
+                    </div>
+                    <h3 class="text-2xl font-bold text-white">RSVP AI Seminar</h3>
+                </div>
+                <p class="text-white/60 mb-6">Complete event management solution for AI seminars and business events</p>
+                <div class="flex justify-center space-x-6">
+                    <a href="#" class="text-white/60 hover:text-white transition-colors">Privacy Policy</a>
+                    <a href="#" class="text-white/60 hover:text-white transition-colors">Terms of Service</a>
+                    <a href="#" class="text-white/60 hover:text-white transition-colors">Contact</a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Advanced Features Section -->
+    <section id="advanced-features" class="py-16">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <h2 class="text-3xl font-bold text-white mb-12 text-center">Advanced Features & Technical Details</h2>
+            
+            <!-- API Endpoints -->
+            <div class="admin-panel rounded-2xl p-8 mb-12 border border-white/20">
+                <h3 class="text-2xl font-semibold text-white mb-6">API Endpoints Reference</h3>
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                    <div class="feature-demo rounded-xl p-6">
+                        <h4 class="text-lg font-semibold text-white mb-4">Campaign Management APIs</h4>
+                        <div class="space-y-3">
+                            <div class="code-block rounded-lg p-3">
+                                <div class="flex items-center justify-between mb-2">
+                                    <span class="text-emerald-400 font-mono text-sm">POST</span>
+                                    <span class="text-white/70 text-xs">/api/admin/campaign/campaigns</span>
+                                </div>
+                                <div class="text-white/60 text-xs">Create new campaign</div>
+                            </div>
+                            <div class="code-block rounded-lg p-3">
+                                <div class="flex items-center justify-between mb-2">
+                                    <span class="text-blue-400 font-mono text-sm">GET</span>
+                                    <span class="text-white/70 text-xs">/api/admin/campaign/campaigns</span>
+                                </div>
+                                <div class="text-white/60 text-xs">List all campaigns</div>
+                            </div>
+                            <div class="code-block rounded-lg p-3">
+                                <div class="flex items-center justify-between mb-2">
+                                    <span class="text-purple-400 font-mono text-sm">PUT</span>
+                                    <span class="text-white/70 text-xs">/api/admin/campaign/campaigns/[id]</span>
+                                </div>
+                                <div class="text-white/60 text-xs">Update campaign</div>
+                            </div>
+                            <div class="code-block rounded-lg p-3">
+                                <div class="flex items-center justify-between mb-2">
+                                    <span class="text-orange-400 font-mono text-sm">DELETE</span>
+                                    <span class="text-white/70 text-xs">/api/admin/campaign/campaigns/[id]</span>
+                                </div>
+                                <div class="text-white/60 text-xs">Delete campaign</div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="feature-demo rounded-xl p-6">
+                        <h4 class="text-lg font-semibold text-white mb-4">Email & RSVP APIs</h4>
+                        <div class="space-y-3">
+                            <div class="code-block rounded-lg p-3">
+                                <div class="flex items-center justify-between mb-2">
+                                    <span class="text-emerald-400 font-mono text-sm">POST</span>
+                                    <span class="text-white/70 text-xs">/api/rsvp</span>
+                                </div>
+                                <div class="text-white/60 text-xs">Submit RSVP form</div>
+                            </div>
+                            <div class="code-block rounded-lg p-3">
+                                <div class="flex items-center justify-between mb-2">
+                                    <span class="text-blue-400 font-mono text-sm">GET</span>
+                                    <span class="text-white/70 text-xs">/api/track/visit</span>
+                                </div>
+                                <div class="text-white/60 text-xs">Track page visits</div>
+                            </div>
+                            <div class="code-block rounded-lg p-3">
+                                <div class="flex items-center justify-between mb-2">
+                                    <span class="text-purple-400 font-mono text-sm">POST</span>
+                                    <span class="text-white/70 text-xs">/api/cron/abcd-monitor</span>
+                                </div>
+                                <div class="text-white/60 text-xs">Cron job monitoring</div>
+                            </div>
+                            <div class="code-block rounded-lg p-3">
+                                <div class="flex items-center justify-between mb-2">
+                                    <span class="text-orange-400 font-mono text-sm">GET</span>
+                                    <span class="text-white/70 text-xs">/api/unsubscribe</span>
+                                </div>
+                                <div class="text-white/60 text-xs">Handle unsubscribes</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Database Schema -->
+            <div class="admin-panel rounded-2xl p-8 mb-12 border border-white/20">
+                <h3 class="text-2xl font-semibold text-white mb-6">Database Schema Overview</h3>
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                    <div class="feature-demo rounded-xl p-6">
+                        <h4 class="text-lg font-semibold text-white mb-4">Core Models</h4>
+                        <div class="space-y-3">
+                            <div class="bg-black/40 rounded-lg p-3">
+                                <div class="text-white font-medium mb-2">Campaign</div>
+                                <div class="text-white/60 text-xs space-y-1">
+                                    <div>• id: String (Primary Key)</div>
+                                    <div>• name: String</div>
+                                    <div>• description: String?</div>
+                                    <div>• status: CampaignStatus</div>
+                                    <div>• createdAt: DateTime</div>
+                                    <div>• updatedAt: DateTime</div>
+                                </div>
+                            </div>
+                            <div class="bg-black/40 rounded-lg p-3">
+                                <div class="text-white font-medium mb-2">RSVP</div>
+                                <div class="text-white/60 text-xs space-y-1">
+                                    <div>• id: String (Primary Key)</div>
+                                    <div>• firstName: String</div>
+                                    <div>• lastName: String</div>
+                                    <div>• email: String</div>
+                                    <div>• phone: String?</div>
+                                    <div>• attendanceStatus: String</div>
+                                    <div>• attendeeCount: Int</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="feature-demo rounded-xl p-6">
+                        <h4 class="text-lg font-semibold text-white mb-4">Relationship Models</h4>
+                        <div class="space-y-3">
+                            <div class="bg-black/40 rounded-lg p-3">
+                                <div class="text-white font-medium mb-2">AudienceGroup</div>
+                                <div class="text-white/60 text-xs space-y-1">
+                                    <div>• id: String (Primary Key)</div>
+                                    <div>• name: String</div>
+                                    <div>• description: String?</div>
+                                    <div>• color: String?</div>
+                                    <div>• members: AudienceMember[]</div>
+                                </div>
+                            </div>
+                            <div class="bg-black/40 rounded-lg p-3">
+                                <div class="text-white font-medium mb-2">CampaignSchedule</div>
+                                <div class="text-white/60 text-xs space-y-1">
+                                    <div>• id: String (Primary Key)</div>
+                                    <div>• campaignId: String (FK)</div>
+                                    <div>• templateId: String (FK)</div>
+                                    <div>• groupId: String (FK)</div>
+                                    <div>• scheduledFor: DateTime?</div>
+                                    <div>• status: CampaignSendStatus</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Security & Configuration -->
+            <div class="admin-panel rounded-2xl p-8 mb-12 border border-white/20">
+                <h3 class="text-2xl font-semibold text-white mb-6">Security & Configuration</h3>
+                <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                    <div class="feature-demo rounded-xl p-6">
+                        <h4 class="text-lg font-semibold text-white mb-4">Environment Variables</h4>
+                        <div class="space-y-2 text-sm">
+                            <div class="code-block px-2 py-1 rounded text-emerald-400">DATABASE_URL</div>
+                            <div class="code-block px-2 py-1 rounded text-emerald-400">RESEND_API_KEY</div>
+                            <div class="code-block px-2 py-1 rounded text-emerald-400">LEADMINE_API_KEY</div>
+                            <div class="code-block px-2 py-1 rounded text-emerald-400">CAMPAIGN_CRON_SECRET</div>
+                            <div class="code-block px-2 py-1 rounded text-emerald-400">ADMIN_SESSION_SECRET</div>
+                        </div>
+                    </div>
+                    
+                    <div class="feature-demo rounded-xl p-6">
+                        <h4 class="text-lg font-semibold text-white mb-4">Security Features</h4>
+                        <div class="space-y-2 text-sm text-white/70">
+                            <div>• JWT-based admin authentication</div>
+                            <div>• CSRF protection</div>
+                            <div>• Rate limiting on APIs</div>
+                            <div>• Input validation with Zod</div>
+                            <div>• SQL injection prevention</div>
+                            <div>• XSS protection</div>
+                        </div>
+                    </div>
+                    
+                    <div class="feature-demo rounded-xl p-6">
+                        <h4 class="text-lg font-semibold text-white mb-4">Performance</h4>
+                        <div class="space-y-2 text-sm text-white/70">
+                            <div>• Database connection pooling</div>
+                            <div>• Email throttling (60/min)</div>
+                            <div>• Caching strategies</div>
+                            <div>• Optimized queries</div>
+                            <div>• Background job processing</div>
+                            <div>• CDN integration</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <script>
+        // Smooth scrolling for navigation links
+        function scrollToSection(sectionId) {
+            const target = document.getElementById(sectionId);
+            if (target) {
+                target.scrollIntoView({
+                    behavior: 'smooth',
+                    block: 'start'
+                });
+            }
+        }
+
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'start'
+                    });
+                }
+            });
+        });
+
+        // Add hover effects to cards
+        document.querySelectorAll('.card-hover').forEach(card => {
+            card.addEventListener('mouseenter', function() {
+                this.style.transform = 'translateY(-4px)';
+            });
+            card.addEventListener('mouseleave', function() {
+                this.style.transform = 'translateY(0)';
+            });
+        });
+
+        // Interactive demo functionality
+        document.querySelectorAll('.interactive-demo').forEach(demo => {
+            demo.addEventListener('click', function() {
+                this.style.transform = 'scale(1.05)';
+                setTimeout(() => {
+                    this.style.transform = 'scale(1.02)';
+                }, 200);
+            });
+        });
+
+        // Code block copy functionality
+        document.querySelectorAll('.code-block').forEach(block => {
+            block.addEventListener('click', function() {
+                const text = this.textContent;
+                navigator.clipboard.writeText(text).then(() => {
+                    const originalText = this.textContent;
+                    this.textContent = 'Copied!';
+                    this.style.backgroundColor = '#22c55e';
+                    setTimeout(() => {
+                        this.textContent = originalText;
+                        this.style.backgroundColor = '#1a1a1a';
+                    }, 1000);
+                });
+            });
+        });
+
+        // Form validation simulation
+        document.querySelectorAll('input, textarea, select').forEach(input => {
+            input.addEventListener('blur', function() {
+                if (this.value.trim() === '') {
+                    this.style.borderColor = '#ef4444';
+                } else {
+                    this.style.borderColor = '#22c55e';
+                }
+            });
+        });
+
+        // Animate counters
+        function animateCounter(element, target, duration = 2000) {
+            let start = 0;
+            const increment = target / (duration / 16);
+            const timer = setInterval(() => {
+                start += increment;
+                element.textContent = Math.floor(start);
+                if (start >= target) {
+                    element.textContent = target;
+                    clearInterval(timer);
+                }
+            }, 16);
+        }
+
+        // Intersection Observer for animations
+        const observerOptions = {
+            threshold: 0.1,
+            rootMargin: '0px 0px -50px 0px'
+        };
+
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('animate-fade-in-up');
+                }
+            });
+        }, observerOptions);
+
+        // Observe all feature demos
+        document.querySelectorAll('.feature-demo, .admin-panel').forEach(el => {
+            observer.observe(el);
+        });
+    </script>
+</body>
+</html>

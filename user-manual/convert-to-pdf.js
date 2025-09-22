@@ -79,3 +79,4 @@ console.log('✅ PDF-ready HTML generated!');
 console.log('📄 Open user-manual-pdf.html in your browser');
 console.log('🖨️ Use Ctrl+P (Cmd+P on Mac) and select "Save as PDF"');
 console.log('📱 The PDF will be mobile-friendly and properly formatted');
+
