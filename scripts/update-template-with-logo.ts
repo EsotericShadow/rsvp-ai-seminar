@@ -1,11 +1,22 @@
 import { PrismaClient } from '@prisma/client'
-import { Resend } from 'resend'
 
 const prisma = new PrismaClient()
-const resend = new Resend(process.env.RESEND_API_KEY)
 
-// Official email template using your exact HTML
-const OFFICIAL_EMAIL_TEMPLATE = `<!DOCTYPE html>
+async function updateTemplateWithLogo() {
+  console.log('🎨 Updating template to use actual Evergreen logo...')
+
+  try {
+    // Find the official template
+    const template = await prisma.campaignTemplate.findFirst({
+      where: { meta: { path: ['official'], equals: true } }
+    })
+
+    if (!template) {
+      throw new Error('Official template not found')
+    }
+
+    // Updated HTML template with actual logo
+    const updatedHtmlTemplate = `<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="utf-8" />
@@ -219,171 +230,40 @@ const OFFICIAL_EMAIL_TEMPLATE = `<!DOCTYPE html>
 </body>
 </html>`
 
-// Text version of the email
-const OFFICIAL_TEXT_TEMPLATE = `{{subject}}
-
-{{global_hero_title}}
-{{global_hero_message}}
-
-{{greeting_title}}
-
-{{main_content_title}}
-{{main_content_body}}
-
-{{button_text}}: {{button_link}}
-
-{{global_event_title}}
-Date: {{global_event_date}}
-Time: {{global_event_time}}
-Location: {{global_event_location}}
-Cost: {{global_event_cost}}
-Includes: {{global_event_includes}}
-
-{{additional_info_title}}
-{{additional_info_body}}
-
-{{global_signature_name}}
-{{global_signature_title}}
-{{global_signature_company}}
-{{global_signature_location}}
-
-{{closing_title}}
-{{closing_message}}
-
-© 2025 Gabriel Lacroix - Evergreen Web Solutions, Terrace BC
-
-LinkedIn: https://www.linkedin.com/in/gabriel-marko-6b7aaa357/
-Facebook: https://www.facebook.com/share/14Exmoytvrs/?mibextid=wwXIfr
-X: https://x.com/Evergreenweb3D
-
-If you no longer wish to receive these emails, unsubscribe here: {{unsubscribe_link}}`
-
-async function sendOfficialTestEmail() {
-  console.log('📤 Sending properly processed official test email...')
-
-  try {
-    // Get the test member
-    const testMember = await prisma.audienceMember.findFirst({
-      where: { primaryEmail: 'gabriel.lacroix94@icloud.com' }
-    })
-
-    if (!testMember) {
-      throw new Error('Test member not found')
-    }
-
-    // Get the campaign and schedule
-    const campaign = await prisma.campaign.findFirst({
-      where: { meta: { path: ['official'], equals: true } }
-    })
-
-    if (!campaign) {
-      throw new Error('Official campaign not found')
-    }
-
-    const schedule = await prisma.campaignSchedule.findFirst({
-      where: { campaignId: campaign.id }
-    })
-
-    if (!schedule) {
-      throw new Error('Campaign schedule not found')
-    }
-
-    // Generate proper tracking links
-    const baseUrl = process.env.CAMPAIGN_LINK_BASE || 'https://rsvp.evergreenwebsolutions.ca'
-    const rsvpLink = `${baseUrl}/rsvp?eid=biz_${testMember.businessId}&campaign=${campaign.id}&schedule=${schedule.id}`
-    const unsubscribeLink = `${baseUrl}/unsubscribe?email=${testMember.primaryEmail}&business=${testMember.businessId}&campaign=${campaign.id}`
-    const trackingPixel = `${baseUrl}/api/__pixel?token=${testMember.businessId}&eid=biz_${testMember.businessId}`
-
-    // Prepare ALL template variables
-    const variables = {
-      // Basic variables
-      subject: 'Free AI Tools Session - October 23rd',
-      contactPerson: testMember.meta?.contactPerson || 'Valued Customer',
-      businessName: testMember.businessName || 'Your Business',
-      business_id: testMember.businessId,
-      invite_link: rsvpLink,
-      button_link: rsvpLink,
-      unsubscribe_link: unsubscribeLink,
-      tracking_pixel: trackingPixel,
-      
-        // Template content variables (no event details - handled by global template)
-        greeting_title: 'Hello!',
-        main_content_title: 'What You\'ll Learn',
-        main_content_body: 'We\'ll cover practical AI tools that can help streamline your business operations, including spreadsheet automation, data analysis, and process optimization. All tools discussed are immediately actionable and cost-effective.',
-        additional_info_title: 'Why This Matters',
-        additional_info_body: 'These AI tools can save your business hours of manual work each week, giving you more time to focus on growing your business and serving your customers better.',
-        closing_title: 'Looking Forward',
-        closing_message: 'We\'re excited to share these practical AI solutions with you and help your business grow.',
-        button_text: 'RSVP for Free Session',
-      
-      // Global template variables
-      global_hero_title: 'Evergreen Web Solutions - Informational Event Invitation',
-      global_hero_message: 'Please RSVP at your earliest convenience!',
-      global_signature_name: 'Gabriel Lacroix',
-      global_signature_title: 'AI Solutions Expert',
-      global_signature_company: 'Evergreen Web Solutions',
-      global_signature_location: 'Terrace, BC',
-      global_event_title: 'Event Details',
-      global_event_date: 'October 23rd 2025',
-      global_event_time: '5:00 PM - 7:00 PM',
-      global_event_location: 'Sunshine Inn - Terrace, BC',
-      global_event_cost: 'Free',
-      global_event_includes: 'Coffee, refreshments, networking, and actionable AI insights'
-    }
-
-    // Process template with ALL variables
-    let processedHtml = OFFICIAL_EMAIL_TEMPLATE
-    let processedText = OFFICIAL_TEXT_TEMPLATE
-    
-    Object.entries(variables).forEach(([key, value]) => {
-      const regex = new RegExp(`{{${key}}}`, 'g')
-      processedHtml = processedHtml.replace(regex, String(value))
-      processedText = processedText.replace(regex, String(value))
-    })
-
-    // Send test email
-    const result = await resend.emails.send({
-      from: process.env.CAMPAIGN_FROM_EMAIL || 'Evergreen AI <gabriel.lacroix94@icloud.com>',
-      to: [testMember.primaryEmail],
-      subject: variables.subject,
-      html: processedHtml,
-      text: processedText,
-      headers: {
-        'X-Campaign-ID': campaign.id,
-        'X-Schedule-ID': schedule.id,
-        'X-Business-ID': testMember.businessId,
-        'X-Official-Test': 'true'
+    // Update the template with the new HTML
+    await prisma.campaignTemplate.update({
+      where: { id: template.id },
+      data: {
+        htmlBody: updatedHtmlTemplate,
+        meta: {
+          ...template.meta as any,
+          updatedBy: 'add-logo',
+          usesActualLogo: true
+        }
       }
     })
 
-    console.log(`✅ Properly processed test email sent to ${testMember.primaryEmail}`)
-    console.log(`🔗 RSVP Link: ${rsvpLink}`)
-    console.log(`📧 Message ID: ${result.data?.id}`)
-    
-    console.log('\n📋 Email should now show:')
-    console.log('- Proper greeting: "Hello Sarah!"')
-    console.log('- Proper content: "What You\'ll Learn"')
-    console.log('- Proper body text about AI tools')
-    console.log('- Proper button: "RSVP for Free Session"')
-    console.log('- Proper event details with all info')
-    console.log('- Proper signature: "Gabriel Lacroix"')
-    console.log('- Proper closing: "Looking Forward"')
+    console.log('✅ Template updated to use actual Evergreen logo')
+    console.log('🎨 Logo now shows:')
+    console.log('- Your actual logo.svg instead of emoji')
+    console.log('- Proper sizing and positioning')
+    console.log('- Professional branding')
 
   } catch (error) {
-    console.error('❌ Failed to send properly processed email:', error)
+    console.error('❌ Failed to update template with logo:', error)
     throw error
   } finally {
     await prisma.$disconnect()
   }
 }
 
-// Run the test
-sendOfficialTestEmail()
+// Run the update
+updateTemplateWithLogo()
   .then(() => {
-    console.log('\n✅ Properly processed test email sent successfully!')
+    console.log('\n✅ Template updated with actual logo successfully!')
     process.exit(0)
   })
   .catch((error) => {
-    console.error('❌ Test failed:', error)
+    console.error('❌ Update failed:', error)
     process.exit(1)
   })
