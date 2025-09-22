@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from 'react'
+import { useState, useEffect, useRef, useMemo } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import type { LeadMineBusiness } from '@/lib/leadMine'
 import { SplitButton } from '../../SplitButton'
@@ -85,7 +85,11 @@ export function BusinessList({
               business={business}
               isSelected={selectedIds.includes(business.id)}
               isExistingMember={existingMemberSet.has(business.id)}
-              isInOtherGroup={Boolean(allExistingMemberIds?.has(business.id) && !existingMemberSet.has(business.id) && currentGroupId)}
+              isInOtherGroup={Boolean(
+                allExistingMemberIds?.has(business.id) && 
+                !existingMemberSet.has(business.id) && 
+                currentGroupId
+              )}
               isUngrouped={Boolean(!allExistingMemberIds?.has(business.id))}
               showUngroupedOnly={showUngroupedOnly}
               onToggleSelection={onToggleSelection}
@@ -163,15 +167,18 @@ function BusinessCard({
   const [showMoveDropdown, setShowMoveDropdown] = useState(false)
   const dropdownRef = useRef<HTMLDivElement>(null)
 
-  // Filter out groups that already have this business
-  const availableGroups = existingGroups.filter(group => {
-    return !group.members.some(m => m.businessId === business.id)
-  })
-
   // Find which group this business belongs to (if any)
   const currentGroup = existingGroups.find(group => 
     group.members.some(m => m.businessId === business.id)
   )
+  
+  // Check if this business is in the currently editing group
+  const isInCurrentGroup = currentGroupId && currentGroup?.id === currentGroupId
+  
+  // Filter out groups that already have this business
+  const availableGroups = existingGroups.filter(group => {
+    return !group.members.some(m => m.businessId === business.id)
+  })
 
   const handleMoveToGroup = async (groupId: string) => {
     if (!onMemberMoved) return
@@ -273,9 +280,20 @@ function BusinessCard({
             <div className="flex items-center space-x-2">
               {currentGroup && (
                 <div 
-                  className="w-3 h-3 rounded-full border border-white/20 flex-shrink-0"
-                  style={{ backgroundColor: (currentGroup as any).color || '#10b981' }}
-                  title={`In group: ${currentGroup.name}`}
+                  className={`w-3 h-3 rounded-full border flex-shrink-0 ${
+                    isInCurrentGroup 
+                      ? 'border-emerald-400 shadow-sm' 
+                      : 'border-white/20'
+                  }`}
+                  style={{ 
+                    backgroundColor: isInCurrentGroup 
+                      ? '#10b981' // Current group gets emerald color
+                      : (currentGroup as any).color || '#6b7280' // Other groups get their assigned color
+                  }}
+                  title={isInCurrentGroup 
+                    ? `Current group: ${currentGroup.name}` 
+                    : `In group: ${currentGroup.name}`
+                  }
                 />
               )}
               <h3 className="font-medium text-white">{business.name || 'Unnamed Business'}</h3>
@@ -284,9 +302,14 @@ function BusinessCard({
                   Already Added
                 </span>
               )}
-              {isInOtherGroup && (
+              {isInOtherGroup && !isInCurrentGroup && (
                 <span className="px-2 py-1 text-xs bg-warning-500/20 text-warning-200 rounded border border-warning-500/30">
                   In Another Group
+                </span>
+              )}
+              {isInCurrentGroup && (
+                <span className="px-2 py-1 text-xs bg-emerald-500/20 text-emerald-200 rounded border border-emerald-500/30">
+                  Current Group
                 </span>
               )}
               {isUngrouped && showUngroupedOnly && (

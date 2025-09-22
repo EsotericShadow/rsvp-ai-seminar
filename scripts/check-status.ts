@@ -49,3 +49,4 @@ checkStatus()
     console.error('❌ Status check failed:', error)
     process.exit(1)
   })
+
