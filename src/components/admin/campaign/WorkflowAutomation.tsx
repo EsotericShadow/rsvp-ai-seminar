@@ -56,68 +56,68 @@ type WorkflowAutomationProps = {
 
 const availableTriggers: WorkflowTrigger[] = [
   {
-    id: 'schedule',
-    name: 'Scheduled Time',
+    id: 'rsvp-reminder',
+    name: 'RSVP Reminder',
     type: 'time',
-    description: 'Trigger at a specific time or interval',
+    description: 'Send reminder emails to non-responders',
     isActive: true,
-    conditions: ['Every day at 9 AM', 'Every Monday', 'First of month'],
-    actions: ['Send email', 'Pause campaign', 'Update audience'],
+    conditions: ['3 days before event', '1 day before event', '2 hours before event'],
+    actions: ['Send reminder email', 'Update RSVP status', 'Add to follow-up list'],
     icon: <ClockIcon className="h-5 w-5" />,
     color: 'text-primary-400'
   },
   {
-    id: 'email-opened',
-    name: 'Email Opened',
+    id: 'rsvp-received',
+    name: 'RSVP Received',
     type: 'event',
-    description: 'Trigger when recipient opens an email',
+    description: 'Trigger when someone RSVPs',
     isActive: true,
-    conditions: ['Opens specific email', 'Opens any email', 'Opens within timeframe'],
-    actions: ['Send follow-up', 'Add to segment', 'Update profile'],
-    icon: <EnvelopeIcon className="h-5 w-5" />,
+    conditions: ['RSVP confirmed', 'RSVP declined', 'RSVP maybe'],
+    actions: ['Send confirmation email', 'Update attendee list', 'Send calendar invite'],
+    icon: <CheckCircleIcon className="h-5 w-5" />,
     color: 'text-success-400'
   },
   {
-    id: 'email-clicked',
-    name: 'Email Clicked',
-    type: 'event',
-    description: 'Trigger when recipient clicks a link',
+    id: 'event-approaching',
+    name: 'Event Approaching',
+    type: 'time',
+    description: 'Trigger as event date approaches',
     isActive: true,
-    conditions: ['Clicks specific link', 'Clicks any link', 'Clicks multiple times'],
-    actions: ['Send targeted email', 'Add to hot leads', 'Schedule call'],
-    icon: <ChartBarIcon className="h-5 w-5" />,
+    conditions: ['1 week before', '3 days before', '1 day before'],
+    actions: ['Send final details', 'Update venue capacity', 'Send parking info'],
+    icon: <EnvelopeIcon className="h-5 w-5" />,
     color: 'text-info-400'
   },
   {
-    id: 'unsubscribe',
-    name: 'Unsubscribed',
-    type: 'event',
-    description: 'Trigger when someone unsubscribes',
-    isActive: true,
-    conditions: ['Unsubscribes from campaign', 'Unsubscribes from all'],
-    actions: ['Send goodbye email', 'Remove from lists', 'Update preferences'],
-    icon: <ExclamationTriangleIcon className="h-5 w-5" />,
-    color: 'text-error-400'
-  },
-  {
-    id: 'audience-size',
-    name: 'Audience Size',
+    id: 'capacity-reached',
+    name: 'Capacity Reached',
     type: 'condition',
-    description: 'Trigger based on audience size changes',
+    description: 'Trigger when event reaches capacity',
     isActive: true,
-    conditions: ['Audience grows by X', 'Audience shrinks by X', 'Reaches threshold'],
-    actions: ['Send notification', 'Adjust send rate', 'Split audience'],
+    conditions: ['Max attendees reached', 'Waitlist activated', 'Registration closed'],
+    actions: ['Close RSVP', 'Start waitlist', 'Send capacity notice'],
     icon: <UsersIcon className="h-5 w-5" />,
     color: 'text-warning-400'
   },
   {
-    id: 'manual',
-    name: 'Manual Trigger',
-    type: 'manual',
-    description: 'Trigger manually or via API',
+    id: 'low-response',
+    name: 'Low Response Rate',
+    type: 'condition',
+    description: 'Trigger when response rate is low',
     isActive: true,
-    conditions: ['API call', 'Button click', 'Admin action'],
-    actions: ['Send email', 'Update campaign', 'Export data'],
+    conditions: ['< 20% response rate', '< 50% after 3 days', 'Declining responses'],
+    actions: ['Send follow-up campaign', 'Adjust messaging', 'Extend deadline'],
+    icon: <ExclamationTriangleIcon className="h-5 w-5" />,
+    color: 'text-error-400'
+  },
+  {
+    id: 'event-cancelled',
+    name: 'Event Cancelled',
+    type: 'manual',
+    description: 'Trigger when event is cancelled',
+    isActive: true,
+    conditions: ['Admin cancels event', 'Venue issues', 'Weather concerns'],
+    actions: ['Send cancellation notice', 'Process refunds', 'Update calendar'],
     icon: <PlayIcon className="h-5 w-5" />,
     color: 'text-neutral-400'
   }
@@ -268,38 +268,38 @@ export function WorkflowAutomation({
       {/* Global Automation Features */}
       {campaignId === 'global' && (
         <div className="bg-neutral-800/50 rounded-lg p-6 border border-neutral-700">
-          <h4 className="text-lg font-semibold text-white mb-4">Global Automation Features</h4>
+          <h4 className="text-lg font-semibold text-white mb-4">RSVP Automation Features</h4>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div className="space-y-3">
-              <h5 className="font-medium text-white">Smart Scheduling</h5>
+              <h5 className="font-medium text-white">Smart Reminders</h5>
               <ul className="text-sm text-neutral-300 space-y-1">
-                <li>• Auto-optimize send times based on audience engagement</li>
-                <li>• Intelligent throttling to prevent spam detection</li>
-                <li>• Timezone-aware delivery scheduling</li>
+                <li>• Auto-send reminder emails to non-responders</li>
+                <li>• Escalating reminder frequency based on urgency</li>
+                <li>• Timezone-aware reminder scheduling</li>
               </ul>
             </div>
             <div className="space-y-3">
-              <h5 className="font-medium text-white">Audience Management</h5>
+              <h5 className="font-medium text-white">Response Management</h5>
               <ul className="text-sm text-neutral-300 space-y-1">
-                <li>• Auto-segment audiences based on behavior</li>
-                <li>• Dynamic list cleaning and maintenance</li>
-                <li>• Engagement-based audience scoring</li>
+                <li>• Auto-confirm RSVPs and send calendar invites</li>
+                <li>• Handle waitlist management when capacity reached</li>
+                <li>• Track and follow up on "maybe" responses</li>
               </ul>
             </div>
             <div className="space-y-3">
-              <h5 className="font-medium text-white">Performance Monitoring</h5>
+              <h5 className="font-medium text-white">Event Coordination</h5>
               <ul className="text-sm text-neutral-300 space-y-1">
-                <li>• Real-time performance alerts</li>
-                <li>• Automatic A/B testing optimization</li>
-                <li>• Deliverability monitoring and recovery</li>
+                <li>• Send event details as date approaches</li>
+                <li>• Auto-update venue capacity and logistics</li>
+                <li>• Handle last-minute changes and cancellations</li>
               </ul>
             </div>
             <div className="space-y-3">
-              <h5 className="font-medium text-white">Compliance & Safety</h5>
+              <h5 className="font-medium text-white">Analytics & Alerts</h5>
               <ul className="text-sm text-neutral-300 space-y-1">
-                <li>• Automatic unsubscribe handling</li>
-                <li>• Bounce management and list hygiene</li>
-                <li>• Compliance monitoring and reporting</li>
+                <li>• Monitor response rates and send alerts</li>
+                <li>• Track engagement patterns for future events</li>
+                <li>• Generate attendance reports automatically</li>
               </ul>
             </div>
           </div>
@@ -368,18 +368,18 @@ export function WorkflowAutomation({
 
 function GlobalSettingsModal({ onClose }: { onClose: () => void }) {
   const [settings, setSettings] = useState({
-    autoOptimizeSendTimes: true,
-    intelligentThrottling: true,
-    timezoneAwareDelivery: true,
-    autoSegmentAudiences: false,
-    dynamicListCleaning: true,
-    engagementScoring: true,
-    performanceAlerts: true,
-    autoABTesting: false,
-    deliverabilityMonitoring: true,
-    autoUnsubscribeHandling: true,
-    bounceManagement: true,
-    complianceMonitoring: true,
+    autoReminderEmails: true,
+    reminderFrequency: 'escalating', // 'fixed' | 'escalating'
+    timezoneAwareReminders: true,
+    autoConfirmRSVPs: true,
+    autoSendCalendarInvites: true,
+    waitlistManagement: true,
+    capacityAlerts: true,
+    responseRateMonitoring: true,
+    lowResponseAlerts: true,
+    eventDetailsReminders: true,
+    lastMinuteChangeHandling: true,
+    attendanceReportGeneration: true,
   })
 
   const handleSave = () => {
@@ -406,32 +406,34 @@ function GlobalSettingsModal({ onClose }: { onClose: () => void }) {
         <div className="p-6 overflow-y-auto max-h-[calc(90vh-120px)]">
           <div className="space-y-6">
             <div>
-              <h4 className="font-semibold text-white mb-3">Smart Scheduling</h4>
+              <h4 className="font-semibold text-white mb-3">Reminder Automation</h4>
               <div className="space-y-3">
                 <label className="flex items-center justify-between">
-                  <span className="text-neutral-300">Auto-optimize send times</span>
+                  <span className="text-neutral-300">Auto-send reminder emails</span>
                   <input
                     type="checkbox"
-                    checked={settings.autoOptimizeSendTimes}
-                    onChange={(e) => setSettings(prev => ({ ...prev, autoOptimizeSendTimes: e.target.checked }))}
+                    checked={settings.autoReminderEmails}
+                    onChange={(e) => setSettings(prev => ({ ...prev, autoReminderEmails: e.target.checked }))}
                     className="w-4 h-4 text-primary-600 bg-neutral-700 border-neutral-600 rounded focus:ring-primary-500"
                   />
                 </label>
+                <div className="flex items-center justify-between">
+                  <span className="text-neutral-300">Reminder frequency</span>
+                  <select
+                    value={settings.reminderFrequency}
+                    onChange={(e) => setSettings(prev => ({ ...prev, reminderFrequency: e.target.value as 'fixed' | 'escalating' }))}
+                    className="px-3 py-1 bg-neutral-700 border border-neutral-600 rounded text-white text-sm"
+                  >
+                    <option value="fixed">Fixed intervals</option>
+                    <option value="escalating">Escalating frequency</option>
+                  </select>
+                </div>
                 <label className="flex items-center justify-between">
-                  <span className="text-neutral-300">Intelligent throttling</span>
+                  <span className="text-neutral-300">Timezone-aware reminders</span>
                   <input
                     type="checkbox"
-                    checked={settings.intelligentThrottling}
-                    onChange={(e) => setSettings(prev => ({ ...prev, intelligentThrottling: e.target.checked }))}
-                    className="w-4 h-4 text-primary-600 bg-neutral-700 border-neutral-600 rounded focus:ring-primary-500"
-                  />
-                </label>
-                <label className="flex items-center justify-between">
-                  <span className="text-neutral-300">Timezone-aware delivery</span>
-                  <input
-                    type="checkbox"
-                    checked={settings.timezoneAwareDelivery}
-                    onChange={(e) => setSettings(prev => ({ ...prev, timezoneAwareDelivery: e.target.checked }))}
+                    checked={settings.timezoneAwareReminders}
+                    onChange={(e) => setSettings(prev => ({ ...prev, timezoneAwareReminders: e.target.checked }))}
                     className="w-4 h-4 text-primary-600 bg-neutral-700 border-neutral-600 rounded focus:ring-primary-500"
                   />
                 </label>
@@ -439,32 +441,32 @@ function GlobalSettingsModal({ onClose }: { onClose: () => void }) {
             </div>
 
             <div>
-              <h4 className="font-semibold text-white mb-3">Audience Management</h4>
+              <h4 className="font-semibold text-white mb-3">RSVP Management</h4>
               <div className="space-y-3">
                 <label className="flex items-center justify-between">
-                  <span className="text-neutral-300">Auto-segment audiences</span>
+                  <span className="text-neutral-300">Auto-confirm RSVPs</span>
                   <input
                     type="checkbox"
-                    checked={settings.autoSegmentAudiences}
-                    onChange={(e) => setSettings(prev => ({ ...prev, autoSegmentAudiences: e.target.checked }))}
+                    checked={settings.autoConfirmRSVPs}
+                    onChange={(e) => setSettings(prev => ({ ...prev, autoConfirmRSVPs: e.target.checked }))}
                     className="w-4 h-4 text-primary-600 bg-neutral-700 border-neutral-600 rounded focus:ring-primary-500"
                   />
                 </label>
                 <label className="flex items-center justify-between">
-                  <span className="text-neutral-300">Dynamic list cleaning</span>
+                  <span className="text-neutral-300">Auto-send calendar invites</span>
                   <input
                     type="checkbox"
-                    checked={settings.dynamicListCleaning}
-                    onChange={(e) => setSettings(prev => ({ ...prev, dynamicListCleaning: e.target.checked }))}
+                    checked={settings.autoSendCalendarInvites}
+                    onChange={(e) => setSettings(prev => ({ ...prev, autoSendCalendarInvites: e.target.checked }))}
                     className="w-4 h-4 text-primary-600 bg-neutral-700 border-neutral-600 rounded focus:ring-primary-500"
                   />
                 </label>
                 <label className="flex items-center justify-between">
-                  <span className="text-neutral-300">Engagement scoring</span>
+                  <span className="text-neutral-300">Waitlist management</span>
                   <input
                     type="checkbox"
-                    checked={settings.engagementScoring}
-                    onChange={(e) => setSettings(prev => ({ ...prev, engagementScoring: e.target.checked }))}
+                    checked={settings.waitlistManagement}
+                    onChange={(e) => setSettings(prev => ({ ...prev, waitlistManagement: e.target.checked }))}
                     className="w-4 h-4 text-primary-600 bg-neutral-700 border-neutral-600 rounded focus:ring-primary-500"
                   />
                 </label>
@@ -472,59 +474,59 @@ function GlobalSettingsModal({ onClose }: { onClose: () => void }) {
             </div>
 
             <div>
-              <h4 className="font-semibold text-white mb-3">Performance & Compliance</h4>
+              <h4 className="font-semibold text-white mb-3">Monitoring & Alerts</h4>
               <div className="space-y-3">
                 <label className="flex items-center justify-between">
-                  <span className="text-neutral-300">Performance alerts</span>
+                  <span className="text-neutral-300">Capacity alerts</span>
                   <input
                     type="checkbox"
-                    checked={settings.performanceAlerts}
-                    onChange={(e) => setSettings(prev => ({ ...prev, performanceAlerts: e.target.checked }))}
+                    checked={settings.capacityAlerts}
+                    onChange={(e) => setSettings(prev => ({ ...prev, capacityAlerts: e.target.checked }))}
                     className="w-4 h-4 text-primary-600 bg-neutral-700 border-neutral-600 rounded focus:ring-primary-500"
                   />
                 </label>
                 <label className="flex items-center justify-between">
-                  <span className="text-neutral-300">Auto A/B testing</span>
+                  <span className="text-neutral-300">Response rate monitoring</span>
                   <input
                     type="checkbox"
-                    checked={settings.autoABTesting}
-                    onChange={(e) => setSettings(prev => ({ ...prev, autoABTesting: e.target.checked }))}
+                    checked={settings.responseRateMonitoring}
+                    onChange={(e) => setSettings(prev => ({ ...prev, responseRateMonitoring: e.target.checked }))}
                     className="w-4 h-4 text-primary-600 bg-neutral-700 border-neutral-600 rounded focus:ring-primary-500"
                   />
                 </label>
                 <label className="flex items-center justify-between">
-                  <span className="text-neutral-300">Deliverability monitoring</span>
+                  <span className="text-neutral-300">Low response alerts</span>
                   <input
                     type="checkbox"
-                    checked={settings.deliverabilityMonitoring}
-                    onChange={(e) => setSettings(prev => ({ ...prev, deliverabilityMonitoring: e.target.checked }))}
+                    checked={settings.lowResponseAlerts}
+                    onChange={(e) => setSettings(prev => ({ ...prev, lowResponseAlerts: e.target.checked }))}
                     className="w-4 h-4 text-primary-600 bg-neutral-700 border-neutral-600 rounded focus:ring-primary-500"
                   />
                 </label>
                 <label className="flex items-center justify-between">
-                  <span className="text-neutral-300">Auto unsubscribe handling</span>
+                  <span className="text-neutral-300">Event details reminders</span>
                   <input
                     type="checkbox"
-                    checked={settings.autoUnsubscribeHandling}
-                    onChange={(e) => setSettings(prev => ({ ...prev, autoUnsubscribeHandling: e.target.checked }))}
+                    checked={settings.eventDetailsReminders}
+                    onChange={(e) => setSettings(prev => ({ ...prev, eventDetailsReminders: e.target.checked }))}
                     className="w-4 h-4 text-primary-600 bg-neutral-700 border-neutral-600 rounded focus:ring-primary-500"
                   />
                 </label>
                 <label className="flex items-center justify-between">
-                  <span className="text-neutral-300">Bounce management</span>
+                  <span className="text-neutral-300">Last-minute change handling</span>
                   <input
                     type="checkbox"
-                    checked={settings.bounceManagement}
-                    onChange={(e) => setSettings(prev => ({ ...prev, bounceManagement: e.target.checked }))}
+                    checked={settings.lastMinuteChangeHandling}
+                    onChange={(e) => setSettings(prev => ({ ...prev, lastMinuteChangeHandling: e.target.checked }))}
                     className="w-4 h-4 text-primary-600 bg-neutral-700 border-neutral-600 rounded focus:ring-primary-500"
                   />
                 </label>
                 <label className="flex items-center justify-between">
-                  <span className="text-neutral-300">Compliance monitoring</span>
+                  <span className="text-neutral-300">Attendance report generation</span>
                   <input
                     type="checkbox"
-                    checked={settings.complianceMonitoring}
-                    onChange={(e) => setSettings(prev => ({ ...prev, complianceMonitoring: e.target.checked }))}
+                    checked={settings.attendanceReportGeneration}
+                    onChange={(e) => setSettings(prev => ({ ...prev, attendanceReportGeneration: e.target.checked }))}
                     className="w-4 h-4 text-primary-600 bg-neutral-700 border-neutral-600 rounded focus:ring-primary-500"
                   />
                 </label>
