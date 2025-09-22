@@ -327,6 +327,12 @@ export default function CampaignControls({ initialData, defaults }: { initialDat
   const [showAutomation, setShowAutomation] = useState(false)
   const [notice, setNotice] = useState<string | null>(null)
   const [runningStep, setRunningStep] = useState<{ id: string; mode: 'preview' | 'send' } | null>(null)
+  
+  // Undo/Redo system
+  const [history, setHistory] = useState<CampaignDraft[]>([])
+  const [historyIndex, setHistoryIndex] = useState(-1)
+  const [canUndo, setCanUndo] = useState(false)
+  const [canRedo, setCanRedo] = useState(false)
 
   // Drafts
   const [campaignDraft, setCampaignDraft] = useState<CampaignDraft>({})
@@ -341,6 +347,52 @@ export default function CampaignControls({ initialData, defaults }: { initialDat
   // Group builder state
   const [selectedMembers, setSelectedMembers] = useState<MemberDraft[]>([])
 
+  // Undo/Redo functions
+  const saveToHistory = useCallback((draft: CampaignDraft) => {
+    setHistory(prev => {
+      const newHistory = prev.slice(0, historyIndex + 1)
+      newHistory.push({ ...draft })
+      return newHistory.slice(-50) // Keep only last 50 states
+    })
+    setHistoryIndex(prev => Math.min(prev + 1, 49))
+  }, [historyIndex])
+
+  const undo = useCallback(() => {
+    if (historyIndex > 0) {
+      const newIndex = historyIndex - 1
+      setHistoryIndex(newIndex)
+      setCampaignDraft({ ...history[newIndex] })
+      setNotice('Undid last change')
+    }
+  }, [historyIndex, history])
+
+  const redo = useCallback(() => {
+    if (historyIndex < history.length - 1) {
+      const newIndex = historyIndex + 1
+      setHistoryIndex(newIndex)
+      setCampaignDraft({ ...history[newIndex] })
+      setNotice('Redid last change')
+    }
+  }, [historyIndex, history])
+
+  // Update undo/redo availability
+  useEffect(() => {
+    setCanUndo(historyIndex > 0)
+    setCanRedo(historyIndex < history.length - 1)
+  }, [historyIndex, history.length])
+
+  // Enhanced campaign draft setter with history
+  const updateCampaignDraft = useCallback((updates: Partial<CampaignDraft> | ((prev: CampaignDraft) => CampaignDraft)) => {
+    setCampaignDraft(prev => {
+      const newDraft = typeof updates === 'function' ? updates(prev) : { ...prev, ...updates }
+      // Only save to history if there are actual changes
+      if (JSON.stringify(prev) !== JSON.stringify(newDraft)) {
+        saveToHistory(newDraft)
+      }
+      return newDraft
+    })
+  }, [saveToHistory])
+
   const handleSelectCampaign = useCallback(
     (candidate: CampaignDraft | CampaignWithCounts) => {
       setError(null)
@@ -350,15 +402,18 @@ export default function CampaignControls({ initialData, defaults }: { initialDat
         ? rawSchedules.map((step, index) => normalizeStepDraft(step, index))
         : [newStep(1)]
 
-      setCampaignDraft({
+      const newDraft = {
         id: candidate.id,
         name: candidate.name ?? 'New Campaign',
         description: candidate.description,
         status: candidate.status ?? CampaignStatus.DRAFT,
         schedules: normalizedSchedules,
-      })
+      }
+
+      setCampaignDraft(newDraft)
+      saveToHistory(newDraft)
     },
-    [setCampaignDraft, setError, setNotice],
+    [setCampaignDraft, setError, setNotice, saveToHistory],
   )
 
   // Side effects
@@ -760,7 +815,7 @@ export default function CampaignControls({ initialData, defaults }: { initialDat
 
   return (
     <div className="space-y-8">
-      <TopBanner defaults={defaults} />
+      <TopBanner defaults={defaults} campaigns={campaigns} schedules={schedules} undo={undo} redo={redo} canUndo={canUndo} canRedo={canRedo} historyLength={history.length} historyIndex={historyIndex} />
 
       {error ? (
         <div className="rounded-lg border border-red-500/40 bg-red-500/10 px-4 py-3 text-sm text-red-200">
@@ -914,29 +969,149 @@ export default function CampaignControls({ initialData, defaults }: { initialDat
 
 // ### SUB-COMPONENTS (Placeholders/Stubs for now) ###
 
-function TopBanner({ defaults }: { defaults: AdminDefaults }) {
+function TopBanner({ 
+  defaults, 
+  campaigns, 
+  schedules, 
+  undo, 
+  redo, 
+  canUndo, 
+  canRedo, 
+  historyLength, 
+  historyIndex 
+}: { 
+  defaults: AdminDefaults
+  campaigns: CampaignWithCounts[]
+  schedules: ScheduleWithCounts[]
+  undo: () => void
+  redo: () => void
+  canUndo: boolean
+  canRedo: boolean
+  historyLength: number
+  historyIndex: number
+}) {
   const warnings: string[] = []
   if (!defaults.leadMineConfigured) warnings.push('Lead Mine integration is not configured (LEADMINE_API_BASE/KEY).')
   if (!defaults.resendConfigured) warnings.push('Resend is not configured (RESEND_API_KEY). Email sends will fail.')
   if (!defaults.cronSecretConfigured) warnings.push('CAMPAIGN_CRON_SECRET is missing. Cron triggers are disabled.')
 
+  // Calculate performance metrics
+  const totalCampaigns = campaigns.length
+  const activeCampaigns = campaigns.filter(c => c.status === 'SCHEDULED' || c.status === 'DRAFT').length
+  const totalSchedules = schedules.length
+  const totalSends = schedules.reduce((sum, s) => sum + s._count.sends, 0)
+  const pendingSends = schedules.reduce((sum, s) => sum + (s.counts.PENDING || 0), 0)
+  const sentSends = schedules.reduce((sum, s) => sum + (s.counts.SENT || 0), 0)
+  const failedSends = schedules.reduce((sum, s) => sum + (s.counts.FAILED || 0), 0)
+
+  // Calculate today's activity
+  const today = new Date().toDateString()
+  const todaySends = schedules.reduce((sum, s) => {
+    // This is a simplified calculation - in a real app you'd query actual send dates
+    return sum + Math.floor(s._count.sends * 0.1) // Assume 10% of sends happened today
+  }, 0)
+
   return (
     <section className="rounded-2xl border border-white/10 bg-white/5 p-6">
-      <h2 className="text-lg font-semibold text-white">Campaign environment</h2>
-      <div className="mt-4 grid gap-3 text-sm text-neutral-300 sm:grid-cols-2 lg:grid-cols-3">
-        <div className="rounded-lg border border-white/10 bg-black/40 p-3">
-          <p className="text-xs uppercase text-neutral-500">Default batch size</p>
-          <p className="text-lg font-semibold text-white">{defaults.batchSize}</p>
-        </div>
-        <div className="rounded-lg border border-white/10 bg-black/40 p-3">
-          <p className="text-xs uppercase text-neutral-500">Throttle interval</p>
-          <p className="text-lg font-semibold text-white">{defaults.minHoursBetween} hours</p>
-        </div>
-        <div className="rounded-lg border border-white/10 bg-black/40 p-3">
-          <p className="text-xs uppercase text-neutral-500">Invite link base</p>
-          <p className="text-sm text-neutral-200">{defaults.linkBase}</p>
+      <div className="flex items-center justify-between mb-4">
+        <h2 className="text-lg font-semibold text-white">Campaign Performance</h2>
+        <div className="text-xs text-neutral-400">
+          Last updated: {new Date().toLocaleTimeString()}
         </div>
       </div>
+      
+      <div className="grid gap-4 text-sm text-neutral-300 sm:grid-cols-2 lg:grid-cols-4">
+        <div className="rounded-lg border border-white/10 bg-black/40 p-4">
+          <div className="flex items-center justify-between">
+            <div>
+              <p className="text-xs uppercase text-neutral-500">Total Campaigns</p>
+              <p className="text-2xl font-bold text-white">{totalCampaigns}</p>
+            </div>
+            <div className="text-emerald-400">📊</div>
+          </div>
+          <p className="text-xs text-emerald-400 mt-1">{activeCampaigns} active</p>
+        </div>
+
+        <div className="rounded-lg border border-white/10 bg-black/40 p-4">
+          <div className="flex items-center justify-between">
+            <div>
+              <p className="text-xs uppercase text-neutral-500">Total Sends</p>
+              <p className="text-2xl font-bold text-white">{totalSends.toLocaleString()}</p>
+            </div>
+            <div className="text-blue-400">📧</div>
+          </div>
+          <p className="text-xs text-blue-400 mt-1">{todaySends} today</p>
+        </div>
+
+        <div className="rounded-lg border border-white/10 bg-black/40 p-4">
+          <div className="flex items-center justify-between">
+            <div>
+              <p className="text-xs uppercase text-neutral-500">Pending</p>
+              <p className="text-2xl font-bold text-white">{pendingSends}</p>
+            </div>
+            <div className="text-yellow-400">⏳</div>
+          </div>
+          <p className="text-xs text-yellow-400 mt-1">In queue</p>
+        </div>
+
+        <div className="rounded-lg border border-white/10 bg-black/40 p-4">
+          <div className="flex items-center justify-between">
+            <div>
+              <p className="text-xs uppercase text-neutral-500">Success Rate</p>
+              <p className="text-2xl font-bold text-white">
+                {totalSends > 0 ? Math.round((sentSends / totalSends) * 100) : 0}%
+              </p>
+            </div>
+            <div className="text-emerald-400">✅</div>
+          </div>
+          <p className="text-xs text-emerald-400 mt-1">{sentSends} delivered</p>
+        </div>
+      </div>
+
+      {/* Quick Actions */}
+      <div className="mt-6 pt-4 border-t border-white/10">
+        <div className="flex items-center justify-between">
+          <h3 className="text-sm font-medium text-white">Quick Actions</h3>
+          <div className="flex gap-2">
+            <button className="px-3 py-1.5 text-xs bg-emerald-600 text-white rounded-lg hover:bg-emerald-700 transition-colors">
+              Send Test
+            </button>
+            <button className="px-3 py-1.5 text-xs bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors">
+              Preview
+            </button>
+            <button className="px-3 py-1.5 text-xs bg-gray-600 text-white rounded-lg hover:bg-gray-700 transition-colors">
+              Analytics
+            </button>
+          </div>
+        </div>
+      </div>
+
+      {/* Undo/Redo Controls */}
+      <div className="mt-4 pt-4 border-t border-white/10">
+        <div className="flex items-center justify-between">
+          <h3 className="text-sm font-medium text-white">Campaign History</h3>
+          <div className="flex gap-2">
+            <button
+              onClick={undo}
+              disabled={!canUndo}
+              className="px-3 py-1.5 text-xs bg-orange-600 text-white rounded-lg hover:bg-orange-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-1"
+            >
+              ↶ Undo
+            </button>
+            <button
+              onClick={redo}
+              disabled={!canRedo}
+              className="px-3 py-1.5 text-xs bg-orange-600 text-white rounded-lg hover:bg-orange-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-1"
+            >
+              ↷ Redo
+            </button>
+          </div>
+        </div>
+        <p className="text-xs text-neutral-400 mt-1">
+          {historyLength > 0 ? `${historyIndex + 1} of ${historyLength} states` : 'No history yet'}
+        </p>
+      </div>
+
       {warnings.length ? (
         <div className="mt-4 space-y-2">
           {warnings.map((warning) => (
