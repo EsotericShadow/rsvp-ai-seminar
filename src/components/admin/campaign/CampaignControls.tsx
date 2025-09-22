@@ -1,6 +1,7 @@
 'use client'
 
 import { useEffect, useMemo, useState, useCallback } from 'react'
+import { useRouter } from 'next/navigation'
 import { Campaign, CampaignSchedule, CampaignSendStatus, CampaignStatus, CampaignTemplate, AudienceGroup } from '@prisma/client'
 import type { LeadMineBusiness } from '@/lib/leadMine'
 import type { MemberDraft } from './AudienceGroupsTab'
@@ -309,6 +310,7 @@ type TabKey = typeof tabs[number]['id']
 // ### COMPONENT ###
 
 export default function CampaignControls({ initialData, defaults }: { initialData: DashboardData; defaults: AdminDefaults }) {
+  const router = useRouter()
   // Core state
   const [activeTab, setActiveTab] = useState<TabKey>('campaigns')
   const [templates, setTemplates] = useState<Template[]>(initialData.templates)
@@ -716,7 +718,7 @@ export default function CampaignControls({ initialData, defaults }: { initialDat
 
   const handleSelectCampaignForDashboard = (campaign: CampaignWithCounts) => {
     // Navigate to analytics page with campaign selected
-    window.location.href = `/admin/analytics?tab=campaigns&campaign=${campaign.id}`
+    router.push(`/admin/analytics?tab=campaigns&campaign=${campaign.id}`)
   }
 
   const handleDuplicateCampaign = (campaign: CampaignWithCounts) => {

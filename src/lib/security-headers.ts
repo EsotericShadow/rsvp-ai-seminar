@@ -3,18 +3,18 @@ import { NextResponse } from 'next/server';
 
 export interface SecurityHeadersConfig {
   csp?: {
-    defaultSrc?: string[];
-    scriptSrc?: string[];
-    styleSrc?: string[];
-    imgSrc?: string[];
-    connectSrc?: string[];
-    fontSrc?: string[];
-    objectSrc?: string[];
-    mediaSrc?: string[];
-    frameSrc?: string[];
-    baseUri?: string[];
-    formAction?: string[];
-    frameAncestors?: string[];
+    'default-src'?: string[];
+    'script-src'?: string[];
+    'style-src'?: string[];
+    'img-src'?: string[];
+    'connect-src'?: string[];
+    'font-src'?: string[];
+    'object-src'?: string[];
+    'media-src'?: string[];
+    'frame-src'?: string[];
+    'base-uri'?: string[];
+    'form-action'?: string[];
+    'frame-ancestors'?: string[];
   };
   hsts?: boolean;
   xFrameOptions?: 'DENY' | 'SAMEORIGIN' | string;
@@ -26,18 +26,18 @@ export interface SecurityHeadersConfig {
 
 const defaultSecurityHeaders: SecurityHeadersConfig = {
   csp: {
-    defaultSrc: ["'self'"],
-    scriptSrc: ["'self'", "'unsafe-inline'", "'unsafe-eval'", "https://cdn.jsdelivr.net"],
-    styleSrc: ["'self'", "'unsafe-inline'", "https://fonts.googleapis.com"],
-    imgSrc: ["'self'", "data:", "https:", "blob:"],
-    connectSrc: ["'self'", "https://api.lead-mine.vercel.app", "https://api.resend.com", "https://api.sendgrid.com"],
-    fontSrc: ["'self'", "https://fonts.gstatic.com"],
-    objectSrc: ["'none'"],
-    mediaSrc: ["'self'"],
-    frameSrc: ["'none'"],
-    baseUri: ["'self'"],
-    formAction: ["'self'"],
-    frameAncestors: ["'none'"]
+    'default-src': ["'self'"],
+    'script-src': ["'self'", "'unsafe-inline'", "'unsafe-eval'", "https://cdn.jsdelivr.net"],
+    'style-src': ["'self'", "'unsafe-inline'", "https://fonts.googleapis.com"],
+    'img-src': ["'self'", "data:", "https:", "blob:"],
+    'connect-src': ["'self'", "https://api.lead-mine.vercel.app", "https://api.resend.com", "https://api.sendgrid.com"],
+    'font-src': ["'self'", "https://fonts.gstatic.com"],
+    'object-src': ["'none'"],
+    'media-src': ["'self'"],
+    'frame-src': ["'none'"],
+    'base-uri': ["'self'"],
+    'form-action': ["'self'"],
+    'frame-ancestors': ["'none'"]
   },
   hsts: true,
   xFrameOptions: 'DENY',
