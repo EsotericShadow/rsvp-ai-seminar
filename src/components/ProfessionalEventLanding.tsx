@@ -306,7 +306,7 @@ export default function ProfessionalEventLanding() {
           >
             {/* What You'll Learn */}
             <div className="bg-white rounded-2xl shadow-xl border border-gray-100 p-8">
-              <h3 className="text-2xl font-bold text-gray-900 mb-6">What You'll Learn</h3>
+              <h3 className="text-2xl font-bold text-gray-900 mb-6">What You&apos;ll Learn</h3>
               <div className="space-y-6">
                 {benefits.map((benefit, index) => (
                   <motion.div
@@ -349,7 +349,7 @@ export default function ProfessionalEventLanding() {
                   </div>
                 </div>
                 <blockquote className="text-gray-300 italic leading-relaxed">
-                  "My goal is clarity. I'll walk through real northern projects, what they cost, and practical first steps that don't disrupt operations."
+                  &ldquo;My goal is clarity. I&apos;ll walk through real northern projects, what they cost, and practical first steps that don&apos;t disrupt operations.&rdquo;
                 </blockquote>
               </div>
             </div>
@@ -367,7 +367,7 @@ export default function ProfessionalEventLanding() {
                     transition={{ delay: index * 0.1, duration: 0.5 }}
                     className="border-l-4 border-emerald-400 pl-4"
                   >
-                    <p className="text-gray-700 italic mb-2">"{testimonial.quote}"</p>
+                    <p className="text-gray-700 italic mb-2">&ldquo;{testimonial.quote}&rdquo;</p>
                     <div className="text-sm">
                       <p className="font-semibold text-gray-900">{testimonial.author}</p>
                       <p className="text-gray-500">{testimonial.role}</p>
@@ -390,7 +390,7 @@ export default function ProfessionalEventLanding() {
             Give Your Team a Clear Starting Point
           </h2>
           <p className="text-xl text-emerald-100 mb-8 max-w-2xl mx-auto">
-            You'll leave knowing where to start, what it might cost, and how to tell if it's working.
+            You&apos;ll leave knowing where to start, what it might cost, and how to tell if it&apos;s working.
           </p>
           <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
             <Link

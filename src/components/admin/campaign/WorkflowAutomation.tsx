@@ -365,7 +365,7 @@ export function WorkflowAutomation({
               <ul className="text-sm text-neutral-300 space-y-1">
                 <li>• Auto-confirm RSVPs and send calendar invites</li>
                 <li>• Handle waitlist management when capacity reached</li>
-                <li>• Track and follow up on "maybe" responses</li>
+                <li>• Track and follow up on &ldquo;maybe&rdquo; responses</li>
               </ul>
             </div>
             <div className="space-y-3">
