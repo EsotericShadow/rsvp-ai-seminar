@@ -145,48 +145,6 @@ export function CampaignDashboard({
 
   return (
     <div className="space-y-6">
-      {/* Analytics Overview */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-        <div className="bg-neutral-800/50 rounded-lg p-4 border border-neutral-700">
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="text-sm text-neutral-400">Total Campaigns</p>
-              <p className="text-2xl font-bold text-white">{analytics.total}</p>
-            </div>
-            <ChartBarIcon className="h-8 w-8 text-primary-400" />
-          </div>
-        </div>
-        
-        <div className="bg-success-500/10 rounded-lg p-4 border border-success-500/20">
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="text-sm text-success-300">Active</p>
-              <p className="text-2xl font-bold text-success-200">{analytics.active}</p>
-            </div>
-            <PlayIcon className="h-8 w-8 text-success-400" />
-          </div>
-        </div>
-        
-        <div className="bg-primary-500/10 rounded-lg p-4 border border-primary-500/20">
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="text-sm text-primary-300">Completed</p>
-              <p className="text-2xl font-bold text-primary-200">{analytics.completed}</p>
-            </div>
-            <CheckCircleIcon className="h-8 w-8 text-primary-400" />
-          </div>
-        </div>
-        
-        <div className="bg-warning-500/10 rounded-lg p-4 border border-warning-500/20">
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="text-sm text-warning-300">Completion Rate</p>
-              <p className="text-2xl font-bold text-warning-200">{analytics.completionRate}%</p>
-            </div>
-            <ArrowTrendingUpIcon className="h-8 w-8 text-warning-400" />
-          </div>
-        </div>
-      </div>
 
       {/* Controls */}
       <div className="flex flex-col sm:flex-row gap-4 items-start sm:items-center justify-between">
