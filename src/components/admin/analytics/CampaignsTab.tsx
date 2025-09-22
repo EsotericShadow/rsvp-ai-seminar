@@ -102,7 +102,7 @@ export default function CampaignsTab({ campaigns, audienceGroups }: CampaignsTab
   const [showDetailedAnalytics, setShowDetailedAnalytics] = useState(false);
   const [timeRange, setTimeRange] = useState('30');
 
-  // Calculate campaign statistics from the data
+  // Calculate campaign statistics from REAL data only
   const campaignStats = useMemo(() => {
     const totalCampaigns = campaigns.length;
     const activeCampaigns = campaigns.filter(c => c.status === 'SCHEDULED').length;
@@ -111,11 +111,12 @@ export default function CampaignsTab({ campaigns, audienceGroups }: CampaignsTab
     const totalSchedules = campaigns.reduce((sum, c) => sum + (c.schedules || []).length, 0);
     const totalAudienceMembers = audienceGroups.reduce((sum, g) => sum + g._count.members, 0);
 
-    // Calculate engagement metrics (mock data for now)
-    const totalEmailsSent = campaigns.reduce((sum, c) => sum + ((c.schedules || []).length || 0) * 100, 0);
-    const totalOpens = Math.floor(totalEmailsSent * 0.25); // 25% open rate
-    const totalClicks = Math.floor(totalOpens * 0.15); // 15% click rate
-    const totalRSVPs = Math.floor(totalClicks * 0.3); // 30% RSVP rate
+    // REAL data only - no fake metrics
+    // We only have 4 audience members, so max 4 emails can be sent
+    const totalEmailsSent = Math.min(totalAudienceMembers, 100); // Respect 100 email limit
+    const totalOpens = 0; // No real opens yet
+    const totalClicks = 0; // No real clicks yet
+    const totalRSVPs = 0; // No real RSVPs yet
 
     return {
       totalCampaigns,
@@ -128,9 +129,9 @@ export default function CampaignsTab({ campaigns, audienceGroups }: CampaignsTab
       totalOpens,
       totalClicks,
       totalRSVPs,
-      openRate: totalEmailsSent > 0 ? (totalOpens / totalEmailsSent) * 100 : 0,
-      clickRate: totalEmailsSent > 0 ? (totalClicks / totalEmailsSent) * 100 : 0,
-      rsvpRate: totalEmailsSent > 0 ? (totalRSVPs / totalEmailsSent) * 100 : 0,
+      openRate: 0, // No real data yet
+      clickRate: 0, // No real data yet
+      rsvpRate: 0, // No real data yet
     };
   }, [campaigns, audienceGroups]);
 
@@ -318,38 +319,30 @@ export default function CampaignsTab({ campaigns, audienceGroups }: CampaignsTab
               id: selectedCampaign.id,
               name: selectedCampaign.name,
               status: selectedCampaign.status.toLowerCase(),
-              totalRecipients: 1000,
-              emailsSent: 850,
-              emailsDelivered: 820,
-              emailsOpened: 245,
-              emailsClicked: 45,
-              unsubscribes: 12,
-              bounces: 8,
-              complaints: 2,
+              totalRecipients: totalAudienceMembers,
+              emailsSent: 0, // No emails sent yet
+              emailsDelivered: 0,
+              emailsOpened: 0,
+              emailsClicked: 0,
+              unsubscribes: 0,
+              bounces: 0,
+              complaints: 0,
               createdAt: selectedCampaign.createdAt.toISOString(),
-              lastSentAt: new Date().toISOString(),
-              nextSendAt: new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString(),
-              openRate: 29.9,
-              clickRate: 5.5,
-              deliveryRate: 96.5,
-              unsubscribeRate: 1.4,
-              bounceRate: 0.9,
-              complaintRate: 0.2,
+              lastSentAt: null,
+              nextSendAt: null,
+              openRate: 0,
+              clickRate: 0,
+              deliveryRate: 0,
+              unsubscribeRate: 0,
+              bounceRate: 0,
+              complaintRate: 0,
               trends: {
-                openRate: 2.3,
-                clickRate: -0.8,
-                deliveryRate: 0.5
+                openRate: 0,
+                clickRate: 0,
+                deliveryRate: 0
               },
-              hourlyData: Array.from({ length: 24 }, (_, i) => ({
-                hour: `${i}:00`,
-                opens: Math.floor(Math.random() * 20),
-                clicks: Math.floor(Math.random() * 5),
-                deliveries: Math.floor(Math.random() * 30)
-              })),
-              topTemplates: [
-                { id: '1', name: 'Welcome Email', openRate: 35.2, clickRate: 8.1 },
-                { id: '2', name: 'Follow-up', openRate: 28.7, clickRate: 6.3 }
-              ]
+              hourlyData: [], // No data yet
+              topTemplates: [] // No data yet
             }}
             onRefresh={() => console.log('Refreshing analytics...')}
             isRefreshing={false}
