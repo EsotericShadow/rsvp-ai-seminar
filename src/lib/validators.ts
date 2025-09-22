@@ -3,6 +3,33 @@ import { z } from "zod";
 
 export const phoneRegex = /^\d{3}-\d{3}-\d{4}$/;
 
+// Input sanitization function to prevent XSS
+function sanitizeString(input: string): string {
+  return input
+    .replace(/[<>\"'&]/g, (match) => {
+      const escapeMap: Record<string, string> = {
+        '<': '&lt;',
+        '>': '&gt;',
+        '"': '&quot;',
+        "'": '&#x27;',
+        '&': '&amp;'
+      };
+      return escapeMap[match];
+    })
+    .trim()
+    .slice(0, 255); // Limit length to prevent buffer overflow
+}
+
+// Custom string validation with sanitization
+const sanitizedString = (minLength?: number) => {
+  if (minLength !== undefined) {
+    return z.string()
+      .min(minLength, `Minimum length is ${minLength} characters`)
+      .transform(sanitizeString);
+  }
+  return z.string().transform(sanitizeString);
+};
+
 // Analytics schema for comprehensive tracking data
 const analyticsSchema = z.object({
   // Basic device info
@@ -39,25 +66,25 @@ const analyticsSchema = z.object({
 
 // Core RSVP form schema
 const coreRsvpSchema = z.object({
-  firstName: z.string().min(1, "Please enter your first name"),
-  lastName: z.string().min(1, "Please enter your last name"),
-  organization: z.string().optional(),
-  email: z.string().email("Enter a valid email"),
+  firstName: sanitizedString(1),
+  lastName: sanitizedString(1),
+  organization: sanitizedString().optional(),
+  email: z.string().email("Enter a valid email").transform((email) => email.toLowerCase().trim()),
   phone: z.string().regex(phoneRegex, "Use 000-000-0000"),
 
   attendanceStatus: z.enum(["YES", "NO", "MAYBE"]),
   attendeeCount: z.number().int().min(1).max(20).optional(),
 
   dietaryPreference: z.enum(["NONE", "VEGETARIAN", "VEGAN", "GLUTEN_FREE", "OTHER"]),
-  dietaryOther: z.string().optional(),
-  accessibilityNeeds: z.string().optional(),
+  dietaryOther: sanitizedString().optional(),
+  accessibilityNeeds: sanitizedString().optional(),
 
   referralSource: z.enum(["RADIO", "CHAMBER", "FACEBOOK", "LINKEDIN", "WORD_OF_MOUTH", "OTHER"]),
-  referralOther: z.string().optional(),
+  referralOther: sanitizedString().optional(),
 
   wantsResources: z.boolean().default(false),
   wantsAudit: z.boolean().default(false),
-  learningGoal: z.string().optional(),
+  learningGoal: sanitizedString().optional(),
 });
 
 // Combined schema that includes analytics
