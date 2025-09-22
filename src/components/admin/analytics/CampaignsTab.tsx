@@ -112,7 +112,7 @@ export default function CampaignsTab({ campaigns, audienceGroups }: CampaignsTab
     const totalAudienceMembers = audienceGroups.reduce((sum, g) => sum + g._count.members, 0);
 
     // Calculate engagement metrics (mock data for now)
-    const totalEmailsSent = campaigns.reduce((sum, c) => sum + (c.schedules?.length || 0) * 100, 0);
+    const totalEmailsSent = campaigns.reduce((sum, c) => sum + ((c.schedules || []).length || 0) * 100, 0);
     const totalOpens = Math.floor(totalEmailsSent * 0.25); // 25% open rate
     const totalClicks = Math.floor(totalOpens * 0.15); // 15% click rate
     const totalRSVPs = Math.floor(totalClicks * 0.3); // 30% RSVP rate

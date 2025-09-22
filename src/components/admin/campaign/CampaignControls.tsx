@@ -1046,7 +1046,7 @@ function CampaignsPanel({
               >
                 <p className="font-semibold leading-tight">{c.name}</p>
                 <p className="mt-1 text-[11px] text-neutral-400">
-                  {c.schedules.length} step{c.schedules.length === 1 ? '' : 's'} · {c.status}
+                  {(c.schedules || []).length} step{(c.schedules || []).length === 1 ? '' : 's'} · {c.status}
                 </p>
               </button>
             ))}

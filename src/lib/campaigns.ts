@@ -76,79 +76,99 @@ const emptyCounts = (): Record<CampaignSendStatus, number> => ({
 })
 
 export async function listCampaignData() {
-  const [templates, groups, schedules, campaigns] = await Promise.all([
-    prisma.campaignTemplate.findMany({ orderBy: { updatedAt: 'desc' } }),
-    prisma.audienceGroup.findMany({
-      orderBy: { updatedAt: 'desc' },
-      include: { members: true },
-    }),
-    prisma.campaignSchedule.findMany({
-      orderBy: [{ campaignId: 'asc' }, { stepOrder: 'asc' }, { updatedAt: 'desc' }],
-      include: {
-        template: true,
-        group: { select: { id: true, name: true } },
-        campaign: { select: { id: true, name: true, status: true } },
-        _count: { select: { sends: true } },
-      },
-    }),
-    prisma.campaign.findMany({
-      orderBy: { updatedAt: 'desc' },
-      include: {
-        schedules: {
-          orderBy: { stepOrder: 'asc' },
-          include: {
-            template: true,
-            group: { select: { id: true, name: true } },
-            campaign: { select: { id: true, name: true, status: true } },
-            _count: { select: { sends: true } },
+  try {
+    const [templates, groups, schedules, campaigns] = await Promise.all([
+      prisma.campaignTemplate.findMany({ orderBy: { updatedAt: 'desc' } }),
+      prisma.audienceGroup.findMany({
+        orderBy: { updatedAt: 'desc' },
+        include: { members: true },
+      }),
+      prisma.campaignSchedule.findMany({
+        orderBy: [{ campaignId: 'asc' }, { stepOrder: 'asc' }, { updatedAt: 'desc' }],
+        include: {
+          template: true,
+          group: { select: { id: true, name: true } },
+          campaign: { select: { id: true, name: true, status: true } },
+          _count: { select: { sends: true } },
+        },
+      }),
+      prisma.campaign.findMany({
+        orderBy: { updatedAt: 'desc' },
+        include: {
+          schedules: {
+            orderBy: { stepOrder: 'asc' },
+            include: {
+              template: true,
+              group: { select: { id: true, name: true } },
+              campaign: { select: { id: true, name: true, status: true } },
+              _count: { select: { sends: true } },
+            },
           },
         },
-      },
-    }),
-  ])
+      }),
+    ])
 
-  const scheduleSummaries = await prisma.campaignSend.groupBy({
-    by: ['scheduleId', 'status'],
-    _count: { _all: true },
-  })
+    // Ensure all data is properly structured
+    const safeTemplates = Array.isArray(templates) ? templates : []
+    const safeGroups = Array.isArray(groups) ? groups : []
+    const safeSchedules = Array.isArray(schedules) ? schedules : []
+    const safeCampaigns = Array.isArray(campaigns) ? campaigns : []
 
-  const countsBySchedule = new Map<string, Record<CampaignSendStatus, number>>()
-  for (const summary of scheduleSummaries) {
-    const existing = countsBySchedule.get(summary.scheduleId) ?? emptyCounts()
-    existing[summary.status] = summary._count._all
-    countsBySchedule.set(summary.scheduleId, existing)
-  }
+    const scheduleSummaries = await prisma.campaignSend.groupBy({
+      by: ['scheduleId', 'status'],
+      _count: { _all: true },
+    })
 
-  const schedulesWithCounts = schedules.map((schedule) => ({
-    ...schedule,
-    counts: countsBySchedule.get(schedule.id) ?? emptyCounts(),
-  }))
+    const countsBySchedule = new Map<string, Record<CampaignSendStatus, number>>()
+    for (const summary of scheduleSummaries) {
+      const existing = countsBySchedule.get(summary.scheduleId) ?? emptyCounts()
+      existing[summary.status] = summary._count._all
+      countsBySchedule.set(summary.scheduleId, existing)
+    }
 
-  const campaignsWithCounts = campaigns.map((campaign) => {
-    const steps = (campaign.schedules || []).map((schedule) => ({
+    const schedulesWithCounts = safeSchedules.map((schedule) => ({
       ...schedule,
       counts: countsBySchedule.get(schedule.id) ?? emptyCounts(),
     }))
 
-    const aggregates = emptyCounts()
-    steps.forEach((step) => {
-      Object.entries(step.counts).forEach(([status, value]) => {
-        aggregates[status as CampaignSendStatus] += value as number
+    const campaignsWithCounts = safeCampaigns.map((campaign) => {
+      // Ensure schedules is always an array
+      const campaignSchedules = Array.isArray(campaign.schedules) ? campaign.schedules : []
+      
+      const steps = campaignSchedules.map((schedule) => ({
+        ...schedule,
+        counts: countsBySchedule.get(schedule.id) ?? emptyCounts(),
+      }))
+
+      const aggregates = emptyCounts()
+      steps.forEach((step) => {
+        Object.entries(step.counts).forEach(([status, value]) => {
+          aggregates[status as CampaignSendStatus] += value as number
+        })
       })
+
+      return {
+        ...campaign,
+        schedules: steps,
+        counts: aggregates,
+      }
     })
 
     return {
-      ...campaign,
-      schedules: steps,
-      counts: aggregates,
+      templates: safeTemplates,
+      groups: safeGroups,
+      schedules: schedulesWithCounts,
+      campaigns: campaignsWithCounts,
     }
-  })
-
-  return {
-    templates,
-    groups,
-    schedules: schedulesWithCounts,
-    campaigns: campaignsWithCounts,
+  } catch (error) {
+    console.error('Error in listCampaignData:', error)
+    // Return empty data structure to prevent crashes
+    return {
+      templates: [],
+      groups: [],
+      schedules: [],
+      campaigns: [],
+    }
   }
 }
 
