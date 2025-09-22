@@ -81,7 +81,7 @@ export async function sendCampaignEmail(jobId: string) {
     // Generate HTML and text using global template
     const html = await generateEmailHTML({
       subject: schedule.template.subject,
-      greeting: `Hi ${context.business_name},`,
+      greeting: 'Hello!',
       body: processedContent,
       ctaText: 'View details & RSVP',
       ctaLink: context.invite_link,
@@ -91,7 +91,7 @@ export async function sendCampaignEmail(jobId: string) {
     });
 
     const text = generateEmailText({
-      greeting: `Hi ${context.business_name},`,
+      greeting: 'Hello!',
       body: schedule.template.textBody || processedContent.replace(/<[^>]*>/g, ''),
       ctaText: 'View details & RSVP',
       ctaLink: context.invite_link,
