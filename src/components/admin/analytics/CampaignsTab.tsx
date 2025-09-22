@@ -325,7 +325,7 @@ export default function CampaignsTab({ campaigns, audienceGroups }: CampaignsTab
             </p>
             <div className="text-sm text-neutral-500">
               <p>• Campaign Status: {selectedCampaign.status}</p>
-              <p>• Total Recipients: {totalAudienceMembers}</p>
+              <p>• Total Recipients: {campaignStats.totalAudienceMembers}</p>
               <p>• Emails Sent: 0</p>
             </div>
           </div>
