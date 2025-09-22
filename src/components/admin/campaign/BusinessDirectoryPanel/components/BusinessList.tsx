@@ -379,7 +379,13 @@ function BusinessCard({
                         headers: { 'Content-Type': 'application/json' },
                         body: JSON.stringify({
                           businessId: business.id,
-                          groupId: group.id
+                          groupId: group.id,
+                          businessData: {
+                            name: business.name,
+                            primaryEmail: business.contact.primaryEmail,
+                            alternateEmail: business.contact.alternateEmail,
+                            tags: business.contact.tags || []
+                          }
                         })
                       })
                       
