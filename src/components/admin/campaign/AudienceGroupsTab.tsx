@@ -158,6 +158,11 @@ export function AudienceGroupsTab({
                 onAddMany={onAddMany}
                 existingMemberIds={memberIds}
                 allExistingMemberIds={allExistingMemberIds}
+                existingGroups={existingGroups}
+                onMemberMoved={() => {
+                  // Refresh the data by calling the parent's refresh function
+                  // This will be handled by the parent component
+                }}
               />
             )}
 
@@ -166,6 +171,12 @@ export function AudienceGroupsTab({
                 members={members}
                 onRemoveMember={onRemoveMember}
                 onAddManual={() => setManualOpen(true)}
+                existingGroups={existingGroups}
+                currentGroupId={draft.id}
+                onMemberMoved={() => {
+                  // Refresh the data by calling the parent's refresh function
+                  // This will be handled by the parent component
+                }}
               />
             )}
 

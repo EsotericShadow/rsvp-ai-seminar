@@ -1,18 +1,29 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import type { MemberDraft } from './AudienceGroupsTab'
 
 interface GroupMembersListProps {
   members: MemberDraft[]
   onRemoveMember: (businessId: string) => void
   onAddManual: () => void
+  existingGroups: Array<{
+    id: string
+    name: string
+    description: string | null
+    members: Array<{ businessId: string }>
+  }>
+  currentGroupId?: string
+  onMemberMoved?: () => void
 }
 
 export function GroupMembersList({
   members,
   onRemoveMember,
   onAddManual,
+  existingGroups,
+  currentGroupId,
+  onMemberMoved,
 }: GroupMembersListProps) {
   const [searchTerm, setSearchTerm] = useState('')
   const [filterType, setFilterType] = useState<'all' | 'manual' | 'leadmine'>('all')
@@ -157,6 +168,9 @@ export function GroupMembersList({
               key={member.businessId}
               member={member}
               onRemove={() => onRemoveMember(member.businessId)}
+              existingGroups={existingGroups}
+              currentGroupId={currentGroupId}
+              onMemberMoved={onMemberMoved}
             />
           ))
         )}
@@ -168,10 +182,25 @@ export function GroupMembersList({
 function MemberCard({
   member,
   onRemove,
+  existingGroups,
+  currentGroupId,
+  onMemberMoved,
 }: {
   member: MemberDraft
   onRemove: () => void
+  existingGroups: Array<{
+    id: string
+    name: string
+    description: string | null
+    members: Array<{ businessId: string }>
+  }>
+  currentGroupId?: string
+  onMemberMoved?: () => void
 }) {
+  const [isMoving, setIsMoving] = useState(false)
+  const [showMoveDropdown, setShowMoveDropdown] = useState(false)
+  const dropdownRef = useRef<HTMLDivElement>(null)
+  
   const isManual = member.meta && typeof member.meta === 'object' && 'manual' in member.meta
   const tags = member.tags || []
   const contactPerson = member.meta && typeof member.meta === 'object' && 'contactPerson' in member.meta 
@@ -183,6 +212,70 @@ function MemberCard({
   const phone = member.meta && typeof member.meta === 'object' && 'phone' in member.meta 
     ? (member.meta as any).phone as string | undefined 
     : undefined
+
+  // Filter out current group and groups that already have this business
+  const availableGroups = existingGroups.filter(group => {
+    if (group.id === currentGroupId) return false
+    return !group.members.some(m => m.businessId === member.businessId)
+  })
+
+  // Close dropdown when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
+        setShowMoveDropdown(false)
+      }
+    }
+
+    if (showMoveDropdown) {
+      document.addEventListener('mousedown', handleClickOutside)
+    }
+
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside)
+    }
+  }, [showMoveDropdown])
+
+  const handleMoveToGroup = async (targetGroupId: string) => {
+    if (!member.businessId || isMoving) return
+    
+    setIsMoving(true)
+    setShowMoveDropdown(false)
+    
+    try {
+      const response = await fetch('/api/admin/campaign/members/move', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          memberId: member.businessId, // Using businessId as memberId for now
+          targetGroupId,
+        }),
+      })
+
+      if (!response.ok) {
+        const error = await response.json()
+        throw new Error(error.error || 'Failed to move member')
+      }
+
+      const result = await response.json()
+      
+      // Call the callback to refresh the data
+      if (onMemberMoved) {
+        onMemberMoved()
+      }
+      
+      // Show success message
+      alert(result.message || 'Member moved successfully')
+      
+    } catch (error) {
+      console.error('Error moving member:', error)
+      alert(error instanceof Error ? error.message : 'Failed to move member')
+    } finally {
+      setIsMoving(false)
+    }
+  }
 
   return (
     <div className="rounded-lg border border-white/10 bg-black/40 p-4">
@@ -255,12 +348,42 @@ function MemberCard({
           )}
         </div>
         
-        <button
-          onClick={onRemove}
-          className="rounded-lg border border-red-500/40 px-3 py-1 text-xs text-red-200 hover:bg-red-500/10 flex-shrink-0"
-        >
-          Remove
-        </button>
+        <div className="flex gap-2 flex-shrink-0">
+          {/* Move to Dropdown */}
+          {availableGroups.length > 0 && (
+            <div className="relative" ref={dropdownRef}>
+              <button
+                onClick={() => setShowMoveDropdown(!showMoveDropdown)}
+                disabled={isMoving}
+                className="rounded-lg border border-blue-500/40 px-3 py-1 text-xs text-blue-200 hover:bg-blue-500/10 disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                {isMoving ? 'Moving...' : 'Move to'}
+              </button>
+              
+              {showMoveDropdown && (
+                <div className="absolute right-0 top-full mt-1 w-48 rounded-lg border border-white/10 bg-neutral-800 py-1 shadow-lg z-10">
+                  {availableGroups.map((group) => (
+                    <button
+                      key={group.id}
+                      onClick={() => handleMoveToGroup(group.id)}
+                      className="w-full px-3 py-2 text-left text-xs text-neutral-200 hover:bg-neutral-700"
+                    >
+                      {group.name}
+                    </button>
+                  ))}
+                </div>
+              )}
+            </div>
+          )}
+          
+          {/* Remove Button */}
+          <button
+            onClick={onRemove}
+            className="rounded-lg border border-red-500/40 px-3 py-1 text-xs text-red-200 hover:bg-red-500/10"
+          >
+            Remove
+          </button>
+        </div>
       </div>
     </div>
   )

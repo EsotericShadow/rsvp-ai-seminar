@@ -1,3 +1,4 @@
+import { useState, useEffect, useRef } from 'react'
 import type { LeadMineBusiness } from '@/lib/leadMine'
 
 type BusinessListProps = {
@@ -12,6 +13,13 @@ type BusinessListProps = {
   onAddMember: (business: LeadMineBusiness) => void
   onLoadMore: () => void
   showUngroupedOnly?: boolean
+  existingGroups?: Array<{
+    id: string
+    name: string
+    description: string | null
+    members: Array<{ businessId: string }>
+  }>
+  onMemberMoved?: () => void
 }
 
 export function BusinessList({
@@ -26,6 +34,8 @@ export function BusinessList({
   onAddMember,
   onLoadMore,
   showUngroupedOnly = false,
+  existingGroups = [],
+  onMemberMoved,
 }: BusinessListProps) {
   if (isLoading) {
     return (
@@ -60,96 +70,21 @@ export function BusinessList({
         </div>
       )}
 
-      {businesses.map((business) => {
-        const isSelected = selectedIds.includes(business.id)
-        const isExistingMember = existingMemberSet.has(business.id)
-        const isInOtherGroup = allExistingMemberIds?.has(business.id) && !isExistingMember
-        const isUngrouped = !allExistingMemberIds?.has(business.id)
-        
-        return (
-          <div
-            key={business.id}
-            className={`p-4 border rounded-lg transition-all duration-200 ${
-              isSelected ? 'border-primary-500 bg-primary-500/10' : 'border-white/10 bg-black/40'
-            } ${isExistingMember ? 'opacity-50' : ''} ${isInOtherGroup ? 'border-warning-500/50 bg-warning-500/5' : ''} ${
-              isUngrouped && showUngroupedOnly ? 'border-warning-400/30 bg-warning-500/5' : ''
-            }`}
-          >
-            <div className="flex items-start justify-between">
-              <div className="flex items-start space-x-3">
-                <input
-                  type="checkbox"
-                  checked={isSelected}
-                  disabled={isExistingMember || isInOtherGroup}
-                  onChange={() => onToggleSelection(business.id)}
-                  className="mt-1 rounded border-white/20 bg-black/60 text-primary-500 focus:border-primary-400 focus:ring-primary-400"
-                />
-                <div className="flex-1">
-                  <div className="flex items-center space-x-2">
-                    <h3 className="font-medium text-white">{business.name || 'Unnamed Business'}</h3>
-                    {isExistingMember && (
-                      <span className="px-2 py-1 text-xs bg-primary-500/20 text-primary-200 rounded border border-primary-500/30">
-                        Already Added
-                      </span>
-                    )}
-                    {isInOtherGroup && (
-                      <span className="px-2 py-1 text-xs bg-warning-500/20 text-warning-200 rounded border border-warning-500/30">
-                        In Another Group
-                      </span>
-                    )}
-                    {isUngrouped && showUngroupedOnly && (
-                      <span className="px-2 py-1 text-xs bg-warning-600/20 text-warning-100 rounded border border-warning-500/40">
-                        Not in Any Group
-                      </span>
-                    )}
-                  </div>
-                  <div className="mt-1 text-sm text-neutral-300">
-                    {business.contact.primaryEmail && (
-                      <div>Email: {business.contact.primaryEmail}</div>
-                    )}
-                    {business.contact.contactPerson && (
-                      <div>Contact: {business.contact.contactPerson}</div>
-                    )}
-                    {business.address && (
-                      <div>Address: {business.address}</div>
-                    )}
-                  </div>
-                  <div className="mt-2 flex flex-wrap gap-1">
-                    {business.contact.tags.map((tag) => (
-                      <span
-                        key={tag}
-                        className="px-2 py-1 text-xs bg-white/10 text-neutral-200 rounded border border-white/20"
-                      >
-                        {tag}
-                      </span>
-                    ))}
-                  </div>
-                  {business.invite && (
-                    <div className="mt-2 text-xs text-neutral-400">
-                      Emails: {business.invite.emailsSent} | 
-                      Visits: {business.invite.visitsCount} | 
-                      RSVPs: {business.invite.rsvpsCount}
-                    </div>
-                  )}
-                </div>
-              </div>
-              <div className="flex space-x-2">
-                <button
-                  onClick={() => onAddMember(business)}
-                  disabled={isExistingMember}
-                  className={`px-3 py-1 text-sm rounded transition-colors ${
-                    isExistingMember
-                      ? 'bg-white/10 text-neutral-400 cursor-not-allowed border border-white/20'
-                      : 'bg-emerald-600 text-white hover:bg-emerald-700 border border-emerald-500'
-                  }`}
-                >
-                  {isExistingMember ? 'Added' : 'Add'}
-                </button>
-              </div>
-            </div>
-          </div>
-        )
-      })}
+      {businesses.map((business) => (
+        <BusinessCard
+          key={business.id}
+          business={business}
+          isSelected={selectedIds.includes(business.id)}
+          isExistingMember={existingMemberSet.has(business.id)}
+          isInOtherGroup={Boolean(allExistingMemberIds?.has(business.id) && !existingMemberSet.has(business.id))}
+          isUngrouped={Boolean(!allExistingMemberIds?.has(business.id))}
+          showUngroupedOnly={showUngroupedOnly}
+          onToggleSelection={onToggleSelection}
+          onAddMember={onAddMember}
+          existingGroups={existingGroups}
+          onMemberMoved={onMemberMoved}
+        />
+      ))}
       
       {hasMore && (
         <div className="text-center py-4">
@@ -162,6 +97,220 @@ export function BusinessList({
           </button>
         </div>
       )}
+    </div>
+  )
+}
+
+function BusinessCard({
+  business,
+  isSelected,
+  isExistingMember,
+  isInOtherGroup,
+  isUngrouped,
+  showUngroupedOnly,
+  onToggleSelection,
+  onAddMember,
+  existingGroups,
+  onMemberMoved,
+}: {
+  business: LeadMineBusiness
+  isSelected: boolean
+  isExistingMember: boolean
+  isInOtherGroup: boolean
+  isUngrouped: boolean
+  showUngroupedOnly: boolean
+  onToggleSelection: (id: string) => void
+  onAddMember: (business: LeadMineBusiness) => void
+  existingGroups: Array<{
+    id: string
+    name: string
+    description: string | null
+    members: Array<{ businessId: string }>
+  }>
+  onMemberMoved?: () => void
+}) {
+  const [isMoving, setIsMoving] = useState(false)
+  const [showMoveDropdown, setShowMoveDropdown] = useState(false)
+  const dropdownRef = useRef<HTMLDivElement>(null)
+
+  // Filter out groups that already have this business
+  const availableGroups = existingGroups.filter(group => {
+    return !group.members.some(m => m.businessId === business.id)
+  })
+
+  // Close dropdown when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
+        setShowMoveDropdown(false)
+      }
+    }
+
+    if (showMoveDropdown) {
+      document.addEventListener('mousedown', handleClickOutside)
+    }
+
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside)
+    }
+  }, [showMoveDropdown])
+
+  const handleMoveToGroup = async (targetGroupId: string) => {
+    if (!business.id || isMoving) return
+    
+    setIsMoving(true)
+    setShowMoveDropdown(false)
+    
+    try {
+      // First, we need to add the business to the target group
+      // Since we don't have a direct move API for LeadMine businesses,
+      // we'll need to create a member in the target group
+      const response = await fetch('/api/admin/campaign/groups', {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          id: targetGroupId,
+          members: [{
+            businessId: business.id,
+            businessName: business.name,
+            primaryEmail: business.contact.primaryEmail,
+            secondaryEmail: business.contact.alternateEmail,
+            tags: business.contact.tags,
+            meta: {}
+          }]
+        }),
+      })
+
+      if (!response.ok) {
+        const error = await response.json()
+        throw new Error(error.error || 'Failed to move business')
+      }
+
+      // Call the callback to refresh the data
+      if (onMemberMoved) {
+        onMemberMoved()
+      }
+      
+      // Show success message
+      alert(`Business moved to group successfully`)
+      
+    } catch (error) {
+      console.error('Error moving business:', error)
+      alert(error instanceof Error ? error.message : 'Failed to move business')
+    } finally {
+      setIsMoving(false)
+    }
+  }
+
+  return (
+    <div
+      className={`p-4 border rounded-lg transition-all duration-200 ${
+        isSelected ? 'border-primary-500 bg-primary-500/10' : 'border-white/10 bg-black/40'
+      } ${isExistingMember ? 'opacity-50' : ''} ${isInOtherGroup ? 'border-warning-500/50 bg-warning-500/5' : ''} ${
+        isUngrouped && showUngroupedOnly ? 'border-warning-400/30 bg-warning-500/5' : ''
+      }`}
+    >
+      <div className="flex items-start justify-between">
+        <div className="flex items-start space-x-3">
+          <input
+            type="checkbox"
+            checked={isSelected}
+            disabled={isExistingMember || isInOtherGroup}
+            onChange={() => onToggleSelection(business.id)}
+            className="mt-1 rounded border-white/20 bg-black/60 text-primary-500 focus:border-primary-400 focus:ring-primary-400"
+          />
+          <div className="flex-1">
+            <div className="flex items-center space-x-2">
+              <h3 className="font-medium text-white">{business.name || 'Unnamed Business'}</h3>
+              {isExistingMember && (
+                <span className="px-2 py-1 text-xs bg-primary-500/20 text-primary-200 rounded border border-primary-500/30">
+                  Already Added
+                </span>
+              )}
+              {isInOtherGroup && (
+                <span className="px-2 py-1 text-xs bg-warning-500/20 text-warning-200 rounded border border-warning-500/30">
+                  In Another Group
+                </span>
+              )}
+              {isUngrouped && showUngroupedOnly && (
+                <span className="px-2 py-1 text-xs bg-warning-600/20 text-warning-100 rounded border border-warning-500/40">
+                  Not in Any Group
+                </span>
+              )}
+            </div>
+            <div className="mt-1 text-sm text-neutral-300">
+              {business.contact.primaryEmail && (
+                <div>Email: {business.contact.primaryEmail}</div>
+              )}
+              {business.contact.contactPerson && (
+                <div>Contact: {business.contact.contactPerson}</div>
+              )}
+              {business.address && (
+                <div>Address: {business.address}</div>
+              )}
+            </div>
+            <div className="mt-2 flex flex-wrap gap-1">
+              {business.contact.tags.map((tag) => (
+                <span
+                  key={tag}
+                  className="px-2 py-1 text-xs bg-white/10 text-neutral-200 rounded border border-white/20"
+                >
+                  {tag}
+                </span>
+              ))}
+            </div>
+            {business.invite && (
+              <div className="mt-2 text-xs text-neutral-400">
+                Emails: {business.invite.emailsSent} | 
+                Visits: {business.invite.visitsCount} | 
+                RSVPs: {business.invite.rsvpsCount}
+              </div>
+            )}
+          </div>
+        </div>
+        <div className="flex space-x-2">
+          {/* Move to Dropdown - only show if business is in another group */}
+          {isInOtherGroup && availableGroups.length > 0 && (
+            <div className="relative" ref={dropdownRef}>
+              <button
+                onClick={() => setShowMoveDropdown(!showMoveDropdown)}
+                disabled={isMoving}
+                className="rounded-lg border border-blue-500/40 px-3 py-1 text-xs text-blue-200 hover:bg-blue-500/10 disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                {isMoving ? 'Moving...' : 'Move to'}
+              </button>
+              
+              {showMoveDropdown && (
+                <div className="absolute right-0 top-full mt-1 w-48 rounded-lg border border-white/10 bg-neutral-800 py-1 shadow-lg z-10">
+                  {availableGroups.map((group) => (
+                    <button
+                      key={group.id}
+                      onClick={() => handleMoveToGroup(group.id)}
+                      className="w-full px-3 py-2 text-left text-xs text-neutral-200 hover:bg-neutral-700"
+                    >
+                      {group.name}
+                    </button>
+                  ))}
+                </div>
+              )}
+            </div>
+          )}
+          
+          <button
+            onClick={() => onAddMember(business)}
+            disabled={isExistingMember}
+            className={`px-3 py-1 text-sm rounded transition-colors ${
+              isExistingMember
+                ? 'bg-white/10 text-neutral-400 cursor-not-allowed border border-white/20'
+                : 'bg-emerald-600 text-white hover:bg-emerald-700 border border-emerald-500'
+            }`}
+          >
+            {isExistingMember ? 'Added' : 'Add'}
+          </button>
+        </div>
+      </div>
     </div>
   )
 }
