@@ -6,7 +6,7 @@ import { useBusinessDirectory } from './BusinessDirectoryPanel/hooks/useBusiness
 import { useSelection } from './BusinessDirectoryPanel/hooks/useSelection'
 import type { BusinessDirectoryPanelProps } from './BusinessDirectoryPanel/types'
 
-export function BusinessDirectoryPanel({ onAddMember, onAddMany, existingMemberIds }: BusinessDirectoryPanelProps) {
+export function BusinessDirectoryPanel({ onAddMember, onAddMany, existingMemberIds, allExistingMemberIds }: BusinessDirectoryPanelProps) {
   const {
     searchInput,
     setSearchInput,
@@ -121,6 +121,7 @@ export function BusinessDirectoryPanel({ onAddMember, onAddMany, existingMemberI
             hasMore={hasMore}
             selectedIds={selectedIds}
             existingMemberSet={existingMemberSet}
+            allExistingMemberIds={allExistingMemberIds}
             onToggleSelection={toggleSelection}
             onAddMember={onAddMember}
             onLoadMore={handleLoadMore}

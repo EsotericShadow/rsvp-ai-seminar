@@ -7,6 +7,7 @@ type BusinessListProps = {
   hasMore: boolean
   selectedIds: string[]
   existingMemberSet: Set<string>
+  allExistingMemberIds?: Set<string>
   onToggleSelection: (id: string) => void
   onAddMember: (business: LeadMineBusiness) => void
   onLoadMore: () => void
@@ -19,6 +20,7 @@ export function BusinessList({
   hasMore,
   selectedIds,
   existingMemberSet,
+  allExistingMemberIds,
   onToggleSelection,
   onAddMember,
   onLoadMore,
@@ -44,20 +46,21 @@ export function BusinessList({
       {businesses.map((business) => {
         const isSelected = selectedIds.includes(business.id)
         const isExistingMember = existingMemberSet.has(business.id)
+        const isInOtherGroup = allExistingMemberIds?.has(business.id) && !isExistingMember
         
         return (
           <div
             key={business.id}
             className={`p-4 border rounded-lg ${
               isSelected ? 'border-emerald-500 bg-emerald-500/10' : 'border-white/10 bg-black/40'
-            } ${isExistingMember ? 'opacity-50' : ''}`}
+            } ${isExistingMember ? 'opacity-50' : ''} ${isInOtherGroup ? 'border-yellow-500/50 bg-yellow-500/5' : ''}`}
           >
             <div className="flex items-start justify-between">
               <div className="flex items-start space-x-3">
                 <input
                   type="checkbox"
                   checked={isSelected}
-                  disabled={isExistingMember}
+                  disabled={isExistingMember || isInOtherGroup}
                   onChange={() => onToggleSelection(business.id)}
                   className="mt-1 rounded border-white/20 bg-black/60 text-emerald-500 focus:border-emerald-400 focus:ring-emerald-400"
                 />
@@ -67,6 +70,11 @@ export function BusinessList({
                     {isExistingMember && (
                       <span className="px-2 py-1 text-xs bg-emerald-500/20 text-emerald-200 rounded border border-emerald-500/30">
                         Already Added
+                      </span>
+                    )}
+                    {isInOtherGroup && (
+                      <span className="px-2 py-1 text-xs bg-yellow-500/20 text-yellow-200 rounded border border-yellow-500/30">
+                        In Another Group
                       </span>
                     )}
                   </div>

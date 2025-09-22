@@ -41,6 +41,7 @@ export type BusinessDirectoryPanelProps = {
   onAddMember: (business: LeadMineBusiness) => void
   onAddMany: (businesses: LeadMineBusiness[]) => void
   existingMemberIds: string[]
+  allExistingMemberIds?: Set<string>
 }
 
 export const INITIAL_FACETS: FacetResponse = {

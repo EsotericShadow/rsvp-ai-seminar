@@ -3,15 +3,14 @@
 import { useEffect, useMemo, useState, useCallback } from 'react'
 import { Campaign, CampaignSchedule, CampaignSendStatus, CampaignStatus, CampaignTemplate, AudienceGroup } from '@prisma/client'
 import type { LeadMineBusiness } from '@/lib/leadMine'
-import { GroupsPanel } from './GroupsPanel'
-import type { MemberDraft } from './GroupsPanel'
+import type { MemberDraft } from './AudienceGroupsTab'
 import TemplateEditor from '../TemplateEditor'
 import GlobalHTMLTemplate from '../GlobalHTMLTemplate'
 import GlobalTemplateSettings from '../GlobalTemplateSettings'
 import HTMLEditor from '../HTMLEditor'
 import TextEditor from '../TextEditor'
 // TemplatesPanel will be implemented inline to match CampaignsView structure
-import { BusinessDirectoryPanel } from './BusinessDirectoryPanel'
+import { AudienceGroupsTab } from './AudienceGroupsTab'
 
 // ### TYPES ###
 
@@ -745,7 +744,7 @@ export default function CampaignControls({ initialData, defaults }: { initialDat
           />
         )}
         {activeTab === 'groups' && (
-          <GroupsPanel
+          <AudienceGroupsTab
             draft={groupDraft}
             setDraft={setGroupDraft}
             members={selectedMembers}
