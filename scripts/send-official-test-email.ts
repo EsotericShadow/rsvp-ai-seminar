@@ -304,15 +304,15 @@ async function sendOfficialTestEmail() {
       unsubscribe_link: unsubscribeLink,
       tracking_pixel: trackingPixel,
       
-      // Template content variables
-      greeting_title: 'Hello Sarah!',
-      main_content_title: 'What You\'ll Learn',
-      main_content_body: 'We\'ll cover practical AI tools that can help streamline your business operations, including spreadsheet automation, data analysis, and process optimization. All tools discussed are immediately actionable and cost-effective.',
-      additional_info_title: 'Event Details',
-      additional_info_body: 'Date: October 23rd, 2025<br>Time: 6:00 PM - 8:00 PM<br>Location: Terrace, BC',
-      closing_title: 'Looking Forward',
-      closing_message: 'We\'re excited to share these practical AI solutions with you and help your business grow.',
-      button_text: 'RSVP for Free Session',
+        // Template content variables (no event details - handled by global template)
+        greeting_title: 'Hello Sarah!',
+        main_content_title: 'What You\'ll Learn',
+        main_content_body: 'We\'ll cover practical AI tools that can help streamline your business operations, including spreadsheet automation, data analysis, and process optimization. All tools discussed are immediately actionable and cost-effective.',
+        additional_info_title: 'Why This Matters',
+        additional_info_body: 'These AI tools can save your business hours of manual work each week, giving you more time to focus on growing your business and serving your customers better.',
+        closing_title: 'Looking Forward',
+        closing_message: 'We\'re excited to share these practical AI solutions with you and help your business grow.',
+        button_text: 'RSVP for Free Session',
       
       // Global template variables
       global_hero_title: 'Evergreen Web Solutions - Informational Event Invitation',
