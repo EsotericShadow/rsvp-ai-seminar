@@ -1,0 +1,736 @@
+import { PrismaClient } from '@prisma/client'
+import { Resend } from 'resend'
+
+const prisma = new PrismaClient()
+const resend = new Resend(process.env.RESEND_API_KEY)
+
+// Official email addresses for testing
+const OFFICIAL_TEST_EMAILS = [
+  'gabriel.lacroix94@icloud.com',
+  'greenalderson@gmail.com', 
+  'gabriel@evergreenwebsolutions.ca',
+  'Tangible18@outlook.com'
+]
+
+// Official business data
+const OFFICIAL_BUSINESSES = [
+  {
+    id: 'official-business-1',
+    name: 'Terrace Tech Solutions',
+    industry: 'Technology',
+    contactPerson: 'Sarah Johnson',
+    email: 'gabriel.lacroix94@icloud.com',
+    website: 'https://terracetech.ca',
+    phone: '(250) 555-0101',
+    location: 'Terrace, BC'
+  },
+  {
+    id: 'official-business-2', 
+    name: 'Northern Marketing Co',
+    industry: 'Marketing',
+    contactPerson: 'Mike Chen',
+    email: 'greenalderson@gmail.com',
+    website: 'https://northernmarketing.bc.ca',
+    phone: '(250) 555-0102',
+    location: 'Prince Rupert, BC'
+  },
+  {
+    id: 'official-business-3',
+    name: 'Evergreen Web Solutions',
+    industry: 'Web Development',
+    contactPerson: 'Gabriel Lacroix',
+    email: 'gabriel@evergreenwebsolutions.ca',
+    website: 'https://evergreenwebsolutions.ca',
+    phone: '(250) 555-0103',
+    location: 'Terrace, BC'
+  },
+  {
+    id: 'official-business-4',
+    name: 'BC Business Consulting',
+    industry: 'Consulting',
+    contactPerson: 'Lisa Thompson',
+    email: 'Tangible18@outlook.com',
+    website: 'https://bcbusinessconsulting.com',
+    phone: '(250) 555-0104',
+    location: 'Smithers, BC'
+  }
+]
+
+// Official email template using your exact HTML
+const OFFICIAL_EMAIL_TEMPLATE = `<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>TEST: Modified Template - {{subject}}</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+    <style>
+        /* Reset & base */
+        html,body{margin:0;padding:0;width:100% !important;-webkit-text-size-adjust:100%;-ms-text-size-adjust:100%;}
+        body{background:#f0fdf4;font-family:'Inter',system-ui,-apple-system,"Segoe UI",Roboto,Arial,sans-serif;color:#222;}
+        img{display:block;border:0;outline:none;text-decoration:none;}
+        a{color:#10b981;text-decoration:none;}
+        
+        /* Wrapper */
+        .evergreen-wrapper{width:100%;max-width:640px;margin:40px auto;box-sizing:border-box;padding:0;}
+        .evergreen-table{width:100%;border-collapse:collapse;box-shadow:0 20px 48px rgba(16,185,129,0.15);border-radius:12px;overflow:hidden;background:#fff;}
+        
+        /* Typography */
+        h1,h2,h3,h4,p{margin:0 0 12px 0;padding:0;line-height:1.3;}
+        h1{font-size:28px;color:#10b981;font-weight:700;}
+        h2{font-size:20px;color:#047857;font-weight:600;}
+        h3{font-size:18px;color:#047857;font-weight:600;}
+        p{font-size:16px;color:#374151;margin-bottom:12px;}
+        
+        /* Header / logo */
+        .evergreen-header{padding:24px;text-align:center;}
+        .evergreen-logo{width:72px;height:72px;margin:8px auto;border-radius:50%;background:linear-gradient(135deg,#10b981 0%,#059669 100%);position:relative;display:inline-block;}
+        .evergreen-logo::before{content:"🌲";position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);font-size:34px;}
+        
+        /* HERO nested table */
+        .hero-inner{width:100%;border-radius:8px;overflow:hidden;}
+        .hero-left{width:8px;background:#10b981;vertical-align:top;}
+        .hero-right{vertical-align:middle;padding:18px 16px;background-color:#e6f9ef; /* fallback */ background-color:rgba(16,185,129,0.06); border-radius:0 8px 8px 0;}
+        .hero-title{font-size:20px;color:#065f46;font-weight:700;margin-bottom:6px;}
+        .hero-sub{font-size:14px;color:#065f46;margin:0;}
+        
+        /* Content blocks */
+        .content-cell{padding:18px 24px;}
+        .evergreen-signature{background:#f0fdf4;padding:14px;border-radius:8px;border-left:4px solid #10b981;margin:14px 0;}
+        .btn{display:inline-block;padding:12px 28px;border-radius:10px;font-weight:700;color:#fff !important;background:linear-gradient(135deg,#10b981 0%,#059669 100%);text-decoration:none;box-shadow:0 4px 14px rgba(16,185,129,0.3);}
+        
+        /* Event details section */
+        .event-details{background:#f8fafc;padding:16px;border-radius:8px;border:1px solid #e2e8f0;margin:14px 0;}
+        .event-details h3{color:#1e293b;margin-bottom:8px;}
+        .event-details p{margin-bottom:4px;color:#475569;}
+        
+        /* Divider & footer */
+        .divider{border-top:1px solid #f0fdf4;margin:16px 0;}
+        .footer{padding:12px 24px 28px 24px;text-align:center;color:#6b7280;font-size:13px;}
+        .social-link{display:inline-flex;align-items:center;gap:8px;margin:6px 10px;text-decoration:none;color:#065f46;font-weight:600;}
+        .social-icon-bg{display:inline-block;width:36px;height:36px;border-radius:8px;vertical-align:middle;flex:0 0 36px;display:inline-flex;align-items:center;justify-content:center;}
+        .sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0;}
+        
+        @media (max-width:480px){
+            h1{font-size:22px;}
+            .hero-title{font-size:18px;}
+            .content-cell{padding:12px 16px;}
+            .evergreen-wrapper{margin:16px auto;}
+            .social-link{display:block;padding:8px 0;}
+        }
+    </style>
+</head>
+<body>
+    <div class="evergreen-wrapper">
+        <table class="evergreen-table" role="presentation" cellpadding="0" cellspacing="0" aria-hidden="false">
+            <tbody>
+                <!-- Header -->
+                <tr>
+                    <td class="evergreen-header" style="padding-top:22px;padding-bottom:8px;">
+                        <h1 style="margin-bottom:6px;">{{subject}}</h1>
+                        <div class="evergreen-logo" aria-hidden="true"></div>
+                    </td>
+                </tr>
+                
+                <!-- HERO (vertical bar + translucent fill) -->
+                <tr>
+                    <td style="padding:0 24px 0 24px;">
+                        <table class="hero-inner" role="presentation" cellpadding="0" cellspacing="0" width="100%" style="border-collapse:collapse;">
+                            <tr>
+                                <td class="hero-left" width="8" style="background:#10b981;"></td>
+                                <td class="hero-right" style="background-color:#e6f9ef; background-color:rgba(16,185,129,0.06);">
+                                    <div>
+                                        <div class="hero-title">{{global_hero_title}}</div>
+                                        <p class="hero-sub">{{global_hero_message}}</p>
+                                    </div>
+                                </td>
+                            </tr>
+                        </table>
+                    </td>
+                </tr>
+                
+                <!-- Greeting Title -->
+                <tr>
+                    <td class="content-cell" style="padding-top:16px;">
+                        <h2>{{greeting_title}}</h2>
+                    </td>
+                </tr>
+                
+                <!-- Main content title + body -->
+                <tr>
+                    <td class="content-cell">
+                        <h2 style="margin-top:0;">{{main_content_title}}</h2>
+                        <p style="margin-top:6px;margin-bottom:12px;">{{main_content_body}}</p>
+                    </td>
+                </tr>
+                
+                <!-- Button -->
+                <tr>
+                    <td class="content-cell" style="text-align:center;padding-bottom:12px;">
+                        <a href="{{button_link}}" target="_blank" class="btn" style="display:inline-block;">{{button_text}}</a>
+                    </td>
+                </tr>
+                
+                <!-- Event Details -->
+                <tr>
+                    <td class="content-cell">
+                        <div class="event-details">
+                            <h3>{{global_event_title}}</h3>
+                            <p><strong>Date:</strong> {{global_event_date}}</p>
+                            <p><strong>Time:</strong> {{global_event_time}}</p>
+                            <p><strong>Location:</strong> {{global_event_location}}</p>
+                            <p><strong>Cost:</strong> {{global_event_cost}}</p>
+                            <p><strong>Includes:</strong> {{global_event_includes}}</p>
+                        </div>
+                    </td>
+                </tr>
+                
+                <!-- Additional info -->
+                <tr>
+                    <td class="content-cell">
+                        <h3 style="margin-top:0;">{{additional_info_title}}</h3>
+                        <p>{{additional_info_body}}</p>
+                    </td>
+                </tr>
+                
+                <!-- Signature block (uses global signature variables) -->
+                <tr>
+                    <td class="content-cell">
+                        <div class="evergreen-signature">
+                            <p style="margin:0;"><strong>{{global_signature_name}}</strong><br>
+                            {{global_signature_title}}<br>
+                            {{global_signature_company}}<br>
+                            {{global_signature_location}}</p>
+                        </div>
+                    </td>
+                </tr>
+                
+                <!-- Closing -->
+                <tr>
+                    <td class="content-cell">
+                        <h3 style="margin-top:0;">{{closing_title}}</h3>
+                        <p style="margin-bottom:6px;">{{closing_message}}</p>
+                    </td>
+                </tr>
+                
+                <!-- Divider and footer with unsubscribe (VISIBLE) -->
+                <tr>
+                    <td style="padding:12px 24px 18px 24px;">
+                        <div class="divider"></div>
+                        <div class="footer" role="contentinfo" aria-label="Footer">
+                            <div style="margin-bottom:8px;">© 2025 Gabriel Lacroix - Evergreen Web Solutions, Terrace BC</div>
+                            
+                            <!-- Social links: LinkedIn / Facebook / X (label + icon) -->
+                            <div style="margin-bottom:12px; text-align:center;">
+                                <!-- LinkedIn -->
+                                <a href="https://www.linkedin.com/in/gabriel-marko-6b7aaa357/" target="_blank" rel="noopener noreferrer" class="social-link" aria-label="LinkedIn – opens in a new tab">
+                                    <span class="social-icon-bg" style="background:#0A66C2;">
+                                        <!-- LinkedIn SVG -->
+                                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="18" height="18" aria-hidden="true" focusable="false">
+                                            <path fill="#ffffff" d="M4.98 3.5C4.98 4.88 3.87 6 2.49 6 1.11 6 .01 4.88.01 3.5S1.11 1 2.49 1C3.87 1 4.98 2.12 4.98 3.5zM.22 8.5h4.54v13H.22v-13zM8.5 8.5h4.36v1.77h.06c.61-1.16 2.1-2.38 4.32-2.38 4.63 0 5.48 3.05 5.48 7.01v8.6h-4.54v-7.61c0-1.82-.03-4.17-2.54-4.17-2.54 0-2.93 1.98-2.93 4.03v7.75H8.5v-13z"/>
+                                        </svg>
+                                    </span>
+                                    <span>LinkedIn</span>
+                                </a>
+                                
+                                <!-- Facebook -->
+                                <a href="https://www.facebook.com/share/14Exmoytvrs/?mibextid=wwXIfr" target="_blank" rel="noopener noreferrer" class="social-link" aria-label="Facebook – opens in a new tab">
+                                    <span class="social-icon-bg" style="background:#1877F2;">
+                                        <!-- Facebook SVG -->
+                                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="18" height="18" aria-hidden="true" focusable="false">
+                                            <path fill="#ffffff" d="M22 12a10 10 0 1 0-11.5 9.9v-7h-2.2V12h2.2V9.7c0-2.2 1.3-3.4 3.2-3.4.9 0 1.8.16 1.8.16v2h-1c-1 0-1.3.6-1.3 1.2V12h2.3l-.37 2.9h-1.93v7A10 10 0 0 0 22 12z"/>
+                                        </svg>
+                                    </span>
+                                    <span>Facebook</span>
+                                </a>
+                                
+                                <!-- X -->
+                                <a href="https://x.com/Evergreenweb3D" target="_blank" rel="noopener noreferrer" class="social-link" aria-label="X (Twitter) – opens in a new tab">
+                                    <span class="social-icon-bg" style="background:#000000;">
+                                        <!-- X SVG -->
+                                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="18" height="18" aria-hidden="true" focusable="false">
+                                            <path fill="#ffffff" d="M22 5.92c-.64.28-1.33.47-2.05.55a3.6 3.6 0 0 0-6.14 2.6v.5A10.2 10.2 0 0 1 3.16 5.15a3.6 3.6 0 0 0 1.12 4.8c-.52 0-1.01-.16-1.44-.4v.04c0 1.57 1.12 2.88 2.6 3.18a3.6 3.6 0 0 1-1.44.05c.41 1.27 1.6 2.2 3.02 2.22A7.22 7.22 0 0 1 2 19.54 10.2 10.2 0 0 0 7.78 21c6.26 0 9.69-5.18 9.69-9.67v-.44c.66-.48 1.23-1.1 1.7-1.8-.6.28-1.25.48-1.93.58z"/>
+                                        </svg>
+                                    </span>
+                                    <span>X</span>
+                                </a>
+                            </div>
+                            
+                            <!-- Visible unsubscribe text (required & obvious) -->
+                            <div style="font-size:13px;color:#6b7280;">
+                                If you no longer wish to receive these emails, <a href="{{unsubscribe_link}}" style="color:#065f46;font-weight:600;" target="_blank" rel="noopener noreferrer">unsubscribe here</a>.
+                            </div>
+                        </div>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</body>
+</html>`
+
+// Text version of the email
+const OFFICIAL_TEXT_TEMPLATE = `{{subject}}
+
+{{global_hero_title}}
+{{global_hero_message}}
+
+{{greeting_title}}
+
+{{main_content_title}}
+{{main_content_body}}
+
+{{button_text}}: {{button_link}}
+
+{{global_event_title}}
+Date: {{global_event_date}}
+Time: {{global_event_time}}
+Location: {{global_event_location}}
+Cost: {{global_event_cost}}
+Includes: {{global_event_includes}}
+
+{{additional_info_title}}
+{{additional_info_body}}
+
+{{global_signature_name}}
+{{global_signature_title}}
+{{global_signature_company}}
+{{global_signature_location}}
+
+{{closing_title}}
+{{closing_message}}
+
+© 2025 Gabriel Lacroix - Evergreen Web Solutions, Terrace BC
+
+LinkedIn: https://www.linkedin.com/in/gabriel-marko-6b7aaa357/
+Facebook: https://www.facebook.com/share/14Exmoytvrs/?mibextid=wwXIfr
+X: https://x.com/Evergreenweb3D
+
+If you no longer wish to receive these emails, unsubscribe here: {{unsubscribe_link}}`
+
+async function cleanupAndSetupOfficial() {
+  console.log('🧹 Starting comprehensive cleanup and official setup...')
+
+  try {
+    // 1. Clean up all test data
+    console.log('🗑️ Cleaning up test data...')
+    
+    // Delete all test campaigns and related data in correct order (respecting foreign keys)
+    
+    // First delete the most dependent records
+    await prisma.campaignSend.deleteMany({
+      where: {
+        OR: [
+          { meta: { path: ['testGroup'], equals: true } },
+          { meta: { path: ['properBrandingTest'], equals: true } },
+          { meta: { path: ['automationTest'], equals: true } }
+        ]
+      }
+    })
+
+    await prisma.emailJob.deleteMany({
+      where: {
+        OR: [
+          { meta: { path: ['testGroup'], equals: true } },
+          { meta: { path: ['properBrandingTest'], equals: true } },
+          { meta: { path: ['automationTest'], equals: true } }
+        ]
+      }
+    })
+
+    await prisma.emailEvent.deleteMany({
+      where: {
+        OR: [
+          { meta: { path: ['testGroup'], equals: true } },
+          { meta: { path: ['properBrandingTest'], equals: true } },
+          { meta: { path: ['automationTest'], equals: true } }
+        ]
+      }
+    })
+
+    // Then delete schedules (which reference campaigns and groups)
+    await prisma.campaignSchedule.deleteMany({
+      where: {
+        OR: [
+          { meta: { path: ['testGroup'], equals: true } },
+          { meta: { path: ['properBrandingTest'], equals: true } },
+          { meta: { path: ['automationTest'], equals: true } }
+        ]
+      }
+    })
+
+    // Then delete campaigns
+    await prisma.campaign.deleteMany({
+      where: {
+        OR: [
+          { meta: { path: ['testGroup'], equals: true } },
+          { meta: { path: ['properBrandingTest'], equals: true } },
+          { meta: { path: ['automationTest'], equals: true } }
+        ]
+      }
+    })
+
+    // Then delete audience members (which reference groups)
+    await prisma.audienceMember.deleteMany({
+      where: {
+        OR: [
+          { meta: { path: ['testGroup'], equals: true } },
+          { meta: { path: ['properBrandingTest'], equals: true } },
+          { meta: { path: ['automationTest'], equals: true } }
+        ]
+      }
+    })
+
+    // Then delete groups
+    await prisma.audienceGroup.deleteMany({
+      where: {
+        OR: [
+          { meta: { path: ['testGroup'], equals: true } },
+          { meta: { path: ['properBrandingTest'], equals: true } },
+          { meta: { path: ['automationTest'], equals: true } }
+        ]
+      }
+    })
+
+    // Finally delete templates
+    await prisma.campaignTemplate.deleteMany({
+      where: {
+        OR: [
+          { meta: { path: ['testGroup'], equals: true } },
+          { meta: { path: ['properBrandingTest'], equals: true } },
+          { meta: { path: ['automationTest'], equals: true } }
+        ]
+      }
+    })
+
+    console.log('✅ Test data cleaned up')
+
+    // 2. Resubscribe gabriel.lacroix94@icloud.com
+    console.log('📧 Resubscribing gabriel.lacroix94@icloud.com...')
+    
+    await prisma.audienceMember.updateMany({
+      where: { primaryEmail: 'gabriel.lacroix94@icloud.com' },
+      data: { unsubscribed: false }
+    })
+
+    console.log('✅ Email resubscribed')
+
+    // 3. Create official audience groups
+    console.log('👥 Creating official audience groups...')
+    
+    const techGroup = await prisma.audienceGroup.create({
+      data: {
+        name: 'Technology Companies',
+        description: 'Tech companies in Northern BC',
+        criteria: { industry: 'Technology' },
+        meta: { official: true, createdBy: 'official-setup' }
+      }
+    })
+
+    const marketingGroup = await prisma.audienceGroup.create({
+      data: {
+        name: 'Marketing Agencies',
+        description: 'Marketing and advertising agencies',
+        criteria: { industry: 'Marketing' },
+        meta: { official: true, createdBy: 'official-setup' }
+      }
+    })
+
+    const consultingGroup = await prisma.audienceGroup.create({
+      data: {
+        name: 'Business Consultants',
+        description: 'Business consulting and advisory services',
+        criteria: { industry: 'Consulting' },
+        meta: { official: true, createdBy: 'official-setup' }
+      }
+    })
+
+    const webDevGroup = await prisma.audienceGroup.create({
+      data: {
+        name: 'Web Development',
+        description: 'Web development and digital services',
+        criteria: { industry: 'Web Development' },
+        meta: { official: true, createdBy: 'official-setup' }
+      }
+    })
+
+    console.log('✅ Official audience groups created')
+
+    // 4. Create official audience members
+    console.log('👤 Creating official audience members...')
+    
+    for (const business of OFFICIAL_BUSINESSES) {
+      let groupId: string
+      
+      switch (business.industry) {
+        case 'Technology':
+          groupId = techGroup.id
+          break
+        case 'Marketing':
+          groupId = marketingGroup.id
+          break
+        case 'Consulting':
+          groupId = consultingGroup.id
+          break
+        case 'Web Development':
+          groupId = webDevGroup.id
+          break
+        default:
+          groupId = techGroup.id
+      }
+
+      await prisma.audienceMember.create({
+        data: {
+          businessId: business.id,
+          groupId: groupId,
+          businessName: business.name,
+          primaryEmail: business.email,
+          secondaryEmail: null,
+          inviteToken: `biz_${business.id}`,
+          tagsSnapshot: [business.industry, business.location],
+          unsubscribed: false,
+          meta: {
+            official: true,
+            contactPerson: business.contactPerson,
+            website: business.website,
+            phone: business.phone,
+            location: business.location,
+            industry: business.industry,
+            createdBy: 'official-setup'
+          }
+        }
+      })
+    }
+
+    console.log('✅ Official audience members created')
+
+    // 5. Create official email template
+    console.log('📧 Creating official email template...')
+    
+    const officialTemplate = await prisma.campaignTemplate.create({
+      data: {
+        name: 'Official Evergreen AI Session Invitation',
+        subject: 'Free AI Tools Session - October 23rd',
+        htmlBody: OFFICIAL_EMAIL_TEMPLATE,
+        textBody: OFFICIAL_TEXT_TEMPLATE,
+        greeting_title: 'Hello {{contactPerson}}!',
+        greeting_message: 'We\'re excited to invite {{businessName}} to our upcoming session about practical AI tools for Northern BC businesses.',
+        main_content_title: 'What You\'ll Learn',
+        main_content_body: 'We\'ll cover practical AI tools that can help streamline your business operations, including spreadsheet automation, data analysis, and process optimization. All tools discussed are immediately actionable and cost-effective.',
+        additional_info_title: 'Event Details',
+        additional_info_body: 'Date: October 23rd, 2025<br>Time: 6:00 PM - 8:00 PM<br>Location: Terrace, BC',
+        closing_title: 'Looking Forward',
+        closing_message: 'We\'re excited to share these practical AI solutions with you and help your business grow.',
+        button_text: 'RSVP for Free Session',
+        signature_name: 'Gabriel Lacroix',
+        signature_title: 'AI Solutions Expert',
+        signature_company: 'Evergreen Web Solutions',
+        signature_location: 'Terrace, BC',
+        meta: {
+          official: true,
+          createdBy: 'official-setup',
+          templateVersion: '1.0',
+          usesOfficialHTML: true
+        }
+      }
+    })
+
+    console.log('✅ Official email template created')
+
+    // 6. Create official test campaign
+    console.log('🚀 Creating official test campaign...')
+    
+    const officialCampaign = await prisma.campaign.create({
+      data: {
+        name: 'Official AI Tools Session - October 2025',
+        description: 'Official test campaign for AI tools session invitation',
+        status: 'DRAFT',
+        meta: {
+          official: true,
+          createdBy: 'official-setup',
+          campaignType: 'session-invitation',
+          eventDate: '2025-10-23'
+        }
+      }
+    })
+
+    // Create campaign schedules for each group
+    const groups = [techGroup, marketingGroup, consultingGroup, webDevGroup]
+    
+    for (let i = 0; i < groups.length; i++) {
+      const group = groups[i]
+      const sendAt = new Date(Date.now() + (i + 1) * 2 * 60 * 1000) // 2 minutes apart
+      
+      await prisma.campaignSchedule.create({
+        data: {
+          name: `AI Session Invitation - ${group.name}`,
+          campaignId: officialCampaign.id,
+          templateId: officialTemplate.id,
+          groupId: group.id,
+          sendAt: sendAt,
+          timeZone: 'America/Vancouver',
+          status: 'SCHEDULED',
+          stepOrder: i + 1,
+          throttlePerMinute: 10,
+          meta: {
+            official: true,
+            createdBy: 'official-setup',
+            groupName: group.name,
+            sendDelay: i * 2 // minutes
+          }
+        }
+      })
+    }
+
+    console.log('✅ Official test campaign created')
+
+    // 7. Update global template settings
+    console.log('⚙️ Updating global template settings...')
+    
+    await prisma.globalTemplateSettings.upsert({
+      where: { id: 'default' },
+      update: {
+        global_hero_title: 'Evergreen Web Solutions - Informational Event Invitation',
+        global_hero_message: 'Please RSVP at your earliest convenience!',
+        global_event_title: 'Event Details',
+        global_event_date: 'October 23rd 2025',
+        global_event_time: '5:00 PM - 7:00 PM',
+        global_event_location: 'Sunshine Inn - Terrace, BC',
+        global_event_cost: 'Free',
+        global_event_includes: 'Coffee, refreshments, networking, and actionable AI insights',
+        global_signature_name: 'Gabriel Lacroix',
+        global_signature_title: 'AI Solutions Expert',
+        global_signature_company: 'Evergreen Web Solutions',
+        global_signature_location: 'Terrace, BC'
+      },
+      create: {
+        id: 'default',
+        global_hero_title: 'Evergreen Web Solutions - Informational Event Invitation',
+        global_hero_message: 'Please RSVP at your earliest convenience!',
+        global_event_title: 'Event Details',
+        global_event_date: 'October 23rd 2025',
+        global_event_time: '5:00 PM - 7:00 PM',
+        global_event_location: 'Sunshine Inn - Terrace, BC',
+        global_event_cost: 'Free',
+        global_event_includes: 'Coffee, refreshments, networking, and actionable AI insights',
+        global_signature_name: 'Gabriel Lacroix',
+        global_signature_title: 'AI Solutions Expert',
+        global_signature_company: 'Evergreen Web Solutions',
+        global_signature_location: 'Terrace, BC'
+      }
+    })
+
+    console.log('✅ Global template settings updated')
+
+    // 8. Test RSVP tracking by sending one email
+    console.log('📤 Testing RSVP tracking with one email...')
+    
+    const testMember = await prisma.audienceMember.findFirst({
+      where: { primaryEmail: 'gabriel.lacroix94@icloud.com' }
+    })
+
+    if (testMember) {
+      const testSchedule = await prisma.campaignSchedule.findFirst({
+        where: { campaignId: officialCampaign.id }
+      })
+
+      if (testSchedule) {
+        // Generate proper tracking links
+        const baseUrl = process.env.CAMPAIGN_LINK_BASE || 'https://rsvp.evergreenwebsolutions.ca'
+        const rsvpLink = `${baseUrl}/rsvp?eid=biz_${testMember.businessId}&campaign=${officialCampaign.id}&schedule=${testSchedule.id}`
+        const unsubscribeLink = `${baseUrl}/unsubscribe?email=${testMember.primaryEmail}&business=${testMember.businessId}&campaign=${officialCampaign.id}`
+        const trackingPixel = `${baseUrl}/api/__pixel?token=${testMember.businessId}&eid=biz_${testMember.businessId}`
+
+        // Prepare email variables
+        const variables = {
+          subject: 'Free AI Tools Session - October 23rd',
+          contactPerson: testMember.meta?.contactPerson || 'Valued Customer',
+          businessName: testMember.businessName || 'Your Business',
+          business_id: testMember.businessId,
+          invite_link: rsvpLink,
+          button_link: rsvpLink,
+          unsubscribe_link: unsubscribeLink,
+          tracking_pixel: trackingPixel,
+          // Global template variables
+          global_hero_title: 'Evergreen Web Solutions - Informational Event Invitation',
+          global_hero_message: 'Please RSVP at your earliest convenience!',
+          global_signature_name: 'Gabriel Lacroix',
+          global_signature_title: 'AI Solutions Expert',
+          global_signature_company: 'Evergreen Web Solutions',
+          global_signature_location: 'Terrace, BC',
+          global_event_title: 'Event Details',
+          global_event_date: 'October 23rd 2025',
+          global_event_time: '5:00 PM - 7:00 PM',
+          global_event_location: 'Sunshine Inn - Terrace, BC',
+          global_event_cost: 'Free',
+          global_event_includes: 'Coffee, refreshments, networking, and actionable AI insights'
+        }
+
+        // Process template
+        let processedHtml = OFFICIAL_EMAIL_TEMPLATE
+        let processedText = OFFICIAL_TEXT_TEMPLATE
+        
+        Object.entries(variables).forEach(([key, value]) => {
+          const regex = new RegExp(`{{${key}}}`, 'g')
+          processedHtml = processedHtml.replace(regex, String(value))
+          processedText = processedText.replace(regex, String(value))
+        })
+
+        // Send test email
+        const result = await resend.emails.send({
+          from: process.env.CAMPAIGN_FROM_EMAIL || 'Evergreen AI <gabriel.lacroix94@icloud.com>',
+          to: [testMember.primaryEmail],
+          subject: variables.subject,
+          html: processedHtml,
+          text: processedText,
+          headers: {
+            'X-Campaign-ID': officialCampaign.id,
+            'X-Schedule-ID': testSchedule.id,
+            'X-Business-ID': testMember.businessId,
+            'X-Official-Test': 'true'
+          }
+        })
+
+        console.log(`✅ Test email sent to ${testMember.primaryEmail}`)
+        console.log(`🔗 RSVP Link: ${rsvpLink}`)
+        console.log(`📧 Message ID: ${result.data?.id}`)
+      }
+    }
+
+    // 9. Summary
+    console.log('\n🎉 Official setup completed successfully!')
+    console.log('📊 Summary:')
+    console.log(`- Cleaned up all test data`)
+    console.log(`- Resubscribed gabriel.lacroix94@icloud.com`)
+    console.log(`- Created 4 official audience groups`)
+    console.log(`- Created 4 official audience members`)
+    console.log(`- Created official email template with your exact HTML`)
+    console.log(`- Created official test campaign with 4 schedules`)
+    console.log(`- Updated global template settings`)
+    console.log(`- Sent test email with proper RSVP tracking`)
+    console.log(`- Removed preferences link (only unsubscribe remains)`)
+    
+    console.log('\n🔗 Test RSVP Link:')
+    console.log(`https://rsvp.evergreenwebsolutions.ca/rsvp?eid=biz_official-business-1&campaign=${officialCampaign.id}`)
+    
+    console.log('\n📧 Test emails sent to:')
+    OFFICIAL_TEST_EMAILS.forEach(email => console.log(`- ${email}`))
+
+  } catch (error) {
+    console.error('❌ Official setup failed:', error)
+    throw error
+  } finally {
+    await prisma.$disconnect()
+  }
+}
+
+// Run the setup
+cleanupAndSetupOfficial()
+  .then(() => {
+    console.log('\n✅ Official setup completed successfully!')
+    process.exit(0)
+  })
+  .catch((error) => {
+    console.error('❌ Setup failed:', error)
+    process.exit(1)
+  })
