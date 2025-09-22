@@ -46,10 +46,11 @@ export type BusinessDirectoryPanelProps = {
     id: string
     name: string
     description: string | null
-    color?: string | null
+    color: string | null
     members: Array<{ businessId: string }>
   }>
   onMemberMoved?: () => void
+  currentGroupId?: string
 }
 
 export const INITIAL_FACETS: FacetResponse = {

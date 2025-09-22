@@ -3,6 +3,7 @@
 import { useState, useEffect, useRef } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import type { MemberDraft } from './AudienceGroupsTab'
+import { SplitButton } from './SplitButton'
 
 interface GroupMembersListProps {
   members: MemberDraft[]
@@ -412,31 +413,37 @@ function MemberCard({
         </div>
         
         <div className="business-card-actions">
-          {/* Move to Dropdown */}
+          {/* Move to Split Button */}
           {availableGroups.length > 0 && (
-            <div className="relative" ref={dropdownRef}>
-              <button
-                onClick={() => setShowMoveDropdown(!showMoveDropdown)}
-                disabled={isMoving}
-                className="business-card-button business-card-button-secondary"
-              >
-                {isMoving ? 'Moving...' : 'Move to'}
-              </button>
-              
-              {showMoveDropdown && (
-                <div className="absolute right-0 top-full mt-1 w-48 rounded-lg border border-white/10 bg-neutral-800 py-1 shadow-lg z-10">
-                  {availableGroups.map((group) => (
-                    <button
-                      key={group.id}
-                      onClick={() => handleMoveToGroup(group.id)}
-                      className="w-full px-3 py-2 text-left text-xs text-neutral-200 hover:bg-neutral-700"
-                    >
-                      {group.name}
-                    </button>
-                  ))}
-                </div>
-              )}
-            </div>
+            <SplitButton
+              mainAction={() => {
+                if (currentGroupId) {
+                  handleMoveToGroup(currentGroupId)
+                }
+              }}
+              dropdownActions={availableGroups
+                .filter(group => group.id !== currentGroupId)
+                .map(group => ({
+                  id: group.id,
+                  label: group.name,
+                  onClick: () => handleMoveToGroup(group.id)
+                }))}
+              mainLabel="Move"
+              mainIcon={
+                <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                </svg>
+              }
+              dropdownIcon={
+                <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                </svg>
+              }
+              disabled={isMoving || !currentGroupId}
+              loading={isMoving}
+              mainButtonClassName="business-card-button-secondary"
+              dropdownButtonClassName="business-card-button-secondary"
+            />
           )}
           
           {/* Remove Button */}
@@ -444,6 +451,9 @@ function MemberCard({
             onClick={onRemove}
             className="business-card-button business-card-button-danger"
           >
+            <svg className="w-3 h-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+            </svg>
             Remove
           </button>
         </div>
