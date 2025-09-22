@@ -171,7 +171,7 @@ function GroupCard({
         <div className="flex gap-2 flex-shrink-0">
           <button
             onClick={onSelect}
-            className="rounded-lg border border-white/10 px-4 py-2 text-sm text-neutral-200 hover:border-emerald-400 hover:text-emerald-200"
+            className="rounded-lg border border-white/10 px-4 py-2 text-sm text-neutral-200 hover:border-primary-400 hover:text-primary-200"
           >
             Edit
           </button>

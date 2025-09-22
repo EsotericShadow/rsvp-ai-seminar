@@ -52,8 +52,8 @@ export function BusinessList({
           <div
             key={business.id}
             className={`p-4 border rounded-lg ${
-              isSelected ? 'border-emerald-500 bg-emerald-500/10' : 'border-white/10 bg-black/40'
-            } ${isExistingMember ? 'opacity-50' : ''} ${isInOtherGroup ? 'border-yellow-500/50 bg-yellow-500/5' : ''}`}
+              isSelected ? 'border-primary-500 bg-primary-500/10' : 'border-white/10 bg-black/40'
+            } ${isExistingMember ? 'opacity-50' : ''} ${isInOtherGroup ? 'border-warning-500/50 bg-warning-500/5' : ''}`}
           >
             <div className="flex items-start justify-between">
               <div className="flex items-start space-x-3">
@@ -62,18 +62,18 @@ export function BusinessList({
                   checked={isSelected}
                   disabled={isExistingMember || isInOtherGroup}
                   onChange={() => onToggleSelection(business.id)}
-                  className="mt-1 rounded border-white/20 bg-black/60 text-emerald-500 focus:border-emerald-400 focus:ring-emerald-400"
+                  className="mt-1 rounded border-white/20 bg-black/60 text-primary-500 focus:border-primary-400 focus:ring-primary-400"
                 />
                 <div className="flex-1">
                   <div className="flex items-center space-x-2">
                     <h3 className="font-medium text-white">{business.name || 'Unnamed Business'}</h3>
                     {isExistingMember && (
-                      <span className="px-2 py-1 text-xs bg-emerald-500/20 text-emerald-200 rounded border border-emerald-500/30">
+                      <span className="px-2 py-1 text-xs bg-primary-500/20 text-primary-200 rounded border border-primary-500/30">
                         Already Added
                       </span>
                     )}
                     {isInOtherGroup && (
-                      <span className="px-2 py-1 text-xs bg-yellow-500/20 text-yellow-200 rounded border border-yellow-500/30">
+                      <span className="px-2 py-1 text-xs bg-warning-500/20 text-warning-200 rounded border border-warning-500/30">
                         In Another Group
                       </span>
                     )}
