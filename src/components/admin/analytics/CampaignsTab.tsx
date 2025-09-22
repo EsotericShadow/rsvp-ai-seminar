@@ -108,7 +108,7 @@ export default function CampaignsTab({ campaigns, audienceGroups }: CampaignsTab
     const activeCampaigns = campaigns.filter(c => c.status === 'SCHEDULED').length;
     const completedCampaigns = campaigns.filter(c => c.status === 'COMPLETED').length;
     const draftCampaigns = campaigns.filter(c => c.status === 'DRAFT').length;
-    const totalSchedules = campaigns.reduce((sum, c) => sum + c._count.schedules, 0);
+    const totalSchedules = campaigns.reduce((sum, c) => sum + (c.schedules || []).length, 0);
     const totalAudienceMembers = audienceGroups.reduce((sum, g) => sum + g._count.members, 0);
 
     // Calculate engagement metrics (mock data for now)
@@ -269,7 +269,7 @@ export default function CampaignsTab({ campaigns, audienceGroups }: CampaignsTab
                 <div>
                   <h4 className="font-semibold text-white">{campaign.name}</h4>
                   <p className="text-sm text-gray-400">
-                    {campaign._count.schedules} schedules • {new Date(campaign.createdAt).toLocaleDateString()}
+                    {(campaign.schedules || []).length} schedules • {new Date(campaign.createdAt).toLocaleDateString()}
                   </p>
                 </div>
               </div>
