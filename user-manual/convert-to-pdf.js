@@ -81,3 +81,4 @@ console.log('🖨️ Use Ctrl+P (Cmd+P on Mac) and select "Save as PDF"');
 console.log('📱 The PDF will be mobile-friendly and properly formatted');
 
 
+

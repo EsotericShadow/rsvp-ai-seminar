@@ -4,15 +4,17 @@ import React, { useRef, useState, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { XMarkIcon, MinusIcon, Square2StackIcon, SparklesIcon, CheckCircleIcon, XCircleIcon, ClockIcon } from '@heroicons/react/24/outline'
 import { ChatMessage, ExtractedEntity } from '@/lib/agents/SLMAgent'
+import { ThinkingIndicator } from './ThinkingIndicator'
 
 interface ChatWindowProps {
   isOpen: boolean
   onClose: () => void
   messages: ChatMessage[]
   isTyping: boolean
+  estimatedTime?: number
 }
 
-export function ChatWindow({ isOpen, onClose, messages, isTyping }: ChatWindowProps) {
+export function ChatWindow({ isOpen, onClose, messages, isTyping, estimatedTime = 3 }: ChatWindowProps) {
   const chatWindowRef = useRef<HTMLDivElement>(null)
   const messagesEndRef = useRef<HTMLDivElement>(null)
   const [isMinimized, setIsMinimized] = useState(false)
@@ -129,11 +131,15 @@ export function ChatWindow({ isOpen, onClose, messages, isTyping }: ChatWindowPr
               <SparklesIcon className="h-5 w-5 text-white" />
               <span className="text-white font-semibold">Juniper AI Assistant</span>
               {isTyping && (
-                <div className="flex space-x-1 ml-2">
+                <motion.div 
+                  className="flex space-x-1 ml-2"
+                  animate={{ opacity: [0.5, 1, 0.5] }}
+                  transition={{ duration: 1.5, repeat: Infinity }}
+                >
                   <div className="w-2 h-2 bg-white rounded-full animate-bounce"></div>
                   <div className="w-2 h-2 bg-white rounded-full animate-bounce" style={{ animationDelay: '0.1s' }}></div>
                   <div className="w-2 h-2 bg-white rounded-full animate-bounce" style={{ animationDelay: '0.2s' }}></div>
-                </div>
+                </motion.div>
               )}
             </div>
             <div className="flex items-center gap-1">
@@ -246,17 +252,7 @@ export function ChatWindow({ isOpen, onClose, messages, isTyping }: ChatWindowPr
                   </div>
                 ))}
 
-                {isTyping && (
-                  <div className="flex justify-start">
-                    <div className="bg-gray-100 text-gray-900 px-3 py-2 rounded-lg text-sm">
-                      <div className="flex space-x-1">
-                        <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce"></div>
-                        <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style={{ animationDelay: '0.1s' }}></div>
-                        <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style={{ animationDelay: '0.2s' }}></div>
-                      </div>
-                    </div>
-                  </div>
-                )}
+                <ThinkingIndicator isVisible={isTyping} estimatedTime={estimatedTime} />
                 <div ref={messagesEndRef} />
               </div>
 

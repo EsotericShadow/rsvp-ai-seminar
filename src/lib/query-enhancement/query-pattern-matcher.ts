@@ -341,3 +341,4 @@ export class QueryPatternMatcher {
 
 // Export singleton instance
 export const queryPatternMatcher = new QueryPatternMatcher();
+

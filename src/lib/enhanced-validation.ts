@@ -292,3 +292,4 @@ export class EnhancedValidator {
 export function validateResponse(response: string, context?: any): ValidationResult {
   return EnhancedValidator.validateResponse(response, context);
 }
+
