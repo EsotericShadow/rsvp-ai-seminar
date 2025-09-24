@@ -446,26 +446,58 @@ export class RAGIntegrationSystem {
         return [];
       }
 
-      const collection = this.weaviateClient.collections.get(collectionName);
-      const results = await collection.query.bm25(query, {
-        limit: limit,
-        returnProperties: ['title', 'content', 'category', 'metadata', 'source', 'tags']
-      });
+      // Use different field names for different collections
+      let fields: string;
+      if (collectionName === 'BusinessData') {
+        fields = 'businessName industry description audienceGroup _additional { id score distance }';
+      } else {
+        fields = 'title content category metadata source tags _additional { id score distance }';
+      }
 
-      return results.objects.map((obj: any) => ({
-        id: obj.uuid,
-        title: obj.properties.title || '',
-        content: obj.properties.content || '',
-        category: obj.properties.category || '',
-        subcategory: '',
-        score: obj.metadata?.score || 0,
-        distance: obj.metadata?.distance || 0,
-        properties: {
-          metadata: obj.properties.metadata,
-          source: obj.properties.source,
-          tags: obj.properties.tags
+      // Use correct API for weaviate-ts-client 1.6.0
+      const results = await this.weaviateClient.graphql
+        .get()
+        .withClassName(collectionName)
+        .withFields(fields)
+        .withBm25({ query })
+        .withLimit(limit)
+        .do();
+
+      const objects = results.data.Get[collectionName] || [];
+      return objects.map((obj: any) => {
+        if (collectionName === 'BusinessData') {
+          return {
+            id: obj._additional?.id || '',
+            title: obj.businessName || '',
+            content: `${obj.industry || ''} - ${obj.description || ''}`,
+            category: 'business',
+            subcategory: obj.audienceGroup || '',
+            score: obj._additional?.score || 0,
+            distance: obj._additional?.distance || 0,
+            properties: {
+              businessName: obj.businessName,
+              industry: obj.industry,
+              description: obj.description,
+              audienceGroup: obj.audienceGroup
+            }
+          };
+        } else {
+          return {
+            id: obj._additional?.id || '',
+            title: obj.title || '',
+            content: obj.content || '',
+            category: obj.category || '',
+            subcategory: '',
+            score: obj._additional?.score || 0,
+            distance: obj._additional?.distance || 0,
+            properties: {
+              metadata: obj.metadata,
+              source: obj.source,
+              tags: obj.tags
+            }
+          };
         }
-      }));
+      });
       
     } catch (error) {
       console.error(`❌ Error searching ${collectionName}:`, error);
