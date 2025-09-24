@@ -14,13 +14,16 @@ This is the AI service for Juniper, the RSVP system AI assistant. It runs on Ren
 2. **Environment Variables:**
    - `PORT` - Server port (default: 3001)
    - `MAIN_APP_URL` - Your main RSVP app URL
+   - `AI_SERVICE_API_KEY` - **REQUIRED** - Secret API key for authentication
 
 ## API Endpoints
 
-- `GET /health` - Health check
-- `POST /api/chat` - Main AI chat endpoint
-- `POST /api/create-template` - Create email template
-- `POST /api/create-campaign` - Create email campaign
+- `GET /health` - Health check (no auth required)
+- `POST /api/chat` - Main AI chat endpoint (requires API key)
+- `POST /api/create-template` - Create email template (requires API key)
+- `POST /api/create-campaign` - Create email campaign (requires API key)
+
+**Authentication:** All endpoints except `/health` require the `X-API-Key` header with your secret API key.
 
 ## Usage
 

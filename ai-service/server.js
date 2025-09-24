@@ -21,8 +21,26 @@ app.get('/health', (req, res) => {
   });
 });
 
+// Authentication middleware
+const authenticateRequest = (req, res, next) => {
+  const apiKey = req.headers['x-api-key'] || req.headers['authorization']?.replace('Bearer ', '');
+  const expectedApiKey = process.env.AI_SERVICE_API_KEY;
+  
+  if (!expectedApiKey) {
+    console.error('AI_SERVICE_API_KEY not configured');
+    return res.status(500).json({ error: 'Service not properly configured' });
+  }
+  
+  if (!apiKey || apiKey !== expectedApiKey) {
+    console.warn('Unauthorized AI service access attempt from:', req.ip);
+    return res.status(401).json({ error: 'Unauthorized access' });
+  }
+  
+  next();
+};
+
 // Main AI chat endpoint
-app.post('/api/chat', async (req, res) => {
+app.post('/api/chat', authenticateRequest, async (req, res) => {
   try {
     const { message, context } = req.body;
     
@@ -58,7 +76,7 @@ app.post('/api/chat', async (req, res) => {
 });
 
 // Template creation endpoint
-app.post('/api/create-template', async (req, res) => {
+app.post('/api/create-template', authenticateRequest, async (req, res) => {
   try {
     const { name, subject, htmlBody, textBody } = req.body;
     
@@ -95,7 +113,7 @@ app.post('/api/create-template', async (req, res) => {
 });
 
 // Campaign creation endpoint
-app.post('/api/create-campaign', async (req, res) => {
+app.post('/api/create-campaign', authenticateRequest, async (req, res) => {
   try {
     const { name, description, steps, audienceGroupId } = req.body;
     

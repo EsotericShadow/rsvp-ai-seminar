@@ -31,15 +31,25 @@ Add these environment variables in Render:
 ```
 PORT=3001
 MAIN_APP_URL=https://rsvp.evergreenwebsolutions.ca
+AI_SERVICE_API_KEY=your-secret-api-key-here
 ```
+
+**⚠️ IMPORTANT:** Generate a strong, random API key for `AI_SERVICE_API_KEY`. You can use:
+```bash
+openssl rand -hex 32
+```
+Or any other secure random string generator.
 
 ### 4. Update Main App
 
-Add this environment variable to your Vercel deployment:
+Add these environment variables to your Vercel deployment:
 
 ```
 NEXT_PUBLIC_AI_SERVICE_URL=https://juniper-ai-service.onrender.com
+NEXT_PUBLIC_AI_SERVICE_API_KEY=your-secret-api-key-here
 ```
+
+**⚠️ IMPORTANT:** Use the SAME API key for both Render and Vercel environment variables.
 
 ## Architecture
 
