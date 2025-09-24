@@ -360,6 +360,28 @@
   .space-y-clean-lg > * + * {
     @apply mt-8;
   }
+
+  /* Glass effect */
+  .glass {
+    @apply bg-white/10 backdrop-blur-md border border-white/20;
+  }
+
+  /* Brand colors */
+  .bg-brand-ink {
+    @apply bg-neutral-900;
+  }
+  
+  .bg-brand-mid {
+    @apply bg-neutral-800;
+  }
+  
+  .ring-brand-sage {
+    @apply ring-emerald-500;
+  }
+  
+  .border-brand-sage {
+    @apply border-emerald-500;
+  }
 }
 
 /* Keyframe animations */
