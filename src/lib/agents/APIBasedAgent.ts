@@ -8,57 +8,60 @@ interface AIResponse {
 
 export class APIBasedAgent {
   private baseUrl: string
+  private aiServiceUrl: string
 
   constructor() {
     this.baseUrl = '/api'
+    // Use environment variable or default to localhost for development
+    this.aiServiceUrl = process.env.NEXT_PUBLIC_AI_SERVICE_URL || 'http://localhost:3001'
   }
 
   async processMessage(message: string): Promise<AIResponse> {
     try {
-      // First, get AI response from the AI agent API
-      const aiResponse = await fetch(`${this.baseUrl}/ai-agent`, {
+      // Call the external AI service on Render
+      const aiResponse = await fetch(`${this.aiServiceUrl}/api/chat`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          query: message,
-          action: 'chat',
+          message: message,
           context: {}
         })
       })
 
       if (!aiResponse.ok) {
-        throw new Error(`AI API error: ${aiResponse.status}`)
+        throw new Error(`AI Service error: ${aiResponse.status}`)
       }
 
       const aiData = await aiResponse.json()
       
-      // If the AI suggests creating a template, handle it through the API
-      if (this.shouldCreateTemplate(message, aiData.answer)) {
-        return await this.handleTemplateCreation(message, aiData)
-      }
-
-      // If the AI suggests creating a campaign, handle it through the API
-      if (this.shouldCreateCampaign(message, aiData.answer)) {
-        return await this.handleCampaignCreation(message, aiData)
+      // Handle any actions returned by the AI service
+      if (aiData.actions && aiData.actions.length > 0) {
+        for (const action of aiData.actions) {
+          if (action.type === 'create_template') {
+            await this.executeTemplateCreation(action.data)
+          } else if (action.type === 'create_campaign') {
+            await this.executeCampaignCreation(action.data)
+          }
+        }
       }
 
       return {
-        message: aiData.answer,
+        message: aiData.message,
         confidence: aiData.confidence || 0.8,
         toolCalls: [],
         toolResults: [],
         nextSteps: aiData.nextSteps || []
       }
     } catch (error) {
-      console.error('API Agent error:', error)
+      console.error('AI Service error:', error)
       return {
-        message: "I'm having trouble connecting to the system right now. Please try again in a moment.",
+        message: "I'm having trouble connecting to the AI service right now. Please try again in a moment.",
         confidence: 0.1,
         toolCalls: [],
         toolResults: [],
-        nextSteps: ['Check system connectivity', 'Retry the request']
+        nextSteps: ['Check AI service connectivity', 'Retry the request']
       }
     }
   }
@@ -205,23 +208,72 @@ export class APIBasedAgent {
 
   private extractTemplateData(message: string): any {
     const data: any = {}
+    const messageLower = message.toLowerCase()
     
-    // Extract name
-    const nameMatch = message.match(/(?:named|called|name)\s+([a-zA-Z0-9\s]+)/i)
-    if (nameMatch) {
-      data.name = nameMatch[1].trim()
+    // Extract name - multiple patterns
+    const namePatterns = [
+      /(?:named|called|name)\s+([a-zA-Z0-9\s]+)/i,
+      /template\s+(?:named|called|name)\s+([a-zA-Z0-9\s]+)/i,
+      /email\s+template\s+(?:named|called|name)\s+([a-zA-Z0-9\s]+)/i,
+      /create\s+(?:a\s+)?template\s+(?:named|called|name)\s+([a-zA-Z0-9\s]+)/i,
+      /make\s+(?:a\s+)?template\s+(?:named|called|name)\s+([a-zA-Z0-9\s]+)/i
+    ]
+    
+    for (const pattern of namePatterns) {
+      const match = message.match(pattern)
+      if (match) {
+        data.name = match[1].trim()
+        break
+      }
     }
 
-    // Extract subject
-    const subjectMatch = message.match(/(?:subject|title)\s+["']([^"']+)["']/i)
-    if (subjectMatch) {
-      data.subject = subjectMatch[1]
+    // Extract subject - multiple patterns
+    const subjectPatterns = [
+      /(?:subject|title)\s+["']([^"']+)["']/i,
+      /(?:subject|title)\s+([a-zA-Z0-9\s]+)/i,
+      /with\s+(?:subject|title)\s+["']([^"']+)["']/i
+    ]
+    
+    for (const pattern of subjectPatterns) {
+      const match = message.match(pattern)
+      if (match) {
+        data.subject = match[1].trim()
+        break
+      }
     }
 
-    // Extract content
-    const contentMatch = message.match(/(?:content|body|message)\s+["']([^"']+)["']/i)
-    if (contentMatch) {
-      data.content = contentMatch[1]
+    // Extract content - multiple patterns
+    const contentPatterns = [
+      /(?:content|body|message)\s+["']([^"']+)["']/i,
+      /(?:content|body|message)\s+([a-zA-Z0-9\s]+)/i,
+      /saying\s+["']([^"']+)["']/i,
+      /that\s+says\s+["']([^"']+)["']/i
+    ]
+    
+    for (const pattern of contentPatterns) {
+      const match = message.match(pattern)
+      if (match) {
+        data.content = match[1].trim()
+        break
+      }
+    }
+
+    // If no name found but we have a simple pattern like "template test" or "test template"
+    if (!data.name) {
+      const simplePatterns = [
+        /template\s+([a-zA-Z0-9]+)/i,
+        /([a-zA-Z0-9]+)\s+template/i,
+        /create\s+([a-zA-Z0-9]+)/i,
+        /make\s+([a-zA-Z0-9]+)/i
+      ]
+      
+      for (const pattern of simplePatterns) {
+        const match = message.match(pattern)
+        if (match) {
+          data.name = match[1].trim()
+          break
+        }
+      }
     }
 
     return data
@@ -230,18 +282,92 @@ export class APIBasedAgent {
   private extractCampaignData(message: string): any {
     const data: any = {}
     
-    // Extract name
-    const nameMatch = message.match(/(?:named|called|name)\s+([a-zA-Z0-9\s]+)/i)
-    if (nameMatch) {
-      data.name = nameMatch[1].trim()
+    // Extract name - multiple patterns
+    const namePatterns = [
+      /(?:named|called|name)\s+([a-zA-Z0-9\s]+)/i,
+      /campaign\s+(?:named|called|name)\s+([a-zA-Z0-9\s]+)/i,
+      /email\s+campaign\s+(?:named|called|name)\s+([a-zA-Z0-9\s]+)/i,
+      /create\s+(?:a\s+)?campaign\s+(?:named|called|name)\s+([a-zA-Z0-9\s]+)/i,
+      /make\s+(?:a\s+)?campaign\s+(?:named|called|name)\s+([a-zA-Z0-9\s]+)/i
+    ]
+    
+    for (const pattern of namePatterns) {
+      const match = message.match(pattern)
+      if (match) {
+        data.name = match[1].trim()
+        break
+      }
     }
 
-    // Extract description
-    const descMatch = message.match(/(?:description|about)\s+["']([^"']+)["']/i)
-    if (descMatch) {
-      data.description = descMatch[1]
+    // If no name found but we have a simple pattern like "campaign test" or "test campaign"
+    if (!data.name) {
+      const simplePatterns = [
+        /campaign\s+([a-zA-Z0-9]+)/i,
+        /([a-zA-Z0-9]+)\s+campaign/i,
+        /create\s+([a-zA-Z0-9]+)/i,
+        /make\s+([a-zA-Z0-9]+)/i
+      ]
+      
+      for (const pattern of simplePatterns) {
+        const match = message.match(pattern)
+        if (match) {
+          data.name = match[1].trim()
+          break
+        }
+      }
+    }
+
+    // Extract description - multiple patterns
+    const descPatterns = [
+      /(?:description|about)\s+["']([^"']+)["']/i,
+      /(?:description|about)\s+([a-zA-Z0-9\s]+)/i,
+      /for\s+["']([^"']+)["']/i
+    ]
+    
+    for (const pattern of descPatterns) {
+      const match = message.match(pattern)
+      if (match) {
+        data.description = match[1].trim()
+        break
+      }
     }
 
     return data
+  }
+
+  private async executeTemplateCreation(templateData: any): Promise<void> {
+    try {
+      const response = await fetch(`${this.baseUrl}/admin/campaign/templates`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(templateData)
+      })
+
+      if (!response.ok) {
+        console.error('Template creation failed:', response.status)
+      }
+    } catch (error) {
+      console.error('Template creation error:', error)
+    }
+  }
+
+  private async executeCampaignCreation(campaignData: any): Promise<void> {
+    try {
+      const response = await fetch(`${this.baseUrl}/admin/campaign/campaigns`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(campaignData)
+      })
+
+      if (!response.ok) {
+        console.error('Campaign creation failed:', response.status)
+      }
+    } catch (error) {
+      console.error('Campaign creation error:', error)
+    }
   }
 }

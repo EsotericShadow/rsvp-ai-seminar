@@ -16,6 +16,7 @@
     "setup-rag": "tsx scripts/setup-rag.ts"
   },
   "dependencies": {
+    "@ai-sdk/openai": "^2.0.34",
     "@google/generative-ai": "^0.24.1",
     "@heroicons/react": "^2.2.0",
     "@hookform/resolvers": "^3.3.4",
@@ -23,6 +24,7 @@
     "@sendgrid/mail": "^8.1.6",
     "@types/ua-parser-js": "^0.7.39",
     "@vercel/og": "^0.8.5",
+    "ai": "^5.0.51",
     "bcryptjs": "^3.0.2",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
