@@ -60,6 +60,7 @@ export class ServerSideAIAgent {
     console.log('🤖 Processing message:', userMessage);
     console.log('💬 Session ID:', sessionId);
     console.log('📚 Conversation history length:', conversationHistory.length);
+    console.log('📚 Conversation history:', conversationHistory.map(msg => `${msg.role}: ${msg.content.substring(0, 50)}...`));
     
     // Initialize context for this session if not exists
     if (!this.context.messages) {
