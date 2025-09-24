@@ -348,6 +348,108 @@ export class ServerSideAIAgent {
     return data;
   }
 
+  analyzeContextualResponse(message: string, conversationHistory: ChatMessage[] = []): AIResponse | null {
+    if (conversationHistory.length < 2) return null;
+    
+    const lastAssistantMessage = conversationHistory.slice(-2).find(msg => msg.role === 'assistant');
+    if (!lastAssistantMessage) return null;
+    
+    const messageLower = message.toLowerCase().trim();
+    const assistantContent = lastAssistantMessage.content.toLowerCase();
+    
+    // Check if the assistant asked about campaign deletion and user is responding
+    if (assistantContent.includes('which campaigns would you like to delete') || 
+        assistantContent.includes('what would you like to delete')) {
+      
+      if (messageLower.includes('all') || messageLower === 'all campaigns') {
+        return {
+          message: "✅ **Confirmed: Delete ALL campaigns**\n\n⚠️ **This will permanently delete ALL campaigns and their data.**\n\nTo proceed with deleting all campaigns, I need to:\n\n1. **Retrieve the list** of existing campaigns\n2. **Confirm the deletion** with you\n3. **Execute the deletion** safely\n\n⚠️ **Warning**: This action cannot be undone. All campaign data, analytics, and history will be lost.\n\nAre you absolutely sure you want to delete ALL campaigns? Type 'YES DELETE ALL' to confirm.",
+          confidence: 0.95,
+          actions: [{
+            type: 'delete_all_campaigns',
+            data: { confirmation: 'pending' }
+          }],
+          nextSteps: ['Confirm deletion', 'Execute campaign deletion']
+        };
+      }
+      
+      if (messageLower.includes('draft') || messageLower.includes('unpublished')) {
+        return {
+          message: "✅ **Confirmed: Delete DRAFT campaigns only**\n\nI'll delete only the draft/unpublished campaigns, keeping active and completed campaigns intact.\n\nLet me retrieve the draft campaigns and show you what will be deleted...",
+          confidence: 0.95,
+          actions: [{
+            type: 'delete_draft_campaigns',
+            data: { confirmation: 'pending' }
+          }],
+          nextSteps: ['List draft campaigns', 'Confirm deletion', 'Execute deletion']
+        };
+      }
+      
+      if (messageLower.includes('specific') || messageLower.includes('particular')) {
+        return {
+          message: "✅ **Confirmed: Delete SPECIFIC campaign**\n\nI can help you delete a specific campaign by name. Let me show you the available campaigns first:\n\n• **List all campaigns** - See what's available\n• **Search campaigns** - Find by name or keyword\n• **Show campaign details** - Get more information before deleting\n\nWhat would you like to do?",
+          confidence: 0.95,
+          nextSteps: ['List campaigns', 'Search for specific campaign', 'Confirm deletion']
+        };
+      }
+    }
+    
+    // Check if assistant asked about template deletion and user is responding
+    if (assistantContent.includes('which templates would you like to delete') || 
+        assistantContent.includes('what templates')) {
+      
+      if (messageLower.includes('all') || messageLower === 'all templates') {
+        return {
+          message: "✅ **Confirmed: Delete ALL templates**\n\n⚠️ **This will permanently delete ALL templates.**\n\nBefore proceeding, I need to check:\n\n1. **Template usage** - Which templates are used in active campaigns\n2. **List all templates** - Show you what will be deleted\n3. **Confirm deletion** - Get your final confirmation\n\n⚠️ **Warning**: Deleting templates used in campaigns may break those campaigns.\n\nAre you absolutely sure you want to delete ALL templates? Type 'YES DELETE ALL' to confirm.",
+          confidence: 0.95,
+          actions: [{
+            type: 'delete_all_templates',
+            data: { confirmation: 'pending' }
+          }],
+          nextSteps: ['Check template usage', 'List templates', 'Confirm deletion']
+        };
+      }
+    }
+    
+    // Check if user is confirming a deletion action
+    if (messageLower.includes('yes delete all') || messageLower.includes('confirm') || messageLower.includes('proceed')) {
+      if (assistantContent.includes('delete all campaigns')) {
+        return {
+          message: "🚨 **EXECUTING: Delete ALL campaigns**\n\nI'm now deleting all campaigns from the system. This may take a moment...\n\n⚠️ **This action cannot be undone.**\n\nPlease wait while I process the deletion...",
+          confidence: 1.0,
+          actions: [{
+            type: 'execute_delete_all_campaigns',
+            data: { status: 'executing' }
+          }],
+          nextSteps: ['Campaigns deleted', 'System cleanup complete']
+        };
+      }
+      
+      if (assistantContent.includes('delete all templates')) {
+        return {
+          message: "🚨 **EXECUTING: Delete ALL templates**\n\nI'm now deleting all templates from the system. This may take a moment...\n\n⚠️ **This action cannot be undone.**\n\nPlease wait while I process the deletion...",
+          confidence: 1.0,
+          actions: [{
+            type: 'execute_delete_all_templates',
+            data: { status: 'executing' }
+          }],
+          nextSteps: ['Templates deleted', 'System cleanup complete']
+        };
+      }
+    }
+    
+    // Check if assistant asked for template details and user is providing them
+    if (assistantContent.includes('what should the subject line be') || 
+        assistantContent.includes('what should the email content be') ||
+        assistantContent.includes('what should we call it')) {
+      
+      // This is likely a response to template creation questions
+      return null; // Let template creation handler deal with this
+    }
+    
+    return null;
+  }
+
   async handleTemplateCreation(
     message: string, 
     intent: Intent, 
@@ -520,9 +622,16 @@ export class ServerSideAIAgent {
     }
   }
 
-  async handleGeneralQuery(message: string, _conversationHistory: ChatMessage[] = []): Promise<AIResponse> {
+  async handleGeneralQuery(message: string, conversationHistory: ChatMessage[] = []): Promise<AIResponse> {
     try {
-      // Try to use RAG system first
+      // First, check if this is a response to a previous question
+      const contextualResponse = this.analyzeContextualResponse(message, conversationHistory);
+      if (contextualResponse) {
+        console.log('✅ Contextual response detected');
+        return contextualResponse;
+      }
+
+      // Try to use RAG system for new queries
       console.log('🔍 Searching RAG system for:', message);
       const ragResponse = await this.ragSystem.generateRAGResponse(message);
       
