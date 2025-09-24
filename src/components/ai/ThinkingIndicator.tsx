@@ -55,7 +55,7 @@ export function ThinkingIndicator({ isVisible, estimatedTime = 3 }: ThinkingIndi
       clearInterval(textInterval)
       clearInterval(stepInterval)
     }
-  }, [isVisible, estimatedTime])
+  }, [isVisible, estimatedTime, steps.length])
 
   if (!isVisible) return null
 
