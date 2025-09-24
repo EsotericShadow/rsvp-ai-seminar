@@ -93,7 +93,7 @@ I'll ask for all the details I need to help you effectively. What would you like
     setIsTyping(true)
 
     try {
-      const response = await aiAgent.processMessage(message)
+      const response = await aiAgent.processMessage(message, messages)
 
       // Add user message
       const userMessage: ChatMessage = {

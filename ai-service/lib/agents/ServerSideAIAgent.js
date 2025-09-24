@@ -9,26 +9,42 @@ class ServerSideAIAgent {
     };
   }
 
-  async processMessage(userMessage) {
-    // Add user message to context
+  async processMessage(userMessage, sessionId = 'default', conversationHistory = []) {
+    console.log('🤖 Processing message:', userMessage);
+    console.log('💬 Session ID:', sessionId);
+    console.log('📚 Conversation history length:', conversationHistory.length);
+    
+    // Initialize context for this session if not exists
+    if (!this.context.messages) {
+      this.context.messages = [];
+    }
+    
+    // Load conversation history into context
+    this.context.messages = conversationHistory.map(msg => ({
+      role: msg.role,
+      content: msg.content,
+      timestamp: new Date(msg.timestamp || Date.now())
+    }));
+    
+    // Add current user message to context
     this.context.messages.push({
       role: 'user',
       content: userMessage,
       timestamp: new Date()
     });
 
-    // Analyze the message and determine intent
-    const intent = this.analyzeIntent(userMessage);
+    // Analyze the message and determine intent with context
+    const intent = this.analyzeIntent(userMessage, this.context.messages);
     
     // Handle based on intent and current context
     let response;
     
     if (intent.type === 'create_template') {
-      response = await this.handleTemplateCreation(userMessage, intent);
+      response = await this.handleTemplateCreation(userMessage, intent, this.context.messages);
     } else if (intent.type === 'create_campaign') {
-      response = await this.handleCampaignCreation(userMessage, intent);
+      response = await this.handleCampaignCreation(userMessage, intent, this.context.messages);
     } else {
-      response = await this.handleGeneralQuery(userMessage);
+      response = await this.handleGeneralQuery(userMessage, this.context.messages);
     }
 
     // Add assistant response to context
@@ -41,8 +57,20 @@ class ServerSideAIAgent {
     return response;
   }
 
-  analyzeIntent(message) {
+  analyzeIntent(message, conversationHistory = []) {
     const messageLower = message.toLowerCase();
+    
+    // Check conversation context for ongoing tasks
+    const recentMessages = conversationHistory.slice(-6); // Last 3 exchanges
+    const hasOngoingTemplate = recentMessages.some(msg => 
+      msg.role === 'assistant' && 
+      (msg.content.includes('template') || msg.content.includes('subject line'))
+    );
+    
+    const hasOngoingCampaign = recentMessages.some(msg => 
+      msg.role === 'assistant' && 
+      (msg.content.includes('campaign') || msg.content.includes('description'))
+    );
     
     // Template creation patterns
     const templatePatterns = [
@@ -60,11 +88,29 @@ class ServerSideAIAgent {
       /email.*campaign/i
     ];
 
+    // If we're in the middle of template creation and user provides simple input
+    if (hasOngoingTemplate && message.length < 50 && !messageLower.includes('template')) {
+      return {
+        type: 'continue_template',
+        confidence: 0.95,
+        extractedData: this.extractTemplateData(message, conversationHistory)
+      };
+    }
+    
+    // If we're in the middle of campaign creation and user provides simple input
+    if (hasOngoingCampaign && message.length < 50 && !messageLower.includes('campaign')) {
+      return {
+        type: 'continue_campaign',
+        confidence: 0.95,
+        extractedData: this.extractCampaignData(message, conversationHistory)
+      };
+    }
+
     if (templatePatterns.some(pattern => pattern.test(message))) {
       return {
         type: 'create_template',
         confidence: 0.9,
-        extractedData: this.extractTemplateData(message)
+        extractedData: this.extractTemplateData(message, conversationHistory)
       };
     }
     
@@ -72,7 +118,7 @@ class ServerSideAIAgent {
       return {
         type: 'create_campaign',
         confidence: 0.9,
-        extractedData: this.extractCampaignData(message)
+        extractedData: this.extractCampaignData(message, conversationHistory)
       };
     }
 
@@ -193,8 +239,45 @@ class ServerSideAIAgent {
     return data;
   }
 
-  async handleTemplateCreation(message, intent) {
+  async handleTemplateCreation(message, intent, conversationHistory = []) {
     const templateData = intent.extractedData;
+    
+    // Check conversation context for ongoing template creation
+    const recentMessages = conversationHistory.slice(-4);
+    const hasTemplateContext = recentMessages.some(msg => 
+      msg.role === 'assistant' && msg.content.includes('template')
+    );
+    
+    // If we're continuing a template creation and user provided simple input
+    if (intent.type === 'continue_template' && hasTemplateContext) {
+      // Check what information we're missing
+      const lastAssistantMessage = recentMessages.reverse().find(msg => msg.role === 'assistant');
+      
+      if (lastAssistantMessage && lastAssistantMessage.content.includes('subject line')) {
+        // User is providing subject line
+        return {
+          message: `Perfect! Subject line "${message}" for template "${templateData.name || 'the template'}". What should the email content be?`,
+          confidence: 0.95,
+          nextSteps: ['Get content', 'Create template']
+        };
+      } else if (lastAssistantMessage && lastAssistantMessage.content.includes('content')) {
+        // User is providing content
+        return {
+          message: `Excellent! I'll create the template with:\n\n• **Name**: ${templateData.name || 'the template'}\n• **Subject**: ${templateData.subject || 'the subject'}\n• **Content**: ${message}\n\nCreating template now...`,
+          confidence: 0.95,
+          actions: [{
+            type: 'create_template',
+            data: {
+              name: templateData.name || 'test',
+              subject: templateData.subject || 'Test Subject',
+              htmlBody: `<h1>${templateData.subject || 'Test Subject'}</h1><p>${message}</p>`,
+              textBody: message
+            }
+          }],
+          nextSteps: ['Template created', 'Ready for campaigns']
+        };
+      }
+    }
     
     // Check if we have enough information
     if (!templateData.name) {
