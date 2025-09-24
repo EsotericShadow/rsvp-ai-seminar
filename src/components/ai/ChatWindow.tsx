@@ -3,7 +3,23 @@
 import React, { useRef, useState, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { XMarkIcon, MinusIcon, Square2StackIcon, SparklesIcon, CheckCircleIcon, XCircleIcon, ClockIcon } from '@heroicons/react/24/outline'
-import { ChatMessage, ExtractedEntity } from '@/lib/agents/SLMAgent'
+// Local type definitions (SLMAgent is archived)
+interface ChatMessage {
+  id: string
+  role: 'user' | 'assistant'
+  content: string
+  timestamp: Date
+  confidence?: number
+  toolCalls?: any[]
+  toolResults?: any[]
+  entities?: ExtractedEntity[]
+}
+
+interface ExtractedEntity {
+  type: string
+  value: string
+  confidence: number
+}
 import { ThinkingIndicator } from './ThinkingIndicator'
 
 interface ChatWindowProps {
