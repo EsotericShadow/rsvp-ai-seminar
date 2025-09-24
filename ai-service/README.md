@@ -37,3 +37,4 @@ User → Vercel App → Render AI Service → Main App APIs
 ```
 
 The AI service runs independently on Render and communicates with your main Vercel app via API calls.
+

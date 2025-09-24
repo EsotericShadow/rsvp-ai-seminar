@@ -203,3 +203,4 @@ export interface TestResult {
 
 // Export singleton instance
 export const queryEnhancementService = new QueryEnhancementService();
+

@@ -378,3 +378,4 @@ console.log('📄 Open user-manual.html in your browser to preview');
 console.log('🖨️ Use "Print to PDF" in your browser for the final PDF');
 
 
+

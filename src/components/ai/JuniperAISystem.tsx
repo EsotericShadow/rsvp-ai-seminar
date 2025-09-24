@@ -32,6 +32,7 @@ export function JuniperAISystem({ isAdmin = false }: JuniperAISystemProps) {
   const [messages, setMessages] = useState<ChatMessage[]>([])
   const [isTyping, setIsTyping] = useState(false)
   const [isPaused, setIsPaused] = useState(false)
+  const [estimatedTime, setEstimatedTime] = useState(3)
 
   // Initialize with welcome message
   useEffect(() => {
@@ -56,9 +57,39 @@ I'll ask for all the details I need to help you effectively. What would you like
     }
   }, [isAdmin, messages.length])
 
+  const calculateEstimatedTime = (message: string): number => {
+    const messageLower = message.toLowerCase()
+    
+    // Simple queries
+    if (messageLower.includes('help') || messageLower.includes('what can you do')) {
+      return 1.5
+    }
+    
+    // Template creation
+    if (messageLower.includes('template') && messageLower.includes('create')) {
+      return 2.5
+    }
+    
+    // Campaign creation
+    if (messageLower.includes('campaign') && messageLower.includes('create')) {
+      return 3.5
+    }
+    
+    // Complex queries
+    if (messageLower.includes('analyze') || messageLower.includes('report')) {
+      return 4
+    }
+    
+    // Default
+    return 2.5
+  }
+
   const handleSendMessage = async (message: string) => {
     if (!message.trim() || isTyping || isPaused) return
 
+    // Calculate estimated time based on message complexity
+    const estimatedTime = calculateEstimatedTime(message)
+    setEstimatedTime(estimatedTime)
     setIsTyping(true)
 
     try {
@@ -131,6 +162,7 @@ I'll ask for all the details I need to help you effectively. What would you like
         onClose={() => setIsWindowOpen(false)}
         messages={messages}
         isTyping={isTyping}
+        estimatedTime={estimatedTime}
       />
     </>
   )

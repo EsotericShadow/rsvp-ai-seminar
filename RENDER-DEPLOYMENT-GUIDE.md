@@ -120,3 +120,4 @@ Content-Type: application/json
 2. Update the main app's environment variables
 3. Test the integration
 4. Monitor logs and performance
+

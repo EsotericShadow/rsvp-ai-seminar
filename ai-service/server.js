@@ -142,3 +142,4 @@ app.listen(port, () => {
   console.log(`📡 Health check: http://localhost:${port}/health`);
   console.log(`🤖 Chat endpoint: http://localhost:${port}/api/chat`);
 });
+

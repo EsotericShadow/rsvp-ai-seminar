@@ -327,3 +327,4 @@ User Query → Vector Search → Context Retrieval → AI Generation → Respons
 
 This comprehensive process documentation provides the foundation for understanding how all components of the RSVP application work together to create a robust, secure, and intelligent email campaign and event management system.
 
+
