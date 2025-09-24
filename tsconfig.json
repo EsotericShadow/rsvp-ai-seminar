@@ -37,6 +37,8 @@
     "node_modules",
     "archive/**/*",
     "lead-mine/**/*",
-    "user-manual/**/*"
+    "user-manual/**/*",
+    "ai-service/**/*",
+    "scripts/**/*"
   ]
 }
