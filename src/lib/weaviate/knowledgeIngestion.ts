@@ -13,7 +13,8 @@ export const knowledgeIngestion = {
       this.ingestBusinessKnowledge(),
       this.ingestSystemCapabilities(),
       this.ingestUIKnowledge(),
-      this.ingestComprehensiveUIKnowledge()
+      this.ingestComprehensiveUIKnowledge(),
+      this.ingestBrandingAndEventData()
     ])
     
     console.log('✅ System knowledge ingestion complete')
@@ -335,6 +336,215 @@ export const knowledgeIngestion = {
 
     await collection.data.insert(comprehensiveUIData)
     console.log('✅ Comprehensive UI knowledge ingested')
+  },
+
+  async ingestBrandingAndEventData(): Promise<void> {
+    const client = await getClient()
+    const collection = client.collections.get('KnowledgeBase')
+
+    // Evergreen Web Solutions Branding Data
+    const evergreenBrandingData = {
+      title: 'Evergreen Web Solutions - Company Branding',
+      content: `
+# Evergreen Web Solutions - Company Branding
+
+## Company Overview
+- **Company Name**: Evergreen Web Solutions
+- **Owner**: Gabe Lacroix
+- **Business Type**: Web development and digital solutions company
+- **Location**: Terrace, British Columbia, Canada
+
+## Brand Identity
+- **Logo**: Evergreen logo with professional design
+- **Color Scheme**: Professional green and white branding
+- **Brand Values**: Innovation, reliability, growth, sustainability
+
+## Services Offered
+- Web development and design
+- Digital marketing solutions
+- AI integration and automation
+- Business intelligence and analytics
+- Custom software development
+- E-commerce solutions
+
+## Target Market
+- Local businesses in Terrace, BC
+- Small to medium-sized businesses
+- Companies looking for digital transformation
+- Businesses needing web presence and online marketing
+
+## Company Philosophy
+- Focus on sustainable, long-term solutions
+- Client-centered approach
+- Innovation in web technologies
+- Local community support and engagement
+      `,
+      category: 'branding',
+      metadata: JSON.stringify({ type: 'company-branding', version: '1.0' }),
+      source: 'evergreen-branding',
+      tags: ['branding', 'company', 'evergreen', 'web-solutions', 'gabe-lacroix']
+    }
+
+    // AI in Terrace Event Information
+    const aiEventData = {
+      title: 'AI in Terrace - Business Event Information',
+      content: `
+# AI in Terrace - Business Event Information
+
+## Event Overview
+- **Event Name**: AI in Terrace
+- **Event Type**: Business informational seminar
+- **Target Audience**: Local business owners and professionals
+- **Location**: Terrace, British Columbia
+- **Organizer**: Evergreen Web Solutions (Gabe Lacroix)
+
+## Event Purpose
+- Educate local businesses about AI opportunities
+- Demonstrate practical AI applications for business
+- Provide AI needs assessment for attendees
+- Showcase AI tools and solutions for small businesses
+
+## Event Content
+- AI seminar presentation
+- Business needs assessment workshop
+- Practical AI demonstrations
+- Q&A sessions with AI experts
+- Networking opportunities for local businesses
+
+## Target Industries
+- Healthcare practices
+- Construction companies
+- Retail businesses
+- Professional services
+- Manufacturing companies
+- Technology companies
+- Hospitality businesses
+
+## Event Benefits for Attendees
+- Understanding AI applications for their business
+- Personalized AI needs assessment
+- Access to AI tools and resources
+- Networking with other business owners
+- Follow-up consultation opportunities
+
+## Marketing Approach
+- Press release distribution
+- Local business outreach
+- Digital marketing campaigns
+- Community engagement
+- Professional networking
+      `,
+      category: 'events',
+      metadata: JSON.stringify({ type: 'event-information', version: '1.0' }),
+      source: 'ai-terrace-event',
+      tags: ['event', 'ai', 'terrace', 'business', 'seminar', 'education']
+    }
+
+    // Strategic Intelligence and Business Development
+    const strategicIntelligenceData = {
+      title: 'Strategic Intelligence - Business Development',
+      content: `
+# Strategic Intelligence - Business Development
+
+## Business Development Strategy
+- **Focus Area**: AI integration for local businesses
+- **Market Position**: Leading AI solutions provider in Terrace
+- **Growth Strategy**: Community education and engagement
+- **Service Expansion**: AI consulting and implementation
+
+## Market Analysis
+- **Primary Market**: Terrace, BC business community
+- **Secondary Market**: Surrounding communities in Northern BC
+- **Market Size**: Small to medium-sized businesses
+- **Market Needs**: Digital transformation, AI adoption, web presence
+
+## Competitive Advantages
+- Local presence and community knowledge
+- Specialized AI expertise
+- Personalized service approach
+- Comprehensive digital solutions
+- Ongoing support and consultation
+
+## Business Intelligence
+- Customer relationship management
+- Market trend analysis
+- Competitive positioning
+- Service optimization
+- Revenue growth strategies
+
+## Client Success Metrics
+- Client satisfaction and retention
+- Project completion rates
+- Business growth for clients
+- AI adoption success rates
+- Community engagement levels
+      `,
+      category: 'strategy',
+      metadata: JSON.stringify({ type: 'strategic-intelligence', version: '1.0' }),
+      source: 'strategic-intelligence',
+      tags: ['strategy', 'business-development', 'market-analysis', 'competitive-advantage']
+    }
+
+    // Portfolio and Capabilities
+    const portfolioData = {
+      title: 'Evergreen Web Solutions - Portfolio and Capabilities',
+      content: `
+# Evergreen Web Solutions - Portfolio and Capabilities
+
+## Technical Capabilities
+- **Web Development**: Modern, responsive websites
+- **AI Integration**: Custom AI solutions for businesses
+- **Digital Marketing**: SEO, social media, email campaigns
+- **E-commerce**: Online stores and payment processing
+- **Analytics**: Business intelligence and reporting
+- **Automation**: Workflow optimization and efficiency
+
+## Project Portfolio
+- Custom web applications
+- AI-powered business tools
+- Digital marketing campaigns
+- E-commerce platforms
+- Business automation systems
+- Data analytics dashboards
+
+## Technology Stack
+- **Frontend**: React, Next.js, TypeScript
+- **Backend**: Node.js, Python, Prisma
+- **Database**: PostgreSQL, Weaviate
+- **AI/ML**: OpenAI, custom AI models
+- **Cloud**: Vercel, Render, AWS
+- **Tools**: Git, Docker, CI/CD
+
+## Service Delivery
+- **Consultation**: Initial needs assessment
+- **Planning**: Project roadmap and timeline
+- **Development**: Agile development process
+- **Testing**: Quality assurance and testing
+- **Deployment**: Production deployment and monitoring
+- **Support**: Ongoing maintenance and updates
+
+## Client Success Stories
+- Improved business efficiency through AI automation
+- Increased online presence and customer engagement
+- Streamlined business processes and workflows
+- Enhanced data-driven decision making
+- Reduced operational costs through automation
+      `,
+      category: 'portfolio',
+      metadata: JSON.stringify({ type: 'portfolio-capabilities', version: '1.0' }),
+      source: 'portfolio-capabilities',
+      tags: ['portfolio', 'capabilities', 'technology', 'services', 'success-stories']
+    }
+
+    // Insert all branding and event data
+    await Promise.all([
+      collection.data.insert(evergreenBrandingData),
+      collection.data.insert(aiEventData),
+      collection.data.insert(strategicIntelligenceData),
+      collection.data.insert(portfolioData)
+    ])
+
+    console.log('✅ Branding and event data ingested')
   },
 
   async searchKnowledge(query: string, limit: number = 5): Promise<any[]> {
