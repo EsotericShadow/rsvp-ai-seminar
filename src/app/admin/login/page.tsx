@@ -4,6 +4,9 @@ import bcrypt from 'bcryptjs'
 
 import { createSessionToken, getAdminConfig, getNewExpiry, getSessionCookieName } from '@/lib/admin-auth'
 
+// Force dynamic rendering for this route
+export const dynamic = 'force-dynamic'
+
 type SearchParams = { [key: string]: string | string[] | undefined }
 
 async function loginAction(formData: FormData) {

@@ -47,8 +47,7 @@ const defaultSecurityHeaders: SecurityHeadersConfig = {
   permissionsPolicy: {
     camera: [],
     microphone: [],
-    geolocation: [],
-    interestCohort: []
+    geolocation: []
   }
 };
 
