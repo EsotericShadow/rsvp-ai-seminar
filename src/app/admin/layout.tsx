@@ -1,7 +1,7 @@
 'use client'
 
 import { useEffect, useState } from 'react'
-import { useRouter } from 'next/navigation'
+import { useRouter, usePathname } from 'next/navigation'
 import { JuniperAISystem } from '@/components/ai/JuniperAISystem'
 
 export default function AdminLayout({
@@ -12,8 +12,18 @@ export default function AdminLayout({
   const [isAuthenticated, setIsAuthenticated] = useState(false)
   const [isLoading, setIsLoading] = useState(true)
   const router = useRouter()
+  const pathname = usePathname()
+
+  // Skip auth check if we're on the login page
+  const isLoginPage = pathname === '/admin/login'
 
   useEffect(() => {
+    // Skip auth check for login page
+    if (isLoginPage) {
+      setIsLoading(false)
+      return
+    }
+
     // Check if user is authenticated
     const checkAuth = async () => {
       try {
@@ -32,7 +42,12 @@ export default function AdminLayout({
     }
 
     checkAuth()
-  }, [router])
+  }, [router, isLoginPage])
+
+  // For login page, render children directly without auth check
+  if (isLoginPage) {
+    return <>{children}</>
+  }
 
   if (isLoading) {
     return (
