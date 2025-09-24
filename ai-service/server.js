@@ -42,7 +42,7 @@ const authenticateRequest = (req, res, next) => {
 // Main AI chat endpoint
 app.post('/api/chat', authenticateRequest, async (req, res) => {
   try {
-    const { message, context } = req.body;
+    const { message, context, conversationHistory = [], sessionId = 'default' } = req.body;
     
     if (!message || typeof message !== 'string') {
       return res.status(400).json({
@@ -51,9 +51,11 @@ app.post('/api/chat', authenticateRequest, async (req, res) => {
     }
 
     console.log('🤖 Processing message:', message);
+    console.log('💬 Session ID:', sessionId);
+    console.log('📚 Conversation history length:', conversationHistory.length);
     
-    // Process message with AI agent
-    const response = await aiAgent.processMessage(message);
+    // Process message with AI agent including conversation history
+    const response = await aiAgent.processMessage(message, sessionId, conversationHistory);
     
     console.log('✅ AI Response:', response.message);
     

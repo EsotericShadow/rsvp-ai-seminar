@@ -16,7 +16,7 @@ export class APIBasedAgent {
     this.aiServiceUrl = process.env.NEXT_PUBLIC_AI_SERVICE_URL || 'http://localhost:3001'
   }
 
-  async processMessage(message: string): Promise<AIResponse> {
+  async processMessage(message: string, conversationHistory: any[] = []): Promise<AIResponse> {
     try {
       // Get API key from environment
       const apiKey = process.env.NEXT_PUBLIC_AI_SERVICE_API_KEY
@@ -34,7 +34,9 @@ export class APIBasedAgent {
         },
         body: JSON.stringify({
           message: message,
-          context: {}
+          context: {},
+          conversationHistory: conversationHistory,
+          sessionId: 'main-session'
         })
       })
 
