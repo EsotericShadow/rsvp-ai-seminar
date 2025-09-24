@@ -3,14 +3,31 @@
 import React, { useState, useEffect } from 'react'
 import { FloatingChatBar } from './FloatingChatBar'
 import { ChatWindow } from './ChatWindow'
-import { SLMAgent, ChatMessage, AIResponse } from '@/lib/agents/SLMAgent'
+import { APIBasedAgent } from '@/lib/agents/APIBasedAgent'
+
+interface ChatMessage {
+  id: string
+  role: 'user' | 'assistant'
+  content: string
+  timestamp: Date
+  confidence?: number
+  toolCalls?: any[]
+  toolResults?: any[]
+}
+
+interface AIResponse {
+  message: string
+  confidence: number
+  toolCalls: any[]
+  nextSteps: string[]
+}
 
 interface JuniperAISystemProps {
   isAdmin?: boolean
 }
 
 export function JuniperAISystem({ isAdmin = false }: JuniperAISystemProps) {
-  const [aiAgent] = useState(() => new SLMAgent())
+  const [aiAgent] = useState(() => new APIBasedAgent())
   const [isWindowOpen, setIsWindowOpen] = useState(false)
   const [messages, setMessages] = useState<ChatMessage[]>([])
   const [isTyping, setIsTyping] = useState(false)
