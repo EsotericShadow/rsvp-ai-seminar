@@ -3,6 +3,9 @@ import { requireAdminSession } from '@/lib/adminSession';
 import { generateRAGResponse, searchRAG, searchFunctionality, searchAPIs, searchTroubleshooting } from '@/lib/rag-integration';
 import { AIEnhancementService, getFallbackKnowledge } from '@/lib/ai-enhancement';
 
+// Force dynamic rendering for this route
+export const dynamic = 'force-dynamic'
+
 export async function POST(req: NextRequest) {
   try {
     // Enhanced JSON parsing with better error handling (before auth check)

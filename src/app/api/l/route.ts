@@ -4,6 +4,9 @@ import crypto from 'crypto'
 import { UAParser } from 'ua-parser-js'
 import prisma from '@/lib/prisma'
 
+// Force dynamic rendering for this route
+export const dynamic = 'force-dynamic'
+
 export async function GET(req: Request) {
   const url = new URL(req.url)
   const to = url.searchParams.get('to')
