@@ -1,16 +1,62 @@
-// Server-side AI Agent for Juniper
-// This runs on Render and handles AI conversations
+/**
+ * Server-side AI Agent for Juniper
+ * This runs on Render and handles AI conversations
+ */
 
-class ServerSideAIAgent {
+import { RAGIntegrationSystem } from '../rag-integration';
+import { 
+  ChatMessage, 
+  AIResponse, 
+  Intent, 
+  TemplateData, 
+  CampaignData, 
+  Context 
+} from '../../types/ai';
+
+export class ServerSideAIAgent {
+  private context: Context;
+  private mainAppUrl: string;
+  private ragSystem: RAGIntegrationSystem;
+  // private _knowledgeInitialized: boolean; // Tracked but not currently used
+
   constructor() {
     this.context = {
-      messages: [],
-      currentTask: undefined
+      messages: []
     };
     this.mainAppUrl = process.env.MAIN_APP_URL || 'http://localhost:3000';
+    this.ragSystem = new RAGIntegrationSystem();
+    // this._knowledgeInitialized = false; // Tracked but not currently used
+    
+    // Automatically initialize knowledge base
+    this.initializeKnowledgeBase();
   }
 
-  async processMessage(userMessage, sessionId = 'default', conversationHistory = []) {
+  async initializeKnowledgeBase(): Promise<void> {
+    try {
+      console.log('🚀 Auto-initializing Weaviate knowledge base...');
+      
+      // Check if Weaviate is configured
+      if (!process.env.WEAVIATE_URL || !process.env.WEAVIATE_API_KEY) {
+        console.log('⚠️ Weaviate not configured, skipping knowledge initialization');
+        return;
+      }
+      
+      // Initialize knowledge base
+      await this.ragSystem.initializeKnowledgeBase();
+      // this._knowledgeInitialized = true; // Tracked but not currently used
+      console.log('✅ Knowledge base auto-initialized successfully');
+      
+    } catch (error) {
+      console.error('❌ Failed to auto-initialize knowledge base:', error);
+      // Don't throw - let the AI work without RAG if needed
+    }
+  }
+
+  async processMessage(
+    userMessage: string, 
+    sessionId: string = 'default', 
+    conversationHistory: ChatMessage[] = []
+  ): Promise<AIResponse> {
     console.log('🤖 Processing message:', userMessage);
     console.log('💬 Session ID:', sessionId);
     console.log('📚 Conversation history length:', conversationHistory.length);
@@ -38,7 +84,7 @@ class ServerSideAIAgent {
     const intent = this.analyzeIntent(userMessage, this.context.messages);
     
     // Handle based on intent and current context
-    let response;
+    let response: AIResponse;
     
     if (intent.type === 'create_template' || intent.type === 'continue_template') {
       response = await this.handleTemplateCreation(userMessage, intent, this.context.messages);
@@ -58,7 +104,7 @@ class ServerSideAIAgent {
     return response;
   }
 
-  analyzeIntent(message, conversationHistory = []) {
+  analyzeIntent(message: string, conversationHistory: ChatMessage[] = []): Intent {
     const messageLower = message.toLowerCase();
     
     // Check conversation context for ongoing tasks
@@ -130,8 +176,30 @@ class ServerSideAIAgent {
     };
   }
 
-  extractTemplateData(message, conversationHistory = []) {
-    const data = {};
+  extractTemplateData(message: string, conversationHistory: ChatMessage[] = []): TemplateData {
+    const data: TemplateData = {};
+    
+    // First, try to extract structured data from the current message
+    // Handle patterns like "the template name should be test, the subject line should be test, the content should be 'ipsum lorem'"
+    const structuredPatterns = [
+      /template name should be ([^,]+)/i,
+      /subject line should be ([^,]+)/i,
+      /content should be ["']?([^"',]+)["']?/i
+    ];
+    
+    for (const pattern of structuredPatterns) {
+      const match = message.match(pattern);
+      if (match) {
+        const value = match[1].trim();
+        if (pattern.source.includes('template name')) {
+          data.name = value;
+        } else if (pattern.source.includes('subject line')) {
+          data.subject = value;
+        } else if (pattern.source.includes('content')) {
+          data.content = value;
+        }
+      }
+    }
     
     // Extract name - multiple patterns
     const namePatterns = [
@@ -198,15 +266,40 @@ class ServerSideAIAgent {
 
     // Fill missing data from conversation history if available
     if (conversationHistory.length > 0) {
-      const lastAssistantMessage = conversationHistory.reverse().find(msg => msg.role === 'assistant');
-      if (lastAssistantMessage) {
-        if (!data.name && lastAssistantMessage.content.includes('template named')) {
-          const match = lastAssistantMessage.content.match(/template named "([^"]+)"/i);
-          if (match) data.name = match[1];
+      // Look through recent messages to find context
+      const recentMessages = conversationHistory.slice(-6); // Look at last 6 messages
+      
+      for (let i = recentMessages.length - 1; i >= 0; i--) {
+        const msg = recentMessages[i];
+        
+        if (msg.role === 'assistant' && msg.content.includes('template named')) {
+          const match = msg.content.match(/template named "([^"]+)"/i);
+          if (match && !data.name) {
+            data.name = match[1];
+          }
         }
-        if (!data.subject && lastAssistantMessage.content.includes('subject line')) {
-          const match = lastAssistantMessage.content.match(/subject line "([^"]+)"/i);
-          if (match) data.subject = match[1];
+        
+        if (msg.role === 'assistant' && msg.content.includes('subject line')) {
+          const match = msg.content.match(/subject line "([^"]+)"/i);
+          if (match && !data.subject) {
+            data.subject = match[1];
+          }
+        }
+        
+        if (msg.role === 'user' && !data.subject && msg.content.length < 50) {
+          // If user gave a short response and we're asking for subject, it's likely the subject
+          const lastAssistantMsg = recentMessages.slice(0, i).reverse().find(m => m.role === 'assistant');
+          if (lastAssistantMsg && lastAssistantMsg.content.includes('subject line')) {
+            data.subject = msg.content.trim();
+          }
+        }
+        
+        if (msg.role === 'user' && !data.content && msg.content.length < 100) {
+          // If user gave a short response and we're asking for content, it's likely the content
+          const lastAssistantMsg = recentMessages.slice(0, i).reverse().find(m => m.role === 'assistant');
+          if (lastAssistantMsg && lastAssistantMsg.content.includes('content')) {
+            data.content = msg.content.trim();
+          }
         }
       }
     }
@@ -214,8 +307,8 @@ class ServerSideAIAgent {
     return data;
   }
 
-  extractCampaignData(message, conversationHistory = []) {
-    const data = {};
+  extractCampaignData(message: string, _conversationHistory: ChatMessage[] = []): CampaignData {
+    const data: CampaignData = {};
     
     // Extract name - multiple patterns
     const namePatterns = [
@@ -255,19 +348,24 @@ class ServerSideAIAgent {
     return data;
   }
 
-  async handleTemplateCreation(message, intent, conversationHistory = []) {
-    const templateData = intent.extractedData;
+  async handleTemplateCreation(
+    message: string, 
+    intent: Intent, 
+    _conversationHistory: ChatMessage[] = []
+  ): Promise<AIResponse> {
+    // Extract template data from the current message and conversation history
+    const templateData = this.extractTemplateData(message, _conversationHistory);
     
     // Check conversation context for ongoing template creation
-    const recentMessages = conversationHistory.slice(-4);
-    const hasTemplateContext = recentMessages.some(msg => 
+    const recentMessages = _conversationHistory.slice(-4);
+    const hasTemplateContext = recentMessages.some((msg: ChatMessage) => 
       msg.role === 'assistant' && msg.content.includes('template')
     );
     
     // If we're continuing a template creation and user provided simple input
     if (intent.type === 'continue_template' && hasTemplateContext) {
       // Check what information we're missing
-      const lastAssistantMessage = recentMessages.reverse().find(msg => msg.role === 'assistant');
+      const lastAssistantMessage = recentMessages.reverse().find((msg: ChatMessage) => msg.role === 'assistant');
       
       if (lastAssistantMessage && lastAssistantMessage.content.includes('subject line')) {
         // User is providing subject line
@@ -289,6 +387,16 @@ class ServerSideAIAgent {
               htmlBody: `<h1>${templateData.subject || 'Test Subject'}</h1><p>${message}</p>`,
               textBody: message
             }
+          }],
+          toolCalls: [{
+            id: `create_template_${Date.now()}`,
+            name: 'create_template',
+            parameters: {
+              name: templateData.name || 'test',
+              subject: templateData.subject || 'Test Subject',
+              content: message
+            },
+            status: 'pending'
           }],
           nextSteps: ['Template created', 'Ready for campaigns']
         };
@@ -345,7 +453,7 @@ class ServerSideAIAgent {
       };
     } catch (error) {
       return {
-        message: `❌ **Failed to create template**: ${error.message}\n\nPlease check your system configuration and try again.`,
+        message: `❌ **Failed to create template**: ${error instanceof Error ? error.message : 'Unknown error'}\n\nPlease check your system configuration and try again.`,
         confidence: 0.1,
         actions: [],
         nextSteps: ['Check system status', 'Retry template creation']
@@ -353,7 +461,11 @@ class ServerSideAIAgent {
     }
   }
 
-  async handleCampaignCreation(message, intent, conversationHistory = []) {
+  async handleCampaignCreation(
+    _message: string, 
+    intent: Intent, 
+    _conversationHistory: ChatMessage[] = []
+  ): Promise<AIResponse> {
     const campaignData = intent.extractedData;
     
     if (!campaignData.name) {
@@ -400,7 +512,7 @@ class ServerSideAIAgent {
       };
     } catch (error) {
       return {
-        message: `❌ **Failed to create campaign**: ${error.message}\n\nPlease check your system configuration and try again.`,
+        message: `❌ **Failed to create campaign**: ${error instanceof Error ? error.message : 'Unknown error'}\n\nPlease check your system configuration and try again.`,
         confidence: 0.1,
         actions: [],
         nextSteps: ['Check system status', 'Retry campaign creation']
@@ -408,8 +520,26 @@ class ServerSideAIAgent {
     }
   }
 
-  async handleGeneralQuery(message) {
-    // For now, provide helpful responses based on keywords
+  async handleGeneralQuery(message: string, _conversationHistory: ChatMessage[] = []): Promise<AIResponse> {
+    try {
+      // Try to use RAG system first
+      console.log('🔍 Searching RAG system for:', message);
+      const ragResponse = await this.ragSystem.generateRAGResponse(message);
+      
+      if (ragResponse && ragResponse.answer) {
+        console.log('✅ RAG system provided answer');
+        return {
+          message: ragResponse.answer,
+          confidence: ragResponse.confidence || 0.8,
+          sources: ragResponse.sources || [],
+          nextSteps: ragResponse.nextSteps || []
+        };
+      }
+    } catch (error) {
+      console.log('⚠️ RAG system failed, using fallback:', error instanceof Error ? error.message : 'Unknown error');
+    }
+    
+    // Fallback to keyword-based responses
     const messageLower = message.toLowerCase();
     
     if (messageLower.includes('help') || messageLower.includes('what can you do')) {
@@ -444,14 +574,20 @@ class ServerSideAIAgent {
   }
 
   // Real database operations
-  async createTemplateInDatabase(templateData) {
+  async createTemplateInDatabase(templateData: {
+    name: string;
+    subject: string;
+    htmlBody: string;
+    textBody?: string;
+  }): Promise<any> {
     try {
       console.log('📧 Creating template in database:', templateData);
       
-      const response = await fetch(`${this.mainAppUrl}/api/admin/campaign/templates`, {
+      const response = await fetch(`${this.mainAppUrl}/api/internal/templates`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
+          'X-AI-API-Key': process.env.AI_SERVICE_API_KEY || ''
         },
         body: JSON.stringify({
           name: templateData.name,
@@ -466,7 +602,7 @@ class ServerSideAIAgent {
         throw new Error(`Template creation failed: ${response.status} - ${error}`);
       }
 
-      const result = await response.json();
+      const result = await response.json() as { template?: any };
       console.log('✅ Template created successfully:', result);
       return result;
     } catch (error) {
@@ -475,14 +611,19 @@ class ServerSideAIAgent {
     }
   }
 
-  async createCampaignInDatabase(campaignData) {
+  async createCampaignInDatabase(campaignData: {
+    name: string;
+    description?: string;
+    steps?: any[];
+  }): Promise<any> {
     try {
       console.log('📢 Creating campaign in database:', campaignData);
       
-      const response = await fetch(`${this.mainAppUrl}/api/admin/campaign/campaigns`, {
+      const response = await fetch(`${this.mainAppUrl}/api/internal/campaigns`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
+          'X-AI-API-Key': process.env.AI_SERVICE_API_KEY || ''
         },
         body: JSON.stringify({
           name: campaignData.name,
@@ -500,7 +641,7 @@ class ServerSideAIAgent {
         throw new Error(`Campaign creation failed: ${response.status} - ${error}`);
       }
 
-      const result = await response.json();
+      const result = await response.json() as { campaign?: any };
       console.log('✅ Campaign created successfully:', result);
       return result;
     } catch (error) {
@@ -509,11 +650,15 @@ class ServerSideAIAgent {
     }
   }
 
-  async getAvailableTemplates() {
+  async getAvailableTemplates(): Promise<any[]> {
     try {
-      const response = await fetch(`${this.mainAppUrl}/api/admin/campaign/templates`);
+      const response = await fetch(`${this.mainAppUrl}/api/internal/templates`, {
+        headers: {
+          'X-AI-API-Key': process.env.AI_SERVICE_API_KEY || ''
+        }
+      });
       if (!response.ok) throw new Error(`Failed to fetch templates: ${response.status}`);
-      const data = await response.json();
+      const data = await response.json() as { templates?: any[] };
       return data.templates || [];
     } catch (error) {
       console.error('❌ Error fetching templates:', error);
@@ -521,11 +666,15 @@ class ServerSideAIAgent {
     }
   }
 
-  async getAvailableAudienceGroups() {
+  async getAvailableAudienceGroups(): Promise<any[]> {
     try {
-      const response = await fetch(`${this.mainAppUrl}/api/admin/campaign/groups`);
+      const response = await fetch(`${this.mainAppUrl}/api/internal/groups`, {
+        headers: {
+          'X-AI-API-Key': process.env.AI_SERVICE_API_KEY || ''
+        }
+      });
       if (!response.ok) throw new Error(`Failed to fetch groups: ${response.status}`);
-      const data = await response.json();
+      const data = await response.json() as { groups?: any[] };
       return data.groups || [];
     } catch (error) {
       console.error('❌ Error fetching audience groups:', error);
@@ -533,33 +682,22 @@ class ServerSideAIAgent {
     }
   }
 
-  async createAudienceGroupInDatabase(groupData) {
+  async createAudienceGroupInDatabase(groupData: any): Promise<any> {
     try {
       console.log('👥 Creating audience group in database:', groupData);
       
-      const response = await fetch(`${this.mainAppUrl}/api/admin/campaign/groups`, {
+      const response = await fetch(`${this.mainAppUrl}/api/internal/groups`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
+          'X-AI-API-Key': process.env.AI_SERVICE_API_KEY || ''
         },
-        body: JSON.stringify({
-          name: groupData.name,
-          description: groupData.description,
-          members: groupData.members.map(member => ({
-            businessId: String(member.businessId),
-            businessName: member.businessName,
-            primaryEmail: String(member.primaryEmail),
-            secondaryEmail: member.secondaryEmail,
-            inviteToken: member.inviteToken,
-            tags: member.tags,
-            meta: member.meta
-          }))
-        })
+        body: JSON.stringify(groupData)
       });
 
       if (!response.ok) {
         const error = await response.text();
-        throw new Error(`Audience group creation failed: ${response.status} - ${error}`);
+        throw new Error(`Group creation failed: ${response.status} - ${error}`);
       }
 
       const result = await response.json();
@@ -571,56 +709,44 @@ class ServerSideAIAgent {
     }
   }
 
-  async scheduleCampaignInDatabase(scheduleData) {
+  async scheduleCampaignInDatabase(scheduleData: any): Promise<any> {
     try {
-      console.log('📅 Creating campaign schedule in database:', scheduleData);
+      console.log('📅 Scheduling campaign in database:', scheduleData);
       
-      const response = await fetch(`${this.mainAppUrl}/api/admin/campaign/schedules`, {
+      const response = await fetch(`${this.mainAppUrl}/api/internal/schedules`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
+          'X-AI-API-Key': process.env.AI_SERVICE_API_KEY || ''
         },
-        body: JSON.stringify({
-          name: scheduleData.name,
-          templateId: String(scheduleData.templateId),
-          groupId: String(scheduleData.groupId),
-          campaignId: scheduleData.campaignId ? String(scheduleData.campaignId) : null,
-          sendAt: scheduleData.sendAt ? new Date(scheduleData.sendAt).toISOString() : null,
-          throttlePerMinute: scheduleData.throttlePerMinute || 10,
-          status: 'scheduled'
-        })
+        body: JSON.stringify(scheduleData)
       });
 
       if (!response.ok) {
         const error = await response.text();
-        throw new Error(`Campaign schedule creation failed: ${response.status} - ${error}`);
+        throw new Error(`Schedule creation failed: ${response.status} - ${error}`);
       }
 
       const result = await response.json();
-      console.log('✅ Campaign schedule created successfully:', result);
+      console.log('✅ Campaign scheduled successfully:', result);
       return result;
     } catch (error) {
-      console.error('❌ Error creating campaign schedule:', error);
+      console.error('❌ Error scheduling campaign:', error);
       throw error;
     }
   }
 
-  async sendCampaignInDatabase(sendData) {
+  async sendCampaignInDatabase(sendData: any): Promise<any> {
     try {
-      console.log('📧 Sending campaign in database:', sendData);
+      console.log('📤 Sending campaign in database:', sendData);
       
-      const response = await fetch(`${this.mainAppUrl}/api/admin/campaign/send`, {
+      const response = await fetch(`${this.mainAppUrl}/api/internal/send`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
+          'X-AI-API-Key': process.env.AI_SERVICE_API_KEY || ''
         },
-        body: JSON.stringify({
-          scheduleId: sendData.scheduleId ? String(sendData.scheduleId) : undefined,
-          templateId: sendData.templateId ? String(sendData.templateId) : undefined,
-          groupId: sendData.groupId ? String(sendData.groupId) : undefined,
-          previewOnly: Boolean(sendData.previewOnly),
-          limit: sendData.limit ? Number(sendData.limit) : undefined
-        })
+        body: JSON.stringify(sendData)
       });
 
       if (!response.ok) {
@@ -637,6 +763,3 @@ class ServerSideAIAgent {
     }
   }
 }
-
-module.exports = { ServerSideAIAgent };
-

@@ -47,12 +47,33 @@ export class APIBasedAgent {
       const aiData = await aiResponse.json()
       
       // Handle any actions returned by the AI service
+      const toolCalls = aiData.toolCalls || []
+      const toolResults: any[] = []
+      
       if (aiData.actions && aiData.actions.length > 0) {
         for (const action of aiData.actions) {
-          if (action.type === 'create_template') {
-            await this.executeTemplateCreation(action.data)
-          } else if (action.type === 'create_campaign') {
-            await this.executeCampaignCreation(action.data)
+          try {
+            if (action.type === 'create_template') {
+              const result = await this.executeTemplateCreation(action.data)
+              toolResults.push({
+                success: true,
+                result: result,
+                action: 'create_template'
+              })
+            } else if (action.type === 'create_campaign') {
+              const result = await this.executeCampaignCreation(action.data)
+              toolResults.push({
+                success: true,
+                result: result,
+                action: 'create_campaign'
+              })
+            }
+          } catch (error) {
+            toolResults.push({
+              success: false,
+              error: error instanceof Error ? error.message : String(error),
+              action: action.type
+            })
           }
         }
       }
@@ -60,8 +81,8 @@ export class APIBasedAgent {
       return {
         message: aiData.message,
         confidence: aiData.confidence || 0.8,
-        toolCalls: [],
-        toolResults: [],
+        toolCalls: toolCalls,
+        toolResults: toolResults,
         nextSteps: aiData.nextSteps || []
       }
     } catch (error) {
@@ -345,7 +366,7 @@ export class APIBasedAgent {
     return data
   }
 
-  private async executeTemplateCreation(templateData: any): Promise<void> {
+  private async executeTemplateCreation(templateData: any): Promise<any> {
     try {
       const response = await fetch(`${this.baseUrl}/admin/campaign/templates`, {
         method: 'POST',
@@ -356,14 +377,21 @@ export class APIBasedAgent {
       })
 
       if (!response.ok) {
-        console.error('Template creation failed:', response.status)
+        const errorText = await response.text()
+        console.error('Template creation failed:', response.status, errorText)
+        throw new Error(`Template creation failed: ${response.status}`)
       }
+
+      const result = await response.json()
+      console.log('✅ Template created successfully:', result)
+      return result
     } catch (error) {
       console.error('Template creation error:', error)
+      throw error
     }
   }
 
-  private async executeCampaignCreation(campaignData: any): Promise<void> {
+  private async executeCampaignCreation(campaignData: any): Promise<any> {
     try {
       const response = await fetch(`${this.baseUrl}/admin/campaign/campaigns`, {
         method: 'POST',
@@ -374,10 +402,17 @@ export class APIBasedAgent {
       })
 
       if (!response.ok) {
-        console.error('Campaign creation failed:', response.status)
+        const errorText = await response.text()
+        console.error('Campaign creation failed:', response.status, errorText)
+        throw new Error(`Campaign creation failed: ${response.status}`)
       }
+
+      const result = await response.json()
+      console.log('✅ Campaign created successfully:', result)
+      return result
     } catch (error) {
       console.error('Campaign creation error:', error)
+      throw error
     }
   }
 }
