@@ -18,11 +18,19 @@ export class APIBasedAgent {
 
   async processMessage(message: string): Promise<AIResponse> {
     try {
+      // Get API key from environment
+      const apiKey = process.env.NEXT_PUBLIC_AI_SERVICE_API_KEY
+      
+      if (!apiKey) {
+        throw new Error('AI Service API key not configured')
+      }
+
       // Call the external AI service on Render
       const aiResponse = await fetch(`${this.aiServiceUrl}/api/chat`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
+          'X-API-Key': apiKey,
         },
         body: JSON.stringify({
           message: message,
