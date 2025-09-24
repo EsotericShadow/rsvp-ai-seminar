@@ -1,0 +1,260 @@
+{
+  "total_issues": 42,
+  "critical_issues": 0,
+  "error_issues": 30,
+  "warning_issues": 12,
+  "issues": [
+    {
+      "test": "Result Quality",
+      "issue": "Result 2 has insufficient content",
+      "severity": "WARNING",
+      "timestamp": 1758693844.3821719
+    },
+    {
+      "test": "Data Structure",
+      "issue": "Example 1 missing field: instruction",
+      "severity": "ERROR",
+      "timestamp": 1758693844.6297338
+    },
+    {
+      "test": "Data Structure",
+      "issue": "Example 1 missing field: input",
+      "severity": "ERROR",
+      "timestamp": 1758693844.629738
+    },
+    {
+      "test": "Data Structure",
+      "issue": "Example 1 missing field: output",
+      "severity": "ERROR",
+      "timestamp": 1758693844.629743
+    },
+    {
+      "test": "Data Structure",
+      "issue": "Example 2 missing field: instruction",
+      "severity": "ERROR",
+      "timestamp": 1758693844.629745
+    },
+    {
+      "test": "Data Structure",
+      "issue": "Example 2 missing field: input",
+      "severity": "ERROR",
+      "timestamp": 1758693844.629746
+    },
+    {
+      "test": "Data Structure",
+      "issue": "Example 2 missing field: output",
+      "severity": "ERROR",
+      "timestamp": 1758693844.629746
+    },
+    {
+      "test": "Data Structure",
+      "issue": "Example 3 missing field: instruction",
+      "severity": "ERROR",
+      "timestamp": 1758693844.629747
+    },
+    {
+      "test": "Data Structure",
+      "issue": "Example 3 missing field: input",
+      "severity": "ERROR",
+      "timestamp": 1758693844.6297479
+    },
+    {
+      "test": "Data Structure",
+      "issue": "Example 3 missing field: output",
+      "severity": "ERROR",
+      "timestamp": 1758693844.629749
+    },
+    {
+      "test": "Data Structure",
+      "issue": "Example 4 missing field: instruction",
+      "severity": "ERROR",
+      "timestamp": 1758693844.62975
+    },
+    {
+      "test": "Data Structure",
+      "issue": "Example 4 missing field: input",
+      "severity": "ERROR",
+      "timestamp": 1758693844.62975
+    },
+    {
+      "test": "Data Structure",
+      "issue": "Example 4 missing field: output",
+      "severity": "ERROR",
+      "timestamp": 1758693844.629751
+    },
+    {
+      "test": "Data Structure",
+      "issue": "Example 5 missing field: instruction",
+      "severity": "ERROR",
+      "timestamp": 1758693844.629751
+    },
+    {
+      "test": "Data Structure",
+      "issue": "Example 5 missing field: input",
+      "severity": "ERROR",
+      "timestamp": 1758693844.6297522
+    },
+    {
+      "test": "Data Structure",
+      "issue": "Example 5 missing field: output",
+      "severity": "ERROR",
+      "timestamp": 1758693844.629753
+    },
+    {
+      "test": "Data Structure",
+      "issue": "Example 6 missing field: instruction",
+      "severity": "ERROR",
+      "timestamp": 1758693844.629754
+    },
+    {
+      "test": "Data Structure",
+      "issue": "Example 6 missing field: input",
+      "severity": "ERROR",
+      "timestamp": 1758693844.629754
+    },
+    {
+      "test": "Data Structure",
+      "issue": "Example 6 missing field: output",
+      "severity": "ERROR",
+      "timestamp": 1758693844.6297548
+    },
+    {
+      "test": "Data Structure",
+      "issue": "Example 7 missing field: instruction",
+      "severity": "ERROR",
+      "timestamp": 1758693844.629756
+    },
+    {
+      "test": "Data Structure",
+      "issue": "Example 7 missing field: input",
+      "severity": "ERROR",
+      "timestamp": 1758693844.629756
+    },
+    {
+      "test": "Data Structure",
+      "issue": "Example 7 missing field: output",
+      "severity": "ERROR",
+      "timestamp": 1758693844.629757
+    },
+    {
+      "test": "Data Structure",
+      "issue": "Example 8 missing field: instruction",
+      "severity": "ERROR",
+      "timestamp": 1758693844.629758
+    },
+    {
+      "test": "Data Structure",
+      "issue": "Example 8 missing field: input",
+      "severity": "ERROR",
+      "timestamp": 1758693844.629758
+    },
+    {
+      "test": "Data Structure",
+      "issue": "Example 8 missing field: output",
+      "severity": "ERROR",
+      "timestamp": 1758693844.629759
+    },
+    {
+      "test": "Data Structure",
+      "issue": "Example 9 missing field: instruction",
+      "severity": "ERROR",
+      "timestamp": 1758693844.629759
+    },
+    {
+      "test": "Data Structure",
+      "issue": "Example 9 missing field: input",
+      "severity": "ERROR",
+      "timestamp": 1758693844.62976
+    },
+    {
+      "test": "Data Structure",
+      "issue": "Example 9 missing field: output",
+      "severity": "ERROR",
+      "timestamp": 1758693844.62976
+    },
+    {
+      "test": "Data Structure",
+      "issue": "Example 10 missing field: instruction",
+      "severity": "ERROR",
+      "timestamp": 1758693844.629761
+    },
+    {
+      "test": "Data Structure",
+      "issue": "Example 10 missing field: input",
+      "severity": "ERROR",
+      "timestamp": 1758693844.629762
+    },
+    {
+      "test": "Data Structure",
+      "issue": "Example 10 missing field: output",
+      "severity": "ERROR",
+      "timestamp": 1758693844.6297631
+    },
+    {
+      "test": "Category Distribution",
+      "issue": "Category 'Form Validation' has only 1 examples",
+      "severity": "WARNING",
+      "timestamp": 1758693844.6297789
+    },
+    {
+      "test": "Category Distribution",
+      "issue": "Category 'Security Features' has only 1 examples",
+      "severity": "WARNING",
+      "timestamp": 1758693844.62978
+    },
+    {
+      "test": "Category Distribution",
+      "issue": "Category 'Admin Authentication' has only 1 examples",
+      "severity": "WARNING",
+      "timestamp": 1758693844.629781
+    },
+    {
+      "test": "Category Distribution",
+      "issue": "Category 'Webhook Handling' has only 1 examples",
+      "severity": "WARNING",
+      "timestamp": 1758693844.629782
+    },
+    {
+      "test": "Category Distribution",
+      "issue": "Category 'Event Management' has only 1 examples",
+      "severity": "WARNING",
+      "timestamp": 1758693844.6297832
+    },
+    {
+      "test": "Category Distribution",
+      "issue": "Category 'LeadMine Integration' has only 1 examples",
+      "severity": "WARNING",
+      "timestamp": 1758693844.629784
+    },
+    {
+      "test": "Category Distribution",
+      "issue": "Category 'Analytics & Tracking' has only 1 examples",
+      "severity": "WARNING",
+      "timestamp": 1758693844.629784
+    },
+    {
+      "test": "Category Distribution",
+      "issue": "Category 'Privacy & Compliance' has only 1 examples",
+      "severity": "WARNING",
+      "timestamp": 1758693844.629785
+    },
+    {
+      "test": "Category Distribution",
+      "issue": "Category 'Audience Management' has only 1 examples",
+      "severity": "WARNING",
+      "timestamp": 1758693844.629786
+    },
+    {
+      "test": "Category Distribution",
+      "issue": "Category 'Middleware Features' has only 1 examples",
+      "severity": "WARNING",
+      "timestamp": 1758693844.629786
+    },
+    {
+      "test": "Error Handling",
+      "issue": "Empty query caused error: Query call with protocol GRPC search failed with message keyword search (bm25) must have query set.",
+      "severity": "WARNING",
+      "timestamp": 1758693845.7780402
+    }
+  ]
+}

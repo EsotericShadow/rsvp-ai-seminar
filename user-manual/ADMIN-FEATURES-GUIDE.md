@@ -346,3 +346,4 @@ Configure default settings for all templates:
 
 *This guide covers advanced features for power users. For basic functionality, see the Quick Start Guide.*
 
+

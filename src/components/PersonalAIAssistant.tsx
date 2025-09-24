@@ -12,7 +12,7 @@ import {
   XCircleIcon,
   ClockIcon
 } from '@heroicons/react/24/outline'
-import { RealDatabaseAgent, ChatMessage, ToolCall, ToolResult } from '@/lib/agents/RealDatabaseAgent'
+import { RAGDatabaseAgent, ChatMessage, ToolCall, ToolResult } from '@/lib/agents/RAGDatabaseAgent'
 
 interface PersonalAIAssistantProps {
   // Only show for admin/Gabe
@@ -20,7 +20,7 @@ interface PersonalAIAssistantProps {
 }
 
 export function PersonalAIAssistant({ isAdmin = false }: PersonalAIAssistantProps) {
-  const [aiAgent] = useState(() => new RealDatabaseAgent())
+  const [aiAgent] = useState(() => new RAGDatabaseAgent())
   const [isOpen, setIsOpen] = useState(false)
   const [isMinimized, setIsMinimized] = useState(false)
   const [message, setMessage] = useState('')
@@ -154,7 +154,7 @@ export function PersonalAIAssistant({ isAdmin = false }: PersonalAIAssistantProp
                 <div className="flex-1 overflow-y-auto p-4 space-y-3" style={{ height: 350 }}>
                   {messages.length === 0 && (
                     <div className="text-center text-gray-500 py-4">
-                      <p className="text-sm">Hi Gabe! I'm your personal AI assistant for the RSVP system.</p>
+                      <p className="text-sm">Hi Gabe! I&apos;m your personal AI assistant for the RSVP system.</p>
                       <p className="text-xs mt-2">I can help you manage campaigns, analyze data, and optimize your email system.</p>
                     </div>
                   )}

@@ -1,0 +1,51 @@
+{
+  "timestamp": "2025-09-23T23:19:34.943534",
+  "overall_status": "good",
+  "overall_score": 86,
+  "components": {
+    "rag_system": {
+      "status": "critical",
+      "response_time": 1.0094451904296875,
+      "search_results": 3,
+      "total_objects": 1101,
+      "health_score": 60,
+      "timestamp": "2025-09-23T23:19:33.670576"
+    },
+    "api_health": {
+      "status": "healthy",
+      "response_time": 0.19204306602478027,
+      "status_code": 200,
+      "collections": {
+        "trainingData": 3,
+        "codebase": 3,
+        "brandContext": 0,
+        "processes": 3,
+        "apis": 3
+      },
+      "total_objects": 12,
+      "health_score": 100,
+      "timestamp": "2025-09-23T23:19:33.862661"
+    },
+    "security": {
+      "status": "healthy",
+      "authentication_working": true,
+      "invalid_endpoint_handled": true,
+      "health_score": 100,
+      "timestamp": "2025-09-23T23:19:33.906807"
+    },
+    "performance": {
+      "status": "healthy",
+      "cpu_percent": 12.7,
+      "memory_percent": 58.0,
+      "disk_percent": 7.1,
+      "health_score": 100,
+      "timestamp": "2025-09-23T23:19:34.943499"
+    }
+  },
+  "critical_issues": [
+    "CRITICAL: rag_system is in critical state"
+  ],
+  "recommendations": [
+    "Optimize RAG system performance - response time is slow"
+  ]
+}

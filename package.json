@@ -12,7 +12,8 @@
     "postinstall": "prisma generate",
     "cleanup-test-rsvps": "tsx scripts/cleanup-test-rsvps.ts",
     "analyze-rsvp-quality": "tsx scripts/cleanup-test-rsvps.ts --analyze",
-    "delete-test-rsvps": "tsx scripts/delete-test-rsvps.ts"
+    "delete-test-rsvps": "tsx scripts/delete-test-rsvps.ts",
+    "setup-rag": "tsx scripts/setup-rag.ts"
   },
   "dependencies": {
     "@google/generative-ai": "^0.24.1",
@@ -39,6 +40,7 @@
     "tailwind-merge": "^3.3.1",
     "ua-parser-js": "^2.0.5",
     "weaviate-client": "^3.8.1",
+    "weaviate-ts-client": "^2.2.0",
     "xlsx": "^0.18.5",
     "zod": "^3.22.4"
   },
