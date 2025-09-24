@@ -8,11 +8,15 @@ import * as crypto from 'crypto';
 import { UAParser } from 'ua-parser-js';
 import { postLeadMineEvent } from '@/lib/leadMine';
 import { recordSendEngagement } from '@/lib/campaigns';
+
 import { sendRSVPConfirmation } from '@/lib/sendgrid-email';
 import { checkRSVPRateLimit } from '@/lib/rate-limiter';
 import { validateRSVPSubmission, getTestDetectionConfig } from '@/lib/test-detection';
 import { createSecureResponse } from '@/lib/security-headers';
 import { logCSRFViolation, logRateLimitViolation, logInvalidInput, logXSSAttempt } from '@/lib/security-logger';
+
+// Force dynamic rendering for this route
+export const dynamic = 'force-dynamic'
 
 const resendApiKey = process.env.RESEND_API_KEY;
 const resendClient = resendApiKey ? new Resend(resendApiKey) : null;

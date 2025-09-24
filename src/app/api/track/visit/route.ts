@@ -6,6 +6,9 @@ import { UAParser } from 'ua-parser-js'
 import { postLeadMineEvent } from '@/lib/leadMine'
 import { recordSendEngagement } from '@/lib/campaigns'
 
+// Force dynamic rendering for this route
+export const dynamic = 'force-dynamic'
+
 const h = (k: string) => headers().get(k)
 
 export async function POST(req: Request) {
