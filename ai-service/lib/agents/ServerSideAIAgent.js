@@ -517,6 +517,110 @@ class ServerSideAIAgent {
       return [];
     }
   }
+
+  async createAudienceGroupInDatabase(groupData) {
+    try {
+      console.log('👥 Creating audience group in database:', groupData);
+      
+      const response = await fetch(`${this.mainAppUrl}/api/admin/campaign/groups`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          name: groupData.name,
+          description: groupData.description,
+          members: groupData.members.map(member => ({
+            businessId: String(member.businessId),
+            businessName: member.businessName,
+            primaryEmail: String(member.primaryEmail),
+            secondaryEmail: member.secondaryEmail,
+            inviteToken: member.inviteToken,
+            tags: member.tags,
+            meta: member.meta
+          }))
+        })
+      });
+
+      if (!response.ok) {
+        const error = await response.text();
+        throw new Error(`Audience group creation failed: ${response.status} - ${error}`);
+      }
+
+      const result = await response.json();
+      console.log('✅ Audience group created successfully:', result);
+      return result;
+    } catch (error) {
+      console.error('❌ Error creating audience group:', error);
+      throw error;
+    }
+  }
+
+  async scheduleCampaignInDatabase(scheduleData) {
+    try {
+      console.log('📅 Creating campaign schedule in database:', scheduleData);
+      
+      const response = await fetch(`${this.mainAppUrl}/api/admin/campaign/schedules`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          name: scheduleData.name,
+          templateId: String(scheduleData.templateId),
+          groupId: String(scheduleData.groupId),
+          campaignId: scheduleData.campaignId ? String(scheduleData.campaignId) : null,
+          sendAt: scheduleData.sendAt ? new Date(scheduleData.sendAt).toISOString() : null,
+          throttlePerMinute: scheduleData.throttlePerMinute || 10,
+          status: 'scheduled'
+        })
+      });
+
+      if (!response.ok) {
+        const error = await response.text();
+        throw new Error(`Campaign schedule creation failed: ${response.status} - ${error}`);
+      }
+
+      const result = await response.json();
+      console.log('✅ Campaign schedule created successfully:', result);
+      return result;
+    } catch (error) {
+      console.error('❌ Error creating campaign schedule:', error);
+      throw error;
+    }
+  }
+
+  async sendCampaignInDatabase(sendData) {
+    try {
+      console.log('📧 Sending campaign in database:', sendData);
+      
+      const response = await fetch(`${this.mainAppUrl}/api/admin/campaign/send`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          scheduleId: sendData.scheduleId ? String(sendData.scheduleId) : undefined,
+          templateId: sendData.templateId ? String(sendData.templateId) : undefined,
+          groupId: sendData.groupId ? String(sendData.groupId) : undefined,
+          previewOnly: Boolean(sendData.previewOnly),
+          limit: sendData.limit ? Number(sendData.limit) : undefined
+        })
+      });
+
+      if (!response.ok) {
+        const error = await response.text();
+        throw new Error(`Campaign send failed: ${response.status} - ${error}`);
+      }
+
+      const result = await response.json();
+      console.log('✅ Campaign sent successfully:', result);
+      return result;
+    } catch (error) {
+      console.error('❌ Error sending campaign:', error);
+      throw error;
+    }
+  }
 }
 
 module.exports = { ServerSideAIAgent };
