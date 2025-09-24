@@ -349,13 +349,25 @@ export class ServerSideAIAgent {
   }
 
   analyzeContextualResponse(message: string, conversationHistory: ChatMessage[] = []): AIResponse | null {
-    if (conversationHistory.length < 2) return null;
+    if (conversationHistory.length < 2) {
+      console.log('🔍 Context analysis: Not enough conversation history');
+      return null;
+    }
     
     const lastAssistantMessage = conversationHistory.slice(-2).find(msg => msg.role === 'assistant');
-    if (!lastAssistantMessage) return null;
+    if (!lastAssistantMessage) {
+      console.log('🔍 Context analysis: No assistant message found in recent history');
+      return null;
+    }
     
     const messageLower = message.toLowerCase().trim();
     const assistantContent = lastAssistantMessage.content.toLowerCase();
+    
+    console.log('🔍 Context analysis:', {
+      userMessage: messageLower,
+      assistantContent: assistantContent.substring(0, 100) + '...',
+      historyLength: conversationHistory.length
+    });
     
     // Check if the assistant asked about campaign deletion and user is responding
     if (assistantContent.includes('which campaigns would you like to delete') || 
@@ -413,7 +425,7 @@ export class ServerSideAIAgent {
     
     // Check if user is confirming a deletion action
     if (messageLower.includes('yes delete all') || messageLower.includes('confirm') || messageLower.includes('proceed')) {
-      if (assistantContent.includes('delete all campaigns')) {
+      if (assistantContent.includes('delete all campaigns') || assistantContent.includes('absolutely sure') || assistantContent.includes('type \'yes delete all\'')) {
         return {
           message: "🚨 **EXECUTING: Delete ALL campaigns**\n\nI'm now deleting all campaigns from the system. This may take a moment...\n\n⚠️ **This action cannot be undone.**\n\nPlease wait while I process the deletion...",
           confidence: 1.0,
@@ -425,7 +437,7 @@ export class ServerSideAIAgent {
         };
       }
       
-      if (assistantContent.includes('delete all templates')) {
+      if (assistantContent.includes('delete all templates') || assistantContent.includes('absolutely sure') || assistantContent.includes('type \'yes delete all\'')) {
         return {
           message: "🚨 **EXECUTING: Delete ALL templates**\n\nI'm now deleting all templates from the system. This may take a moment...\n\n⚠️ **This action cannot be undone.**\n\nPlease wait while I process the deletion...",
           confidence: 1.0,

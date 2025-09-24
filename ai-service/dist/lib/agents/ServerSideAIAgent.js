@@ -252,13 +252,22 @@ class ServerSideAIAgent {
         return data;
     }
     analyzeContextualResponse(message, conversationHistory = []) {
-        if (conversationHistory.length < 2)
+        if (conversationHistory.length < 2) {
+            console.log('🔍 Context analysis: Not enough conversation history');
             return null;
+        }
         const lastAssistantMessage = conversationHistory.slice(-2).find(msg => msg.role === 'assistant');
-        if (!lastAssistantMessage)
+        if (!lastAssistantMessage) {
+            console.log('🔍 Context analysis: No assistant message found in recent history');
             return null;
+        }
         const messageLower = message.toLowerCase().trim();
         const assistantContent = lastAssistantMessage.content.toLowerCase();
+        console.log('🔍 Context analysis:', {
+            userMessage: messageLower,
+            assistantContent: assistantContent.substring(0, 100) + '...',
+            historyLength: conversationHistory.length
+        });
         if (assistantContent.includes('which campaigns would you like to delete') ||
             assistantContent.includes('what would you like to delete')) {
             if (messageLower.includes('all') || messageLower === 'all campaigns') {
@@ -306,7 +315,7 @@ class ServerSideAIAgent {
             }
         }
         if (messageLower.includes('yes delete all') || messageLower.includes('confirm') || messageLower.includes('proceed')) {
-            if (assistantContent.includes('delete all campaigns')) {
+            if (assistantContent.includes('delete all campaigns') || assistantContent.includes('absolutely sure') || assistantContent.includes('type \'yes delete all\'')) {
                 return {
                     message: "🚨 **EXECUTING: Delete ALL campaigns**\n\nI'm now deleting all campaigns from the system. This may take a moment...\n\n⚠️ **This action cannot be undone.**\n\nPlease wait while I process the deletion...",
                     confidence: 1.0,
@@ -317,7 +326,7 @@ class ServerSideAIAgent {
                     nextSteps: ['Campaigns deleted', 'System cleanup complete']
                 };
             }
-            if (assistantContent.includes('delete all templates')) {
+            if (assistantContent.includes('delete all templates') || assistantContent.includes('absolutely sure') || assistantContent.includes('type \'yes delete all\'')) {
                 return {
                     message: "🚨 **EXECUTING: Delete ALL templates**\n\nI'm now deleting all templates from the system. This may take a moment...\n\n⚠️ **This action cannot be undone.**\n\nPlease wait while I process the deletion...",
                     confidence: 1.0,
