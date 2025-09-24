@@ -9,9 +9,10 @@ export declare class ServerSideAIAgent {
     analyzeIntent(message: string, conversationHistory?: ChatMessage[]): Intent;
     extractTemplateData(message: string, conversationHistory?: ChatMessage[]): TemplateData;
     extractCampaignData(message: string, _conversationHistory?: ChatMessage[]): CampaignData;
+    analyzeContextualResponse(message: string, conversationHistory?: ChatMessage[]): AIResponse | null;
     handleTemplateCreation(message: string, intent: Intent, _conversationHistory?: ChatMessage[]): Promise<AIResponse>;
     handleCampaignCreation(_message: string, intent: Intent, _conversationHistory?: ChatMessage[]): Promise<AIResponse>;
-    handleGeneralQuery(message: string, _conversationHistory?: ChatMessage[]): Promise<AIResponse>;
+    handleGeneralQuery(message: string, conversationHistory?: ChatMessage[]): Promise<AIResponse>;
     createTemplateInDatabase(templateData: {
         name: string;
         subject: string;
