@@ -7,6 +7,7 @@ class ServerSideAIAgent {
       messages: [],
       currentTask: undefined
     };
+    this.mainAppUrl = process.env.MAIN_APP_URL || 'http://localhost:3000';
   }
 
   async processMessage(userMessage, sessionId = 'default', conversationHistory = []) {
@@ -129,7 +130,7 @@ class ServerSideAIAgent {
     };
   }
 
-  extractTemplateData(message) {
+  extractTemplateData(message, conversationHistory = []) {
     const data = {};
     
     // Extract name - multiple patterns
@@ -198,7 +199,7 @@ class ServerSideAIAgent {
     return data;
   }
 
-  extractCampaignData(message) {
+  extractCampaignData(message, conversationHistory = []) {
     const data = {};
     
     // Extract name - multiple patterns
@@ -305,23 +306,39 @@ class ServerSideAIAgent {
     }
 
     // We have all the information, create the template
-    return {
-      message: `✅ I'll create the template "${templateData.name}" with:\n\n**Subject**: ${templateData.subject}\n**Content**: ${templateData.content}\n\nCreating template now...`,
-      confidence: 1.0,
-      actions: [{
-        type: 'create_template',
-        data: {
-          name: templateData.name,
-          subject: templateData.subject,
-          htmlBody: `<h1>${templateData.subject}</h1><p>${templateData.content}</p>`,
-          textBody: templateData.content
-        }
-      }],
-      nextSteps: ['Template created successfully']
-    };
+    try {
+      const templateResult = await this.createTemplateInDatabase({
+        name: templateData.name,
+        subject: templateData.subject,
+        htmlBody: `<h1>${templateData.subject}</h1><p>${templateData.content}</p>`,
+        textBody: templateData.content
+      });
+
+      return {
+        message: `✅ **Template created successfully!**\n\n**Name**: ${templateData.name}\n**Subject**: ${templateData.subject}\n**Content**: ${templateData.content}\n\nTemplate ID: ${templateResult.template?.id || 'N/A'}\n\nThe template is now ready to use in your campaigns!`,
+        confidence: 1.0,
+        actions: [{
+          type: 'create_template',
+          data: {
+            name: templateData.name,
+            subject: templateData.subject,
+            htmlBody: `<h1>${templateData.subject}</h1><p>${templateData.content}</p>`,
+            textBody: templateData.content
+          }
+        }],
+        nextSteps: ['Template ready for campaigns', 'Create campaign with this template']
+      };
+    } catch (error) {
+      return {
+        message: `❌ **Failed to create template**: ${error.message}\n\nPlease check your system configuration and try again.`,
+        confidence: 0.1,
+        actions: [],
+        nextSteps: ['Check system status', 'Retry template creation']
+      };
+    }
   }
 
-  async handleCampaignCreation(message, intent) {
+  async handleCampaignCreation(message, intent, conversationHistory = []) {
     const campaignData = intent.extractedData;
     
     if (!campaignData.name) {
@@ -332,24 +349,48 @@ class ServerSideAIAgent {
       };
     }
 
-    return {
-      message: `✅ I'll create the campaign "${campaignData.name}". Let me set that up for you...`,
-      confidence: 1.0,
-      actions: [{
-        type: 'create_campaign',
-        data: {
-          name: campaignData.name,
-          description: `Campaign: ${campaignData.name}`,
-          steps: [{
-            type: 'email',
-            templateId: 1, // Default template
-            delay: 0
-          }],
-          audienceGroupId: 1 // Default audience
-        }
-      }],
-      nextSteps: ['Campaign created successfully']
-    };
+    try {
+      // Get available templates and groups for better campaign creation
+      const [templates, groups] = await Promise.all([
+        this.getAvailableTemplates(),
+        this.getAvailableAudienceGroups()
+      ]);
+
+      const campaignResult = await this.createCampaignInDatabase({
+        name: campaignData.name,
+        description: campaignData.description || `Campaign: ${campaignData.name}`,
+        steps: [{
+          type: 'email',
+          templateId: templates.length > 0 ? templates[0].id : 1,
+          delay: 0
+        }]
+      });
+
+      return {
+        message: `✅ **Campaign created successfully!**\n\n**Name**: ${campaignData.name}\n**Description**: ${campaignData.description || `Campaign: ${campaignData.name}`}\n**Campaign ID**: ${campaignResult.campaign?.id || 'N/A'}\n\nAvailable templates: ${templates.length}\nAvailable audience groups: ${groups.length}\n\nThe campaign is ready for scheduling!`,
+        confidence: 1.0,
+        actions: [{
+          type: 'create_campaign',
+          data: {
+            name: campaignData.name,
+            description: campaignData.description || `Campaign: ${campaignData.name}`,
+            steps: [{
+              type: 'email',
+              templateId: templates.length > 0 ? templates[0].id : 1,
+              delay: 0
+            }]
+          }
+        }],
+        nextSteps: ['Campaign ready for scheduling', 'Set up campaign schedule', 'Configure audience targeting']
+      };
+    } catch (error) {
+      return {
+        message: `❌ **Failed to create campaign**: ${error.message}\n\nPlease check your system configuration and try again.`,
+        confidence: 0.1,
+        actions: [],
+        nextSteps: ['Check system status', 'Retry campaign creation']
+      };
+    }
   }
 
   async handleGeneralQuery(message) {
@@ -385,6 +426,96 @@ class ServerSideAIAgent {
       confidence: 0.8,
       nextSteps: ['Ask for specific task']
     };
+  }
+
+  // Real database operations
+  async createTemplateInDatabase(templateData) {
+    try {
+      console.log('📧 Creating template in database:', templateData);
+      
+      const response = await fetch(`${this.mainAppUrl}/api/admin/campaign/templates`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          name: templateData.name,
+          subject: templateData.subject,
+          htmlBody: templateData.htmlBody,
+          textBody: templateData.textBody
+        })
+      });
+
+      if (!response.ok) {
+        const error = await response.text();
+        throw new Error(`Template creation failed: ${response.status} - ${error}`);
+      }
+
+      const result = await response.json();
+      console.log('✅ Template created successfully:', result);
+      return result;
+    } catch (error) {
+      console.error('❌ Error creating template:', error);
+      throw error;
+    }
+  }
+
+  async createCampaignInDatabase(campaignData) {
+    try {
+      console.log('📢 Creating campaign in database:', campaignData);
+      
+      const response = await fetch(`${this.mainAppUrl}/api/admin/campaign/campaigns`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          name: campaignData.name,
+          description: campaignData.description,
+          steps: campaignData.steps || [{
+            type: 'email',
+            templateId: 1,
+            delay: 0
+          }]
+        })
+      });
+
+      if (!response.ok) {
+        const error = await response.text();
+        throw new Error(`Campaign creation failed: ${response.status} - ${error}`);
+      }
+
+      const result = await response.json();
+      console.log('✅ Campaign created successfully:', result);
+      return result;
+    } catch (error) {
+      console.error('❌ Error creating campaign:', error);
+      throw error;
+    }
+  }
+
+  async getAvailableTemplates() {
+    try {
+      const response = await fetch(`${this.mainAppUrl}/api/admin/campaign/templates`);
+      if (!response.ok) throw new Error(`Failed to fetch templates: ${response.status}`);
+      const data = await response.json();
+      return data.templates || [];
+    } catch (error) {
+      console.error('❌ Error fetching templates:', error);
+      return [];
+    }
+  }
+
+  async getAvailableAudienceGroups() {
+    try {
+      const response = await fetch(`${this.mainAppUrl}/api/admin/campaign/groups`);
+      if (!response.ok) throw new Error(`Failed to fetch groups: ${response.status}`);
+      const data = await response.json();
+      return data.groups || [];
+    } catch (error) {
+      console.error('❌ Error fetching audience groups:', error);
+      return [];
+    }
   }
 }
 
