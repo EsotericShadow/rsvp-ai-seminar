@@ -40,9 +40,9 @@ class ServerSideAIAgent {
     // Handle based on intent and current context
     let response;
     
-    if (intent.type === 'create_template') {
+    if (intent.type === 'create_template' || intent.type === 'continue_template') {
       response = await this.handleTemplateCreation(userMessage, intent, this.context.messages);
-    } else if (intent.type === 'create_campaign') {
+    } else if (intent.type === 'create_campaign' || intent.type === 'continue_campaign') {
       response = await this.handleCampaignCreation(userMessage, intent, this.context.messages);
     } else {
       response = await this.handleGeneralQuery(userMessage, this.context.messages);
@@ -65,7 +65,7 @@ class ServerSideAIAgent {
     const recentMessages = conversationHistory.slice(-6); // Last 3 exchanges
     const hasOngoingTemplate = recentMessages.some(msg => 
       msg.role === 'assistant' && 
-      (msg.content.includes('template') || msg.content.includes('subject line'))
+      (msg.content.includes('template') || msg.content.includes('subject line') || msg.content.includes('What should the subject line be'))
     );
     
     const hasOngoingCampaign = recentMessages.some(msg => 
@@ -90,7 +90,7 @@ class ServerSideAIAgent {
     ];
 
     // If we're in the middle of template creation and user provides simple input
-    if (hasOngoingTemplate && message.length < 50 && !messageLower.includes('template')) {
+    if (hasOngoingTemplate && message.length < 100 && !messageLower.includes('template') && !messageLower.includes('campaign')) {
       return {
         type: 'continue_template',
         confidence: 0.95,
@@ -193,6 +193,21 @@ class ServerSideAIAgent {
       if (match) {
         data.content = match[1].trim();
         break;
+      }
+    }
+
+    // Fill missing data from conversation history if available
+    if (conversationHistory.length > 0) {
+      const lastAssistantMessage = conversationHistory.reverse().find(msg => msg.role === 'assistant');
+      if (lastAssistantMessage) {
+        if (!data.name && lastAssistantMessage.content.includes('template named')) {
+          const match = lastAssistantMessage.content.match(/template named "([^"]+)"/i);
+          if (match) data.name = match[1];
+        }
+        if (!data.subject && lastAssistantMessage.content.includes('subject line')) {
+          const match = lastAssistantMessage.content.match(/subject line "([^"]+)"/i);
+          if (match) data.subject = match[1];
+        }
       }
     }
 
