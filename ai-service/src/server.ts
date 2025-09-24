@@ -16,12 +16,21 @@ const app = express();
 const port = process.env.PORT || 10000;
 
 // Middleware
-app.use(cors());
+app.use(cors({
+  origin: [
+    'https://rsvp.evergreenwebsolutions.ca',
+    'http://localhost:3000', // For local development
+    'https://rsvp-ai-seminar.vercel.app' // Fallback domain
+  ],
+  credentials: true,
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization', 'X-AI-API-Key', 'x-api-key']
+}));
 app.use(express.json());
 
 // Authentication middleware for AI service
 const authenticateRequest = (req: express.Request, res: express.Response, next: express.NextFunction): void => {
-  const apiKey = req.headers['x-api-key'] as string || req.headers['authorization']?.toString().replace('Bearer ', '');
+  const apiKey = req.headers['x-ai-api-key'] as string || req.headers['x-api-key'] as string || req.headers['authorization']?.toString().replace('Bearer ', '');
   const expectedApiKey = process.env.AI_SERVICE_API_KEY;
   
   if (!expectedApiKey) {
