@@ -419,11 +419,29 @@ class RAGIntegrationSystem {
     }
     generateAnswerFromContext(query, _context) {
         const queryLower = query.toLowerCase();
-        if (queryLower.includes('template')) {
+        if (queryLower.includes('delete') && queryLower.includes('campaign')) {
+            return "I can help you delete campaigns! However, I need to clarify what you'd like to delete:\n\n• **All campaigns** - Remove all existing campaigns\n• **Specific campaign** - Delete a particular campaign by name\n• **Draft campaigns** - Remove only unpublished campaigns\n\n⚠️ **Warning**: Deleting campaigns will permanently remove them and their data. This action cannot be undone.\n\nWhich campaigns would you like to delete?";
+        }
+        if (queryLower.includes('delete') && queryLower.includes('template')) {
+            return "I can help you delete templates! However, I need to clarify what you'd like to delete:\n\n• **All templates** - Remove all existing templates\n• **Specific template** - Delete a particular template by name\n• **Unused templates** - Remove templates that aren't used in any campaigns\n\n⚠️ **Warning**: Deleting templates will permanently remove them. Make sure they're not being used in active campaigns.\n\nWhich templates would you like to delete?";
+        }
+        if ((queryLower.includes('list') || queryLower.includes('show') || queryLower.includes('view')) && queryLower.includes('campaign')) {
+            return "I can show you your current campaigns! Let me retrieve the list of campaigns for you:\n\n• **Active campaigns** - Currently running or scheduled\n• **Draft campaigns** - Created but not yet sent\n• **Completed campaigns** - Finished campaigns with results\n\nWould you like me to list all campaigns or filter by status?";
+        }
+        if ((queryLower.includes('list') || queryLower.includes('show') || queryLower.includes('view')) && queryLower.includes('template')) {
+            return "I can show you your email templates! Let me retrieve the list of templates for you:\n\n• **All templates** - Complete list of available templates\n• **Active templates** - Templates used in campaigns\n• **Draft templates** - Templates not yet used\n\nWould you like me to list all templates or show specific details?";
+        }
+        if (queryLower.includes('create') && queryLower.includes('template')) {
             return "I can help you create email templates! Based on your system, I can create templates with custom HTML content, subject lines, and styling. What would you like to name your template?";
         }
-        if (queryLower.includes('campaign')) {
+        if (queryLower.includes('create') && queryLower.includes('campaign')) {
             return "I can help you create and manage email campaigns! I can assist with campaign setup, audience targeting, scheduling, and performance tracking. What would you like to name your campaign?";
+        }
+        if (queryLower.includes('campaign') && !queryLower.includes('create') && !queryLower.includes('delete') && !queryLower.includes('list')) {
+            return "I can help you with campaign management! Here's what I can do:\n\n• **Create campaigns** - Set up new email campaigns\n• **List campaigns** - Show existing campaigns\n• **Delete campaigns** - Remove campaigns\n• **Schedule campaigns** - Set up campaign timing\n• **Monitor performance** - Track campaign results\n\nWhat would you like to do with campaigns?";
+        }
+        if (queryLower.includes('template') && !queryLower.includes('create') && !queryLower.includes('delete') && !queryLower.includes('list')) {
+            return "I can help you with template management! Here's what I can do:\n\n• **Create templates** - Design new email templates\n• **List templates** - Show existing templates\n• **Delete templates** - Remove templates\n• **Edit templates** - Modify existing templates\n• **Preview templates** - See how templates look\n\nWhat would you like to do with templates?";
         }
         if (queryLower.includes('evergreen') || queryLower.includes('company') || queryLower.includes('business')) {
             return "Evergreen Web Solutions is your web development and digital solutions company, owned by Gabe Lacroix and based in Terrace, BC. We specialize in web development, AI integration, digital marketing, and custom software solutions for local businesses.";
