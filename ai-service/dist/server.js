@@ -10,10 +10,19 @@ const ServerSideAIAgent_1 = require("./lib/agents/ServerSideAIAgent");
 dotenv_1.default.config();
 const app = (0, express_1.default)();
 const port = process.env.PORT || 10000;
-app.use((0, cors_1.default)());
+app.use((0, cors_1.default)({
+    origin: [
+        'https://rsvp.evergreenwebsolutions.ca',
+        'http://localhost:3000',
+        'https://rsvp-ai-seminar.vercel.app'
+    ],
+    credentials: true,
+    methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+    allowedHeaders: ['Content-Type', 'Authorization', 'X-AI-API-Key', 'x-api-key']
+}));
 app.use(express_1.default.json());
 const authenticateRequest = (req, res, next) => {
-    const apiKey = req.headers['x-api-key'] || req.headers['authorization']?.toString().replace('Bearer ', '');
+    const apiKey = req.headers['x-ai-api-key'] || req.headers['x-api-key'] || req.headers['authorization']?.toString().replace('Bearer ', '');
     const expectedApiKey = process.env.AI_SERVICE_API_KEY;
     if (!expectedApiKey) {
         console.error('AI_SERVICE_API_KEY not configured');
