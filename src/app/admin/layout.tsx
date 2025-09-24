@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
-import { PersonalAIAssistant } from '@/components/PersonalAIAssistant'
+import { JuniperAISystem } from '@/components/ai/JuniperAISystem'
 
 export default function AdminLayout({
   children,
@@ -50,7 +50,7 @@ export default function AdminLayout({
     <div className="min-h-screen bg-gray-50">
       {children}
       {/* AI Assistant - Only visible in admin area */}
-      <PersonalAIAssistant isAdmin={true} />
+        <JuniperAISystem isAdmin={true} />
     </div>
   )
 }

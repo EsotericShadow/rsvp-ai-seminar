@@ -40,3 +40,4 @@ CREATE INDEX "WorkflowExecution_startedAt_idx" ON "WorkflowExecution"("startedAt
 -- AddForeignKey
 ALTER TABLE "WorkflowExecution" ADD CONSTRAINT "WorkflowExecution_workflowId_fkey" FOREIGN KEY ("workflowId") REFERENCES "WorkflowRule"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
+

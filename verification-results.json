@@ -1,0 +1,80 @@
+[
+  {
+    "test_name": "Campaign Creation API",
+    "response": "Prompt: 55 tokens, 361.848 tokens-per-sec\nGeneration: 61 tokens, 37.106 tokens-per-sec\nPeak memory: 6.250 GB",
+    "accuracy_score": 0,
+    "found_apis": [],
+    "found_fields": [],
+    "missing_elements": [
+      "POST /api/admin/campaign/campaigns",
+      "name",
+      "description",
+      "status",
+      "steps"
+    ],
+    "incorrect_elements": []
+  },
+  {
+    "test_name": "Email Template API",
+    "response": "Prompt: 50 tokens, 317.546 tokens-per-sec\nGeneration: 326 tokens, 36.567 tokens-per-sec\nPeak memory: 6.244 GB",
+    "accuracy_score": 0,
+    "found_apis": [],
+    "found_fields": [],
+    "missing_elements": [
+      "POST /api/admin/campaign/templates",
+      "name",
+      "subject",
+      "htmlBody",
+      "textBody",
+      "meta"
+    ],
+    "incorrect_elements": []
+  },
+  {
+    "test_name": "Audience Group API",
+    "response": "Prompt: 51 tokens, 335.639 tokens-per-sec\nGeneration: 155 tokens, 36.777 tokens-per-sec\nPeak memory: 6.245 GB",
+    "accuracy_score": 0,
+    "found_apis": [],
+    "found_fields": [],
+    "missing_elements": [
+      "POST /api/admin/campaign/groups",
+      "name",
+      "description",
+      "color",
+      "criteria",
+      "meta"
+    ],
+    "incorrect_elements": []
+  },
+  {
+    "test_name": "RSVP Data Structure",
+    "response": "Prompt: 50 tokens, 321.466 tokens-per-sec\nGeneration: 20 tokens, 38.484 tokens-per-sec\nPeak memory: 6.244 GB",
+    "accuracy_score": 0,
+    "found_apis": [],
+    "found_fields": [],
+    "missing_elements": [
+      "fullName",
+      "email",
+      "attendanceStatus",
+      "attendeeCount",
+      "dietaryPreference"
+    ],
+    "incorrect_elements": []
+  },
+  {
+    "test_name": "Campaign Schedule API",
+    "response": "Prompt: 51 tokens, 325.160 tokens-per-sec\nGeneration: 400 tokens, 36.379 tokens-per-sec\nPeak memory: 6.245 GB",
+    "accuracy_score": 0,
+    "found_apis": [],
+    "found_fields": [],
+    "missing_elements": [
+      "POST /api/admin/campaign/schedules",
+      "name",
+      "templateId",
+      "groupId",
+      "sendAt",
+      "timeZone"
+    ],
+    "incorrect_elements": []
+  }
+]

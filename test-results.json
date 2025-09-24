@@ -1,0 +1,100 @@
+[
+  {
+    "test_name": "Campaign Creation",
+    "response": "Prompt: 55 tokens, 351.927 tokens-per-sec\nGeneration: 400 tokens, 36.644 tokens-per-sec\nPeak memory: 6.250 GB",
+    "response_time": 14.087074995040894,
+    "quality_score": 1.0,
+    "expected_elements": [
+      "API endpoint",
+      "request body",
+      "campaign name",
+      "template",
+      "audience"
+    ]
+  },
+  {
+    "test_name": "Template Management",
+    "response": "Prompt: 53 tokens, 348.875 tokens-per-sec\nGeneration: 400 tokens, 36.609 tokens-per-sec\nPeak memory: 6.247 GB",
+    "response_time": 14.14101505279541,
+    "quality_score": 1.0,
+    "expected_elements": [
+      "template structure",
+      "HTML body",
+      "text body",
+      "variables",
+      "API endpoint"
+    ]
+  },
+  {
+    "test_name": "Audience Segmentation",
+    "response": "Prompt: 53 tokens, 347.612 tokens-per-sec\nGeneration: 400 tokens, 36.638 tokens-per-sec\nPeak memory: 6.247 GB",
+    "response_time": 14.072910070419312,
+    "quality_score": 1.0,
+    "expected_elements": [
+      "audience criteria",
+      "group structure",
+      "API endpoint",
+      "segmentation rules"
+    ]
+  },
+  {
+    "test_name": "RSVP Data Query",
+    "response": "Prompt: 53 tokens, 350.602 tokens-per-sec\nGeneration: 11 tokens, 40.424 tokens-per-sec\nPeak memory: 6.247 GB",
+    "response_time": 3.467287063598633,
+    "quality_score": 1.0,
+    "expected_elements": [
+      "RSVP structure",
+      "data fields",
+      "attendance status",
+      "dietary preferences"
+    ]
+  },
+  {
+    "test_name": "Campaign Analytics",
+    "response": "Prompt: 51 tokens, 332.519 tokens-per-sec\nGeneration: 400 tokens, 36.690 tokens-per-sec\nPeak memory: 6.245 GB",
+    "response_time": 14.115119934082031,
+    "quality_score": 1.0,
+    "expected_elements": [
+      "metrics",
+      "open rates",
+      "click rates",
+      "performance data"
+    ]
+  },
+  {
+    "test_name": "System Architecture",
+    "response": "Prompt: 50 tokens, 336.367 tokens-per-sec\nGeneration: 400 tokens, 36.503 tokens-per-sec\nPeak memory: 6.244 GB",
+    "response_time": 14.170209169387817,
+    "quality_score": 1.0,
+    "expected_elements": [
+      "database models",
+      "API endpoints",
+      "components",
+      "workflow"
+    ]
+  },
+  {
+    "test_name": "Error Handling",
+    "response": "Prompt: 51 tokens, 331.642 tokens-per-sec\nGeneration: 328 tokens, 36.457 tokens-per-sec\nPeak memory: 6.245 GB",
+    "response_time": 12.2921302318573,
+    "quality_score": 1.0,
+    "expected_elements": [
+      "diagnostic steps",
+      "common issues",
+      "solutions",
+      "troubleshooting"
+    ]
+  },
+  {
+    "test_name": "Integration Help",
+    "response": "Prompt: 55 tokens, 357.329 tokens-per-sec\nGeneration: 400 tokens, 36.477 tokens-per-sec\nPeak memory: 6.250 GB",
+    "response_time": 14.270335912704468,
+    "quality_score": 1.0,
+    "expected_elements": [
+      "integration steps",
+      "API configuration",
+      "authentication",
+      "setup process"
+    ]
+  }
+]

@@ -1,0 +1,35 @@
+{
+  "vectorization_summary": {
+    "date": "2025-09-22T13:52:32.718328",
+    "total_examples": 7,
+    "categories_processed": 7,
+    "explanation_depth": "comprehensive"
+  },
+  "training_data_breakdown": {
+    "26-database-operations-slm-friendly.jsonl": 1,
+    "27-api-routing-slm-friendly.jsonl": 1,
+    "28-ui-components-slm-friendly.jsonl": 1,
+    "29-error-handling-slm-friendly.jsonl": 1,
+    "30-performance-optimization-slm-friendly.jsonl": 1,
+    "31-testing-framework-slm-friendly.jsonl": 1,
+    "32-deployment-config-slm-friendly.jsonl": 1
+  },
+  "extracted_components_summary": {
+    "total_code_blocks": 38,
+    "total_api_endpoints": 4,
+    "total_database_operations": 79,
+    "total_business_concepts": 93
+  },
+  "learning_objectives_covered": [
+    "Learn how to interact with APIs, database, and UI components",
+    "Understand the complete system architecture and workflows",
+    "Understand business processes and user workflows"
+  ],
+  "practical_applications": [
+    "How do I send emails to my audience?",
+    "How do I create a new campaign?",
+    "How do I process RSVPs?",
+    "How do I manage audience groups?",
+    "How do I track campaign performance?"
+  ]
+}

@@ -1,0 +1,55 @@
+{
+  "validation_summary": {
+    "timestamp": "2025-09-23T21:31:50.471381",
+    "total_files_checked": 48,
+    "total_examples": 590,
+    "valid_examples": 589,
+    "invalid_examples": 1,
+    "validation_success_rate": 99.83050847457628
+  },
+  "training_data_quality": {
+    "categories_covered": 47,
+    "api_endpoints_found": 85,
+    "functions_found": 115,
+    "code_blocks_found": 1023,
+    "business_concepts_found": 17
+  },
+  "ai_command_validation": {
+    "valid_functions": [
+      "createCampaign",
+      "updateCampaign",
+      "listCampaigns",
+      "getCampaign",
+      "sendCampaignEmail",
+      "runSchedule",
+      "createAudienceGroup",
+      "createTemplate",
+      "renderTemplate",
+      "getCampaignDashboard"
+    ],
+    "invalid_functions": [],
+    "missing_mappings": [],
+    "api_endpoints_mapped": 16,
+    "functions_mapped": 0
+  },
+  "rag_system_validation": {
+    "total_examples": 7,
+    "valid_examples": 7,
+    "extracted_components": {
+      "code_blocks": 38,
+      "api_endpoints": 4,
+      "database_operations": 79,
+      "business_concepts": 93
+    },
+    "search_configurations": {},
+    "integration_ready": true
+  },
+  "errors": [
+    "12-security-features-accurate.jsonl:1 - JSON parse error: Expecting ',' delimiter: line 1 column 3876 (char 3875)"
+  ],
+  "warnings": [],
+  "recommendations": [
+    "Fix invalid training examples to improve data quality",
+    "Address validation errors before proceeding"
+  ]
+}

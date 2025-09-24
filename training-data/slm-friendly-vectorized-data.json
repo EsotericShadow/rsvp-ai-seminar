@@ -1,0 +1,1366 @@
+{
+  "metadata": {
+    "total_examples": 7,
+    "vectorization_date": "2025-09-22T13:52:32.717196",
+    "purpose": "SLM training data with comprehensive explanations",
+    "target_model": "Small Language Model (SLM)",
+    "explanation_depth": "high",
+    "comprehensiveness": "comprehensive"
+  },
+  "training_data": [
+    {
+      "instruction": "How does the database work in this RSVP application?",
+      "input": "Explain database operations in simple terms that an AI can understand",
+      "output": "I'll explain how the database works in this RSVP application in simple terms.\n\n**WHAT IS THE DATABASE?**\nThe database is like a digital filing cabinet that stores all the information for the RSVP application. It uses PostgreSQL (a type of database) and Prisma (a tool that helps us talk to the database).\n\n**MAIN THINGS STORED IN THE DATABASE:**\n\n1. **Audience Groups** - These are like mailing lists. Each group has:\n   - A name (like \"Tech Companies\")\n   - A description of what kind of businesses are in it\n   - A color for the interface\n   - Rules about who belongs in the group\n   - When it was created\n\n2. **Audience Members** - These are the individual businesses in each group:\n   - Business name and ID\n   - Primary and secondary email addresses\n   - Tags that describe the business\n   - Whether they've unsubscribed from emails\n   - When they were added to the group\n\n3. **Campaigns** - These are email marketing campaigns:\n   - Campaign name and description\n   - Current status (draft, running, completed, etc.)\n   - When it was created and last updated\n   - Extra information stored as JSON\n\n4. **Campaign Templates** - These are the email designs:\n   - Template name\n   - Email subject line\n   - Email content (both text and HTML versions)\n   - Variables that can be customized for each recipient\n   - Which campaign it belongs to\n\n5. **Campaign Schedules** - These control when emails are sent:\n   - Which campaign and audience group\n   - When the emails should be sent\n   - Current status (pending, running, completed)\n   - Description of the schedule\n\n6. **Campaign Sends** - These track each time emails are actually sent:\n   - Which schedule it came from\n   - When the emails were sent\n   - Status of the send operation\n   - Any extra data about the send\n\n7. **Email Jobs** - These are individual email sending tasks:\n   - Which send and which member it's for\n   - Current status (pending, sending, sent, failed)\n   - When the email was sent\n   - Any extra information\n\n8. **Email Events** - These track what happens to each email:\n   - Type of event (sent, delivered, opened, clicked, bounced)\n   - When the event happened\n   - Extra data about the event\n\n9. **RSVPs** - These are event registrations:\n   - Person's full name and organization\n   - Email and phone number\n   - Whether they're attending (yes/no/maybe)\n   - How many people they're bringing\n   - Dietary preferences and accessibility needs\n   - How they heard about the event\n   - Whether they want resources or an audit\n   - Their learning goals\n   - Technical info (IP address, browser, etc.)\n   - Marketing info (where they came from)\n\n10. **Visits** - These track website visitors:\n    - Visitor ID and session ID\n    - Which page they visited\n    - Where they came from\n    - Device and browser information\n    - Location information\n    - How long they stayed\n    - How much they scrolled\n    - How many times they clicked\n\n**HOW THE DATABASE CONNECTS THINGS:**\n\n- **One-to-Many Relationships:**\n  - One Audience Group can have many Audience Members\n  - One Campaign can have many Templates and Schedules\n  - One Schedule can have many Sends\n  - One Send can have many Email Jobs\n  - One Email Job can have many Events\n\n- **How Data Flows:**\n  1. Create an Audience Group (like \"Tech Companies\")\n  2. Add Audience Members to the group\n  3. Create a Campaign (like \"AI Event Invitation\")\n  4. Create Templates for the campaign\n  5. Create Schedules to send emails to the group\n  6. When it's time, create Sends and Email Jobs\n  7. Track Events as emails are sent and opened\n  8. Store RSVPs when people respond\n  9. Track Visits for analytics\n\n**COMMON DATABASE OPERATIONS:**\n\n1. **Creating Records:**\n   - When someone creates a new campaign, we store it in the campaigns table\n   - When someone RSVPs, we store it in the rsvps table\n   - When someone visits the website, we store it in the visits table\n\n2. **Reading Records:**\n   - When showing the campaign list, we read from the campaigns table\n   - When showing audience members, we read from the audience_members table\n   - When showing analytics, we read from multiple tables and combine the data\n\n3. **Updating Records:**\n   - When a campaign status changes, we update the campaigns table\n   - When someone unsubscribes, we update the audience_members table\n   - When an email is sent, we update the email_jobs table\n\n4. **Deleting Records:**\n   - When a campaign is cancelled, we might delete related records\n   - When cleaning up old data, we delete old visits and events\n\n**DATABASE OPTIMIZATION:**\n\n1. **Indexes:** These make searches faster:\n   - We index visitor IDs to find visits quickly\n   - We index group IDs to find members quickly\n   - We index creation dates to sort by time quickly\n\n2. **Batch Operations:** These handle many records at once:\n   - When sending emails to 1000 people, we create 1000 email jobs at once\n   - When updating many audience members, we do it in batches of 100\n\n3. **Transactions:** These ensure data consistency:\n   - When creating a campaign with templates and schedules, either all succeed or all fail\n   - When processing an RSVP, we create the RSVP record and visit record together\n\n**ERROR HANDLING:**\n\n1. **Connection Issues:**\n   - If the database is down, we show an error message\n   - We retry failed connections automatically\n   - We log all database errors for debugging\n\n2. **Data Validation:**\n   - We check that required fields are filled\n   - We validate email addresses and phone numbers\n   - We prevent duplicate entries where needed\n\n3. **Performance Monitoring:**\n   - We track how long database queries take\n   - We log slow queries that take more than 1 second\n   - We monitor database connection health\n\n**HOW THIS HELPS THE AI UNDERSTAND:**\n\nWhen you ask the AI to:\n- \"Create a new campaign\" - It knows to create records in campaigns, templates, and schedules tables\n- \"Show me audience analytics\" - It knows to read from audience_members, email_events, and visits tables\n- \"Send emails to a group\" - It knows to create sends and email jobs, then track events\n- \"Process an RSVP\" - It knows to create an RSVP record and update related tables\n- \"Show campaign performance\" - It knows to read from multiple tables and calculate metrics\n\nThe database is the foundation that stores all the information and relationships needed to run the RSVP application effectively.",
+      "metadata": {
+        "created_at": "2025-09-22T13:52:32.706659",
+        "type": "slm_training_data",
+        "comprehensiveness": "high",
+        "explanation_depth": "detailed"
+      },
+      "extracted_components": {
+        "code_blocks": [],
+        "api_endpoints": [],
+        "database_operations": [
+          {
+            "operation": "CREATE",
+            "entity": "an",
+            "type": "database_operation"
+          },
+          {
+            "operation": "CREATE",
+            "entity": "a",
+            "type": "database_operation"
+          },
+          {
+            "operation": "CREATE",
+            "entity": "Templates",
+            "type": "database_operation"
+          },
+          {
+            "operation": "CREATE",
+            "entity": "Schedules",
+            "type": "database_operation"
+          },
+          {
+            "operation": "CREATE",
+            "entity": "Sends",
+            "type": "database_operation"
+          },
+          {
+            "operation": "READ",
+            "entity": "from",
+            "type": "database_operation"
+          },
+          {
+            "operation": "READ",
+            "entity": "from",
+            "type": "database_operation"
+          },
+          {
+            "operation": "READ",
+            "entity": "from",
+            "type": "database_operation"
+          },
+          {
+            "operation": "UPDATE",
+            "entity": "the",
+            "type": "database_operation"
+          },
+          {
+            "operation": "UPDATE",
+            "entity": "the",
+            "type": "database_operation"
+          },
+          {
+            "operation": "UPDATE",
+            "entity": "the",
+            "type": "database_operation"
+          },
+          {
+            "operation": "DELETE",
+            "entity": "related",
+            "type": "database_operation"
+          },
+          {
+            "operation": "DELETE",
+            "entity": "old",
+            "type": "database_operation"
+          },
+          {
+            "operation": "CREATE",
+            "entity": "1000",
+            "type": "database_operation"
+          },
+          {
+            "operation": "CREATE",
+            "entity": "the",
+            "type": "database_operation"
+          },
+          {
+            "operation": "CREATE",
+            "entity": "a",
+            "type": "database_operation"
+          },
+          {
+            "operation": "CREATE",
+            "entity": "records",
+            "type": "database_operation"
+          },
+          {
+            "operation": "READ",
+            "entity": "from",
+            "type": "database_operation"
+          },
+          {
+            "operation": "CREATE",
+            "entity": "sends",
+            "type": "database_operation"
+          },
+          {
+            "operation": "CREATE",
+            "entity": "an",
+            "type": "database_operation"
+          },
+          {
+            "operation": "UPDATE",
+            "entity": "related",
+            "type": "database_operation"
+          },
+          {
+            "operation": "READ",
+            "entity": "from",
+            "type": "database_operation"
+          },
+          {
+            "operation": "CAMPAIGNS",
+            "entity": "table",
+            "type": "database_operation"
+          },
+          {
+            "operation": "RSVPS",
+            "entity": "table",
+            "type": "database_operation"
+          },
+          {
+            "operation": "VISITS",
+            "entity": "table",
+            "type": "database_operation"
+          },
+          {
+            "operation": "CAMPAIGNS",
+            "entity": "table",
+            "type": "database_operation"
+          },
+          {
+            "operation": "AUDIENCE_MEMBERS",
+            "entity": "table",
+            "type": "database_operation"
+          },
+          {
+            "operation": "MULTIPLE",
+            "entity": "table",
+            "type": "database_operation"
+          },
+          {
+            "operation": "CAMPAIGNS",
+            "entity": "table",
+            "type": "database_operation"
+          },
+          {
+            "operation": "AUDIENCE_MEMBERS",
+            "entity": "table",
+            "type": "database_operation"
+          },
+          {
+            "operation": "EMAIL_JOBS",
+            "entity": "table",
+            "type": "database_operation"
+          },
+          {
+            "operation": "SCHEDULES",
+            "entity": "table",
+            "type": "database_operation"
+          },
+          {
+            "operation": "VISITS",
+            "entity": "table",
+            "type": "database_operation"
+          },
+          {
+            "operation": "RELATED",
+            "entity": "table",
+            "type": "database_operation"
+          },
+          {
+            "operation": "MULTIPLE",
+            "entity": "table",
+            "type": "database_operation"
+          }
+        ],
+        "business_concepts": [
+          {
+            "concept": "campaign",
+            "type": "business_concept"
+          },
+          {
+            "concept": "audience",
+            "type": "business_concept"
+          },
+          {
+            "concept": "email",
+            "type": "business_concept"
+          },
+          {
+            "concept": "template",
+            "type": "business_concept"
+          },
+          {
+            "concept": "schedule",
+            "type": "business_concept"
+          },
+          {
+            "concept": "rsvp",
+            "type": "business_concept"
+          },
+          {
+            "concept": "analytics",
+            "type": "business_concept"
+          },
+          {
+            "concept": "visitor",
+            "type": "business_concept"
+          },
+          {
+            "concept": "member",
+            "type": "business_concept"
+          },
+          {
+            "concept": "group",
+            "type": "business_concept"
+          },
+          {
+            "concept": "send",
+            "type": "business_concept"
+          },
+          {
+            "concept": "bounce",
+            "type": "business_concept"
+          },
+          {
+            "concept": "open",
+            "type": "business_concept"
+          },
+          {
+            "concept": "click",
+            "type": "business_concept"
+          },
+          {
+            "concept": "unsubscribe",
+            "type": "business_concept"
+          }
+        ]
+      },
+      "learning_objectives": {
+        "primary": "Understand the complete system architecture and workflows",
+        "secondary": "Learn how to interact with APIs, database, and UI components",
+        "tertiary": "Understand business processes and user workflows"
+      },
+      "context_explanation": {
+        "what_this_teaches": "This training example teaches the AI how to understand and work with the RSVP application system",
+        "why_this_matters": "Understanding these concepts allows the AI to help users with real tasks in the application",
+        "how_to_use": "The AI can use this knowledge to answer questions, perform tasks, and help users navigate the system"
+      },
+      "practical_applications": {
+        "user_queries": [
+          "How do I create a new campaign?",
+          "How do I manage audience groups?",
+          "How do I send emails to my audience?",
+          "How do I track campaign performance?",
+          "How do I process RSVPs?"
+        ],
+        "ai_capabilities": [
+          "Answer questions about system functionality",
+          "Guide users through workflows",
+          "Help troubleshoot issues",
+          "Explain system processes",
+          "Assist with data management"
+        ]
+      },
+      "system_interconnections": {
+        "data_flow": "Shows how data flows through the system from user input to database storage",
+        "component_relationships": "Explains how different parts of the system work together",
+        "workflow_dependencies": "Describes the order of operations and dependencies between tasks"
+      },
+      "source_file": "26-database-operations-slm-friendly.jsonl",
+      "line_number": 1
+    },
+    {
+      "instruction": "How do API routes work in this RSVP application?",
+      "input": "Explain API routing in simple terms that an AI can understand",
+      "output": "I'll explain how API routes work in this RSVP application in simple terms.\n\n**WHAT ARE API ROUTES?**\nAPI routes are like the \"phone numbers\" that different parts of the application use to talk to each other. They're web addresses that handle specific tasks, like creating campaigns, processing RSVPs, or getting analytics data.\n\n**HOW API ROUTES WORK:**\n\n1. **Request Comes In:** Someone (like a web page or mobile app) sends a request to a specific URL\n2. **Route Handler Processes:** The API route looks at what was requested and decides what to do\n3. **Database Operations:** It might read from or write to the database\n4. **Response Sent Back:** It sends back the result (success, error, or data)\n\n**TYPES OF API ROUTES:**\n\n**1. ADMIN ROUTES (Protected):**\nThese require admin login and handle management tasks:\n\n- `/api/admin/campaign/campaigns` - Manage email campaigns\n  - GET: Get list of campaigns\n  - POST: Create new campaign\n  - PUT: Update existing campaign\n  - DELETE: Delete campaign\n\n- `/api/admin/campaign/groups` - Manage audience groups\n  - GET: Get list of groups\n  - POST: Create new group\n  - PUT: Update group\n  - DELETE: Delete group\n\n- `/api/admin/campaign/templates` - Manage email templates\n  - GET: Get templates\n  - POST: Create template\n  - PUT: Update template\n  - DELETE: Delete template\n\n- `/api/admin/campaign/schedules` - Manage email schedules\n  - GET: Get schedules\n  - POST: Create schedule\n  - PUT: Update schedule\n  - DELETE: Delete schedule\n\n- `/api/admin/analytics` - Get analytics data\n  - GET: Get visitor stats, RSVP stats, campaign performance\n\n**2. PUBLIC ROUTES (Open):**\nThese don't require login and handle public interactions:\n\n- `/api/rsvp` - Handle RSVP submissions\n  - POST: Process new RSVP\n  - Validates form data\n  - Saves to database\n  - Sends confirmation email\n  - Tracks analytics\n\n- `/api/track/visit` - Track website visitors\n  - POST: Record visitor data\n  - Stores device info, location, behavior\n  - Used for analytics\n\n- `/api/l` - Track link clicks\n  - GET: Record when someone clicks a link\n  - Redirects to final destination\n  - Tracks marketing campaigns\n\n- `/api/__pixel` - Track email opens\n  - GET: 1x1 pixel image\n  - Records when email is opened\n  - Used for email analytics\n\n**3. WEBHOOK ROUTES (External Services):**\nThese receive data from external services:\n\n- `/api/webhooks/sendgrid` - Receive email events from SendGrid\n  - POST: Get delivery, open, click, bounce notifications\n  - Updates email job statuses\n  - Tracks email performance\n\n**HOW API ROUTES PROCESS REQUESTS:**\n\n**1. Authentication Check:**\n- Admin routes check if user is logged in\n- Public routes skip this step\n- If not authenticated, return 401 error\n\n**2. Input Validation:**\n- Check that required fields are present\n- Validate email addresses, phone numbers, etc.\n- Check data types and formats\n- If invalid, return 400 error with details\n\n**3. Security Checks:**\n- Check for CSRF attacks (malicious requests)\n- Check rate limits (prevent spam)\n- Sanitize input to prevent XSS attacks\n- If security issue, return 403 error\n\n**4. Business Logic:**\n- Process the actual request\n- Read from or write to database\n- Call external services if needed\n- Handle any errors that occur\n\n**5. Response:**\n- Return success with data (200)\n- Return created resource (201)\n- Return error with details (400, 401, 403, 404, 500)\n\n**COMMON API PATTERNS:**\n\n**1. GET Requests (Reading Data):**\n```\nGET /api/admin/campaign/campaigns?page=1&limit=10&status=DRAFT\n```\n- Gets list of campaigns\n- Supports pagination (page, limit)\n- Supports filtering (status, search)\n- Returns JSON with data and pagination info\n\n**2. POST Requests (Creating Data):**\n```\nPOST /api/admin/campaign/campaigns\nContent-Type: application/json\n\n{\n  \"name\": \"AI Event Invitation\",\n  \"description\": \"Invite to AI information session\",\n  \"templates\": [...],\n  \"schedules\": [...]\n}\n```\n- Creates new campaign\n- Validates all required fields\n- Creates related records (templates, schedules)\n- Returns created campaign with ID\n\n**3. PUT Requests (Updating Data):**\n```\nPUT /api/admin/campaign/campaigns?id=123\nContent-Type: application/json\n\n{\n  \"name\": \"Updated Campaign Name\",\n  \"status\": \"SCHEDULED\"\n}\n```\n- Updates existing campaign\n- Only updates provided fields\n- Returns updated campaign\n\n**4. DELETE Requests (Removing Data):**\n```\nDELETE /api/admin/campaign/campaigns?id=123\n```\n- Deletes campaign and related records\n- Returns success confirmation\n\n**ERROR HANDLING:**\n\n**1. Validation Errors (400):**\n```\n{\n  \"success\": false,\n  \"error\": \"Validation failed\",\n  \"fieldErrors\": {\n    \"name\": \"Campaign name is required\",\n    \"email\": \"Invalid email format\"\n  }\n}\n```\n\n**2. Authentication Errors (401):**\n```\n{\n  \"success\": false,\n  \"error\": \"Authentication required\"\n}\n```\n\n**3. Authorization Errors (403):**\n```\n{\n  \"success\": false,\n  \"error\": \"Access denied\"\n}\n```\n\n**4. Not Found Errors (404):**\n```\n{\n  \"success\": false,\n  \"error\": \"Campaign not found\"\n}\n```\n\n**5. Server Errors (500):**\n```\n{\n  \"success\": false,\n  \"error\": \"Internal server error\"\n}\n```\n\n**SECURITY FEATURES:**\n\n**1. CSRF Protection:**\n- Checks that requests come from allowed websites\n- Prevents malicious sites from making requests\n- Uses origin and referer headers\n\n**2. Rate Limiting:**\n- Limits how many requests one IP can make\n- Prevents spam and abuse\n- Uses IP fingerprinting for accuracy\n\n**3. Input Sanitization:**\n- Removes dangerous characters from input\n- Prevents XSS attacks\n- Limits input length\n\n**4. Security Headers:**\n- Adds security headers to all responses\n- Prevents clickjacking, XSS, etc.\n- Sets content security policy\n\n**HOW THIS HELPS THE AI UNDERSTAND:**\n\nWhen you ask the AI to:\n- \"Create a new campaign\" - It knows to make a POST request to `/api/admin/campaign/campaigns`\n- \"Get campaign list\" - It knows to make a GET request to `/api/admin/campaign/campaigns`\n- \"Update campaign status\" - It knows to make a PUT request with the campaign ID\n- \"Process RSVP\" - It knows to make a POST request to `/api/rsvp`\n- \"Get analytics\" - It knows to make a GET request to `/api/admin/analytics`\n- \"Track visitor\" - It knows to make a POST request to `/api/track/visit`\n\n**API ROUTE INTERCONNECTIONS:**\n\n1. **Campaign Creation Flow:**\n   - POST to `/api/admin/campaign/campaigns` (create campaign)\n   - POST to `/api/admin/campaign/templates` (create templates)\n   - POST to `/api/admin/campaign/schedules` (create schedules)\n   - POST to `/api/admin/campaign/groups` (create audience groups if needed)\n\n2. **RSVP Processing Flow:**\n   - POST to `/api/rsvp` (process RSVP)\n   - POST to `/api/track/visit` (track confirmation page visit)\n   - Webhook to SendGrid (send confirmation email)\n   - Update audience member records\n\n3. **Email Campaign Flow:**\n   - GET from `/api/admin/campaign/schedules` (get pending sends)\n   - POST to `/api/admin/campaign/send` (trigger email send)\n   - Webhook from SendGrid (receive delivery events)\n   - Update email job statuses\n\n**PERFORMANCE OPTIMIZATION:**\n\n1. **Caching:**\n   - Cache frequently accessed data\n   - Use Redis for distributed caching\n   - Cache API responses for better performance\n\n2. **Pagination:**\n   - Limit number of records returned\n   - Use cursor-based pagination for large datasets\n   - Include pagination metadata in responses\n\n3. **Batch Operations:**\n   - Process multiple items in single request\n   - Use database transactions for consistency\n   - Handle errors gracefully\n\n**MONITORING AND LOGGING:**\n\n1. **Request Logging:**\n   - Log all API requests and responses\n   - Track response times\n   - Monitor error rates\n\n2. **Performance Monitoring:**\n   - Track slow API endpoints\n   - Monitor database query performance\n   - Alert on high error rates\n\n3. **Security Monitoring:**\n   - Log security violations\n   - Track failed authentication attempts\n   - Monitor for suspicious patterns\n\nThe API routes are the communication system that allows different parts of the application to work together and handle all the business logic for the RSVP system.",
+      "metadata": {
+        "created_at": "2025-09-22T13:52:32.707963",
+        "type": "slm_training_data",
+        "comprehensiveness": "high",
+        "explanation_depth": "detailed"
+      },
+      "extracted_components": {
+        "code_blocks": [
+          {
+            "language": "inline",
+            "code": "/api/admin/campaign/campaigns",
+            "type": "inline_code"
+          },
+          {
+            "language": "inline",
+            "code": "/api/admin/campaign/groups",
+            "type": "inline_code"
+          },
+          {
+            "language": "inline",
+            "code": "/api/admin/campaign/templates",
+            "type": "inline_code"
+          },
+          {
+            "language": "inline",
+            "code": "/api/admin/campaign/schedules",
+            "type": "inline_code"
+          },
+          {
+            "language": "inline",
+            "code": "/api/admin/analytics",
+            "type": "inline_code"
+          },
+          {
+            "language": "inline",
+            "code": "/api/track/visit",
+            "type": "inline_code"
+          },
+          {
+            "language": "inline",
+            "code": "/api/__pixel",
+            "type": "inline_code"
+          },
+          {
+            "language": "inline",
+            "code": "/api/webhooks/sendgrid",
+            "type": "inline_code"
+          },
+          {
+            "language": "inline",
+            "code": "\nGET /api/admin/campaign/campaigns?page=1&limit=10&status=DRAFT\n",
+            "type": "inline_code"
+          },
+          {
+            "language": "inline",
+            "code": "\n- Gets list of campaigns\n- Supports pagination (page, limit)\n- Supports filtering (status, search)\n- Returns JSON with data and pagination info\n\n**2. POST Requests (Creating Data):**\n",
+            "type": "inline_code"
+          },
+          {
+            "language": "inline",
+            "code": "\nPOST /api/admin/campaign/campaigns\nContent-Type: application/json\n\n{\n  \"name\": \"AI Event Invitation\",\n  \"description\": \"Invite to AI information session\",\n  \"templates\": [...],\n  \"schedules\": [...]\n}\n",
+            "type": "inline_code"
+          },
+          {
+            "language": "inline",
+            "code": "\n- Creates new campaign\n- Validates all required fields\n- Creates related records (templates, schedules)\n- Returns created campaign with ID\n\n**3. PUT Requests (Updating Data):**\n",
+            "type": "inline_code"
+          },
+          {
+            "language": "inline",
+            "code": "\nPUT /api/admin/campaign/campaigns?id=123\nContent-Type: application/json\n\n{\n  \"name\": \"Updated Campaign Name\",\n  \"status\": \"SCHEDULED\"\n}\n",
+            "type": "inline_code"
+          },
+          {
+            "language": "inline",
+            "code": "\n- Updates existing campaign\n- Only updates provided fields\n- Returns updated campaign\n\n**4. DELETE Requests (Removing Data):**\n",
+            "type": "inline_code"
+          },
+          {
+            "language": "inline",
+            "code": "\nDELETE /api/admin/campaign/campaigns?id=123\n",
+            "type": "inline_code"
+          },
+          {
+            "language": "inline",
+            "code": "\n- Deletes campaign and related records\n- Returns success confirmation\n\n**ERROR HANDLING:**\n\n**1. Validation Errors (400):**\n",
+            "type": "inline_code"
+          },
+          {
+            "language": "inline",
+            "code": "\n{\n  \"success\": false,\n  \"error\": \"Validation failed\",\n  \"fieldErrors\": {\n    \"name\": \"Campaign name is required\",\n    \"email\": \"Invalid email format\"\n  }\n}\n",
+            "type": "inline_code"
+          },
+          {
+            "language": "inline",
+            "code": "\n\n**2. Authentication Errors (401):**\n",
+            "type": "inline_code"
+          },
+          {
+            "language": "inline",
+            "code": "\n{\n  \"success\": false,\n  \"error\": \"Authentication required\"\n}\n",
+            "type": "inline_code"
+          },
+          {
+            "language": "inline",
+            "code": "\n\n**3. Authorization Errors (403):**\n",
+            "type": "inline_code"
+          },
+          {
+            "language": "inline",
+            "code": "\n{\n  \"success\": false,\n  \"error\": \"Access denied\"\n}\n",
+            "type": "inline_code"
+          },
+          {
+            "language": "inline",
+            "code": "\n\n**4. Not Found Errors (404):**\n",
+            "type": "inline_code"
+          },
+          {
+            "language": "inline",
+            "code": "\n{\n  \"success\": false,\n  \"error\": \"Campaign not found\"\n}\n",
+            "type": "inline_code"
+          },
+          {
+            "language": "inline",
+            "code": "\n\n**5. Server Errors (500):**\n",
+            "type": "inline_code"
+          },
+          {
+            "language": "inline",
+            "code": "\n{\n  \"success\": false,\n  \"error\": \"Internal server error\"\n}\n",
+            "type": "inline_code"
+          },
+          {
+            "language": "inline",
+            "code": "\n\n**SECURITY FEATURES:**\n\n**1. CSRF Protection:**\n- Checks that requests come from allowed websites\n- Prevents malicious sites from making requests\n- Uses origin and referer headers\n\n**2. Rate Limiting:**\n- Limits how many requests one IP can make\n- Prevents spam and abuse\n- Uses IP fingerprinting for accuracy\n\n**3. Input Sanitization:**\n- Removes dangerous characters from input\n- Prevents XSS attacks\n- Limits input length\n\n**4. Security Headers:**\n- Adds security headers to all responses\n- Prevents clickjacking, XSS, etc.\n- Sets content security policy\n\n**HOW THIS HELPS THE AI UNDERSTAND:**\n\nWhen you ask the AI to:\n- \"Create a new campaign\" - It knows to make a POST request to ",
+            "type": "inline_code"
+          },
+          {
+            "language": "inline",
+            "code": "\n- \"Get campaign list\" - It knows to make a GET request to ",
+            "type": "inline_code"
+          },
+          {
+            "language": "inline",
+            "code": "\n- \"Update campaign status\" - It knows to make a PUT request with the campaign ID\n- \"Process RSVP\" - It knows to make a POST request to ",
+            "type": "inline_code"
+          },
+          {
+            "language": "inline",
+            "code": "\n- \"Get analytics\" - It knows to make a GET request to ",
+            "type": "inline_code"
+          },
+          {
+            "language": "inline",
+            "code": "\n- \"Track visitor\" - It knows to make a POST request to ",
+            "type": "inline_code"
+          },
+          {
+            "language": "inline",
+            "code": "\n\n**API ROUTE INTERCONNECTIONS:**\n\n1. **Campaign Creation Flow:**\n   - POST to ",
+            "type": "inline_code"
+          },
+          {
+            "language": "inline",
+            "code": " (create campaign)\n   - POST to ",
+            "type": "inline_code"
+          },
+          {
+            "language": "inline",
+            "code": " (create templates)\n   - POST to ",
+            "type": "inline_code"
+          },
+          {
+            "language": "inline",
+            "code": " (create schedules)\n   - POST to ",
+            "type": "inline_code"
+          },
+          {
+            "language": "inline",
+            "code": " (create audience groups if needed)\n\n2. **RSVP Processing Flow:**\n   - POST to ",
+            "type": "inline_code"
+          },
+          {
+            "language": "inline",
+            "code": " (process RSVP)\n   - POST to ",
+            "type": "inline_code"
+          },
+          {
+            "language": "inline",
+            "code": " (track confirmation page visit)\n   - Webhook to SendGrid (send confirmation email)\n   - Update audience member records\n\n3. **Email Campaign Flow:**\n   - GET from ",
+            "type": "inline_code"
+          },
+          {
+            "language": "inline",
+            "code": " (get pending sends)\n   - POST to ",
+            "type": "inline_code"
+          }
+        ],
+        "api_endpoints": [
+          {
+            "method": "GET",
+            "endpoint": "/api/admin/campaign/campaigns?page=1&limit=10&status=DRAFT",
+            "type": "api_endpoint"
+          },
+          {
+            "method": "POST",
+            "endpoint": "/api/admin/campaign/campaigns",
+            "type": "api_endpoint"
+          },
+          {
+            "method": "PUT",
+            "endpoint": "/api/admin/campaign/campaigns?id=123",
+            "type": "api_endpoint"
+          },
+          {
+            "method": "DELETE",
+            "endpoint": "/api/admin/campaign/campaigns?id=123",
+            "type": "api_endpoint"
+          }
+        ],
+        "database_operations": [
+          {
+            "operation": "READ",
+            "entity": "from",
+            "type": "database_operation"
+          },
+          {
+            "operation": "CREATE",
+            "entity": "new",
+            "type": "database_operation"
+          },
+          {
+            "operation": "UPDATE",
+            "entity": "existing",
+            "type": "database_operation"
+          },
+          {
+            "operation": "DELETE",
+            "entity": "campaign",
+            "type": "database_operation"
+          },
+          {
+            "operation": "CREATE",
+            "entity": "new",
+            "type": "database_operation"
+          },
+          {
+            "operation": "UPDATE",
+            "entity": "group",
+            "type": "database_operation"
+          },
+          {
+            "operation": "DELETE",
+            "entity": "group",
+            "type": "database_operation"
+          },
+          {
+            "operation": "CREATE",
+            "entity": "template",
+            "type": "database_operation"
+          },
+          {
+            "operation": "UPDATE",
+            "entity": "template",
+            "type": "database_operation"
+          },
+          {
+            "operation": "DELETE",
+            "entity": "template",
+            "type": "database_operation"
+          },
+          {
+            "operation": "CREATE",
+            "entity": "schedule",
+            "type": "database_operation"
+          },
+          {
+            "operation": "UPDATE",
+            "entity": "schedule",
+            "type": "database_operation"
+          },
+          {
+            "operation": "DELETE",
+            "entity": "schedule",
+            "type": "database_operation"
+          },
+          {
+            "operation": "READ",
+            "entity": "from",
+            "type": "database_operation"
+          },
+          {
+            "operation": "DELETE",
+            "entity": "Requests",
+            "type": "database_operation"
+          },
+          {
+            "operation": "CREATE",
+            "entity": "a",
+            "type": "database_operation"
+          },
+          {
+            "operation": "UPDATE",
+            "entity": "campaign",
+            "type": "database_operation"
+          },
+          {
+            "operation": "CREATE",
+            "entity": "campaign",
+            "type": "database_operation"
+          },
+          {
+            "operation": "CREATE",
+            "entity": "templates",
+            "type": "database_operation"
+          },
+          {
+            "operation": "CREATE",
+            "entity": "schedules",
+            "type": "database_operation"
+          },
+          {
+            "operation": "CREATE",
+            "entity": "audience",
+            "type": "database_operation"
+          },
+          {
+            "operation": "UPDATE",
+            "entity": "audience",
+            "type": "database_operation"
+          },
+          {
+            "operation": "UPDATE",
+            "entity": "email",
+            "type": "database_operation"
+          }
+        ],
+        "business_concepts": [
+          {
+            "concept": "campaign",
+            "type": "business_concept"
+          },
+          {
+            "concept": "audience",
+            "type": "business_concept"
+          },
+          {
+            "concept": "email",
+            "type": "business_concept"
+          },
+          {
+            "concept": "template",
+            "type": "business_concept"
+          },
+          {
+            "concept": "schedule",
+            "type": "business_concept"
+          },
+          {
+            "concept": "rsvp",
+            "type": "business_concept"
+          },
+          {
+            "concept": "analytics",
+            "type": "business_concept"
+          },
+          {
+            "concept": "visitor",
+            "type": "business_concept"
+          },
+          {
+            "concept": "member",
+            "type": "business_concept"
+          },
+          {
+            "concept": "group",
+            "type": "business_concept"
+          },
+          {
+            "concept": "send",
+            "type": "business_concept"
+          },
+          {
+            "concept": "delivery",
+            "type": "business_concept"
+          },
+          {
+            "concept": "bounce",
+            "type": "business_concept"
+          },
+          {
+            "concept": "open",
+            "type": "business_concept"
+          },
+          {
+            "concept": "click",
+            "type": "business_concept"
+          },
+          {
+            "concept": "confirmation",
+            "type": "business_concept"
+          }
+        ]
+      },
+      "learning_objectives": {
+        "primary": "Understand the complete system architecture and workflows",
+        "secondary": "Learn how to interact with APIs, database, and UI components",
+        "tertiary": "Understand business processes and user workflows"
+      },
+      "context_explanation": {
+        "what_this_teaches": "This training example teaches the AI how to understand and work with the RSVP application system",
+        "why_this_matters": "Understanding these concepts allows the AI to help users with real tasks in the application",
+        "how_to_use": "The AI can use this knowledge to answer questions, perform tasks, and help users navigate the system"
+      },
+      "practical_applications": {
+        "user_queries": [
+          "How do I create a new campaign?",
+          "How do I manage audience groups?",
+          "How do I send emails to my audience?",
+          "How do I track campaign performance?",
+          "How do I process RSVPs?"
+        ],
+        "ai_capabilities": [
+          "Answer questions about system functionality",
+          "Guide users through workflows",
+          "Help troubleshoot issues",
+          "Explain system processes",
+          "Assist with data management"
+        ]
+      },
+      "system_interconnections": {
+        "data_flow": "Shows how data flows through the system from user input to database storage",
+        "component_relationships": "Explains how different parts of the system work together",
+        "workflow_dependencies": "Describes the order of operations and dependencies between tasks"
+      },
+      "source_file": "27-api-routing-slm-friendly.jsonl",
+      "line_number": 1
+    },
+    {
+      "instruction": "How do UI components work in this RSVP application?",
+      "input": "Explain UI components in simple terms that an AI can understand",
+      "output": "I'll explain how UI components work in this RSVP application in simple terms.\n\n**WHAT ARE UI COMPONENTS?**\nUI components are like building blocks that make up the user interface. They're reusable pieces of code that create the visual parts of the application - buttons, forms, tables, charts, etc. Each component has a specific job and can be used in different places.\n\n**MAIN UI COMPONENTS IN THE RSVP APPLICATION:**\n\n**1. RSVP FORM COMPONENT:**\nThis is the main form where people register for events:\n\n**What it does:**\n- Collects personal information (name, email, phone)\n- Asks about attendance (yes/no/maybe, how many people)\n- Gets dietary preferences and accessibility needs\n- Asks how they heard about the event\n- Collects learning goals and preferences\n\n**How it works:**\n- Multi-step form with progress indicator\n- Validates input as user types\n- Shows helpful error messages\n- Saves progress as user goes through steps\n- Submits all data when complete\n\n**Key features:**\n- Responsive design (works on mobile and desktop)\n- Accessibility features (screen reader friendly)\n- Form validation with helpful messages\n- Progress tracking through steps\n- Auto-save functionality\n\n**2. EVENT LANDING PAGE COMPONENT:**\nThis is the main page people see when they visit the event:\n\n**What it does:**\n- Shows event details (date, time, location, description)\n- Displays the RSVP form\n- Shows event information and agenda\n- Includes social sharing buttons\n- Has structured data for search engines\n\n**How it works:**\n- Fetches event data from the database\n- Renders event information dynamically\n- Embeds the RSVP form component\n- Handles social media sharing\n- Optimizes for search engines\n\n**Key features:**\n- SEO optimized with structured data\n- Mobile responsive design\n- Fast loading with image optimization\n- Social media integration\n- Analytics tracking\n\n**3. CAMPAIGN DASHBOARD COMPONENT:**\nThis shows campaign performance and controls:\n\n**What it does:**\n- Displays campaign statistics (sent, opened, clicked)\n- Shows audience engagement metrics\n- Provides campaign control buttons (start, pause, stop)\n- Shows real-time performance updates\n- Displays audience segmentation data\n\n**How it works:**\n- Fetches campaign data from API\n- Updates statistics in real-time\n- Handles campaign control actions\n- Shows progress indicators\n- Displays charts and graphs\n\n**Key features:**\n- Real-time data updates\n- Interactive charts and graphs\n- Campaign control buttons\n- Performance metrics display\n- Audience insights\n\n**4. ADMIN LOGIN COMPONENT:**\nThis handles admin authentication:\n\n**What it does:**\n- Collects admin username and password\n- Validates credentials\n- Creates admin session\n- Redirects to admin dashboard\n- Shows error messages for failed login\n\n**How it works:**\n- Form with username and password fields\n- Server-side authentication\n- Session cookie management\n- Redirects after successful login\n- Error handling for failed attempts\n\n**Key features:**\n- Secure password handling\n- Session management\n- Error message display\n- Redirect functionality\n- Security best practices\n\n**5. ANALYTICS DASHBOARD COMPONENT:**\nThis shows website and campaign analytics:\n\n**What it does:**\n- Displays visitor statistics\n- Shows RSVP conversion rates\n- Displays campaign performance\n- Shows geographic data\n- Provides time-based analytics\n\n**How it works:**\n- Fetches analytics data from database\n- Renders charts and graphs\n- Updates data periodically\n- Handles date range filtering\n- Exports data functionality\n\n**Key features:**\n- Interactive charts and graphs\n- Date range filtering\n- Data export functionality\n- Real-time updates\n- Geographic visualization\n\n**6. AUDIENCE MANAGEMENT COMPONENT:**\nThis manages audience groups and members:\n\n**What it does:**\n- Lists all audience groups\n- Shows group member counts\n- Allows creating new groups\n- Manages group settings\n- Handles member imports\n\n**How it works:**\n- Fetches groups from database\n- Displays group information in table\n- Handles group creation forms\n- Manages group updates\n- Processes member imports\n\n**Key features:**\n- Group listing and management\n- Member count display\n- Group creation and editing\n- Member import functionality\n- Search and filtering\n\n**7. EMAIL TEMPLATE EDITOR COMPONENT:**\nThis creates and edits email templates:\n\n**What it does:**\n- Provides rich text editor for email content\n- Shows preview of email template\n- Manages template variables\n- Handles template saving and loading\n- Validates template syntax\n\n**How it works:**\n- Rich text editor with formatting options\n- Live preview of email template\n- Variable insertion system\n- Template validation\n- Save and load functionality\n\n**Key features:**\n- Rich text editing\n- Live preview\n- Variable management\n- Template validation\n- Save and load\n\n**8. CAMPAIGN SCHEDULER COMPONENT:**\nThis schedules when emails are sent:\n\n**What it does:**\n- Sets campaign send dates and times\n- Manages timezone handling\n- Shows schedule conflicts\n- Allows schedule editing\n- Handles recurring schedules\n\n**How it works:**\n- Date and time picker interface\n- Timezone conversion\n- Conflict detection\n- Schedule management\n- Recurring schedule options\n\n**Key features:**\n- Date and time selection\n- Timezone handling\n- Conflict detection\n- Schedule editing\n- Recurring options\n\n**HOW UI COMPONENTS WORK TOGETHER:**\n\n**1. Component Hierarchy:**\n- Event Landing Page contains RSVP Form\n- Admin Dashboard contains Campaign Dashboard, Analytics Dashboard, Audience Management\n- Campaign Dashboard contains Email Template Editor, Campaign Scheduler\n- Each component can contain other components\n\n**2. Data Flow:**\n- Components receive data from parent components (props)\n- Components can request data from APIs\n- Components can update data and notify parents\n- State changes trigger re-rendering\n\n**3. Event Handling:**\n- User interactions trigger events\n- Events are handled by component functions\n- Functions can update state or call APIs\n- State changes update the UI\n\n**STYLING AND DESIGN:**\n\n**1. Tailwind CSS:**\n- Utility-first CSS framework\n- Pre-built classes for styling\n- Responsive design classes\n- Dark mode support\n- Custom color schemes\n\n**2. Component Styling:**\n- Each component has its own styles\n- Styles are scoped to components\n- Responsive design for all screen sizes\n- Accessibility features built-in\n- Consistent design system\n\n**3. Animation and Transitions:**\n- Framer Motion for animations\n- Smooth transitions between states\n- Loading animations\n- Hover effects\n- Page transitions\n\n**RESPONSIVE DESIGN:**\n\n**1. Mobile First:**\n- Components work on mobile devices\n- Touch-friendly interfaces\n- Optimized for small screens\n- Fast loading on mobile\n\n**2. Desktop Enhancement:**\n- Additional features on larger screens\n- More detailed layouts\n- Keyboard shortcuts\n- Mouse interactions\n\n**3. Tablet Support:**\n- Optimized for tablet screens\n- Touch and mouse support\n- Adaptive layouts\n\n**ACCESSIBILITY FEATURES:**\n\n**1. Screen Reader Support:**\n- Proper ARIA labels\n- Semantic HTML elements\n- Focus management\n- Keyboard navigation\n\n**2. Visual Accessibility:**\n- High contrast colors\n- Large click targets\n- Clear typography\n- Color-blind friendly\n\n**3. Motor Accessibility:**\n- Keyboard navigation\n- Voice control support\n- Large touch targets\n- Reduced motion options\n\n**PERFORMANCE OPTIMIZATION:**\n\n**1. Code Splitting:**\n- Components load only when needed\n- Reduces initial bundle size\n- Faster page loads\n- Better user experience\n\n**2. Lazy Loading:**\n- Images load as needed\n- Components load on demand\n- Reduces bandwidth usage\n- Improves performance\n\n**3. Caching:**\n- Component data is cached\n- Reduces API calls\n- Faster interactions\n- Better user experience\n\n**ERROR HANDLING:**\n\n**1. User-Friendly Errors:**\n- Clear error messages\n- Helpful suggestions\n- Recovery options\n- No technical jargon\n\n**2. Graceful Degradation:**\n- App works even if some features fail\n- Fallback content\n- Progressive enhancement\n- Better reliability\n\n**3. Error Boundaries:**\n- Catch component errors\n- Show fallback UI\n- Log errors for debugging\n- Prevent app crashes\n\n**HOW THIS HELPS THE AI UNDERSTAND:**\n\nWhen you ask the AI to:\n- \"Show me the RSVP form\" - It knows to render the RsvpForm component\n- \"Display campaign analytics\" - It knows to render the Analytics Dashboard component\n- \"Create a new email template\" - It knows to render the Email Template Editor component\n- \"Schedule a campaign\" - It knows to render the Campaign Scheduler component\n- \"Manage audience groups\" - It knows to render the Audience Management component\n- \"Show admin login\" - It knows to render the Admin Login component\n\n**COMPONENT INTERCONNECTIONS:**\n\n1. **RSVP Flow:**\n   - Event Landing Page displays RSVP Form\n   - Form submission triggers API call\n   - Success shows confirmation message\n   - Analytics Dashboard updates with new RSVP\n\n2. **Campaign Management Flow:**\n   - Campaign Dashboard shows campaign list\n   - Clicking campaign opens Campaign Details\n   - Campaign Details contains Email Template Editor\n   - Template Editor connects to Campaign Scheduler\n   - Scheduler connects to Audience Management\n\n3. **Admin Flow:**\n   - Admin Login authenticates user\n   - Success redirects to Admin Dashboard\n   - Dashboard contains all management components\n   - Components communicate through shared state\n\n**TESTING AND QUALITY:**\n\n1. **Component Testing:**\n   - Each component has unit tests\n   - Tests cover user interactions\n   - Tests verify accessibility\n   - Tests check responsive design\n\n2. **Integration Testing:**\n   - Tests component interactions\n   - Tests data flow\n   - Tests error handling\n   - Tests performance\n\n3. **Visual Testing:**\n   - Screenshot comparisons\n   - Visual regression testing\n   - Cross-browser testing\n   - Responsive design testing\n\nThe UI components are the visual interface that users interact with, making the RSVP application easy to use and understand.",
+      "metadata": {
+        "created_at": "2025-09-22T13:52:32.709791",
+        "type": "slm_training_data",
+        "comprehensiveness": "high",
+        "explanation_depth": "detailed"
+      },
+      "extracted_components": {
+        "code_blocks": [],
+        "api_endpoints": [],
+        "database_operations": [
+          {
+            "operation": "CREATE",
+            "entity": "the",
+            "type": "database_operation"
+          },
+          {
+            "operation": "UPDATE",
+            "entity": "data",
+            "type": "database_operation"
+          },
+          {
+            "operation": "UPDATE",
+            "entity": "state",
+            "type": "database_operation"
+          },
+          {
+            "operation": "UPDATE",
+            "entity": "the",
+            "type": "database_operation"
+          },
+          {
+            "operation": "CREATE",
+            "entity": "a",
+            "type": "database_operation"
+          },
+          {
+            "operation": "IN",
+            "entity": "table",
+            "type": "database_operation"
+          },
+          {
+            "operation": "FOR",
+            "entity": "table",
+            "type": "database_operation"
+          }
+        ],
+        "business_concepts": [
+          {
+            "concept": "campaign",
+            "type": "business_concept"
+          },
+          {
+            "concept": "audience",
+            "type": "business_concept"
+          },
+          {
+            "concept": "email",
+            "type": "business_concept"
+          },
+          {
+            "concept": "template",
+            "type": "business_concept"
+          },
+          {
+            "concept": "schedule",
+            "type": "business_concept"
+          },
+          {
+            "concept": "rsvp",
+            "type": "business_concept"
+          },
+          {
+            "concept": "analytics",
+            "type": "business_concept"
+          },
+          {
+            "concept": "tracking",
+            "type": "business_concept"
+          },
+          {
+            "concept": "visitor",
+            "type": "business_concept"
+          },
+          {
+            "concept": "member",
+            "type": "business_concept"
+          },
+          {
+            "concept": "group",
+            "type": "business_concept"
+          },
+          {
+            "concept": "send",
+            "type": "business_concept"
+          },
+          {
+            "concept": "open",
+            "type": "business_concept"
+          },
+          {
+            "concept": "click",
+            "type": "business_concept"
+          },
+          {
+            "concept": "confirmation",
+            "type": "business_concept"
+          }
+        ]
+      },
+      "learning_objectives": {
+        "primary": "Understand the complete system architecture and workflows",
+        "secondary": "Learn how to interact with APIs, database, and UI components",
+        "tertiary": "Understand business processes and user workflows"
+      },
+      "context_explanation": {
+        "what_this_teaches": "This training example teaches the AI how to understand and work with the RSVP application system",
+        "why_this_matters": "Understanding these concepts allows the AI to help users with real tasks in the application",
+        "how_to_use": "The AI can use this knowledge to answer questions, perform tasks, and help users navigate the system"
+      },
+      "practical_applications": {
+        "user_queries": [
+          "How do I create a new campaign?",
+          "How do I manage audience groups?",
+          "How do I send emails to my audience?",
+          "How do I track campaign performance?",
+          "How do I process RSVPs?"
+        ],
+        "ai_capabilities": [
+          "Answer questions about system functionality",
+          "Guide users through workflows",
+          "Help troubleshoot issues",
+          "Explain system processes",
+          "Assist with data management"
+        ]
+      },
+      "system_interconnections": {
+        "data_flow": "Shows how data flows through the system from user input to database storage",
+        "component_relationships": "Explains how different parts of the system work together",
+        "workflow_dependencies": "Describes the order of operations and dependencies between tasks"
+      },
+      "source_file": "28-ui-components-slm-friendly.jsonl",
+      "line_number": 1
+    },
+    {
+      "instruction": "How does error handling work in this RSVP application?",
+      "input": "Explain error handling in simple terms that an AI can understand",
+      "output": "I'll explain how error handling works in this RSVP application in simple terms.\n\n**WHAT IS ERROR HANDLING?**\nError handling is like having a safety net that catches problems before they break the application. It's the system that deals with things going wrong - like when the database is down, when someone enters invalid data, or when an email fails to send.\n\n**TYPES OF ERRORS IN THE RSVP APPLICATION:**\n\n**1. USER INPUT ERRORS:**\nThese happen when users enter invalid information:\n\n**Examples:**\n- Invalid email address (missing @ symbol)\n- Phone number with letters instead of numbers\n- Required field left empty\n- Text too long for the field\n- Invalid date format\n\n**How we handle them:**\n- Check input as user types\n- Show helpful error messages\n- Highlight fields with problems\n- Prevent form submission until fixed\n- Suggest corrections\n\n**2. DATABASE ERRORS:**\nThese happen when the database has problems:\n\n**Examples:**\n- Database connection lost\n- Query takes too long\n- Duplicate data trying to be inserted\n- Database server is down\n- Disk space full\n\n**How we handle them:**\n- Retry failed connections\n- Show \"service temporarily unavailable\" message\n- Log errors for debugging\n- Use fallback data when possible\n- Alert administrators\n\n**3. NETWORK ERRORS:**\nThese happen when communication with external services fails:\n\n**Examples:**\n- Email service (Resend/SendGrid) is down\n- LeadMine API is unavailable\n- Internet connection problems\n- Timeout waiting for response\n- SSL certificate issues\n\n**How we handle them:**\n- Retry failed requests\n- Queue emails for later sending\n- Show offline mode message\n- Cache data when possible\n- Notify users of delays\n\n**4. AUTHENTICATION ERRORS:**\nThese happen when users can't access protected areas:\n\n**Examples:**\n- Wrong username or password\n- Session expired\n- No admin privileges\n- Account locked\n- Invalid session token\n\n**How we handle them:**\n- Show login form again\n- Clear invalid sessions\n- Log security violations\n- Lock accounts after failed attempts\n- Redirect to login page\n\n**5. VALIDATION ERRORS:**\nThese happen when data doesn't meet requirements:\n\n**Examples:**\n- Email already exists in database\n- Campaign name too long\n- Invalid date range\n- Missing required fields\n- Data format incorrect\n\n**How we handle them:**\n- Validate before saving\n- Show specific error messages\n- Prevent invalid data entry\n- Suggest valid alternatives\n- Highlight problem areas\n\n**6. SECURITY ERRORS:**\nThese happen when security is compromised:\n\n**Examples:**\n- CSRF attack detected\n- Rate limit exceeded\n- XSS attack attempt\n- SQL injection attempt\n- Unauthorized access\n\n**How we handle them:**\n- Block suspicious requests\n- Log security violations\n- Alert administrators\n- Lock out attackers\n- Sanitize input data\n\n**ERROR HANDLING STRATEGIES:**\n\n**1. PREVENTION (Best approach):**\n- Validate input before processing\n- Use secure coding practices\n- Test thoroughly before release\n- Monitor for problems\n- Keep systems updated\n\n**2. DETECTION (Early warning):**\n- Monitor system health\n- Check for error patterns\n- Alert on unusual activity\n- Track performance metrics\n- Log all errors\n\n**3. RECOVERY (Fix problems):**\n- Retry failed operations\n- Use backup systems\n- Restore from backups\n- Switch to fallback mode\n- Restart failed services\n\n**4. COMMUNICATION (Tell users):**\n- Show clear error messages\n- Explain what went wrong\n- Suggest what to do next\n- Provide contact information\n- Keep users informed\n\n**ERROR HANDLING IN DIFFERENT PARTS:**\n\n**1. FRONTEND (User Interface):**\n\n**Form Validation:**\n- Check fields as user types\n- Show error messages immediately\n- Prevent submission with errors\n- Highlight problem fields\n- Provide helpful suggestions\n\n**API Error Handling:**\n- Catch network errors\n- Show loading states\n- Display error messages\n- Retry failed requests\n- Fallback to cached data\n\n**User Experience:**\n- Don't show technical errors to users\n- Use friendly language\n- Provide next steps\n- Keep interface working\n- Maintain user progress\n\n**2. BACKEND (Server):**\n\n**API Route Error Handling:**\n- Validate all inputs\n- Check authentication\n- Handle database errors\n- Return proper error codes\n- Log errors for debugging\n\n**Database Error Handling:**\n- Retry failed connections\n- Handle transaction failures\n- Validate data before saving\n- Use proper error codes\n- Log database issues\n\n**External Service Errors:**\n- Retry failed API calls\n- Handle timeouts gracefully\n- Queue failed operations\n- Monitor service health\n- Use fallback services\n\n**3. EMAIL SYSTEM:**\n\n**Email Sending Errors:**\n- Retry failed sends\n- Handle bounce emails\n- Process unsubscribe requests\n- Monitor delivery rates\n- Alert on high failure rates\n\n**Template Errors:**\n- Validate template syntax\n- Check for missing variables\n- Test templates before sending\n- Handle rendering errors\n- Provide fallback templates\n\n**4. ANALYTICS SYSTEM:**\n\n**Data Collection Errors:**\n- Handle missing data gracefully\n- Validate tracking data\n- Retry failed analytics calls\n- Cache data when offline\n- Recover lost data\n\n**Reporting Errors:**\n- Handle missing data points\n- Show partial data when possible\n- Indicate data quality issues\n- Provide data export options\n- Alert on reporting failures\n\n**ERROR MESSAGES FOR USERS:**\n\n**1. Good Error Messages:**\n- Clear and specific\n- Explain what went wrong\n- Suggest what to do next\n- Use friendly language\n- Don't blame the user\n\n**Examples:**\n- \"Please enter a valid email address\"\n- \"The server is temporarily unavailable. Please try again in a few minutes.\"\n- \"Your session has expired. Please log in again.\"\n- \"This email address is already registered.\"\n- \"The file is too large. Please choose a smaller file.\"\n\n**2. Bad Error Messages:**\n- Technical jargon\n- Vague descriptions\n- Blaming the user\n- No next steps\n- Confusing language\n\n**Examples:**\n- \"Error 500: Internal server error\"\n- \"Something went wrong\"\n- \"You entered invalid data\"\n- \"Database connection failed\"\n- \"Null pointer exception\"\n\n**ERROR LOGGING AND MONITORING:**\n\n**1. What We Log:**\n- All error messages\n- User actions that caused errors\n- System performance data\n- Security violations\n- Database query failures\n\n**2. How We Log:**\n- Structured logging format\n- Include timestamps\n- Add user context\n- Include error details\n- Categorize by severity\n\n**3. Monitoring:**\n- Real-time error tracking\n- Performance monitoring\n- Security alerting\n- User experience tracking\n- System health checks\n\n**4. Alerting:**\n- Email alerts for critical errors\n- Dashboard for error trends\n- Mobile notifications for outages\n- Escalation procedures\n- Recovery instructions\n\n**ERROR RECOVERY PROCEDURES:**\n\n**1. Automatic Recovery:**\n- Retry failed operations\n- Switch to backup systems\n- Restart failed services\n- Clear temporary data\n- Reset connection pools\n\n**2. Manual Recovery:**\n- Administrator intervention\n- Database restoration\n- Service restarts\n- Configuration fixes\n- Data cleanup\n\n**3. User Recovery:**\n- Clear browser cache\n- Refresh the page\n- Try again later\n- Contact support\n- Use alternative methods\n\n**TESTING ERROR HANDLING:**\n\n**1. Unit Tests:**\n- Test error conditions\n- Verify error messages\n- Check error handling logic\n- Test recovery procedures\n- Validate error logging\n\n**2. Integration Tests:**\n- Test API error responses\n- Verify database error handling\n- Test external service failures\n- Check error propagation\n- Test error recovery\n\n**3. Load Tests:**\n- Test under high load\n- Verify error handling under stress\n- Check performance degradation\n- Test resource exhaustion\n- Verify graceful degradation\n\n**HOW THIS HELPS THE AI UNDERSTAND:**\n\nWhen you ask the AI to:\n- \"Handle a form validation error\" - It knows to show user-friendly messages and prevent submission\n- \"Deal with database connection failure\" - It knows to retry, show offline message, and log the error\n- \"Process email sending failure\" - It knows to queue for retry, notify user, and monitor delivery\n- \"Handle authentication failure\" - It knows to show login form, clear session, and log security event\n- \"Deal with API timeout\" - It knows to retry request, show loading state, and use cached data\n- \"Handle file upload error\" - It knows to validate file, show size limits, and provide alternatives\n\n**ERROR HANDLING INTERCONNECTIONS:**\n\n1. **Form Submission Flow:**\n   - Frontend validates input\n   - Backend validates again\n   - Database validates constraints\n   - External services validate data\n   - Errors bubble up with context\n\n2. **Email Campaign Flow:**\n   - Validate campaign data\n   - Check audience availability\n   - Verify email templates\n   - Handle sending failures\n   - Process delivery events\n\n3. **RSVP Processing Flow:**\n   - Validate form data\n   - Check for duplicates\n   - Process payment (if any)\n   - Send confirmation email\n   - Handle email failures\n\n**BEST PRACTICES:**\n\n1. **Fail Fast:**\n   - Catch errors early\n   - Validate input immediately\n   - Don't let errors propagate\n   - Provide immediate feedback\n\n2. **Fail Gracefully:**\n   - Don't crash the application\n   - Show helpful error messages\n   - Maintain user progress\n   - Provide recovery options\n\n3. **Log Everything:**\n   - Log all errors\n   - Include context information\n   - Use structured logging\n   - Monitor error trends\n\n4. **Test Error Conditions:**\n   - Test all error scenarios\n   - Verify error messages\n   - Check error handling logic\n   - Test recovery procedures\n\n5. **Monitor and Alert:**\n   - Monitor error rates\n   - Alert on critical errors\n   - Track error trends\n   - Respond quickly to issues\n\nError handling is the safety system that keeps the RSVP application working smoothly even when things go wrong.",
+      "metadata": {
+        "created_at": "2025-09-22T13:52:32.711460",
+        "type": "slm_training_data",
+        "comprehensiveness": "high",
+        "explanation_depth": "detailed"
+      },
+      "extracted_components": {
+        "code_blocks": [],
+        "api_endpoints": [],
+        "database_operations": [],
+        "business_concepts": [
+          {
+            "concept": "campaign",
+            "type": "business_concept"
+          },
+          {
+            "concept": "audience",
+            "type": "business_concept"
+          },
+          {
+            "concept": "email",
+            "type": "business_concept"
+          },
+          {
+            "concept": "template",
+            "type": "business_concept"
+          },
+          {
+            "concept": "rsvp",
+            "type": "business_concept"
+          },
+          {
+            "concept": "analytics",
+            "type": "business_concept"
+          },
+          {
+            "concept": "tracking",
+            "type": "business_concept"
+          },
+          {
+            "concept": "send",
+            "type": "business_concept"
+          },
+          {
+            "concept": "delivery",
+            "type": "business_concept"
+          },
+          {
+            "concept": "bounce",
+            "type": "business_concept"
+          },
+          {
+            "concept": "unsubscribe",
+            "type": "business_concept"
+          },
+          {
+            "concept": "confirmation",
+            "type": "business_concept"
+          }
+        ]
+      },
+      "learning_objectives": {
+        "primary": "Understand the complete system architecture and workflows",
+        "secondary": "Learn how to interact with APIs, database, and UI components",
+        "tertiary": "Understand business processes and user workflows"
+      },
+      "context_explanation": {
+        "what_this_teaches": "This training example teaches the AI how to understand and work with the RSVP application system",
+        "why_this_matters": "Understanding these concepts allows the AI to help users with real tasks in the application",
+        "how_to_use": "The AI can use this knowledge to answer questions, perform tasks, and help users navigate the system"
+      },
+      "practical_applications": {
+        "user_queries": [
+          "How do I create a new campaign?",
+          "How do I manage audience groups?",
+          "How do I send emails to my audience?",
+          "How do I track campaign performance?",
+          "How do I process RSVPs?"
+        ],
+        "ai_capabilities": [
+          "Answer questions about system functionality",
+          "Guide users through workflows",
+          "Help troubleshoot issues",
+          "Explain system processes",
+          "Assist with data management"
+        ]
+      },
+      "system_interconnections": {
+        "data_flow": "Shows how data flows through the system from user input to database storage",
+        "component_relationships": "Explains how different parts of the system work together",
+        "workflow_dependencies": "Describes the order of operations and dependencies between tasks"
+      },
+      "source_file": "29-error-handling-slm-friendly.jsonl",
+      "line_number": 1
+    },
+    {
+      "instruction": "How does performance optimization work in this RSVP application?",
+      "input": "Explain performance optimization in simple terms that an AI can understand",
+      "output": "I'll explain how performance optimization works in this RSVP application in simple terms.\n\n**WHAT IS PERFORMANCE OPTIMIZATION?**\nPerformance optimization is like tuning a car to make it run faster and more efficiently. It's about making the application load quickly, respond fast to user actions, and use resources efficiently. The goal is to give users a smooth, fast experience.\n\n**WHY PERFORMANCE MATTERS:**\n\n**1. User Experience:**\n- Fast loading pages keep users engaged\n- Quick responses feel professional\n- Slow apps frustrate users\n- Good performance builds trust\n- Users expect instant results\n\n**2. Business Impact:**\n- Fast sites get more conversions\n- Slow sites lose customers\n- Good performance improves SEO\n- Better user experience = more RSVPs\n- Performance affects revenue\n\n**3. Technical Benefits:**\n- Less server load\n- Lower hosting costs\n- Better scalability\n- Fewer errors\n- Easier maintenance\n\n**AREAS OF PERFORMANCE OPTIMIZATION:**\n\n**1. FRONTEND OPTIMIZATION (User Interface):**\n\n**Code Splitting:**\n- Break large code into smaller pieces\n- Load only what's needed for each page\n- Reduce initial download size\n- Faster page loads\n- Better user experience\n\n**How it works:**\n- Split code by routes (pages)\n- Load components on demand\n- Use dynamic imports\n- Lazy load heavy components\n- Optimize bundle sizes\n\n**Image Optimization:**\n- Compress images to reduce file size\n- Use modern formats (WebP, AVIF)\n- Resize images for different screens\n- Lazy load images below the fold\n- Use responsive images\n\n**How it works:**\n- Automatically compress images\n- Generate multiple sizes\n- Serve appropriate size for device\n- Load images as needed\n- Use placeholder while loading\n\n**Caching:**\n- Store frequently used data in memory\n- Avoid repeated API calls\n- Cache static assets\n- Use browser caching\n- Implement service workers\n\n**How it works:**\n- Cache API responses\n- Store data in memory\n- Use browser cache headers\n- Implement offline caching\n- Cache computed results\n\n**2. BACKEND OPTIMIZATION (Server):**\n\n**Database Optimization:**\n- Use proper indexes for fast queries\n- Optimize query performance\n- Use connection pooling\n- Cache frequently accessed data\n- Minimize database calls\n\n**How it works:**\n- Add indexes on search fields\n- Use efficient query patterns\n- Batch multiple operations\n- Cache query results\n- Use read replicas for heavy reads\n\n**API Optimization:**\n- Minimize API response size\n- Use pagination for large datasets\n- Implement request caching\n- Use compression (gzip)\n- Optimize JSON responses\n\n**How it works:**\n- Return only needed data\n- Use pagination for lists\n- Cache API responses\n- Compress responses\n- Use efficient data formats\n\n**Server Performance:**\n- Use efficient server configurations\n- Implement load balancing\n- Use CDN for static assets\n- Optimize server resources\n- Monitor server performance\n\n**How it works:**\n- Configure server properly\n- Distribute load across servers\n- Serve static files from CDN\n- Monitor CPU and memory usage\n- Scale resources as needed\n\n**3. NETWORK OPTIMIZATION:**\n\n**HTTP/2 and HTTP/3:**\n- Use modern HTTP protocols\n- Enable multiplexing\n- Reduce connection overhead\n- Improve loading speed\n- Better error handling\n\n**Compression:**\n- Compress text files (HTML, CSS, JS)\n- Use gzip or brotli compression\n- Reduce file sizes by 70-80%\n- Faster downloads\n- Less bandwidth usage\n\n**CDN (Content Delivery Network):**\n- Serve files from locations closer to users\n- Reduce latency\n- Handle traffic spikes\n- Improve global performance\n- Offload server resources\n\n**4. DATABASE OPTIMIZATION:**\n\n**Query Optimization:**\n- Write efficient SQL queries\n- Use proper indexes\n- Avoid N+1 query problems\n- Use database-specific optimizations\n- Monitor slow queries\n\n**How it works:**\n- Analyze query execution plans\n- Add missing indexes\n- Rewrite inefficient queries\n- Use database-specific features\n- Monitor and log slow queries\n\n**Connection Pooling:**\n- Reuse database connections\n- Reduce connection overhead\n- Handle concurrent requests\n- Improve response times\n- Better resource utilization\n\n**How it works:**\n- Create pool of database connections\n- Reuse connections for multiple requests\n- Manage connection lifecycle\n- Handle connection failures\n- Scale connections based on load\n\n**Caching Strategies:**\n- Cache frequently accessed data\n- Use Redis for distributed caching\n- Implement cache invalidation\n- Cache at multiple levels\n- Monitor cache performance\n\n**How it works:**\n- Store data in memory cache\n- Use Redis for shared caching\n- Invalidate cache when data changes\n- Cache at application and database level\n- Monitor cache hit rates\n\n**5. EMAIL SYSTEM OPTIMIZATION:**\n\n**Batch Processing:**\n- Send emails in batches\n- Process multiple emails together\n- Reduce API calls to email service\n- Better error handling\n- Improved throughput\n\n**How it works:**\n- Group emails by campaign\n- Send batches of 100-500 emails\n- Process batches in parallel\n- Handle batch failures gracefully\n- Monitor batch performance\n\n**Queue Management:**\n- Use message queues for email processing\n- Handle high email volumes\n- Retry failed emails\n- Process emails asynchronously\n- Better resource utilization\n\n**How it works:**\n- Queue emails for processing\n- Process queue in background\n- Retry failed emails\n- Handle queue backlogs\n- Monitor queue performance\n\n**6. ANALYTICS OPTIMIZATION:**\n\n**Data Collection:**\n- Collect only necessary data\n- Batch analytics requests\n- Use efficient tracking methods\n- Minimize performance impact\n- Handle high traffic\n\n**How it works:**\n- Collect essential metrics only\n- Batch multiple events together\n- Use efficient tracking pixels\n- Process analytics asynchronously\n- Handle traffic spikes\n\n**Data Processing:**\n- Process analytics data efficiently\n- Use aggregation for reports\n- Cache computed results\n- Optimize database queries\n- Handle large datasets\n\n**How it works:**\n- Aggregate data at collection time\n- Pre-compute common reports\n- Cache report results\n- Use efficient database queries\n- Handle data growth\n\n**PERFORMANCE MONITORING:**\n\n**1. Frontend Monitoring:**\n- Track page load times\n- Monitor user interactions\n- Measure Core Web Vitals\n- Track error rates\n- Monitor user experience\n\n**Metrics to track:**\n- First Contentful Paint (FCP)\n- Largest Contentful Paint (LCP)\n- First Input Delay (FID)\n- Cumulative Layout Shift (CLS)\n- Time to Interactive (TTI)\n\n**2. Backend Monitoring:**\n- Monitor API response times\n- Track database performance\n- Monitor server resources\n- Track error rates\n- Monitor throughput\n\n**Metrics to track:**\n- API response times\n- Database query times\n- Server CPU and memory usage\n- Error rates and types\n- Requests per second\n\n**3. Database Monitoring:**\n- Track slow queries\n- Monitor connection usage\n- Track database size\n- Monitor index usage\n- Track query performance\n\n**Metrics to track:**\n- Slow query logs\n- Connection pool usage\n- Database size growth\n- Index hit rates\n- Query execution times\n\n**PERFORMANCE TESTING:**\n\n**1. Load Testing:**\n- Test under normal load\n- Simulate realistic user behavior\n- Test concurrent users\n- Monitor performance under load\n- Identify bottlenecks\n\n**2. Stress Testing:**\n- Test beyond normal capacity\n- Find breaking points\n- Test error handling\n- Monitor system recovery\n- Plan for scaling\n\n**3. Performance Regression Testing:**\n- Test after code changes\n- Compare performance metrics\n- Identify performance regressions\n- Monitor performance trends\n- Maintain performance standards\n\n**OPTIMIZATION TECHNIQUES:**\n\n**1. Lazy Loading:**\n- Load content as needed\n- Defer non-critical resources\n- Load images on scroll\n- Load components on demand\n- Improve initial page load\n\n**2. Preloading:**\n- Preload critical resources\n- Prefetch likely next pages\n- Preload important images\n- Preload API data\n- Improve perceived performance\n\n**3. Compression:**\n- Compress text files\n- Use efficient image formats\n- Compress API responses\n- Use HTTP compression\n- Reduce file sizes\n\n**4. Minification:**\n- Remove unnecessary code\n- Compress JavaScript and CSS\n- Remove comments and whitespace\n- Optimize file sizes\n- Faster downloads\n\n**5. Caching:**\n- Cache static assets\n- Cache API responses\n- Cache database queries\n- Use browser caching\n- Implement service workers\n\n**HOW THIS HELPS THE AI UNDERSTAND:**\n\nWhen you ask the AI to:\n- \"Optimize page loading\" - It knows to implement code splitting, image optimization, and caching\n- \"Improve database performance\" - It knows to add indexes, optimize queries, and use connection pooling\n- \"Speed up email sending\" - It knows to implement batch processing and queue management\n- \"Optimize analytics collection\" - It knows to batch requests and process data efficiently\n- \"Improve API performance\" - It knows to implement caching, compression, and pagination\n- \"Monitor performance\" - It knows to track metrics, set up alerts, and analyze trends\n\n**PERFORMANCE OPTIMIZATION INTERCONNECTIONS:**\n\n1. **Page Load Optimization:**\n   - Code splitting reduces initial bundle\n   - Image optimization reduces file sizes\n   - Caching reduces repeated downloads\n   - CDN reduces latency\n   - Compression reduces transfer time\n\n2. **Database Performance:**\n   - Indexes speed up queries\n   - Connection pooling reduces overhead\n   - Caching reduces database load\n   - Query optimization improves efficiency\n   - Monitoring identifies bottlenecks\n\n3. **Email System Performance:**\n   - Batch processing reduces API calls\n   - Queue management handles volume\n   - Retry logic handles failures\n   - Monitoring tracks performance\n   - Optimization improves throughput\n\n**BEST PRACTICES:**\n\n1. **Measure First:**\n   - Identify performance bottlenecks\n   - Set performance budgets\n   - Monitor key metrics\n   - Track performance trends\n   - Measure impact of changes\n\n2. **Optimize Incrementally:**\n   - Start with biggest impact\n   - Test each optimization\n   - Measure performance gains\n   - Avoid over-optimization\n   - Focus on user experience\n\n3. **Monitor Continuously:**\n   - Set up performance monitoring\n   - Track key metrics\n   - Alert on performance issues\n   - Analyze performance trends\n   - Respond to performance problems\n\n4. **Test Regularly:**\n   - Run performance tests\n   - Test under different loads\n   - Monitor performance regressions\n   - Test on different devices\n   - Validate performance improvements\n\n5. **Plan for Scale:**\n   - Design for growth\n   - Use scalable architectures\n   - Plan for traffic spikes\n   - Implement auto-scaling\n   - Monitor resource usage\n\nPerformance optimization is an ongoing process that ensures the RSVP application runs fast and efficiently for all users.",
+      "metadata": {
+        "created_at": "2025-09-22T13:52:32.713296",
+        "type": "slm_training_data",
+        "comprehensiveness": "high",
+        "explanation_depth": "detailed"
+      },
+      "extracted_components": {
+        "code_blocks": [],
+        "api_endpoints": [],
+        "database_operations": [
+          {
+            "operation": "READ",
+            "entity": "replicas",
+            "type": "database_operation"
+          },
+          {
+            "operation": "CREATE",
+            "entity": "pool",
+            "type": "database_operation"
+          }
+        ],
+        "business_concepts": [
+          {
+            "concept": "campaign",
+            "type": "business_concept"
+          },
+          {
+            "concept": "email",
+            "type": "business_concept"
+          },
+          {
+            "concept": "rsvp",
+            "type": "business_concept"
+          },
+          {
+            "concept": "analytics",
+            "type": "business_concept"
+          },
+          {
+            "concept": "tracking",
+            "type": "business_concept"
+          },
+          {
+            "concept": "group",
+            "type": "business_concept"
+          },
+          {
+            "concept": "send",
+            "type": "business_concept"
+          },
+          {
+            "concept": "delivery",
+            "type": "business_concept"
+          }
+        ]
+      },
+      "learning_objectives": {
+        "primary": "Understand the complete system architecture and workflows",
+        "secondary": "Learn how to interact with APIs, database, and UI components",
+        "tertiary": "Understand business processes and user workflows"
+      },
+      "context_explanation": {
+        "what_this_teaches": "This training example teaches the AI how to understand and work with the RSVP application system",
+        "why_this_matters": "Understanding these concepts allows the AI to help users with real tasks in the application",
+        "how_to_use": "The AI can use this knowledge to answer questions, perform tasks, and help users navigate the system"
+      },
+      "practical_applications": {
+        "user_queries": [
+          "How do I create a new campaign?",
+          "How do I manage audience groups?",
+          "How do I send emails to my audience?",
+          "How do I track campaign performance?",
+          "How do I process RSVPs?"
+        ],
+        "ai_capabilities": [
+          "Answer questions about system functionality",
+          "Guide users through workflows",
+          "Help troubleshoot issues",
+          "Explain system processes",
+          "Assist with data management"
+        ]
+      },
+      "system_interconnections": {
+        "data_flow": "Shows how data flows through the system from user input to database storage",
+        "component_relationships": "Explains how different parts of the system work together",
+        "workflow_dependencies": "Describes the order of operations and dependencies between tasks"
+      },
+      "source_file": "30-performance-optimization-slm-friendly.jsonl",
+      "line_number": 1
+    },
+    {
+      "instruction": "How does testing work in this RSVP application?",
+      "input": "Explain testing framework in simple terms that an AI can understand",
+      "output": "I'll explain how testing works in this RSVP application in simple terms.\n\n**WHAT IS TESTING?**\nTesting is like quality control for software. It's the process of checking that the application works correctly, doesn't break when changes are made, and meets the requirements. Think of it like testing a car before selling it - you want to make sure everything works properly.\n\n**WHY TESTING IS IMPORTANT:**\n\n**1. Catch Bugs Early:**\n- Find problems before users do\n- Fix issues when they're easier to fix\n- Prevent bugs from reaching production\n- Save time and money\n- Improve user experience\n\n**2. Ensure Quality:**\n- Verify features work as expected\n- Check that changes don't break existing features\n- Maintain code quality\n- Build confidence in the system\n- Meet user requirements\n\n**3. Enable Safe Changes:**\n- Make changes without fear\n- Refactor code safely\n- Add new features confidently\n- Update dependencies safely\n- Maintain system stability\n\n**TYPES OF TESTING:**\n\n**1. UNIT TESTING:**\nTests individual pieces of code in isolation:\n\n**What it tests:**\n- Individual functions\n- Component behavior\n- Data processing logic\n- Utility functions\n- Business logic\n\n**Examples:**\n- Test email validation function\n- Test form submission logic\n- Test data transformation\n- Test calculation functions\n- Test error handling\n\n**How it works:**\n- Test one function at a time\n- Mock external dependencies\n- Check inputs and outputs\n- Verify expected behavior\n- Test edge cases\n\n**2. INTEGRATION TESTING:**\nTests how different parts work together:\n\n**What it tests:**\n- API endpoints\n- Database interactions\n- Component interactions\n- Service integrations\n- Data flow between components\n\n**Examples:**\n- Test RSVP form submission\n- Test campaign creation flow\n- Test email sending process\n- Test analytics data collection\n- Test admin authentication\n\n**How it works:**\n- Test multiple components together\n- Use real or test databases\n- Test API endpoints\n- Verify data flow\n- Test error scenarios\n\n**3. END-TO-END TESTING:**\nTests complete user workflows:\n\n**What it tests:**\n- Complete user journeys\n- Full application workflows\n- User interactions\n- Cross-browser compatibility\n- Mobile responsiveness\n\n**Examples:**\n- User visits event page and RSVPs\n- Admin creates campaign and sends emails\n- User receives email and clicks link\n- Admin views analytics dashboard\n- User unsubscribes from emails\n\n**How it works:**\n- Simulate real user actions\n- Test in real browsers\n- Use test data\n- Verify complete workflows\n- Test on different devices\n\n**4. PERFORMANCE TESTING:**\nTests how the application performs under load:\n\n**What it tests:**\n- Response times\n- Throughput\n- Resource usage\n- Scalability\n- Stability under load\n\n**Examples:**\n- Test page load times\n- Test API response times\n- Test database performance\n- Test email sending speed\n- Test concurrent users\n\n**How it works:**\n- Simulate multiple users\n- Measure performance metrics\n- Test under different loads\n- Monitor resource usage\n- Identify bottlenecks\n\n**TESTING TOOLS AND FRAMEWORKS:**\n\n**1. JEST (JavaScript Testing):**\n- Test runner and assertion library\n- Mock functions and modules\n- Code coverage reporting\n- Snapshot testing\n- Parallel test execution\n\n**How it works:**\n- Write test files with .test.js extension\n- Use describe() and it() functions\n- Use expect() for assertions\n- Mock external dependencies\n- Run tests with npm test\n\n**2. REACT TESTING LIBRARY:**\n- Test React components\n- Focus on user behavior\n- Accessible testing methods\n- Simple and intuitive API\n- Encourages good practices\n\n**How it works:**\n- Render components in tests\n- Query elements like users would\n- Simulate user interactions\n- Test component behavior\n- Verify accessibility\n\n**3. PLAYWRIGHT (End-to-End Testing):**\n- Cross-browser testing\n- Mobile testing\n- Visual regression testing\n- Network interception\n- Parallel test execution\n\n**How it works:**\n- Write tests in JavaScript/TypeScript\n- Control real browsers\n- Simulate user actions\n- Take screenshots\n- Test across multiple browsers\n\n**4. PRISMA TEST UTILS:**\n- Test database operations\n- Create test databases\n- Seed test data\n- Clean up after tests\n- Mock database calls\n\n**How it works:**\n- Create isolated test databases\n- Seed with test data\n- Run tests against test database\n- Clean up after each test\n- Mock external services\n\n**TESTING STRATEGIES:**\n\n**1. TEST PYRAMID:**\n- Many unit tests (base)\n- Some integration tests (middle)\n- Few end-to-end tests (top)\n- Focus on fast, reliable tests\n- Catch most bugs with unit tests\n\n**2. TEST-DRIVEN DEVELOPMENT (TDD):**\n- Write tests before code\n- Write failing test first\n- Write code to make test pass\n- Refactor code\n- Repeat cycle\n\n**3. BEHAVIOR-DRIVEN DEVELOPMENT (BDD):**\n- Write tests in plain English\n- Focus on user behavior\n- Use Given-When-Then format\n- Collaborate with stakeholders\n- Test business requirements\n\n**TESTING DIFFERENT PARTS:**\n\n**1. FRONTEND COMPONENTS:**\n\n**RSVP Form Testing:**\n- Test form validation\n- Test user interactions\n- Test error handling\n- Test accessibility\n- Test responsive design\n\n**Campaign Dashboard Testing:**\n- Test data display\n- Test user interactions\n- Test real-time updates\n- Test error states\n- Test loading states\n\n**Admin Interface Testing:**\n- Test authentication\n- Test form submissions\n- Test data management\n- Test navigation\n- Test permissions\n\n**2. BACKEND API TESTING:**\n\n**API Endpoint Testing:**\n- Test request/response formats\n- Test authentication\n- Test validation\n- Test error handling\n- Test performance\n\n**Database Testing:**\n- Test data creation\n- Test data retrieval\n- Test data updates\n- Test data deletion\n- Test relationships\n\n**Service Integration Testing:**\n- Test email sending\n- Test external API calls\n- Test webhook handling\n- Test data synchronization\n- Test error handling\n\n**3. EMAIL SYSTEM TESTING:**\n\n**Email Template Testing:**\n- Test template rendering\n- Test variable substitution\n- Test HTML generation\n- Test email formatting\n- Test responsive design\n\n**Email Sending Testing:**\n- Test email delivery\n- Test bounce handling\n- Test unsubscribe processing\n- Test tracking pixels\n- Test webhook events\n\n**4. ANALYTICS TESTING:**\n\n**Data Collection Testing:**\n- Test visitor tracking\n- Test event recording\n- Test data validation\n- Test data storage\n- Test data processing\n\n**Reporting Testing:**\n- Test data aggregation\n- Test report generation\n- Test data accuracy\n- Test performance\n- Test data export\n\n**TEST DATA MANAGEMENT:**\n\n**1. Test Data Creation:**\n- Create realistic test data\n- Use factories for data generation\n- Create data for different scenarios\n- Use consistent test data\n- Clean up test data\n\n**2. Test Data Isolation:**\n- Use separate test database\n- Isolate test data\n- Clean up between tests\n- Use transactions for cleanup\n- Avoid test interference\n\n**3. Mock Data:**\n- Mock external services\n- Use fake data for testing\n- Simulate different responses\n- Test error scenarios\n- Control test conditions\n\n**TEST AUTOMATION:**\n\n**1. Continuous Integration:**\n- Run tests on every code change\n- Automate test execution\n- Fail builds on test failures\n- Generate test reports\n- Notify on test results\n\n**2. Test Scheduling:**\n- Run tests at regular intervals\n- Run tests during off-peak hours\n- Schedule performance tests\n- Run security tests\n- Monitor test results\n\n**3. Test Reporting:**\n- Generate test reports\n- Track test coverage\n- Monitor test trends\n- Identify flaky tests\n- Share test results\n\n**TESTING BEST PRACTICES:**\n\n**1. Write Good Tests:**\n- Make tests readable\n- Use descriptive test names\n- Test one thing at a time\n- Use proper assertions\n- Keep tests simple\n\n**2. Test Coverage:**\n- Aim for high coverage\n- Focus on critical paths\n- Test edge cases\n- Test error conditions\n- Don't test implementation details\n\n**3. Test Maintenance:**\n- Keep tests up to date\n- Refactor tests with code\n- Remove obsolete tests\n- Fix flaky tests\n- Monitor test performance\n\n**4. Test Organization:**\n- Organize tests logically\n- Use consistent naming\n- Group related tests\n- Use test utilities\n- Share test helpers\n\n**HOW THIS HELPS THE AI UNDERSTAND:**\n\nWhen you ask the AI to:\n- \"Test the RSVP form\" - It knows to test validation, user interactions, and error handling\n- \"Test campaign creation\" - It knows to test the complete workflow from creation to sending\n- \"Test email sending\" - It knows to test delivery, bounces, and tracking\n- \"Test analytics collection\" - It knows to test data collection and reporting\n- \"Test admin authentication\" - It knows to test login, session management, and permissions\n- \"Test API endpoints\" - It knows to test request/response, validation, and error handling\n\n**TESTING INTERCONNECTIONS:**\n\n1. **RSVP Flow Testing:**\n   - Unit test form validation\n   - Integration test form submission\n   - End-to-end test complete RSVP process\n   - Test email confirmation\n   - Test analytics tracking\n\n2. **Campaign Management Testing:**\n   - Unit test campaign creation\n   - Integration test template management\n   - End-to-end test campaign execution\n   - Test email delivery\n   - Test performance monitoring\n\n3. **Admin System Testing:**\n   - Unit test authentication\n   - Integration test admin workflows\n   - End-to-end test admin operations\n   - Test security features\n   - Test data management\n\n**TESTING CHALLENGES:**\n\n**1. Flaky Tests:**\n- Tests that sometimes pass, sometimes fail\n- Usually caused by timing issues\n- Can be caused by external dependencies\n- Need to be fixed or removed\n- Can reduce confidence in test suite\n\n**2. Test Maintenance:**\n- Tests need to be updated with code changes\n- Can become outdated\n- Need regular review and cleanup\n- Can slow down development\n- Need good test organization\n\n**3. Test Performance:**\n- Tests should run quickly\n- Slow tests slow down development\n- Need to optimize test execution\n- Use parallel execution\n- Mock slow operations\n\n**4. Test Coverage:**\n- Hard to achieve 100% coverage\n- Some code is hard to test\n- Need to focus on critical paths\n- Coverage doesn't guarantee quality\n- Need to test user scenarios\n\n**TESTING METRICS:**\n\n**1. Test Coverage:**\n- Percentage of code covered by tests\n- Line coverage, branch coverage\n- Function coverage, statement coverage\n- Should aim for 80%+ coverage\n- Focus on critical code paths\n\n**2. Test Execution Time:**\n- How long tests take to run\n- Should be fast for unit tests\n- Can be slower for integration tests\n- Use parallel execution\n- Optimize slow tests\n\n**3. Test Reliability:**\n- Percentage of tests that pass consistently\n- Should be 95%+ reliable\n- Fix flaky tests\n- Monitor test trends\n- Investigate failures\n\n**4. Bug Detection:**\n- How many bugs tests catch\n- Bugs found in production vs testing\n- Test effectiveness\n- Continuous improvement\n- Learn from missed bugs\n\nTesting is the quality assurance system that ensures the RSVP application works correctly and reliably for all users.",
+      "metadata": {
+        "created_at": "2025-09-22T13:52:32.715146",
+        "type": "slm_training_data",
+        "comprehensiveness": "high",
+        "explanation_depth": "detailed"
+      },
+      "extracted_components": {
+        "code_blocks": [],
+        "api_endpoints": [],
+        "database_operations": [
+          {
+            "operation": "UPDATE",
+            "entity": "dependencies",
+            "type": "database_operation"
+          },
+          {
+            "operation": "CREATE",
+            "entity": "test",
+            "type": "database_operation"
+          },
+          {
+            "operation": "CREATE",
+            "entity": "isolated",
+            "type": "database_operation"
+          },
+          {
+            "operation": "CREATE",
+            "entity": "realistic",
+            "type": "database_operation"
+          },
+          {
+            "operation": "CREATE",
+            "entity": "data",
+            "type": "database_operation"
+          }
+        ],
+        "business_concepts": [
+          {
+            "concept": "campaign",
+            "type": "business_concept"
+          },
+          {
+            "concept": "email",
+            "type": "business_concept"
+          },
+          {
+            "concept": "template",
+            "type": "business_concept"
+          },
+          {
+            "concept": "schedule",
+            "type": "business_concept"
+          },
+          {
+            "concept": "rsvp",
+            "type": "business_concept"
+          },
+          {
+            "concept": "analytics",
+            "type": "business_concept"
+          },
+          {
+            "concept": "tracking",
+            "type": "business_concept"
+          },
+          {
+            "concept": "visitor",
+            "type": "business_concept"
+          },
+          {
+            "concept": "group",
+            "type": "business_concept"
+          },
+          {
+            "concept": "send",
+            "type": "business_concept"
+          },
+          {
+            "concept": "delivery",
+            "type": "business_concept"
+          },
+          {
+            "concept": "bounce",
+            "type": "business_concept"
+          },
+          {
+            "concept": "click",
+            "type": "business_concept"
+          },
+          {
+            "concept": "unsubscribe",
+            "type": "business_concept"
+          },
+          {
+            "concept": "confirmation",
+            "type": "business_concept"
+          }
+        ]
+      },
+      "learning_objectives": {
+        "primary": "Understand the complete system architecture and workflows",
+        "secondary": "Learn how to interact with APIs, database, and UI components",
+        "tertiary": "Understand business processes and user workflows"
+      },
+      "context_explanation": {
+        "what_this_teaches": "This training example teaches the AI how to understand and work with the RSVP application system",
+        "why_this_matters": "Understanding these concepts allows the AI to help users with real tasks in the application",
+        "how_to_use": "The AI can use this knowledge to answer questions, perform tasks, and help users navigate the system"
+      },
+      "practical_applications": {
+        "user_queries": [
+          "How do I create a new campaign?",
+          "How do I manage audience groups?",
+          "How do I send emails to my audience?",
+          "How do I track campaign performance?",
+          "How do I process RSVPs?"
+        ],
+        "ai_capabilities": [
+          "Answer questions about system functionality",
+          "Guide users through workflows",
+          "Help troubleshoot issues",
+          "Explain system processes",
+          "Assist with data management"
+        ]
+      },
+      "system_interconnections": {
+        "data_flow": "Shows how data flows through the system from user input to database storage",
+        "component_relationships": "Explains how different parts of the system work together",
+        "workflow_dependencies": "Describes the order of operations and dependencies between tasks"
+      },
+      "source_file": "31-testing-framework-slm-friendly.jsonl",
+      "line_number": 1
+    },
+    {
+      "instruction": "How does deployment and configuration work in this RSVP application?",
+      "input": "Explain deployment configuration in simple terms that an AI can understand",
+      "output": "I'll explain how deployment and configuration works in this RSVP application in simple terms.\n\n**WHAT IS DEPLOYMENT?**\nDeployment is like moving your application from your computer (where you built it) to a server on the internet (where users can access it). It's the process of making your application live and available to users. Think of it like opening a restaurant - you need to set up the kitchen, hire staff, and open the doors to customers.\n\n**WHY DEPLOYMENT MATTERS:**\n\n**1. Make Application Available:**\n- Users can access the application\n- Application runs 24/7\n- Handle multiple users simultaneously\n- Provide reliable service\n- Scale with user growth\n\n**2. Production Environment:**\n- Stable and reliable environment\n- Optimized for performance\n- Secure and monitored\n- Backed up regularly\n- Professional setup\n\n**3. Business Operations:**\n- Enable real business operations\n- Process real RSVPs\n- Send real emails\n- Collect real analytics\n- Serve real customers\n\n**DEPLOYMENT ENVIRONMENTS:**\n\n**1. DEVELOPMENT ENVIRONMENT:**\nThis is where you build and test the application:\n\n**Characteristics:**\n- Runs on your local computer\n- Uses test data\n- Has debugging enabled\n- Allows experimental changes\n- Not accessible to public\n\n**Purpose:**\n- Develop new features\n- Test changes\n- Debug problems\n- Experiment with ideas\n- Learn and practice\n\n**2. STAGING ENVIRONMENT:**\nThis is like a practice run before going live:\n\n**Characteristics:**\n- Runs on a server (like production)\n- Uses production-like data\n- Tests the deployment process\n- Accessible to team members\n- Mirrors production setup\n\n**Purpose:**\n- Test deployment process\n- Verify features work on server\n- Test with real data\n- Practice deployment procedures\n- Catch deployment issues\n\n**3. PRODUCTION ENVIRONMENT:**\nThis is the live application that users access:\n\n**Characteristics:**\n- Runs on reliable servers\n- Uses real data\n- Optimized for performance\n- Monitored and secured\n- Accessible to public\n\n**Purpose:**\n- Serve real users\n- Process real business\n- Handle real traffic\n- Generate real revenue\n- Provide real service\n\n**DEPLOYMENT COMPONENTS:**\n\n**1. WEB SERVER:**\nThis serves the application to users:\n\n**Next.js Application:**\n- Handles web requests\n- Serves pages and API endpoints\n- Processes user interactions\n- Manages sessions\n- Handles routing\n\n**Server Configuration:**\n- Node.js runtime\n- Process management\n- Memory management\n- Error handling\n- Logging\n\n**2. DATABASE SERVER:**\nThis stores all the application data:\n\n**PostgreSQL Database:**\n- Stores user data\n- Stores campaign data\n- Stores analytics data\n- Handles transactions\n- Provides data integrity\n\n**Database Configuration:**\n- Connection pooling\n- Backup strategies\n- Performance tuning\n- Security settings\n- Monitoring\n\n**3. EMAIL SERVICES:**\nThese handle email sending:\n\n**Resend (Campaign Emails):**\n- Sends marketing emails\n- Handles email templates\n- Tracks email delivery\n- Manages bounces\n- Provides analytics\n\n**SendGrid (Transactional Emails):**\n- Sends confirmation emails\n- Handles RSVP confirmations\n- Manages email events\n- Processes webhooks\n- Tracks delivery\n\n**4. EXTERNAL SERVICES:**\nThese provide additional functionality:\n\n**LeadMine API:**\n- Provides business data\n- Enriches audience information\n- Tracks business events\n- Updates business records\n- Provides analytics\n\n**ImprovMX:**\n- Handles email reception\n- Manages custom domains\n- Processes incoming emails\n- Provides email forwarding\n- Manages MX records\n\n**DEPLOYMENT PROCESS:**\n\n**1. CODE PREPARATION:**\n\n**Build Process:**\n- Compile TypeScript to JavaScript\n- Bundle and optimize code\n- Generate static assets\n- Create production build\n- Optimize for performance\n\n**Quality Checks:**\n- Run tests\n- Check code quality\n- Validate configuration\n- Security scanning\n- Performance testing\n\n**2. ENVIRONMENT SETUP:**\n\n**Server Configuration:**\n- Set up server environment\n- Install dependencies\n- Configure system settings\n- Set up monitoring\n- Configure security\n\n**Database Setup:**\n- Create database\n- Run migrations\n- Set up indexes\n- Configure backups\n- Set up monitoring\n\n**3. APPLICATION DEPLOYMENT:**\n\n**Code Deployment:**\n- Upload application code\n- Install dependencies\n- Configure environment variables\n- Start application\n- Verify deployment\n\n**Database Migration:**\n- Run database migrations\n- Update schema\n- Migrate data if needed\n- Verify data integrity\n- Test database connections\n\n**4. SERVICE CONFIGURATION:**\n\n**Email Services:**\n- Configure Resend API\n- Configure SendGrid API\n- Test email sending\n- Set up webhooks\n- Verify email delivery\n\n**External Services:**\n- Configure LeadMine API\n- Configure ImprovMX\n- Test API connections\n- Set up monitoring\n- Verify functionality\n\n**5. MONITORING AND VERIFICATION:**\n\n**Health Checks:**\n- Test application endpoints\n- Verify database connections\n- Test email sending\n- Check external services\n- Monitor performance\n\n**User Testing:**\n- Test RSVP form\n- Test admin interface\n- Test email delivery\n- Test analytics\n- Verify all features\n\n**CONFIGURATION MANAGEMENT:**\n\n**1. ENVIRONMENT VARIABLES:**\nThese store configuration settings:\n\n**Database Configuration:**\n- DATABASE_URL: Database connection string\n- DB_HOST: Database server address\n- DB_PORT: Database port number\n- DB_NAME: Database name\n- DB_USER: Database username\n- DB_PASSWORD: Database password\n\n**Email Configuration:**\n- RESEND_API_KEY: Resend API key\n- SENDGRID_API_KEY: SendGrid API key\n- FROM_EMAIL: Default sender email\n- REPLY_TO_EMAIL: Reply-to email address\n\n**External Services:**\n- LEADMINE_API_KEY: LeadMine API key\n- LEADMINE_API_URL: LeadMine API endpoint\n- IMPROVMX_API_KEY: ImprovMX API key\n- IMPROVMX_DOMAIN: ImprovMX domain\n\n**Application Settings:**\n- NODE_ENV: Environment (development/staging/production)\n- PORT: Application port\n- HOST: Application host\n- SECRET_KEY: Session secret\n- ADMIN_USERNAME: Admin username\n- ADMIN_PASSWORD: Admin password\n\n**2. CONFIGURATION FILES:**\nThese store application settings:\n\n**Next.js Configuration:**\n- next.config.js: Next.js settings\n- package.json: Dependencies and scripts\n- tsconfig.json: TypeScript settings\n- tailwind.config.js: Styling configuration\n\n**Database Configuration:**\n- prisma/schema.prisma: Database schema\n- prisma/migrations/: Database migrations\n- .env: Environment variables\n- .env.example: Environment template\n\n**3. SECURITY CONFIGURATION:**\n\n**Authentication:**\n- Admin login credentials\n- Session management\n- Password hashing\n- CSRF protection\n- Rate limiting\n\n**API Security:**\n- API key management\n- Request validation\n- Input sanitization\n- Error handling\n- Logging\n\n**Database Security:**\n- Connection encryption\n- Access control\n- Backup encryption\n- Audit logging\n- Monitoring\n\n**DEPLOYMENT STRATEGIES:**\n\n**1. BLUE-GREEN DEPLOYMENT:**\n- Run two identical environments\n- Deploy to inactive environment\n- Switch traffic when ready\n- Zero downtime deployment\n- Easy rollback if issues\n\n**2. ROLLING DEPLOYMENT:**\n- Deploy to subset of servers\n- Gradually roll out to all servers\n- Monitor for issues\n- Roll back if problems\n- Minimal downtime\n\n**3. CANARY DEPLOYMENT:**\n- Deploy to small percentage of users\n- Monitor performance and errors\n- Gradually increase percentage\n- Full deployment if successful\n- Quick rollback if issues\n\n**MONITORING AND MAINTENANCE:**\n\n**1. APPLICATION MONITORING:**\n\n**Performance Monitoring:**\n- Response times\n- Throughput\n- Error rates\n- Resource usage\n- User experience\n\n**Health Monitoring:**\n- Application health\n- Database health\n- External service health\n- System resources\n- Network connectivity\n\n**2. LOGGING:**\n\n**Application Logs:**\n- Error logs\n- Access logs\n- Performance logs\n- Security logs\n- Audit logs\n\n**Log Management:**\n- Centralized logging\n- Log aggregation\n- Log analysis\n- Log retention\n- Log monitoring\n\n**3. BACKUP AND RECOVERY:**\n\n**Database Backups:**\n- Regular automated backups\n- Point-in-time recovery\n- Backup verification\n- Offsite storage\n- Recovery testing\n\n**Application Backups:**\n- Code backups\n- Configuration backups\n- Asset backups\n- Version control\n- Disaster recovery\n\n**4. SECURITY MONITORING:**\n\n**Security Scanning:**\n- Vulnerability scanning\n- Dependency scanning\n- Code analysis\n- Penetration testing\n- Security audits\n\n**Threat Detection:**\n- Intrusion detection\n- Anomaly detection\n- Attack monitoring\n- Incident response\n- Security alerts\n\n**HOW THIS HELPS THE AI UNDERSTAND:**\n\nWhen you ask the AI to:\n- \"Deploy the application\" - It knows to build, configure, and deploy to production\n- \"Set up staging environment\" - It knows to create a production-like test environment\n- \"Configure email services\" - It knows to set up Resend and SendGrid APIs\n- \"Set up database\" - It knows to create database, run migrations, and configure connections\n- \"Monitor application\" - It knows to set up logging, monitoring, and alerting\n- \"Backup data\" - It knows to create and verify database backups\n\n**DEPLOYMENT INTERCONNECTIONS:**\n\n1. **Application Deployment Flow:**\n   - Build application code\n   - Configure environment variables\n   - Deploy to server\n   - Set up database\n   - Configure external services\n   - Verify deployment\n\n2. **Database Deployment Flow:**\n   - Create database\n   - Run schema migrations\n   - Set up indexes\n   - Configure backups\n   - Test connections\n\n3. **Service Configuration Flow:**\n   - Configure email services\n   - Set up external APIs\n   - Test integrations\n   - Configure monitoring\n   - Verify functionality\n\n**DEPLOYMENT CHALLENGES:**\n\n**1. Environment Differences:**\n- Development vs production differences\n- Configuration variations\n- Data differences\n- Performance differences\n- Security differences\n\n**2. Dependency Management:**\n- External service dependencies\n- Database dependencies\n- Network dependencies\n- Version compatibility\n- Service availability\n\n**3. Data Migration:**\n- Schema changes\n- Data format changes\n- Data volume\n- Downtime requirements\n- Rollback procedures\n\n**4. Service Coordination:**\n- Multiple services to deploy\n- Service dependencies\n- Configuration synchronization\n- Health checks\n- Error handling\n\n**BEST PRACTICES:**\n\n**1. Automation:**\n- Automate deployment process\n- Use deployment scripts\n- Automate testing\n- Automate monitoring\n- Automate rollbacks\n\n**2. Version Control:**\n- Track all changes\n- Use semantic versioning\n- Tag releases\n- Document changes\n- Maintain history\n\n**3. Testing:**\n- Test in staging first\n- Automated testing\n- Performance testing\n- Security testing\n- User acceptance testing\n\n**4. Monitoring:**\n- Monitor during deployment\n- Set up alerts\n- Track metrics\n- Monitor logs\n- Respond quickly to issues\n\n**5. Documentation:**\n- Document deployment process\n- Document configuration\n- Document procedures\n- Document troubleshooting\n- Keep documentation updated\n\nDeployment and configuration is the process of making the RSVP application live and available to users in a reliable, secure, and performant way.",
+      "metadata": {
+        "created_at": "2025-09-22T13:52:32.717162",
+        "type": "slm_training_data",
+        "comprehensiveness": "high",
+        "explanation_depth": "detailed"
+      },
+      "extracted_components": {
+        "code_blocks": [],
+        "api_endpoints": [],
+        "database_operations": [
+          {
+            "operation": "CREATE",
+            "entity": "production",
+            "type": "database_operation"
+          },
+          {
+            "operation": "CREATE",
+            "entity": "database",
+            "type": "database_operation"
+          },
+          {
+            "operation": "UPDATE",
+            "entity": "schema",
+            "type": "database_operation"
+          },
+          {
+            "operation": "CREATE",
+            "entity": "a",
+            "type": "database_operation"
+          },
+          {
+            "operation": "CREATE",
+            "entity": "database",
+            "type": "database_operation"
+          },
+          {
+            "operation": "CREATE",
+            "entity": "and",
+            "type": "database_operation"
+          },
+          {
+            "operation": "CREATE",
+            "entity": "database",
+            "type": "database_operation"
+          }
+        ],
+        "business_concepts": [
+          {
+            "concept": "campaign",
+            "type": "business_concept"
+          },
+          {
+            "concept": "audience",
+            "type": "business_concept"
+          },
+          {
+            "concept": "email",
+            "type": "business_concept"
+          },
+          {
+            "concept": "template",
+            "type": "business_concept"
+          },
+          {
+            "concept": "rsvp",
+            "type": "business_concept"
+          },
+          {
+            "concept": "analytics",
+            "type": "business_concept"
+          },
+          {
+            "concept": "member",
+            "type": "business_concept"
+          },
+          {
+            "concept": "send",
+            "type": "business_concept"
+          },
+          {
+            "concept": "delivery",
+            "type": "business_concept"
+          },
+          {
+            "concept": "bounce",
+            "type": "business_concept"
+          },
+          {
+            "concept": "open",
+            "type": "business_concept"
+          },
+          {
+            "concept": "confirmation",
+            "type": "business_concept"
+          }
+        ]
+      },
+      "learning_objectives": {
+        "primary": "Understand the complete system architecture and workflows",
+        "secondary": "Learn how to interact with APIs, database, and UI components",
+        "tertiary": "Understand business processes and user workflows"
+      },
+      "context_explanation": {
+        "what_this_teaches": "This training example teaches the AI how to understand and work with the RSVP application system",
+        "why_this_matters": "Understanding these concepts allows the AI to help users with real tasks in the application",
+        "how_to_use": "The AI can use this knowledge to answer questions, perform tasks, and help users navigate the system"
+      },
+      "practical_applications": {
+        "user_queries": [
+          "How do I create a new campaign?",
+          "How do I manage audience groups?",
+          "How do I send emails to my audience?",
+          "How do I track campaign performance?",
+          "How do I process RSVPs?"
+        ],
+        "ai_capabilities": [
+          "Answer questions about system functionality",
+          "Guide users through workflows",
+          "Help troubleshoot issues",
+          "Explain system processes",
+          "Assist with data management"
+        ]
+      },
+      "system_interconnections": {
+        "data_flow": "Shows how data flows through the system from user input to database storage",
+        "component_relationships": "Explains how different parts of the system work together",
+        "workflow_dependencies": "Describes the order of operations and dependencies between tasks"
+      },
+      "source_file": "32-deployment-config-slm-friendly.jsonl",
+      "line_number": 1
+    }
+  ],
+  "summary": {
+    "categories_covered": 7,
+    "total_examples": 7,
+    "explanation_types": [
+      "code_blocks",
+      "api_endpoints",
+      "database_operations",
+      "business_concepts",
+      "system_interconnections",
+      "practical_applications"
+    ]
+  }
+}
