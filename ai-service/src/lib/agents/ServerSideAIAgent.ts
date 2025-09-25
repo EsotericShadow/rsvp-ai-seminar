@@ -722,8 +722,8 @@ export class ServerSideAIAgent {
     
     // If we're continuing a template creation and user provided simple input
     if (intent.type === 'continue_template' && hasTemplateContext) {
-      // Check what information we're missing
-      const lastAssistantMessage = recentMessages.reverse().find((msg: ChatMessage) => msg.role === 'assistant');
+      // Check what information we're missing - use a copy to avoid mutating the original array
+      const lastAssistantMessage = [...recentMessages].reverse().find((msg: ChatMessage) => msg.role === 'assistant');
       
       if (lastAssistantMessage && lastAssistantMessage.content.includes('subject line')) {
         // User is providing subject line

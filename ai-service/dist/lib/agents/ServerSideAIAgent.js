@@ -541,7 +541,7 @@ class ServerSideAIAgent {
         const recentMessages = _conversationHistory.slice(-4);
         const hasTemplateContext = recentMessages.some((msg) => msg.role === 'assistant' && msg.content.includes('template'));
         if (intent.type === 'continue_template' && hasTemplateContext) {
-            const lastAssistantMessage = recentMessages.reverse().find((msg) => msg.role === 'assistant');
+            const lastAssistantMessage = [...recentMessages].reverse().find((msg) => msg.role === 'assistant');
             if (lastAssistantMessage && lastAssistantMessage.content.includes('subject line')) {
                 return {
                     message: `Perfect! Subject line "${message}" for template "${templateData.name || 'the template'}". What should the email content be?`,
