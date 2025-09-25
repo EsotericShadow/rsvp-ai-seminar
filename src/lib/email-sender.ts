@@ -1,10 +1,11 @@
-import { Resend } from 'resend';
+import sgMail from '@sendgrid/mail';
 import prisma from '@/lib/prisma';
 import { inviteLinkFromToken } from './campaigns';
 import { postLeadMineEvent } from './leadMine';
 import { generateEmailHTML, generateEmailText } from './email-template';
 
-const resend = new Resend(process.env.RESEND_API_KEY);
+// Initialize SendGrid
+sgMail.setApiKey(process.env.SENDGRID_API_KEY || '');
 
 export async function sendCampaignEmail(jobId: string) {
   try {
@@ -24,39 +25,29 @@ export async function sendCampaignEmail(jobId: string) {
       throw new Error(`Email job ${jobId} missing recipientId`);
     }
 
-    // Get campaign and schedule info
-    const campaign = await prisma.campaign.findUnique({
-      where: { id: job.campaignId },
+    // Get template and group info directly from EmailJob
+    const template = await prisma.campaignTemplate.findUnique({
+      where: { id: job.templateId }
+    });
+
+    if (!template) {
+      throw new Error(`Template ${job.templateId} not found`);
+    }
+
+    const group = await prisma.audienceGroup.findUnique({
+      where: { id: job.groupId },
       include: {
-        schedules: {
-          include: {
-            template: true,
-            group: {
-              include: {
-                members: {
-                  where: { businessId: job.recipientId },
-                },
-              },
-            },
-          },
+        members: {
+          where: { businessId: job.recipientId },
         },
       },
     });
 
-    if (!campaign) {
-      throw new Error(`Campaign ${job.campaignId} not found`);
+    if (!group) {
+      throw new Error(`Group ${job.groupId} not found`);
     }
 
-    // Find the schedule for this email
-    const schedule = (campaign.schedules || []).find(s => 
-      s.group.members.some(m => m.businessId === job.recipientId)
-    );
-
-    if (!schedule) {
-      throw new Error(`No schedule found for job ${jobId}`);
-    }
-
-    const member = schedule.group.members[0];
+    const member = group.members[0];
     if (!member || !member.inviteToken) {
       throw new Error(`Member or invite token not found for job ${jobId}`);
     }
@@ -70,7 +61,7 @@ export async function sendCampaignEmail(jobId: string) {
     };
 
     // Extract content from template (assume it's stored as plain content, not full HTML)
-    const templateContent = schedule.template.htmlBody;
+    const templateContent = template.htmlBody;
     
     // Replace placeholders in content
     const processedContent = templateContent
@@ -80,7 +71,7 @@ export async function sendCampaignEmail(jobId: string) {
 
     // Generate HTML and text using global template
     const html = await generateEmailHTML({
-      subject: schedule.template.subject,
+      subject: template.subject,
       greeting: 'Hello!',
       body: processedContent,
       ctaText: 'View details & RSVP',
@@ -92,41 +83,41 @@ export async function sendCampaignEmail(jobId: string) {
 
     const text = generateEmailText({
       greeting: 'Hello!',
-      body: schedule.template.textBody || processedContent.replace(/<[^>]*>/g, ''),
+      body: template.textBody || processedContent.replace(/<[^>]*>/g, ''),
       ctaText: 'View details & RSVP',
       ctaLink: context.invite_link,
     });
 
-    // Send email via Resend
-    const emailResponse = await resend.emails.send({
+    // Send email via SendGrid
+    const emailResponse = await sgMail.send({
       from: 'Gabriel Lacroix <gabriel@evergreenwebsolutions.ca>',
-      to: [job.recipientEmail],
-      subject: schedule.template.subject.replace(/\{\{\s*business_name\s*\}\}/g, context.business_name),
+      to: job.recipientEmail,
+      subject: template.subject.replace(/\{\{\s*business_name\s*\}\}/g, context.business_name),
       html: html,
       text: text,
     });
 
-    if (emailResponse.error) {
-      throw new Error(`Resend error: ${emailResponse.error.message}`);
+    if (!emailResponse || emailResponse.length === 0) {
+      throw new Error('SendGrid error: No response received');
     }
 
     // Create CampaignSend record
     await prisma.campaignSend.create({
       data: {
-        scheduleId: schedule.id,
-        groupId: schedule.groupId,
-        templateId: schedule.templateId,
+        scheduleId: job.scheduleId,
+        groupId: job.groupId,
+        templateId: job.templateId,
         businessId: member.businessId,
         businessName: member.businessName,
         email: job.recipientEmail,
         inviteToken: member.inviteToken,
         inviteLink: context.invite_link,
-        resendMessageId: emailResponse.data?.id,
+        resendMessageId: emailResponse[0]?.headers?.['x-message-id'] || emailResponse[0]?.messageId,
         status: 'SENT',
         sentAt: new Date(),
         meta: {
           template: {
-            subject: schedule.template.subject,
+            subject: template.subject,
             html: html,
             text: text,
             content: processedContent,
@@ -168,10 +159,10 @@ export async function sendCampaignEmail(jobId: string) {
         type: 'email_sent',
         meta: {
           campaignId: job.campaignId,
-          scheduleId: schedule.id,
-          templateId: schedule.templateId,
+          scheduleId: job.scheduleId,
+          templateId: job.templateId,
           email: job.recipientEmail,
-          subject: schedule.template.subject,
+          subject: template.subject,
           messageId: emailResponse.data?.id,
           sentAt: new Date().toISOString(),
           inviteToken: member.inviteToken,
