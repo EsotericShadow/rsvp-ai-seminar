@@ -36,9 +36,16 @@ function parseSteps(rawSteps: unknown, allowPartial = false) {
       throw new Error(`Step ${index} missing required field: templateId`)
     }
     
+    if (!allowPartial && step.type === 'email' && !step.groupId) {
+      throw new Error(`Step ${index} missing required field: groupId`)
+    }
+    
     return {
       type: String(step.type),
       templateId: step.templateId ? String(step.templateId) : undefined,
+      groupId: step.groupId ? String(step.groupId) : undefined,
+      sendAt: step.sendAt ? new Date(step.sendAt) : null,
+      throttlePerMinute: step.throttlePerMinute ? Number(step.throttlePerMinute) : 60,
       delay: step.delay ? Number(step.delay) : undefined,
       order: step.order ? Number(step.order) : undefined,
     }
