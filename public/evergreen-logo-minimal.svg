@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 72 36" width="72" height="36">
+  <g fill="#3a6032">
+    <!-- Simple Evergreen Tree -->
+    <path d="M36 4L32 12L28 10L24 16L20 14L16 20L12 18L8 24L4 22L2 26L8 28L12 24L16 26L20 20L24 22L28 16L32 18L36 12L40 18L44 16L48 22L52 20L56 26L60 24L64 30L68 28L72 32L68 30L64 26L60 28L56 22L52 24L48 18L44 20L40 14L36 16L32 12L28 14L24 18L20 16L16 20L12 18L8 22L4 20L0 24L4 22L8 18L12 20L16 16L20 18L24 14L28 16L32 12L36 4Z"/>
+    
+    <!-- Evergreen Text -->
+    <text x="2" y="32" font-family="Arial, sans-serif" font-size="6" font-weight="bold">EVERGREEN</text>
+  </g>
+</svg>
