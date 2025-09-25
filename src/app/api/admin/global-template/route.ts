@@ -28,8 +28,7 @@ const defaultGlobalTemplate = `<!DOCTYPE html>
         
         /* Header / logo */
         .evergreen-header{padding:24px;text-align:center;}
-        .evergreen-logo{width:72px;height:72px;margin:8px auto;border-radius:50%;background:linear-gradient(135deg,#10b981 0%,#059669 100%);position:relative;display:inline-block;}
-        .evergreen-logo::before{content:"🌲";position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);font-size:34px;}
+        .evergreen-logo{width:72px;height:36px;margin:8px auto;display:inline-block;}
         
         /* HERO nested table */
         .hero-inner{width:100%;border-radius:8px;overflow:hidden;}
@@ -72,7 +71,7 @@ const defaultGlobalTemplate = `<!DOCTYPE html>
                 <tr>
                     <td class="evergreen-header" style="padding-top:22px;padding-bottom:8px;">
                         <h1 style="margin-bottom:6px;">{{subject}}</h1>
-                        <div class="evergreen-logo" aria-hidden="true"></div>
+                        <img src="{{base_url}}/evergreen-logo.png" alt="Evergreen Web Solutions" class="evergreen-logo" />
                     </td>
                 </tr>
                 

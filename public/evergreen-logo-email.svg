@@ -1,0 +1,36 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 72 36" width="72" height="36">
+  <!-- Email-optimized Evergreen Logo -->
+  <g fill="#3a6032">
+    <!-- Evergreen Tree Icon -->
+    <g transform="translate(2, 2)">
+      <path d="M34 2L30 10L26 8L22 14L18 12L14 18L10 16L6 22L2 20L0 26L8 28L12 22L16 24L20 18L24 20L28 14L32 16L34 10L36 16L40 14L44 20L48 18L52 24L56 22L60 28L68 30L72 24L68 22L64 28L60 26L56 32L52 30L48 36L44 34L40 30L36 24L32 26L28 30L24 36L20 32L16 28L12 30L8 34L4 30L0 24L4 22L8 26L12 20L16 22L20 16L24 18L28 12L32 14L34 2Z"/>
+    </g>
+    
+    <!-- E -->
+    <text x="8" y="26" font-family="Arial, sans-serif" font-size="8" font-weight="bold">E</text>
+    
+    <!-- V -->
+    <text x="14" y="26" font-family="Arial, sans-serif" font-size="8" font-weight="bold">V</text>
+    
+    <!-- E -->
+    <text x="20" y="26" font-family="Arial, sans-serif" font-size="8" font-weight="bold">E</text>
+    
+    <!-- R -->
+    <text x="26" y="26" font-family="Arial, sans-serif" font-size="8" font-weight="bold">R</text>
+    
+    <!-- G -->
+    <text x="32" y="26" font-family="Arial, sans-serif" font-size="8" font-weight="bold">G</text>
+    
+    <!-- R -->
+    <text x="38" y="26" font-family="Arial, sans-serif" font-size="8" font-weight="bold">R</text>
+    
+    <!-- E -->
+    <text x="44" y="26" font-family="Arial, sans-serif" font-size="8" font-weight="bold">E</text>
+    
+    <!-- E -->
+    <text x="50" y="26" font-family="Arial, sans-serif" font-size="8" font-weight="bold">E</text>
+    
+    <!-- N -->
+    <text x="56" y="26" font-family="Arial, sans-serif" font-size="8" font-weight="bold">N</text>
+  </g>
+</svg>
