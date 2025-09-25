@@ -140,7 +140,7 @@ export class ServerSideAIAgent {
     ];
 
     // If we're in the middle of template creation and user provides simple input
-    if (hasOngoingTemplate && message.length < 100 && !messageLower.includes('template') && !messageLower.includes('campaign')) {
+    if (hasOngoingTemplate && message.length < 200 && !messageLower.includes('template') && !messageLower.includes('campaign')) {
       return {
         type: 'continue_template',
         confidence: 0.95,

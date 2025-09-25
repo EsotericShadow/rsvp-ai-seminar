@@ -82,7 +82,7 @@ class ServerSideAIAgent {
             /campaign.*named/i,
             /email.*campaign/i
         ];
-        if (hasOngoingTemplate && message.length < 100 && !messageLower.includes('template') && !messageLower.includes('campaign')) {
+        if (hasOngoingTemplate && message.length < 200 && !messageLower.includes('template') && !messageLower.includes('campaign')) {
             return {
                 type: 'continue_template',
                 confidence: 0.95,
