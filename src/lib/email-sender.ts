@@ -97,7 +97,7 @@ export async function sendCampaignEmail(jobId: string) {
       text: text,
     });
 
-    if (!emailResponse || emailResponse.length === 0) {
+    if (!emailResponse) {
       throw new Error('SendGrid error: No response received');
     }
 
@@ -112,7 +112,7 @@ export async function sendCampaignEmail(jobId: string) {
         email: job.recipientEmail,
         inviteToken: member.inviteToken,
         inviteLink: context.invite_link,
-        resendMessageId: emailResponse[0]?.headers?.['x-message-id'] || emailResponse[0]?.messageId,
+        resendMessageId: (emailResponse as any)?.[0]?.headers?.['x-message-id'] || (emailResponse as any)?.[0]?.messageId || 'sendgrid-sent',
         status: 'SENT',
         sentAt: new Date(),
         meta: {
@@ -133,7 +133,7 @@ export async function sendCampaignEmail(jobId: string) {
       data: {
         status: 'sent',
         sentAt: new Date(),
-        providerMessageId: emailResponse.data?.id,
+        providerMessageId: (emailResponse as any)?.[0]?.headers?.['x-message-id'] || (emailResponse as any)?.[0]?.messageId || 'sendgrid-sent',
         attempts: { increment: 1 },
         error: null,
       },
@@ -145,8 +145,8 @@ export async function sendCampaignEmail(jobId: string) {
         jobId,
         type: 'sent',
         meta: {
-          providerMessageId: emailResponse.data?.id,
-          resendId: emailResponse.data?.id,
+          providerMessageId: (emailResponse as any)?.[0]?.headers?.['x-message-id'] || (emailResponse as any)?.[0]?.messageId || 'sendgrid-sent',
+          sendgridId: (emailResponse as any)?.[0]?.headers?.['x-message-id'] || (emailResponse as any)?.[0]?.messageId || 'sendgrid-sent',
         },
       },
     });
@@ -163,7 +163,7 @@ export async function sendCampaignEmail(jobId: string) {
           templateId: job.templateId,
           email: job.recipientEmail,
           subject: template.subject,
-          messageId: emailResponse.data?.id,
+          messageId: (emailResponse as any)?.[0]?.headers?.['x-message-id'] || (emailResponse as any)?.[0]?.messageId || 'sendgrid-sent',
           sentAt: new Date().toISOString(),
           inviteToken: member.inviteToken,
         },
@@ -175,7 +175,7 @@ export async function sendCampaignEmail(jobId: string) {
 
     return {
       success: true,
-      messageId: emailResponse.data?.id,
+      messageId: (emailResponse as any)?.[0]?.headers?.['x-message-id'] || (emailResponse as any)?.[0]?.messageId || 'sendgrid-sent',
       businessId: member.businessId,
       businessName: member.businessName,
     };
