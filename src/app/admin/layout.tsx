@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react'
 import { useRouter, usePathname } from 'next/navigation'
-import { JuniperAISystem } from '@/components/ai/JuniperAISystem'
+// AI component temporarily removed - see AI_BACKBURNER directory
 
 export default function AdminLayout({
   children,
@@ -64,8 +64,7 @@ export default function AdminLayout({
   return (
     <div className="min-h-screen bg-gray-50">
       {children}
-      {/* AI Assistant - Only visible in admin area */}
-        <JuniperAISystem isAdmin={true} />
+      {/* AI Assistant temporarily removed - see AI_BACKBURNER directory */}
     </div>
   )
 }

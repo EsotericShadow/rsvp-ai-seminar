@@ -20,3 +20,6 @@ prisma/dev.db-journal
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
+
+# AI Integration - Backburnered
+AI_BACKBURNER/
