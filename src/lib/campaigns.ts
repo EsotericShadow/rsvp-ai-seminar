@@ -818,6 +818,17 @@ async function ensureMemberInviteToken(member: {
 }): Promise<string | null> {
   if (member.inviteToken) return member.inviteToken
 
+  // For test members, generate a simple token
+  if (member.businessId.startsWith('test-')) {
+    const testToken = `test-token-${member.businessId}-${Date.now()}`
+    await prisma.audienceMember.update({
+      where: { id: member.id },
+      data: { inviteToken: testToken },
+    })
+    console.log(`Generated test invite token for ${member.businessId}: ${testToken}`)
+    return testToken
+  }
+
   try {
     const { data } = await fetchLeadMineBusinesses({
       ids: [member.businessId],
