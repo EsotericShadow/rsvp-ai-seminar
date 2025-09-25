@@ -34,3 +34,4 @@ console.log('   1. Redeploy both Vercel and Render services');
 console.log('   2. Wait for deployments to complete');
 console.log('   3. Test the AI service again');
 console.log('\n✅ This should fix the 502 Bad Gateway errors!');
+
