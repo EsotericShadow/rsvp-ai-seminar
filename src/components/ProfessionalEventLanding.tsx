@@ -19,9 +19,9 @@ const EASE_OUT = cubicBezier(0.16, 1, 0.3, 1)
 // --- Data ------------------------------------------------------
 const VENUE_ADDRESS = "4812 Hwy 16, Terrace, BC, Canada"
 const VENUE_NAME = "Sunshine Inn Terrace — Jasmine Room"
-const EVENT_NAME = "AI in Northern BC: Information Session"
-const START_ISO = "2025-10-23T18:00:00-07:00"
-const END_ISO = "2025-10-23T20:30:00-07:00"
+const EVENT_NAME = "AI for Business Informational Event"
+const START_ISO = "2025-10-23T17:00:00-07:00"
+const END_ISO = "2025-10-23T19:00:00-07:00"
 
 const ICS_URL = `/api/ics?title=${encodeURIComponent(
   EVENT_NAME
@@ -34,7 +34,7 @@ const ICS_URL = `/api/ics?title=${encodeURIComponent(
 const detailItems: Array<{ label: string; value: string; href?: string; icon: string }> = [
   {
     label: "When",
-    value: "Thu, Oct 23 · Doors 6:00 PM · 6:30–8:30 PM",
+    value: "Thu, Oct 23 · 5:00–7:00 PM",
     href: ICS_URL,
     icon: "📅"
   },
@@ -349,8 +349,9 @@ export default function ProfessionalEventLanding() {
                   </div>
                 </div>
                 <blockquote className="text-gray-300 italic leading-relaxed">
-                  &ldquo;My goal is clarity. I&apos;ll walk through real northern projects, what they cost, and practical first steps that don&apos;t disrupt operations.&rdquo;
+                  &ldquo;This event isn&apos;t about tech hype. It&apos;s about showing what AI really does for businesses here in the North.&rdquo;
                 </blockquote>
+
               </div>
             </div>
 
