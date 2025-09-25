@@ -892,12 +892,18 @@ export class ServerSideAIAgent {
 
   async handleGeneralQuery(message: string, conversationHistory: ChatMessage[] = []): Promise<AIResponse> {
     try {
+      console.log('🚀 HANDLE GENERAL QUERY CALLED - VERSION 2.0');
+      console.log('Message:', message);
+      console.log('Conversation history length:', conversationHistory.length);
+      
       // First, check if this is a response to a previous question
       const contextualResponse = this.analyzeContextualResponse(message, conversationHistory);
       if (contextualResponse) {
         console.log('✅ Contextual response detected');
         return contextualResponse;
       }
+      
+      console.log('❌ No contextual response detected, falling back to RAG');
 
       // Try to use RAG system for new queries
       console.log('🔍 Searching RAG system for:', message);
