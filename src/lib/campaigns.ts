@@ -13,8 +13,11 @@ const normalizeJsonInput = (value: Prisma.JsonValue | undefined) => {
 }
 
 const resendKey = process.env.RESEND_API_KEY?.trim()
-const linkBase =
-  process.env.CAMPAIGN_LINK_BASE?.replace(/\/$/, '') || 'https://rsvp.evergreenwebsolutions.ca'
+const linkBase = (() => {
+  const base = process.env.CAMPAIGN_LINK_BASE?.replace(/\/$/, '') || 'https://rsvp.evergreenwebsolutions.ca'
+  // Ensure the URL has a protocol
+  return base.startsWith('http') ? base : `https://${base}`
+})()
 const fromEmail = process.env.CAMPAIGN_FROM_EMAIL || 'Evergreen AI <gabriel.lacroix94@icloud.com>'
 
 function assertResendConfigured() {
