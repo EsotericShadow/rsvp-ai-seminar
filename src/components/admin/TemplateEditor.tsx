@@ -65,6 +65,7 @@ function TemplateEditor({ template, onSave, onCancel, refreshTrigger }: Template
   const [previewMode, setPreviewMode] = useState<'desktop' | 'mobile'>('desktop');
   const [previewHTML, setPreviewHTML] = useState('');
   const [globalSettings, setGlobalSettings] = useState<any>(null);
+  const [globalTemplateHtml, setGlobalTemplateHtml] = useState<string>('');
 
   // Helper function to handle Enter key navigation
   const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement | HTMLTextAreaElement>) => {
@@ -93,64 +94,76 @@ function TemplateEditor({ template, onSave, onCancel, refreshTrigger }: Template
   // Auto-refresh preview when content changes
   const [previewKey, setPreviewKey] = useState(0);
 
-  // Load global template settings on mount and when refreshTrigger changes
+  // Load global template settings and HTML on mount and when refreshTrigger changes
   useEffect(() => {
-    const loadGlobalSettings = async () => {
+    const loadGlobalData = async () => {
       try {
-        const response = await fetch('/api/admin/global-template-settings');
-        if (response.ok) {
-          const settings = await response.json();
+        // Load global template settings
+        const settingsResponse = await fetch('/api/admin/global-template-settings');
+        if (settingsResponse.ok) {
+          const settings = await settingsResponse.json();
           setGlobalSettings(settings);
         }
+
+        // Load global template HTML
+        const templateResponse = await fetch('/api/admin/global-template');
+        if (templateResponse.ok) {
+          const templateData = await templateResponse.json();
+          setGlobalTemplateHtml(templateData.html || '');
+        }
       } catch (error) {
-        console.error('Error loading global template settings:', error);
+        console.error('Error loading global template data:', error);
       }
     };
-    loadGlobalSettings();
+    loadGlobalData();
   }, [refreshTrigger]);
   
-  const getPreviewHTML = useCallback(async () => {
-    // Replace variables with sample data for preview
+  const getPreviewHTML = useCallback(() => {
+    // If we don't have the global template HTML yet, return empty string
+    if (!globalTemplateHtml) {
+      return '';
+    }
+
+    // Replace variables with sample data for preview - same approach as GlobalHTMLTemplate
     let content = formData.main_content_body;
     content = content.replace(/\{\{business_name\}\}/g, 'Sample Business Name');
     content = content.replace(/\{\{business_id\}\}/g, 'sample-business-123');
     content = content.replace(/\{\{invite_link\}\}/g, 'https://rsvp.evergreenwebsolutions.ca/rsvp/sample-business-123');
     content = content.replace(/\{\{.*?\}\}/g, 'Sample Data');
     
-    // Generate preview using global template with all the individual template variables
-    return await generateEmailHTML({
-      subject: formData.subject,
-      greeting_title: formData.greeting_title,
-      greeting_message: formData.greeting_message,
-      signature_name: formData.signature_name,
-      signature_title: formData.signature_title,
-      signature_company: formData.signature_company,
-      signature_location: formData.signature_location,
-      main_content_title: formData.main_content_title,
-      body: content, // This is the main content body
-      ctaText: formData.button_text,
-      ctaLink: 'https://rsvp.evergreenwebsolutions.ca/rsvp/sample-business-123', // Use sample tracking link for preview
-      additional_info_title: formData.additional_info_title,
-      additional_info_body: formData.additional_info_body,
-      closing_title: formData.closing_title,
-      closing_message: formData.closing_message,
-      businessName: 'Sample Business Name',
-      businessId: 'sample-business-123',
+    // Use the same placeholder replacement logic as GlobalHTMLTemplate
+    return globalTemplateHtml
+      .replace(/\{\{subject\}\}/g, formData.subject)
+      // Individual template variables
+      .replace(/\{\{greeting_title\}\}/g, formData.greeting_title)
+      .replace(/\{\{greeting_message\}\}/g, formData.greeting_message)
+      .replace(/\{\{signature_name\}\}/g, formData.signature_name)
+      .replace(/\{\{signature_title\}\}/g, formData.signature_title)
+      .replace(/\{\{signature_company\}\}/g, formData.signature_company)
+      .replace(/\{\{signature_location\}\}/g, formData.signature_location)
+      .replace(/\{\{main_content_title\}\}/g, formData.main_content_title)
+      .replace(/\{\{main_content_body\}\}/g, content)
+      .replace(/\{\{button_text\}\}/g, formData.button_text)
+      .replace(/\{\{button_link\}\}/g, 'https://rsvp.evergreenwebsolutions.ca/rsvp/sample-business-123')
+      .replace(/\{\{additional_info_title\}\}/g, formData.additional_info_title)
+      .replace(/\{\{additional_info_body\}\}/g, formData.additional_info_body)
+      .replace(/\{\{closing_title\}\}/g, formData.closing_title)
+      .replace(/\{\{closing_message\}\}/g, formData.closing_message)
+      .replace(/\{\{unsubscribe_link\}\}/g, 'https://rsvp.evergreenwebsolutions.ca/unsubscribe?token=sample')
       // Global template variables (use loaded settings or defaults)
-      global_hero_title: globalSettings?.global_hero_title || 'Welcome to Evergreen AI',
-      global_hero_message: globalSettings?.global_hero_message || 'Thank you for your interest in our upcoming informational session about practical AI tools for Northern BC businesses.',
-      global_signature_name: globalSettings?.global_signature_name || 'Gabriel Lacroix',
-      global_signature_title: globalSettings?.global_signature_title || 'AI Solutions Specialist',
-      global_signature_company: globalSettings?.global_signature_company || 'Evergreen Web Solutions',
-      global_signature_location: globalSettings?.global_signature_location || 'Terrace, BC',
-      global_event_title: globalSettings?.global_event_title || 'Event Details',
-      global_event_date: globalSettings?.global_event_date || 'October 23rd, 2025',
-      global_event_time: globalSettings?.global_event_time || '6:00 PM - 8:00 PM',
-      global_event_location: globalSettings?.global_event_location || 'Terrace, BC',
-      global_event_cost: globalSettings?.global_event_cost || 'Free',
-      global_event_includes: globalSettings?.global_event_includes || 'Coffee, refreshments, networking, and actionable AI insights',
-    });
-  }, [formData, globalSettings]);
+      .replace(/\{\{global_hero_title\}\}/g, globalSettings?.global_hero_title || 'Welcome to Evergreen AI')
+      .replace(/\{\{global_hero_message\}\}/g, globalSettings?.global_hero_message || 'Thank you for your interest in our upcoming informational session about practical AI tools for Northern BC businesses.')
+      .replace(/\{\{global_signature_name\}\}/g, globalSettings?.global_signature_name || 'Gabriel Lacroix')
+      .replace(/\{\{global_signature_title\}\}/g, globalSettings?.global_signature_title || 'AI Solutions Specialist')
+      .replace(/\{\{global_signature_company\}\}/g, globalSettings?.global_signature_company || 'Evergreen Web Solutions')
+      .replace(/\{\{global_signature_location\}\}/g, globalSettings?.global_signature_location || 'Terrace, BC')
+      .replace(/\{\{global_event_title\}\}/g, globalSettings?.global_event_title || 'Event Details')
+      .replace(/\{\{global_event_date\}\}/g, globalSettings?.global_event_date || 'October 23rd, 2025')
+      .replace(/\{\{global_event_time\}\}/g, globalSettings?.global_event_time || '6:00 PM - 8:00 PM')
+      .replace(/\{\{global_event_location\}\}/g, globalSettings?.global_event_location || 'Terrace, BC')
+      .replace(/\{\{global_event_cost\}\}/g, globalSettings?.global_event_cost || 'Free')
+      .replace(/\{\{global_event_includes\}\}/g, globalSettings?.global_event_includes || 'Coffee, refreshments, networking, and actionable AI insights');
+  }, [formData, globalSettings, globalTemplateHtml]);
 
   useEffect(() => {
     const timer = setTimeout(() => {
@@ -161,30 +174,24 @@ function TemplateEditor({ template, onSave, onCancel, refreshTrigger }: Template
 
   // Update preview HTML when preview key changes
   useEffect(() => {
-    const updatePreview = async () => {
-      try {
-        const html = await getPreviewHTML();
-        setPreviewHTML(html);
-      } catch (error) {
-        console.error('Failed to generate preview:', error);
-        setPreviewHTML('<p>Error generating preview</p>');
-      }
-    };
-    updatePreview();
+    try {
+      const html = getPreviewHTML();
+      setPreviewHTML(html);
+    } catch (error) {
+      console.error('Failed to generate preview:', error);
+      setPreviewHTML('<p>Error generating preview</p>');
+    }
   }, [previewKey, getPreviewHTML]);
 
   // Initial preview generation when component mounts
   useEffect(() => {
-    const generateInitialPreview = async () => {
-      try {
-        const html = await getPreviewHTML();
-        setPreviewHTML(html);
-      } catch (error) {
-        console.error('Failed to generate initial preview:', error);
-        setPreviewHTML('<p>Error generating preview</p>');
-      }
-    };
-    generateInitialPreview();
+    try {
+      const html = getPreviewHTML();
+      setPreviewHTML(html);
+    } catch (error) {
+      console.error('Failed to generate initial preview:', error);
+      setPreviewHTML('<p>Error generating preview</p>');
+    }
   }, [getPreviewHTML]);
 
   const handleSave = async () => {
