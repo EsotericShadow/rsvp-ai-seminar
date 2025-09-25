@@ -71,14 +71,24 @@ const benefits = [
 
 const testimonials = [
   {
-    quote: "Finally, someone who speaks plain English about AI. Gabriel's examples from local businesses made it click for me.",
-    author: "Sarah Chen",
-    role: "Operations Manager, Kitimat Manufacturing"
+    quote: "Gabriel not only solved my computer problem, but as a bonus he got my new iPhone connected. Telus couldn't do it, but Gabriel had no problems. He doesn't walk on water, but he wades real high.",
+    author: "Jim Lynch",
+    role: "Community Leader"
   },
   {
-    quote: "I left with a clear roadmap and realistic budget expectations. This was exactly what our team needed.",
-    author: "Mike Thompson",
-    role: "Owner, Prince Rupert Logistics"
+    quote: "Gabriel built my company website. He did a fantastic job. I would not hesitate to recommend him and his abilities anytime.",
+    author: "Jack Cook",
+    role: "Karma Training"
+  },
+  {
+    quote: "I was blown away with the results! Gabriel was very professional and easy to work with. He delivered the website very quickly with minimal revisions needed.",
+    author: "Kaden Chad",
+    role: "3D Animator"
+  },
+  {
+    quote: "Absolutely best investment! Not only were they professional and creative, but took the time I needed without added pressure. Looking forward to our next project.",
+    author: "Michelle Lacroix",
+    role: "Small Business Owner"
   }
 ]
 
