@@ -255,8 +255,8 @@ class ServerSideAIAgent {
         return data;
     }
     analyzeContextualResponse(message, conversationHistory = []) {
-        if (conversationHistory.length < 2) {
-            console.log('🔍 Context analysis: Not enough conversation history');
+        if (conversationHistory.length < 1) {
+            console.log('🔍 Context analysis: No conversation history');
             return null;
         }
         console.log('🔍 Context analysis debug:', {

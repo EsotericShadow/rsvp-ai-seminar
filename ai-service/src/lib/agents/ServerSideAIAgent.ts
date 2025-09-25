@@ -353,8 +353,8 @@ export class ServerSideAIAgent {
   }
 
   analyzeContextualResponse(message: string, conversationHistory: ChatMessage[] = []): AIResponse | null {
-    if (conversationHistory.length < 2) {
-      console.log('🔍 Context analysis: Not enough conversation history');
+    if (conversationHistory.length < 1) {
+      console.log('🔍 Context analysis: No conversation history');
       return null;
     }
     
