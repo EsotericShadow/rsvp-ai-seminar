@@ -998,6 +998,14 @@ export class ServerSideAIAgent {
     try {
       console.log('📢 Creating campaign in database:', campaignData);
       
+      // Get available templates to use a valid templateId
+      const templates = await this.getAvailableTemplates();
+      const firstTemplateId = templates.length > 0 ? templates[0].id : null;
+      
+      if (!firstTemplateId) {
+        throw new Error('No templates available. Please create a template first.');
+      }
+      
       const response = await fetch(`${this.mainAppUrl}/api/internal/campaigns`, {
         method: 'POST',
         headers: {
@@ -1009,7 +1017,7 @@ export class ServerSideAIAgent {
           description: campaignData.description,
           steps: campaignData.steps || [{
             type: 'email',
-            templateId: 1,
+            templateId: firstTemplateId,
             delay: 0
           }]
         })
