@@ -84,11 +84,6 @@ const testimonials = [
     quote: "I was blown away with the results! Gabriel was very professional and easy to work with. He delivered the website very quickly with minimal revisions needed.",
     author: "Kaden Chad",
     role: "3D Animator"
-  },
-  {
-    quote: "Absolutely best investment! Not only were they professional and creative, but took the time I needed without added pressure. Looking forward to our next project.",
-    author: "Michelle Lacroix",
-    role: "Small Business Owner"
   }
 ]
 
