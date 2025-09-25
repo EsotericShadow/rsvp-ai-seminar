@@ -257,92 +257,280 @@ class ServerSideAIAgent {
             console.log('🔍 Context analysis: Not enough conversation history');
             return null;
         }
-        const lastAssistantMessage = conversationHistory.slice(-6).reverse().find(msg => msg.role === 'assistant');
+        const messageLower = message.toLowerCase().trim();
+        const recentMessages = conversationHistory.slice(-8);
+        const assistantMessages = recentMessages.filter(msg => msg.role === 'assistant');
+        const lastAssistantMessage = assistantMessages[assistantMessages.length - 1];
         if (!lastAssistantMessage) {
             console.log('🔍 Context analysis: No assistant message found in recent history');
             return null;
         }
-        const messageLower = message.toLowerCase().trim();
         const assistantContent = lastAssistantMessage.content.toLowerCase();
         console.log('🔍 Context analysis:', {
             userMessage: messageLower,
-            assistantContent: assistantContent.substring(0, 100) + '...',
-            historyLength: conversationHistory.length
+            assistantContent: assistantContent.substring(0, 150) + '...',
+            historyLength: conversationHistory.length,
+            recentMessagesCount: recentMessages.length
         });
-        if (assistantContent.includes('which campaigns would you like to delete') ||
-            assistantContent.includes('what would you like to delete')) {
-            if (messageLower.includes('all') || messageLower === 'all campaigns') {
-                return {
-                    message: "✅ **Confirmed: Delete ALL campaigns**\n\n⚠️ **This will permanently delete ALL campaigns and their data.**\n\nTo proceed with deleting all campaigns, I need to:\n\n1. **Retrieve the list** of existing campaigns\n2. **Confirm the deletion** with you\n3. **Execute the deletion** safely\n\n⚠️ **Warning**: This action cannot be undone. All campaign data, analytics, and history will be lost.\n\nAre you absolutely sure you want to delete ALL campaigns? Type 'YES DELETE ALL' to confirm.",
-                    confidence: 0.95,
-                    actions: [{
-                            type: 'delete_all_campaigns',
-                            data: { confirmation: 'pending' }
-                        }],
-                    nextSteps: ['Confirm deletion', 'Execute campaign deletion']
-                };
-            }
-            if (messageLower.includes('draft') || messageLower.includes('unpublished')) {
-                return {
-                    message: "✅ **Confirmed: Delete DRAFT campaigns only**\n\nI'll delete only the draft/unpublished campaigns, keeping active and completed campaigns intact.\n\nLet me retrieve the draft campaigns and show you what will be deleted...",
-                    confidence: 0.95,
-                    actions: [{
-                            type: 'delete_draft_campaigns',
-                            data: { confirmation: 'pending' }
-                        }],
-                    nextSteps: ['List draft campaigns', 'Confirm deletion', 'Execute deletion']
-                };
-            }
-            if (messageLower.includes('specific') || messageLower.includes('particular')) {
-                return {
-                    message: "✅ **Confirmed: Delete SPECIFIC campaign**\n\nI can help you delete a specific campaign by name. Let me show you the available campaigns first:\n\n• **List all campaigns** - See what's available\n• **Search campaigns** - Find by name or keyword\n• **Show campaign details** - Get more information before deleting\n\nWhat would you like to do?",
-                    confidence: 0.95,
-                    nextSteps: ['List campaigns', 'Search for specific campaign', 'Confirm deletion']
-                };
-            }
+        if (this.isCampaignDeletionConfirmation(messageLower, assistantContent)) {
+            return this.handleCampaignDeletionConfirmation(messageLower, assistantContent);
         }
-        if (assistantContent.includes('which templates would you like to delete') ||
-            assistantContent.includes('what templates')) {
-            if (messageLower.includes('all') || messageLower === 'all templates') {
-                return {
-                    message: "✅ **Confirmed: Delete ALL templates**\n\n⚠️ **This will permanently delete ALL templates.**\n\nBefore proceeding, I need to check:\n\n1. **Template usage** - Which templates are used in active campaigns\n2. **List all templates** - Show you what will be deleted\n3. **Confirm deletion** - Get your final confirmation\n\n⚠️ **Warning**: Deleting templates used in campaigns may break those campaigns.\n\nAre you absolutely sure you want to delete ALL templates? Type 'YES DELETE ALL' to confirm.",
-                    confidence: 0.95,
-                    actions: [{
-                            type: 'delete_all_templates',
-                            data: { confirmation: 'pending' }
-                        }],
-                    nextSteps: ['Check template usage', 'List templates', 'Confirm deletion']
-                };
-            }
+        if (this.isTemplateDeletionConfirmation(messageLower, assistantContent)) {
+            return this.handleTemplateDeletionConfirmation(messageLower, assistantContent);
         }
-        if (messageLower.includes('yes delete all') || messageLower.includes('confirm') || messageLower.includes('proceed')) {
-            if (assistantContent.includes('delete all campaigns') || assistantContent.includes('absolutely sure') || assistantContent.includes('type \'yes delete all\'')) {
-                return {
-                    message: "🚨 **EXECUTING: Delete ALL campaigns**\n\nI'm now deleting all campaigns from the system. This may take a moment...\n\n⚠️ **This action cannot be undone.**\n\nPlease wait while I process the deletion...",
-                    confidence: 1.0,
-                    actions: [{
-                            type: 'execute_delete_all_campaigns',
-                            data: { status: 'executing' }
-                        }],
-                    nextSteps: ['Campaigns deleted', 'System cleanup complete']
-                };
-            }
-            if (assistantContent.includes('delete all templates') || assistantContent.includes('absolutely sure') || assistantContent.includes('type \'yes delete all\'')) {
-                return {
-                    message: "🚨 **EXECUTING: Delete ALL templates**\n\nI'm now deleting all templates from the system. This may take a moment...\n\n⚠️ **This action cannot be undone.**\n\nPlease wait while I process the deletion...",
-                    confidence: 1.0,
-                    actions: [{
-                            type: 'execute_delete_all_templates',
-                            data: { status: 'executing' }
-                        }],
-                    nextSteps: ['Templates deleted', 'System cleanup complete']
-                };
-            }
+        if (this.isTemplateNameResponse(messageLower, assistantContent)) {
+            return this.handleTemplateNameResponse(message, assistantContent);
         }
-        if (assistantContent.includes('what should the subject line be') ||
-            assistantContent.includes('what should the email content be') ||
-            assistantContent.includes('what should we call it')) {
-            return null;
+        if (this.isTemplateSubjectResponse(messageLower, assistantContent)) {
+            return this.handleTemplateSubjectResponse(message, assistantContent);
+        }
+        if (this.isTemplateContentResponse(messageLower, assistantContent)) {
+            return this.handleTemplateContentResponse(message, assistantContent);
+        }
+        if (this.isCampaignNameResponse(messageLower, assistantContent)) {
+            return this.handleCampaignNameResponse(message, assistantContent);
+        }
+        if (this.isCampaignAudienceResponse(messageLower, assistantContent)) {
+            return this.handleCampaignAudienceResponse(message, assistantContent);
+        }
+        if (this.isListCampaignResponse(messageLower, assistantContent)) {
+            return this.handleListCampaignResponse(messageLower, assistantContent);
+        }
+        if (this.isListTemplateResponse(messageLower, assistantContent)) {
+            return this.handleListTemplateResponse(messageLower, assistantContent);
+        }
+        if (this.isFinalDeletionConfirmation(messageLower, assistantContent)) {
+            return this.handleFinalDeletionConfirmation(messageLower, assistantContent);
+        }
+        if (this.isYesNoResponse(messageLower, assistantContent)) {
+            return this.handleYesNoResponse(messageLower, assistantContent);
+        }
+        return null;
+    }
+    isCampaignDeletionConfirmation(messageLower, assistantContent) {
+        return (assistantContent.includes('which campaigns would you like to delete') ||
+            assistantContent.includes('what would you like to delete') ||
+            assistantContent.includes('delete campaigns')) &&
+            (messageLower.includes('all') || messageLower === 'all campaigns' ||
+                messageLower.includes('yes delete all') || messageLower.includes('confirm'));
+    }
+    isTemplateDeletionConfirmation(messageLower, assistantContent) {
+        return (assistantContent.includes('which templates would you like to delete') ||
+            assistantContent.includes('delete templates')) &&
+            (messageLower.includes('all') || messageLower === 'all templates' ||
+                messageLower.includes('yes delete all') || messageLower.includes('confirm'));
+    }
+    isTemplateNameResponse(messageLower, assistantContent) {
+        return (assistantContent.includes('template name') ||
+            assistantContent.includes('what should we call it') ||
+            assistantContent.includes('name the template')) &&
+            messageLower.length < 50 &&
+            !messageLower.includes('template') &&
+            !messageLower.includes('subject') &&
+            !messageLower.includes('content');
+    }
+    isTemplateSubjectResponse(messageLower, assistantContent) {
+        return (assistantContent.includes('subject line') ||
+            assistantContent.includes('email subject')) &&
+            messageLower.length < 100 &&
+            !messageLower.includes('template') &&
+            !messageLower.includes('content');
+    }
+    isTemplateContentResponse(messageLower, assistantContent) {
+        return (assistantContent.includes('email content') ||
+            assistantContent.includes('what should the email say') ||
+            assistantContent.includes('content')) &&
+            messageLower.length < 200;
+    }
+    isCampaignNameResponse(messageLower, assistantContent) {
+        return (assistantContent.includes('campaign name') ||
+            assistantContent.includes('name the campaign')) &&
+            messageLower.length < 50 &&
+            !messageLower.includes('campaign') &&
+            !messageLower.includes('audience') &&
+            !messageLower.includes('template');
+    }
+    isCampaignAudienceResponse(messageLower, assistantContent) {
+        return (assistantContent.includes('target audience') ||
+            assistantContent.includes('who should receive it')) &&
+            messageLower.length < 100;
+    }
+    isListCampaignResponse(messageLower, assistantContent) {
+        return (assistantContent.includes('list campaigns') ||
+            assistantContent.includes('show campaigns')) &&
+            (messageLower.includes('all') || messageLower.includes('yes') ||
+                messageLower.includes('show') || messageLower.includes('list'));
+    }
+    isListTemplateResponse(messageLower, assistantContent) {
+        return (assistantContent.includes('list templates') ||
+            assistantContent.includes('show templates')) &&
+            (messageLower.includes('all') || messageLower.includes('yes') ||
+                messageLower.includes('show') || messageLower.includes('list'));
+    }
+    isFinalDeletionConfirmation(messageLower, assistantContent) {
+        return (messageLower.includes('yes delete all') ||
+            messageLower.includes('confirm') ||
+            messageLower.includes('proceed')) &&
+            (assistantContent.includes('absolutely sure') ||
+                assistantContent.includes('type \'yes delete all\'') ||
+                assistantContent.includes('delete all campaigns') ||
+                assistantContent.includes('delete all templates'));
+    }
+    isYesNoResponse(messageLower, assistantContent) {
+        return (assistantContent.includes('?') || assistantContent.includes('confirm') ||
+            assistantContent.includes('proceed') || assistantContent.includes('continue')) &&
+            (messageLower === 'yes' || messageLower === 'no' ||
+                messageLower === 'y' || messageLower === 'n' ||
+                messageLower.includes('yes') || messageLower.includes('no'));
+    }
+    handleCampaignDeletionConfirmation(messageLower, _assistantContent) {
+        if (messageLower.includes('all') || messageLower === 'all campaigns') {
+            return {
+                message: "✅ **Confirmed: Delete ALL campaigns**\n\n⚠️ **This will permanently delete ALL campaigns and their data.**\n\nTo proceed with deleting all campaigns, I need to:\n\n1. **Retrieve the list** of existing campaigns\n2. **Confirm the deletion** with you\n3. **Execute the deletion** safely\n\n⚠️ **Warning**: This action cannot be undone. All campaign data, analytics, and history will be lost.\n\nAre you absolutely sure you want to delete ALL campaigns? Type 'YES DELETE ALL' to confirm.",
+                confidence: 0.95,
+                actions: [{
+                        type: 'delete_all_campaigns',
+                        data: { confirmation: 'pending' }
+                    }],
+                nextSteps: ['Confirm deletion', 'Execute campaign deletion']
+            };
+        }
+        if (messageLower.includes('draft') || messageLower.includes('unpublished')) {
+            return {
+                message: "✅ **Confirmed: Delete DRAFT campaigns only**\n\nI'll delete only the draft/unpublished campaigns, keeping active and completed campaigns intact.\n\nLet me retrieve the draft campaigns and show you what will be deleted...",
+                confidence: 0.95,
+                actions: [{
+                        type: 'delete_draft_campaigns',
+                        data: { confirmation: 'pending' }
+                    }],
+                nextSteps: ['List draft campaigns', 'Confirm deletion', 'Execute deletion']
+            };
+        }
+        if (messageLower.includes('specific') || messageLower.includes('particular')) {
+            return {
+                message: "✅ **Confirmed: Delete SPECIFIC campaign**\n\nI can help you delete a specific campaign by name. Let me show you the available campaigns first:\n\n• **List all campaigns** - See what's available\n• **Search campaigns** - Find by name or keyword\n• **Show campaign details** - Get more information before deleting\n\nWhat would you like to do?",
+                confidence: 0.95,
+                nextSteps: ['List campaigns', 'Search for specific campaign', 'Confirm deletion']
+            };
+        }
+        return null;
+    }
+    handleTemplateDeletionConfirmation(messageLower, _assistantContent) {
+        if (messageLower.includes('all') || messageLower === 'all templates') {
+            return {
+                message: "✅ **Confirmed: Delete ALL templates**\n\n⚠️ **This will permanently delete ALL templates.**\n\nBefore proceeding, I need to check:\n\n1. **Template usage** - Which templates are used in active campaigns\n2. **List all templates** - Show you what will be deleted\n3. **Confirm deletion** - Get your final confirmation\n\n⚠️ **Warning**: Deleting templates used in campaigns may break those campaigns.\n\nAre you absolutely sure you want to delete ALL templates? Type 'YES DELETE ALL' to confirm.",
+                confidence: 0.95,
+                actions: [{
+                        type: 'delete_all_templates',
+                        data: { confirmation: 'pending' }
+                    }],
+                nextSteps: ['Check template usage', 'List templates', 'Confirm deletion']
+            };
+        }
+        return null;
+    }
+    handleTemplateNameResponse(message, _assistantContent) {
+        return {
+            message: `Perfect! I'll create a template named "${message}". What should the subject line be?`,
+            confidence: 0.95,
+            nextSteps: ['Get subject line', 'Get content', 'Create template']
+        };
+    }
+    handleTemplateSubjectResponse(message, _assistantContent) {
+        return {
+            message: `Great! Subject line "${message}". What should the email content say?`,
+            confidence: 0.95,
+            nextSteps: ['Get content', 'Create template']
+        };
+    }
+    handleTemplateContentResponse(message, _assistantContent) {
+        return {
+            message: `Excellent! I have all the information I need to create your template. Creating it now...`,
+            confidence: 0.95,
+            actions: [{
+                    type: 'create_template',
+                    data: {
+                        content: message
+                    }
+                }],
+            nextSteps: ['Template created', 'Ready for campaigns']
+        };
+    }
+    handleCampaignNameResponse(message, _assistantContent) {
+        return {
+            message: `Great! Campaign "${message}". Who should receive this campaign? (audience/target group)`,
+            confidence: 0.95,
+            nextSteps: ['Get audience', 'Get template', 'Get schedule', 'Create campaign']
+        };
+    }
+    handleCampaignAudienceResponse(message, _assistantContent) {
+        return {
+            message: `Perfect! Targeting "${message}". Which email template should we use?`,
+            confidence: 0.95,
+            nextSteps: ['Get template', 'Get schedule', 'Create campaign']
+        };
+    }
+    handleListCampaignResponse(_messageLower, _assistantContent) {
+        return {
+            message: `Let me retrieve your campaigns for you...`,
+            confidence: 0.95,
+            actions: [{
+                    type: 'list_campaigns',
+                    data: { status: 'retrieving' }
+                }],
+            nextSteps: ['Display campaigns', 'Show campaign details']
+        };
+    }
+    handleListTemplateResponse(_messageLower, _assistantContent) {
+        return {
+            message: `Let me retrieve your email templates for you...`,
+            confidence: 0.95,
+            actions: [{
+                    type: 'list_templates',
+                    data: { status: 'retrieving' }
+                }],
+            nextSteps: ['Display templates', 'Show template details']
+        };
+    }
+    handleFinalDeletionConfirmation(_messageLower, assistantContent) {
+        if (assistantContent.includes('delete all campaigns') || assistantContent.includes('absolutely sure')) {
+            return {
+                message: "🚨 **EXECUTING: Delete ALL campaigns**\n\nI'm now deleting all campaigns from the system. This may take a moment...\n\n⚠️ **This action cannot be undone.**\n\nPlease wait while I process the deletion...",
+                confidence: 1.0,
+                actions: [{
+                        type: 'execute_delete_all_campaigns',
+                        data: { status: 'executing' }
+                    }],
+                nextSteps: ['Campaigns deleted', 'System cleanup complete']
+            };
+        }
+        if (assistantContent.includes('delete all templates') || assistantContent.includes('absolutely sure')) {
+            return {
+                message: "🚨 **EXECUTING: Delete ALL templates**\n\nI'm now deleting all templates from the system. This may take a moment...\n\n⚠️ **This action cannot be undone.**\n\nPlease wait while I process the deletion...",
+                confidence: 1.0,
+                actions: [{
+                        type: 'execute_delete_all_templates',
+                        data: { status: 'executing' }
+                    }],
+                nextSteps: ['Templates deleted', 'System cleanup complete']
+            };
+        }
+        return null;
+    }
+    handleYesNoResponse(messageLower, _assistantContent) {
+        if (messageLower.includes('yes') || messageLower === 'y') {
+            return {
+                message: `Understood! Proceeding with your request...`,
+                confidence: 0.9,
+                nextSteps: ['Execute action']
+            };
+        }
+        else if (messageLower.includes('no') || messageLower === 'n') {
+            return {
+                message: `No problem! Let me know if you need anything else.`,
+                confidence: 0.9,
+                nextSteps: ['Ask for new task']
+            };
         }
         return null;
     }
