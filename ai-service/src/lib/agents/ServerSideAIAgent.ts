@@ -733,31 +733,37 @@ export class ServerSideAIAgent {
           nextSteps: ['Get content', 'Create template']
         };
       } else if (lastAssistantMessage && lastAssistantMessage.content.includes('content')) {
-        // User is providing content
-        return {
-          message: `Excellent! I'll create the template with:\n\n• **Name**: ${templateData.name || 'the template'}\n• **Subject**: ${templateData.subject || 'the subject'}\n• **Content**: ${message}\n\nCreating template now...`,
-          confidence: 0.95,
-          actions: [{
-            type: 'create_template',
-            data: {
-              name: templateData.name || 'test',
-              subject: templateData.subject || 'Test Subject',
-              htmlBody: `<h1>${templateData.subject || 'Test Subject'}</h1><p>${message}</p>`,
-              textBody: message
-            }
-          }],
-          toolCalls: [{
-            id: `create_template_${Date.now()}`,
-            name: 'create_template',
-            parameters: {
-              name: templateData.name || 'test',
-              subject: templateData.subject || 'Test Subject',
-              content: message
-            },
-            status: 'pending'
-          }],
-          nextSteps: ['Template created', 'Ready for campaigns']
-        };
+        // User is providing content - actually create the template
+        try {
+          const templateResult = await this.createTemplateInDatabase({
+            name: templateData.name || 'test',
+            subject: templateData.subject || 'Test Subject',
+            htmlBody: `<h1>${templateData.subject || 'Test Subject'}</h1><p>${message}</p>`,
+            textBody: message
+          });
+
+          return {
+            message: `✅ **Template created successfully!**\n\n• **Name**: ${templateData.name || 'the template'}\n• **Subject**: ${templateData.subject || 'the subject'}\n• **Content**: ${message}\n\nTemplate ID: ${templateResult.template?.id || 'N/A'}\n\nThe template is now ready to use in your campaigns!`,
+            confidence: 0.95,
+            actions: [{
+              type: 'create_template',
+              data: {
+                name: templateData.name || 'test',
+                subject: templateData.subject || 'Test Subject',
+                htmlBody: `<h1>${templateData.subject || 'Test Subject'}</h1><p>${message}</p>`,
+                textBody: message
+              }
+            }],
+            nextSteps: ['Template ready for campaigns', 'Create campaign with this template']
+          };
+        } catch (error) {
+          return {
+            message: `❌ **Failed to create template**: ${error instanceof Error ? error.message : 'Unknown error'}\n\nPlease check your system configuration and try again.`,
+            confidence: 0.8,
+            actions: [],
+            nextSteps: ['Try again', 'Check system configuration']
+          };
+        }
       }
     }
     
