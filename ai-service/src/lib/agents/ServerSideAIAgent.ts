@@ -358,6 +358,12 @@ export class ServerSideAIAgent {
       return null;
     }
     
+    console.log('🔍 Context analysis debug:', {
+      message,
+      historyLength: conversationHistory.length,
+      lastAssistantMessage: conversationHistory[conversationHistory.length - 1]?.content?.substring(0, 100)
+    });
+    
     const messageLower = message.toLowerCase().trim();
     
     // Get conversation context - look for the most recent assistant message that contains questions
@@ -436,6 +442,7 @@ export class ServerSideAIAgent {
     
     // 10. Final deletion confirmations
     if (this.isFinalDeletionConfirmation(messageLower, assistantContent)) {
+      console.log('🎯 Final deletion confirmation detected!');
       return this.handleFinalDeletionConfirmation(messageLower, assistantContent);
     }
     

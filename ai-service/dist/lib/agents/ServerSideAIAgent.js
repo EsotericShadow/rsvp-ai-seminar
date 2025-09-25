@@ -259,6 +259,11 @@ class ServerSideAIAgent {
             console.log('🔍 Context analysis: Not enough conversation history');
             return null;
         }
+        console.log('🔍 Context analysis debug:', {
+            message,
+            historyLength: conversationHistory.length,
+            lastAssistantMessage: conversationHistory[conversationHistory.length - 1]?.content?.substring(0, 100)
+        });
         const messageLower = message.toLowerCase().trim();
         const recentMessages = conversationHistory.slice(-8);
         const assistantMessages = recentMessages.filter(msg => msg.role === 'assistant');
@@ -302,6 +307,7 @@ class ServerSideAIAgent {
             return this.handleListTemplateResponse(messageLower, assistantContent);
         }
         if (this.isFinalDeletionConfirmation(messageLower, assistantContent)) {
+            console.log('🎯 Final deletion confirmation detected!');
             return this.handleFinalDeletionConfirmation(messageLower, assistantContent);
         }
         if (this.isYesNoResponse(messageLower, assistantContent)) {
