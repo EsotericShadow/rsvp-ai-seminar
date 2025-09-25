@@ -1016,6 +1016,15 @@ export class ServerSideAIAgent {
       const firstTemplateId = templates.length > 0 ? templates[0].id : null;
       const firstGroupId = groups.length > 0 ? groups[0].id : null;
       
+      console.log('📊 Campaign creation debug:', {
+        templatesCount: templates.length,
+        groupsCount: groups.length,
+        firstTemplateId,
+        firstGroupId,
+        templates: templates.slice(0, 2),
+        groups: groups.slice(0, 2)
+      });
+      
       if (!firstTemplateId) {
         throw new Error('No templates available. Please create a template first.');
       }
