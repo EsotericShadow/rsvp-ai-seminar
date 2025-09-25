@@ -255,6 +255,7 @@ class ServerSideAIAgent {
         return data;
     }
     analyzeContextualResponse(message, conversationHistory = []) {
+        console.log('🚀 CONTEXT ANALYSIS CALLED - VERSION 2.0');
         if (conversationHistory.length < 1) {
             console.log('🔍 Context analysis: No conversation history');
             return null;
