@@ -362,7 +362,8 @@ export class ServerSideAIAgent {
     console.log('🔍 Context analysis debug:', {
       message,
       historyLength: conversationHistory.length,
-      lastAssistantMessage: conversationHistory[conversationHistory.length - 1]?.content?.substring(0, 100)
+      lastAssistantMessage: conversationHistory[conversationHistory.length - 1]?.content?.substring(0, 100),
+      fullHistory: conversationHistory.map(msg => ({ role: msg.role, contentLength: msg.content?.length }))
     });
     
     const messageLower = message.toLowerCase().trim();
