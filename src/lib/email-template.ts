@@ -72,35 +72,31 @@ export async function generateEmailHTML(content: {
     global_event_includes = 'Coffee, refreshments, networking, and actionable AI insights'
   } = content;
 
-  // Get global template from API
+  // Get global template directly from database
   let globalTemplate = '';
   try {
-    const baseUrl = typeof window !== 'undefined' 
-      ? '' 
-      : (process.env.NEXT_PUBLIC_BASE_URL || process.env.VERCEL_URL || 'http://localhost:3000');
+    // Import prisma dynamically to avoid issues
+    const { PrismaClient } = require('@prisma/client');
+    const prisma = new PrismaClient();
     
-    // Ensure we have a proper URL
-    const templateUrl = baseUrl.startsWith('http') 
-      ? `${baseUrl}/api/admin/global-template`
-      : `https://${baseUrl}/api/admin/global-template`;
+    const globalTemplateData = await prisma.globalHTMLTemplate.findFirst({
+      where: { isActive: true },
+      orderBy: { createdAt: 'desc' }
+    });
     
-    console.log('Fetching global template from:', templateUrl);
-    const response = await fetch(templateUrl);
-    
-    if (response.ok) {
-      const data = await response.json();
-      globalTemplate = data.html;
-      console.log('Global template fetched successfully');
+    if (globalTemplateData) {
+      globalTemplate = globalTemplateData.html;
+      console.log('Global template loaded from database successfully');
     } else {
-      console.error('Failed to fetch global template, status:', response.status);
+      console.log('No active global template found in database');
     }
+    
+    await prisma.$disconnect();
   } catch (error) {
-    console.error('Failed to fetch global template:', error);
-    // Use fallback template immediately on error
-    globalTemplate = getDefaultTemplate();
+    console.error('Failed to load global template from database:', error);
   }
 
-  // Fallback to default template if API fails
+  // Fallback to default template if database fails
   if (!globalTemplate) {
     console.log('Using fallback template');
     globalTemplate = getDefaultTemplate();
