@@ -355,7 +355,7 @@ export class ServerSideAIAgent {
       return null;
     }
     
-    const lastAssistantMessage = conversationHistory.slice(-2).find(msg => msg.role === 'assistant');
+    const lastAssistantMessage = conversationHistory.slice(-6).reverse().find(msg => msg.role === 'assistant');
     if (!lastAssistantMessage) {
       console.log('🔍 Context analysis: No assistant message found in recent history');
       return null;
