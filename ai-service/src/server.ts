@@ -53,7 +53,12 @@ const aiAgent = new ServerSideAIAgent();
 
 // Health check endpoint (no auth required)
 app.get('/health', (_req, res) => {
-  res.json({ status: 'healthy', timestamp: new Date().toISOString() });
+  res.json({ 
+    status: 'healthy', 
+    timestamp: new Date().toISOString(),
+    version: '2.3-DEPLOYMENT-TEST',
+    contextAnalysis: 'Should be working now'
+  });
 });
 
 // Chat endpoint
