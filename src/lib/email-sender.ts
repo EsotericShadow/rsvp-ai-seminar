@@ -141,7 +141,7 @@ export async function sendCampaignEmail(jobId: string) {
     // Create CampaignSend record
     await prisma.campaignSend.create({
       data: {
-        scheduleId: job.scheduleId,
+        scheduleId: job.scheduleId || 'manual-send',
         groupId: job.groupId,
         templateId: job.templateId,
         businessId: member.businessId,
