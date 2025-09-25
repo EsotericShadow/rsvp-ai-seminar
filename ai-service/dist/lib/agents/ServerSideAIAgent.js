@@ -798,6 +798,7 @@ class ServerSideAIAgent {
                     name: campaignData.name,
                     description: campaignData.description,
                     steps: campaignData.steps || [{
+                            type: 'email',
                             templateId: firstTemplateId,
                             groupId: firstGroupId,
                             sendAt: null,
