@@ -96,10 +96,13 @@ export async function generateEmailHTML(content: {
     }
   } catch (error) {
     console.error('Failed to fetch global template:', error);
+    // Use fallback template immediately on error
+    globalTemplate = getDefaultTemplate();
   }
 
   // Fallback to default template if API fails
   if (!globalTemplate) {
+    console.log('Using fallback template');
     globalTemplate = getDefaultTemplate();
   }
 
