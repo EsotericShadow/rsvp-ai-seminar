@@ -743,7 +743,7 @@ class ServerSideAIAgent {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
-                    'X-AI-API-Key': process.env.AI_SERVICE_API_KEY || ''
+                    'X-AI-API-Key': process.env.AI_SERVICE_API_KEY || 'REDACTED_CREDENTIAL'
                 },
                 body: JSON.stringify({
                     name: templateData.name,
@@ -772,7 +772,7 @@ class ServerSideAIAgent {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
-                    'X-AI-API-Key': process.env.AI_SERVICE_API_KEY || ''
+                    'X-AI-API-Key': process.env.AI_SERVICE_API_KEY || 'REDACTED_CREDENTIAL'
                 },
                 body: JSON.stringify({
                     name: campaignData.name,
@@ -801,7 +801,7 @@ class ServerSideAIAgent {
         try {
             const response = await fetch(`${this.mainAppUrl}/api/internal/templates`, {
                 headers: {
-                    'X-AI-API-Key': process.env.AI_SERVICE_API_KEY || ''
+                    'X-AI-API-Key': process.env.AI_SERVICE_API_KEY || 'REDACTED_CREDENTIAL'
                 }
             });
             if (!response.ok)
@@ -818,7 +818,7 @@ class ServerSideAIAgent {
         try {
             const response = await fetch(`${this.mainAppUrl}/api/internal/groups`, {
                 headers: {
-                    'X-AI-API-Key': process.env.AI_SERVICE_API_KEY || ''
+                    'X-AI-API-Key': process.env.AI_SERVICE_API_KEY || 'REDACTED_CREDENTIAL'
                 }
             });
             if (!response.ok)
@@ -838,7 +838,7 @@ class ServerSideAIAgent {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
-                    'X-AI-API-Key': process.env.AI_SERVICE_API_KEY || ''
+                    'X-AI-API-Key': process.env.AI_SERVICE_API_KEY || 'REDACTED_CREDENTIAL'
                 },
                 body: JSON.stringify(groupData)
             });
@@ -862,7 +862,7 @@ class ServerSideAIAgent {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
-                    'X-AI-API-Key': process.env.AI_SERVICE_API_KEY || ''
+                    'X-AI-API-Key': process.env.AI_SERVICE_API_KEY || 'REDACTED_CREDENTIAL'
                 },
                 body: JSON.stringify(scheduleData)
             });
@@ -886,7 +886,7 @@ class ServerSideAIAgent {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
-                    'X-AI-API-Key': process.env.AI_SERVICE_API_KEY || ''
+                    'X-AI-API-Key': process.env.AI_SERVICE_API_KEY || 'REDACTED_CREDENTIAL'
                 },
                 body: JSON.stringify(sendData)
             });
