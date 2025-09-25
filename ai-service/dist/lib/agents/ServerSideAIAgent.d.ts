@@ -3,6 +3,7 @@ export declare class ServerSideAIAgent {
     private context;
     private mainAppUrl;
     private ragSystem;
+    private commandBridge;
     constructor();
     initializeKnowledgeBase(): Promise<void>;
     processMessage(userMessage: string, sessionId?: string, conversationHistory?: ChatMessage[]): Promise<AIResponse>;
