@@ -652,12 +652,7 @@ class ServerSideAIAgent {
             ]);
             const campaignResult = await this.createCampaignInDatabase({
                 name: campaignData.name,
-                description: campaignData.description || `Campaign: ${campaignData.name}`,
-                steps: [{
-                        type: 'email',
-                        templateId: templates.length > 0 ? templates[0].id : 1,
-                        delay: 0
-                    }]
+                description: campaignData.description || `Campaign: ${campaignData.name}`
             });
             return {
                 message: `✅ **Campaign created successfully!**\n\n**Name**: ${campaignData.name}\n**Description**: ${campaignData.description || `Campaign: ${campaignData.name}`}\n**Campaign ID**: ${campaignResult.campaign?.id || 'N/A'}\n\nAvailable templates: ${templates.length}\nAvailable audience groups: ${groups.length}\n\nThe campaign is ready for scheduling!`,
