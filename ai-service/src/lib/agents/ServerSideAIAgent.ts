@@ -727,13 +727,16 @@ export class ServerSideAIAgent {
       
       if (lastAssistantMessage && lastAssistantMessage.content.includes('subject line')) {
         // User is providing subject line
+        templateData.subject = message;
         return {
           message: `Perfect! Subject line "${message}" for template "${templateData.name || 'the template'}". What should the email content be?`,
           confidence: 0.95,
           nextSteps: ['Get content', 'Create template']
         };
       } else if (lastAssistantMessage && lastAssistantMessage.content.includes('content')) {
-        // User is providing content - actually create the template
+        // User is providing content - set the content and create the template
+        templateData.content = message;
+        
         try {
           const templateResult = await this.createTemplateInDatabase({
             name: templateData.name || 'test',

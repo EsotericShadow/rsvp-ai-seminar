@@ -543,6 +543,7 @@ class ServerSideAIAgent {
         if (intent.type === 'continue_template' && hasTemplateContext) {
             const lastAssistantMessage = [...recentMessages].reverse().find((msg) => msg.role === 'assistant');
             if (lastAssistantMessage && lastAssistantMessage.content.includes('subject line')) {
+                templateData.subject = message;
                 return {
                     message: `Perfect! Subject line "${message}" for template "${templateData.name || 'the template'}". What should the email content be?`,
                     confidence: 0.95,
@@ -550,6 +551,7 @@ class ServerSideAIAgent {
                 };
             }
             else if (lastAssistantMessage && lastAssistantMessage.content.includes('content')) {
+                templateData.content = message;
                 try {
                     const templateResult = await this.createTemplateInDatabase({
                         name: templateData.name || 'test',
