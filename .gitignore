@@ -1,18 +1,18 @@
 node_modules
 .next
 .turbo
-lead-mine/
+
 
 # Local databases & Prisma artifacts
 prisma/dev.db
 prisma/dev.db-journal
 
 # Environment & secrets
-.env
-.env.local
-.env.development.local
-.env.test.local
-.env.production.local
+!.env
+!.env.local
+!.env.development.local
+!.env.test.local
+!.env.production.local
 
 # macOS & build cruft
 .DS_Store
@@ -23,3 +23,25 @@ yarn-error.log*
 
 # AI Integration - Backburnered
 AI_BACKBURNER/
+
+# Environment files with sensitive data
+.env
+.env.local
+.env.production
+
+# Scripts with sensitive API keys and secrets
+scripts/test-production-sendgrid.js
+scripts/test-sendgrid-locally.js
+scripts/test-production-*.js
+scripts/test-direct-*.js
+scripts/send-*.js
+scripts/debug-*.js
+scripts/test-automated-*.js
+scripts/test-email-*.js
+scripts/test-schedule-*.js
+scripts/test-fixed-*.js
+scripts/run-ready-*.js
+scripts/create-leadmime-*.js
+scripts/add-missing-*.js
+scripts/test-comprehensive-*.js
+scripts/test-delete-*.js
