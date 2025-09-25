@@ -51,6 +51,7 @@ export async function POST(req: NextRequest) {
     const group = await createAudienceGroup({
       name: String(body.name),
       description: body.description ? String(body.description) : undefined,
+      members: [] // Start with empty members array
     })
 
     return NextResponse.json({ group }, { status: 201 })
