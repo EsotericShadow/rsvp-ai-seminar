@@ -35,6 +35,9 @@ export async function generateEmailHTML(content: {
   global_event_cost?: string;
   global_event_includes?: string;
 }) {
+  // Get base URL for images and links
+  const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || process.env.VERCEL_URL || 'https://rsvp.evergreenwebsolutions.ca';
+  
   const {
     subject = '',
     greeting = 'Hi there,',
@@ -142,7 +145,8 @@ export async function generateEmailHTML(content: {
     .replace(/\{\{global_event_time\}\}/g, global_event_time)
     .replace(/\{\{global_event_location\}\}/g, global_event_location)
     .replace(/\{\{global_event_cost\}\}/g, global_event_cost)
-    .replace(/\{\{global_event_includes\}\}/g, global_event_includes);
+    .replace(/\{\{global_event_includes\}\}/g, global_event_includes)
+    .replace(/\{\{base_url\}\}/g, baseUrl);
 
   // Add tracking pixel to the end
   return finalHTML + trackingPixel;
