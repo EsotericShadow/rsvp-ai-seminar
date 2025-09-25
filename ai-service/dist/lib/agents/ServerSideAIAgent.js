@@ -776,10 +776,17 @@ class ServerSideAIAgent {
     async createCampaignInDatabase(campaignData) {
         try {
             console.log('📢 Creating campaign in database:', campaignData);
-            const templates = await this.getAvailableTemplates();
+            const [templates, groups] = await Promise.all([
+                this.getAvailableTemplates(),
+                this.getAvailableAudienceGroups()
+            ]);
             const firstTemplateId = templates.length > 0 ? templates[0].id : null;
+            const firstGroupId = groups.length > 0 ? groups[0].id : null;
             if (!firstTemplateId) {
                 throw new Error('No templates available. Please create a template first.');
+            }
+            if (!firstGroupId) {
+                throw new Error('No audience groups available. Please create an audience group first.');
             }
             const response = await fetch(`${this.mainAppUrl}/api/internal/campaigns`, {
                 method: 'POST',
@@ -791,9 +798,10 @@ class ServerSideAIAgent {
                     name: campaignData.name,
                     description: campaignData.description,
                     steps: campaignData.steps || [{
-                            type: 'email',
                             templateId: firstTemplateId,
-                            delay: 0
+                            groupId: firstGroupId,
+                            sendAt: null,
+                            throttlePerMinute: 60
                         }]
                 })
             });
