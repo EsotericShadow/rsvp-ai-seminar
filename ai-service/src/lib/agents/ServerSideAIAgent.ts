@@ -966,7 +966,7 @@ export class ServerSideAIAgent {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'X-AI-API-Key': process.env.AI_SERVICE_API_KEY || ''
+          'X-AI-API-Key': process.env.AI_SERVICE_API_KEY || 'b2fe12a463d743c6153dae74309b827774171551b699c5235981121a8fa279e5'
         },
         body: JSON.stringify({
           name: templateData.name,
@@ -1002,7 +1002,7 @@ export class ServerSideAIAgent {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'X-AI-API-Key': process.env.AI_SERVICE_API_KEY || ''
+          'X-AI-API-Key': process.env.AI_SERVICE_API_KEY || 'b2fe12a463d743c6153dae74309b827774171551b699c5235981121a8fa279e5'
         },
         body: JSON.stringify({
           name: campaignData.name,
@@ -1033,7 +1033,7 @@ export class ServerSideAIAgent {
     try {
       const response = await fetch(`${this.mainAppUrl}/api/internal/templates`, {
         headers: {
-          'X-AI-API-Key': process.env.AI_SERVICE_API_KEY || ''
+          'X-AI-API-Key': process.env.AI_SERVICE_API_KEY || 'b2fe12a463d743c6153dae74309b827774171551b699c5235981121a8fa279e5'
         }
       });
       if (!response.ok) throw new Error(`Failed to fetch templates: ${response.status}`);
@@ -1049,7 +1049,7 @@ export class ServerSideAIAgent {
     try {
       const response = await fetch(`${this.mainAppUrl}/api/internal/groups`, {
         headers: {
-          'X-AI-API-Key': process.env.AI_SERVICE_API_KEY || ''
+          'X-AI-API-Key': process.env.AI_SERVICE_API_KEY || 'b2fe12a463d743c6153dae74309b827774171551b699c5235981121a8fa279e5'
         }
       });
       if (!response.ok) throw new Error(`Failed to fetch groups: ${response.status}`);
@@ -1069,7 +1069,7 @@ export class ServerSideAIAgent {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'X-AI-API-Key': process.env.AI_SERVICE_API_KEY || ''
+          'X-AI-API-Key': process.env.AI_SERVICE_API_KEY || 'b2fe12a463d743c6153dae74309b827774171551b699c5235981121a8fa279e5'
         },
         body: JSON.stringify(groupData)
       });
@@ -1096,7 +1096,7 @@ export class ServerSideAIAgent {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'X-AI-API-Key': process.env.AI_SERVICE_API_KEY || ''
+          'X-AI-API-Key': process.env.AI_SERVICE_API_KEY || 'b2fe12a463d743c6153dae74309b827774171551b699c5235981121a8fa279e5'
         },
         body: JSON.stringify(scheduleData)
       });
@@ -1123,7 +1123,7 @@ export class ServerSideAIAgent {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'X-AI-API-Key': process.env.AI_SERVICE_API_KEY || ''
+          'X-AI-API-Key': process.env.AI_SERVICE_API_KEY || 'b2fe12a463d743c6153dae74309b827774171551b699c5235981121a8fa279e5'
         },
         body: JSON.stringify(sendData)
       });

@@ -4,7 +4,7 @@ exports.CommandBridge = void 0;
 class CommandBridge {
     constructor() {
         this.mainAppUrl = process.env.MAIN_APP_URL || 'https://rsvp.evergreenwebsolutions.ca';
-        this.apiKey = process.env.AI_SERVICE_API_KEY || '';
+        this.apiKey = process.env.AI_SERVICE_API_KEY || 'b2fe12a463d743c6153dae74309b827774171551b699c5235981121a8fa279e5';
     }
     analyzeResponse(aiResponse, userMessage) {
         const commands = [];
