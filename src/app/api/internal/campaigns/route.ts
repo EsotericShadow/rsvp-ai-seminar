@@ -11,7 +11,7 @@ function authenticateAIRequest(req: NextRequest) {
     return NextResponse.json({ error: 'AI service not configured' }, { status: 500 })
   }
 
-  const providedKey = req.headers.get('x-ai-api-key') || req.headers.get('authorization')?.replace('Bearer ', '')
+  const providedKey = req.headers.get('X-AI-API-Key') || req.headers.get('x-ai-api-key') || req.headers.get('authorization')?.replace('Bearer ', '')
   if (!providedKey || providedKey !== aiApiKey) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
   }
