@@ -28,7 +28,7 @@ const defaultGlobalTemplate = `<!DOCTYPE html>
         
         /* Header / logo */
         .evergreen-header{padding:24px;text-align:center;}
-        .evergreen-logo{width:72px;height:36px;margin:8px auto;display:inline-block;}
+        .evergreen-logo{max-width:120px;height:auto;margin:8px auto;display:block;}
         
         /* HERO nested table */
         .hero-inner{width:100%;border-radius:8px;overflow:hidden;}
@@ -51,7 +51,7 @@ const defaultGlobalTemplate = `<!DOCTYPE html>
         .divider{border-top:1px solid #f0fdf4;margin:16px 0;}
         .footer{padding:12px 24px 28px 24px;text-align:center;color:#6b7280;font-size:13px;}
         .social-link{display:inline-flex;align-items:center;gap:8px;margin:6px 10px;text-decoration:none;color:#065f46;font-weight:600;}
-        .social-icon-bg{display:inline-block;width:36px;height:36px;border-radius:8px;vertical-align:middle;flex:0 0 36px;display:inline-flex;align-items:center;justify-content:center;}
+        .social-icon-bg{display:inline-block;width:72px;height:72px;border-radius:8px;vertical-align:middle;flex:0 0 72px;display:inline-flex;align-items:center;justify-content:center;text-align:center;}
         .sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0;}
         
         @media (max-width:480px){
@@ -71,7 +71,7 @@ const defaultGlobalTemplate = `<!DOCTYPE html>
                 <tr>
                     <td class="evergreen-header" style="padding-top:22px;padding-bottom:8px;">
                         <h1 style="margin-bottom:6px;">{{subject}}</h1>
-                        <img src="https://www.evergreenwebsolutions.ca/_next/image?url=%2Flogo.png&w=640&q=75" alt="Evergreen Web Solutions" class="evergreen-logo" />
+                        <img src="https://www.evergreenwebsolutions.ca/_next/image?url=%2Flogo.png&w=640&q=75" alt="Evergreen Web Solutions" class="evergreen-logo" style="max-width:120px;height:auto;" />
                     </td>
                 </tr>
                 
@@ -167,21 +167,21 @@ const defaultGlobalTemplate = `<!DOCTYPE html>
                             <div style="margin-bottom:12px; text-align:center;">
                                 <!-- LinkedIn -->
                                 <a href="https://www.linkedin.com/in/gabriel-marko-6b7aaa357/" target="_blank" rel="noopener noreferrer" class="social-link" aria-label="LinkedIn – opens in a new tab">
-                                    <span class="social-icon-bg" style="background:#0A66C2; color:#ffffff; font-weight:bold; font-size:12px;">
+                                    <span class="social-icon-bg" style="background:#0A66C2; color:#ffffff; font-weight:bold; font-size:24px; line-height:72px; text-align:center; display:flex; align-items:center; justify-content:center;">
                                         in
                                     </span>
                                 </a>
                                 
                                 <!-- Facebook -->
                                 <a href="https://www.facebook.com/share/14Exmoytvrs/?mibextid=wwXIfr" target="_blank" rel="noopener noreferrer" class="social-link" aria-label="Facebook – opens in a new tab">
-                                    <span class="social-icon-bg" style="background:#1877F2; color:#ffffff; font-weight:bold; font-size:12px;">
+                                    <span class="social-icon-bg" style="background:#1877F2; color:#ffffff; font-weight:bold; font-size:24px; line-height:72px; text-align:center; display:flex; align-items:center; justify-content:center;">
                                         f
                                     </span>
                                 </a>
                                 
                                 <!-- X -->
                                 <a href="https://x.com/Evergreenweb3D" target="_blank" rel="noopener noreferrer" class="social-link" aria-label="X (Twitter) – opens in a new tab">
-                                    <span class="social-icon-bg" style="background:#000000; color:#ffffff; font-weight:bold; font-size:12px;">
+                                    <span class="social-icon-bg" style="background:#000000; color:#ffffff; font-weight:bold; font-size:24px; line-height:72px; text-align:center; display:flex; align-items:center; justify-content:center;">
                                         X
                                     </span>
                                 </a>
