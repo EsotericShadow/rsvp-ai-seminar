@@ -4,6 +4,7 @@
  */
 
 import { RAGIntegrationSystem } from '../rag-integration';
+import { CommandBridge } from '../command-bridge';
 import { 
   ChatMessage, 
   AIResponse, 
@@ -17,14 +18,16 @@ export class ServerSideAIAgent {
   private context: Context;
   private mainAppUrl: string;
   private ragSystem: RAGIntegrationSystem;
+  private commandBridge: CommandBridge;
   // private _knowledgeInitialized: boolean; // Tracked but not currently used
 
   constructor() {
     this.context = {
       messages: []
     };
-    this.mainAppUrl = process.env.MAIN_APP_URL || 'http://localhost:3000';
+    this.mainAppUrl = process.env.MAIN_APP_URL || 'https://rsvp.evergreenwebsolutions.ca';
     this.ragSystem = new RAGIntegrationSystem();
+    this.commandBridge = new CommandBridge();
     // this._knowledgeInitialized = false; // Tracked but not currently used
     
     // Automatically initialize knowledge base
@@ -890,12 +893,26 @@ export class ServerSideAIAgent {
       
       if (ragResponse && ragResponse.answer) {
         console.log('✅ RAG system provided answer');
-        return {
+        
+        // Create initial response
+        const initialResponse: AIResponse = {
           message: ragResponse.answer,
           confidence: ragResponse.confidence || 0.8,
           sources: ragResponse.sources || [],
           nextSteps: ragResponse.nextSteps || []
         };
+
+        // Use command bridge to analyze and execute commands
+        console.log('🔗 Analyzing commands with Command Bridge...');
+        const commands = this.commandBridge.analyzeResponse(initialResponse, message);
+        
+        if (commands.length > 0) {
+          console.log('🎯 Found actionable commands, executing...');
+          const executionResults = await this.commandBridge.executeCommands(commands);
+          return this.commandBridge.generateEnhancedResponse(initialResponse, commands, executionResults);
+        }
+        
+        return initialResponse;
       }
     } catch (error) {
       console.log('⚠️ RAG system failed, using fallback:', error instanceof Error ? error.message : 'Unknown error');

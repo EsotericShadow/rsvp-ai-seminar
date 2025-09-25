@@ -2,13 +2,15 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.ServerSideAIAgent = void 0;
 const rag_integration_1 = require("../rag-integration");
+const command_bridge_1 = require("../command-bridge");
 class ServerSideAIAgent {
     constructor() {
         this.context = {
             messages: []
         };
-        this.mainAppUrl = process.env.MAIN_APP_URL || 'http://localhost:3000';
+        this.mainAppUrl = process.env.MAIN_APP_URL || 'https://rsvp.evergreenwebsolutions.ca';
         this.ragSystem = new rag_integration_1.RAGIntegrationSystem();
+        this.commandBridge = new command_bridge_1.CommandBridge();
         this.initializeKnowledgeBase();
     }
     async initializeKnowledgeBase() {
@@ -687,12 +689,20 @@ class ServerSideAIAgent {
             const ragResponse = await this.ragSystem.generateRAGResponse(message);
             if (ragResponse && ragResponse.answer) {
                 console.log('✅ RAG system provided answer');
-                return {
+                const initialResponse = {
                     message: ragResponse.answer,
                     confidence: ragResponse.confidence || 0.8,
                     sources: ragResponse.sources || [],
                     nextSteps: ragResponse.nextSteps || []
                 };
+                console.log('🔗 Analyzing commands with Command Bridge...');
+                const commands = this.commandBridge.analyzeResponse(initialResponse, message);
+                if (commands.length > 0) {
+                    console.log('🎯 Found actionable commands, executing...');
+                    const executionResults = await this.commandBridge.executeCommands(commands);
+                    return this.commandBridge.generateEnhancedResponse(initialResponse, commands, executionResults);
+                }
+                return initialResponse;
             }
         }
         catch (error) {

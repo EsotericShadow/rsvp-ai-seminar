@@ -13,7 +13,15 @@
     "cleanup-test-rsvps": "tsx scripts/cleanup-test-rsvps.ts",
     "analyze-rsvp-quality": "tsx scripts/cleanup-test-rsvps.ts --analyze",
     "delete-test-rsvps": "tsx scripts/delete-test-rsvps.ts",
-    "setup-rag": "tsx scripts/setup-rag.ts"
+    "setup-rag": "tsx scripts/setup-rag.ts",
+    "test-ai": "node scripts/test-ai-quick.js",
+    "test-ai-core": "node scripts/test-ai-core.js",
+    "test-ai-rag": "node scripts/test-rag-system.js",
+    "test-ai-full": "tsx scripts/test-ai-operations.ts",
+    "test-ai-live": "node scripts/test-ai-live.js",
+    "test-ai-comprehensive": "node scripts/test-ai-comprehensive.js",
+    "test-ai-full-workflow": "node scripts/test-ai-full-workflow.js",
+    "test-ai-real": "node scripts/test-ai-real-operations.js"
   },
   "dependencies": {
     "@ai-sdk/openai": "^2.0.34",
