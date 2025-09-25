@@ -75,11 +75,22 @@ export async function generateEmailHTML(content: {
   // Get global template from API
   let globalTemplate = '';
   try {
-    const baseUrl = typeof window !== 'undefined' ? '' : (process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000');
-    const response = await fetch(`${baseUrl}/api/admin/global-template`);
+    const baseUrl = typeof window !== 'undefined' 
+      ? '' 
+      : (process.env.NEXT_PUBLIC_BASE_URL || process.env.VERCEL_URL || 'http://localhost:3000');
+    
+    // Ensure we have a proper URL
+    const templateUrl = baseUrl.startsWith('http') 
+      ? `${baseUrl}/api/admin/global-template`
+      : `https://${baseUrl}/api/admin/global-template`;
+    
+    console.log('Fetching global template from:', templateUrl);
+    const response = await fetch(templateUrl);
+    
     if (response.ok) {
       const data = await response.json();
       globalTemplate = data.html;
+      console.log('Global template fetched successfully');
     } else {
       console.error('Failed to fetch global template, status:', response.status);
     }
