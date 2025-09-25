@@ -11,7 +11,7 @@ export default function manifest(): MetadataRoute.Manifest {
     theme_color: '#10b981', // brand-sage color
     icons: [
       {
-        src: '/favicon.ico',
+        src: '/VERGREE.ico',
         sizes: 'any',
         type: 'image/x-icon',
       },
