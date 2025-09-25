@@ -243,6 +243,9 @@ model CampaignSettings {
 model EmailJob {
   id                  String         @id @default(cuid())
   campaignId          String
+  scheduleId          String?
+  templateId          String
+  groupId             String
   recipientEmail      String
   recipientId         String?
   sendAt              DateTime
@@ -258,6 +261,9 @@ model EmailJob {
   events              EmailEvent[]
 
   @@index([campaignId, status, sendAt])
+  @@index([templateId])
+  @@index([groupId])
+  @@index([scheduleId])
 }
 
 model EmailEvent {
