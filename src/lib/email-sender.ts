@@ -69,22 +69,59 @@ export async function sendCampaignEmail(jobId: string) {
       .replace(/\{\{\s*business_id\s*\}\}/g, context.business_id)
       .replace(/\{\{\s*invite_link\s*\}\}/g, context.invite_link);
 
-    // Generate HTML and text using global template
+    // Get global template settings for the email
+    let globalSettings: any = {};
+    try {
+      const settingsResponse = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL || process.env.VERCEL_URL || 'http://localhost:3000'}/api/admin/global-template-settings`);
+      if (settingsResponse.ok) {
+        globalSettings = await settingsResponse.json();
+      }
+    } catch (error) {
+      console.error('Failed to fetch global template settings:', error);
+    }
+
+    // Generate HTML using individual template fields + global template + global settings
     const html = await generateEmailHTML({
       subject: template.subject,
-      greeting: 'Hello!',
+      // Individual template variables from the database
+      greeting_title: template.greeting_title || '',
+      greeting_message: template.greeting_message || '',
+      signature_name: template.signature_name || 'Gabriel Lacroix',
+      signature_title: template.signature_title || 'AI Solutions Specialist',
+      signature_company: template.signature_company || 'Evergreen Web Solutions',
+      signature_location: template.signature_location || 'Terrace, BC',
+      main_content_title: template.main_content_title || '',
+      ctaText: template.button_text || 'View details & RSVP',
+      additional_info_title: template.additional_info_title || '',
+      additional_info_body: template.additional_info_body || '',
+      closing_title: template.closing_title || '',
+      closing_message: template.closing_message || '',
+      // Legacy parameters for compatibility
+      greeting: template.greeting_message || 'Hello!',
       body: processedContent,
-      ctaText: 'View details & RSVP',
       ctaLink: context.invite_link,
       inviteToken: member.inviteToken,
       businessName: context.business_name,
       businessId: context.business_id,
+      // Global template variables from settings
+      global_hero_title: globalSettings.global_hero_title || 'Welcome to Evergreen AI',
+      global_hero_message: globalSettings.global_hero_message || 'Thank you for your interest in our upcoming informational session about practical AI tools for Northern BC businesses.',
+      global_signature_name: globalSettings.global_signature_name || 'Gabriel Lacroix',
+      global_signature_title: globalSettings.global_signature_title || 'AI Solutions Specialist',
+      global_signature_company: globalSettings.global_signature_company || 'Evergreen Web Solutions',
+      global_signature_location: globalSettings.global_signature_location || 'Terrace, BC',
+      global_event_title: globalSettings.global_event_title || 'Event Details',
+      global_event_date: globalSettings.global_event_date || 'October 23rd, 2025',
+      global_event_time: globalSettings.global_event_time || '6:00 PM - 8:00 PM',
+      global_event_location: globalSettings.global_event_location || 'Terrace, BC',
+      global_event_cost: globalSettings.global_event_cost || 'Free',
+      global_event_includes: globalSettings.global_event_includes || 'Coffee, refreshments, networking, and actionable AI insights',
     });
 
     const text = generateEmailText({
-      greeting: 'Hello!',
+      greeting: template.greeting_message || 'Hello!',
       body: template.textBody || processedContent.replace(/<[^>]*>/g, ''),
-      ctaText: 'View details & RSVP',
+      ctaText: template.button_text || 'View details & RSVP',
       ctaLink: context.invite_link,
     });
 
