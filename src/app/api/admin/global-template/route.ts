@@ -71,7 +71,7 @@ const defaultGlobalTemplate = `<!DOCTYPE html>
                 <tr>
                     <td class="evergreen-header" style="padding-top:22px;padding-bottom:8px;">
                         <h1 style="margin-bottom:6px;">{{subject}}</h1>
-                        <img src="{{base_url}}/evergreen-logo.png" alt="Evergreen Web Solutions" class="evergreen-logo" />
+                        <img src="https://www.evergreenwebsolutions.ca/_next/image?url=%2Flogo.png&w=640&q=75" alt="Evergreen Web Solutions" class="evergreen-logo" />
                     </td>
                 </tr>
                 
@@ -167,35 +167,23 @@ const defaultGlobalTemplate = `<!DOCTYPE html>
                             <div style="margin-bottom:12px; text-align:center;">
                                 <!-- LinkedIn -->
                                 <a href="https://www.linkedin.com/in/gabriel-marko-6b7aaa357/" target="_blank" rel="noopener noreferrer" class="social-link" aria-label="LinkedIn – opens in a new tab">
-                                    <span class="social-icon-bg" style="background:#0A66C2;">
-                                        <!-- LinkedIn SVG -->
-                                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="18" height="18" aria-hidden="true" focusable="false">
-                                            <path fill="#ffffff" d="M4.98 3.5C4.98 4.88 3.87 6 2.49 6 1.11 6 .01 4.88.01 3.5S1.11 1 2.49 1C3.87 1 4.98 2.12 4.98 3.5zM.22 8.5h4.54v13H.22v-13zM8.5 8.5h4.36v1.77h.06c.61-1.16 2.1-2.38 4.32-2.38 4.63 0 5.48 3.05 5.48 7.01v8.6h-4.54v-7.61c0-1.82-.03-4.17-2.54-4.17-2.54 0-2.93 1.98-2.93 4.03v7.75H8.5v-13z"/>
-                                        </svg>
+                                    <span class="social-icon-bg" style="background:#0A66C2; color:#ffffff; font-weight:bold; font-size:12px;">
+                                        in
                                     </span>
-                                    <span>LinkedIn</span>
                                 </a>
                                 
                                 <!-- Facebook -->
                                 <a href="https://www.facebook.com/share/14Exmoytvrs/?mibextid=wwXIfr" target="_blank" rel="noopener noreferrer" class="social-link" aria-label="Facebook – opens in a new tab">
-                                    <span class="social-icon-bg" style="background:#1877F2;">
-                                        <!-- Facebook SVG -->
-                                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="18" height="18" aria-hidden="true" focusable="false">
-                                            <path fill="#ffffff" d="M22 12a10 10 0 1 0-11.5 9.9v-7h-2.2V12h2.2V9.7c0-2.2 1.3-3.4 3.2-3.4.9 0 1.8.16 1.8.16v2h-1c-1 0-1.3.6-1.3 1.2V12h2.3l-.37 2.9h-1.93v7A10 10 0 0 0 22 12z"/>
-                                        </svg>
+                                    <span class="social-icon-bg" style="background:#1877F2; color:#ffffff; font-weight:bold; font-size:12px;">
+                                        f
                                     </span>
-                                    <span>Facebook</span>
                                 </a>
                                 
                                 <!-- X -->
                                 <a href="https://x.com/Evergreenweb3D" target="_blank" rel="noopener noreferrer" class="social-link" aria-label="X (Twitter) – opens in a new tab">
-                                    <span class="social-icon-bg" style="background:#000000;">
-                                        <!-- X SVG -->
-                                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="18" height="18" aria-hidden="true" focusable="false">
-                                            <path fill="#ffffff" d="M22 5.92c-.64.28-1.33.47-2.05.55a3.6 3.6 0 0 0-6.14 2.6v.5A10.2 10.2 0 0 1 3.16 5.15a3.6 3.6 0 0 0 1.12 4.8c-.52 0-1.01-.16-1.44-.4v.04c0 1.57 1.12 2.88 2.6 3.18a3.6 3.6 0 0 1-1.44.05c.41 1.27 1.6 2.2 3.02 2.22A7.22 7.22 0 0 1 2 19.54 10.2 10.2 0 0 0 7.78 21c6.26 0 9.69-5.18 9.69-9.67v-.44c.66-.48 1.23-1.1 1.7-1.8-.6.28-1.25.48-1.93.58z"/>
-                                        </svg>
+                                    <span class="social-icon-bg" style="background:#000000; color:#ffffff; font-weight:bold; font-size:12px;">
+                                        X
                                     </span>
-                                    <span>X</span>
                                 </a>
                             </div>
                             
