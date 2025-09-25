@@ -86,7 +86,9 @@ export async function generateEmailHTML(content: {
     
     if (globalTemplateData) {
       globalTemplate = globalTemplateData.html;
-      console.log('Global template loaded from database successfully');
+      console.log('Global template loaded from database successfully, length:', globalTemplate.length);
+      console.log('Has evergreen-logo.png:', globalTemplate.includes('evergreen-logo.png'));
+      console.log('Has {{base_url}}:', globalTemplate.includes('{{base_url}}'));
     } else {
       console.log('No active global template found in database');
     }
