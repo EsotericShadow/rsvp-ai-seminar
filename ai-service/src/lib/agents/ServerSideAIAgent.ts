@@ -852,12 +852,7 @@ export class ServerSideAIAgent {
 
       const campaignResult = await this.createCampaignInDatabase({
         name: campaignData.name,
-        description: campaignData.description || `Campaign: ${campaignData.name}`,
-        steps: [{
-          type: 'email',
-          templateId: templates.length > 0 ? templates[0].id : 1,
-          delay: 0
-        }]
+        description: campaignData.description || `Campaign: ${campaignData.name}`
       });
 
       return {
