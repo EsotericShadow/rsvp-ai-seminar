@@ -38,7 +38,12 @@ const authenticateRequest = (req, res, next) => {
 };
 const aiAgent = new ServerSideAIAgent_1.ServerSideAIAgent();
 app.get('/health', (_req, res) => {
-    res.json({ status: 'healthy', timestamp: new Date().toISOString() });
+    res.json({
+        status: 'healthy',
+        timestamp: new Date().toISOString(),
+        version: '2.3-DEPLOYMENT-TEST',
+        contextAnalysis: 'Should be working now'
+    });
 });
 app.post('/api/chat', authenticateRequest, async (req, res) => {
     try {
