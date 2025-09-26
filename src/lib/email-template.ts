@@ -112,44 +112,56 @@ export async function generateEmailHTML(content: {
     ? `<img src="/api/__pixel?token=${inviteToken}&eid=biz_${inviteToken}" width="1" height="1" style="display:none;" />`
     : '';
 
-  // Replace variables in global template
-  const finalHTML = globalTemplate
-    .replace(/\{\{subject\}\}/g, subject)
-    .replace(/\{\{greeting_title\}\}/g, greeting_title)
-    .replace(/\{\{greeting_message\}\}/g, greeting_message)
-    .replace(/\{\{signature_name\}\}/g, signature_name)
-    .replace(/\{\{signature_title\}\}/g, signature_title)
-    .replace(/\{\{signature_company\}\}/g, signature_company)
-    .replace(/\{\{signature_location\}\}/g, signature_location)
-    .replace(/\{\{main_content_title\}\}/g, main_content_title)
-    .replace(/\{\{main_content_body\}\}/g, body)
-    .replace(/\{\{button_text\}\}/g, ctaText)
-    .replace(/\{\{button_link\}\}/g, ctaLink)
-    .replace(/\{\{additional_info_title\}\}/g, additional_info_title)
-    .replace(/\{\{additional_info_body\}\}/g, additional_info_body)
-    .replace(/\{\{closing_title\}\}/g, closing_title)
-    .replace(/\{\{closing_message\}\}/g, closing_message)
-    .replace(/\{\{business_name\}\}/g, businessName)
-    .replace(/\{\{business_id\}\}/g, businessId)
-    .replace(/\{\{invite_link\}\}/g, ctaLink)
-    .replace(/\{\{unsubscribe_link\}\}/g, `/unsubscribe?token=${inviteToken || ''}`)
+  // Replace variables in global template using proper regex escaping
+  const replacements = {
+    '{{subject}}': subject,
+    '{{greeting_title}}': greeting_title,
+    '{{greeting_message}}': greeting_message,
+    '{{signature_name}}': signature_name,
+    '{{signature_title}}': signature_title,
+    '{{signature_company}}': signature_company,
+    '{{signature_location}}': signature_location,
+    '{{main_content_title}}': main_content_title,
+    '{{main_content_body}}': body,
+    '{{button_text}}': ctaText,
+    '{{button_link}}': ctaLink,
+    '{{additional_info_title}}': additional_info_title,
+    '{{additional_info_body}}': additional_info_body,
+    '{{closing_title}}': closing_title,
+    '{{closing_message}}': closing_message,
+    '{{business_name}}': businessName,
+    '{{business_id}}': businessId,
+    '{{invite_token}}': inviteToken || '',
+    '{{invite_link}}': ctaLink,
+    '{{unsubscribe_link}}': `/unsubscribe?token=${inviteToken || ''}`,
+    '{{base_url}}': baseUrl,
     // Global template variables
-    .replace(/\{\{global_hero_title\}\}/g, global_hero_title)
-    .replace(/\{\{global_hero_message\}\}/g, global_hero_message)
-    .replace(/\{\{global_signature_name\}\}/g, global_signature_name)
-    .replace(/\{\{global_signature_title\}\}/g, global_signature_title)
-    .replace(/\{\{global_signature_company\}\}/g, global_signature_company)
-    .replace(/\{\{global_signature_location\}\}/g, global_signature_location)
-    .replace(/\{\{global_event_title\}\}/g, global_event_title)
-    .replace(/\{\{global_event_date\}\}/g, global_event_date)
-    .replace(/\{\{global_event_time\}\}/g, global_event_time)
-    .replace(/\{\{global_event_location\}\}/g, global_event_location)
-    .replace(/\{\{global_event_cost\}\}/g, global_event_cost)
-    .replace(/\{\{global_event_includes\}\}/g, global_event_includes)
-    .replace(/\{\{base_url\}\}/g, baseUrl);
+    '{{global_hero_title}}': global_hero_title,
+    '{{global_hero_message}}': global_hero_message,
+    '{{global_signature_name}}': global_signature_name,
+    '{{global_signature_title}}': global_signature_title,
+    '{{global_signature_company}}': global_signature_company,
+    '{{global_signature_location}}': global_signature_location,
+    '{{global_event_title}}': global_event_title,
+    '{{global_event_date}}': global_event_date,
+    '{{global_event_time}}': global_event_time,
+    '{{global_event_location}}': global_event_location,
+    '{{global_event_cost}}': global_event_cost,
+    '{{global_event_includes}}': global_event_includes,
+  };
 
-  // Add tracking pixel to the end
-  return finalHTML + trackingPixel;
+  let finalHTML = globalTemplate;
+  
+  // Apply replacements with proper regex escaping
+  for (const [placeholder, value] of Object.entries(replacements)) {
+    const escapedPlaceholder = placeholder.replace(/[{}]/g, '\\$&');
+    finalHTML = finalHTML.replace(new RegExp(escapedPlaceholder, 'g'), value);
+  }
+  
+  // Add tracking pixel
+  finalHTML = finalHTML.replace('</body>', `${trackingPixel}</body>`);
+  
+  return finalHTML;
 }
 
 // Fallback default template
