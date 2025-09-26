@@ -327,8 +327,8 @@ export async function POST(req: Request) {
     let icsUrl = null;
     try {
       const { error, value } = createEvent({
-        start: [2025, 10, 23, 18, 0],
-        end: [2025, 10, 23, 20, 30],
+        start: [2025, 10, 23, 17, 0],
+        end: [2025, 10, 23, 19, 0],
         title: 'AI in Northern BC: Information Session',
         description: 'A comprehensive information session on AI, machine learning, and AI automation for Northern BC businesses.',
         location: 'Sunshine Inn Terrace — Jasmine Room, 4812 Hwy 16, Terrace, BC, Canada',
@@ -341,7 +341,7 @@ export async function POST(req: Request) {
 
       if (!error && value) {
         // Store ICS file or generate URL
-        icsUrl = `/api/ics?title=${encodeURIComponent('AI in Northern BC: Information Session')}&start=${encodeURIComponent('2025-10-23T18:00:00-07:00')}&end=${encodeURIComponent('2025-10-23T20:30:00-07:00')}&location=${encodeURIComponent('Sunshine Inn Terrace — Jasmine Room')}&desc=${encodeURIComponent('AI Information Session')}`;
+        icsUrl = `/api/ics?title=${encodeURIComponent('AI in Northern BC: Information Session')}&start=${encodeURIComponent('2025-10-23T17:00:00-07:00')}&end=${encodeURIComponent('2025-10-23T19:00:00-07:00')}&location=${encodeURIComponent('Sunshine Inn Terrace — Jasmine Room')}&desc=${encodeURIComponent('AI Information Session')}`;
       }
     } catch (icsError) {
       console.error('ICS generation error:', icsError);
