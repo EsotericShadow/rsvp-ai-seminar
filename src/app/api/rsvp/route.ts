@@ -9,7 +9,7 @@ import { UAParser } from 'ua-parser-js';
 import { postLeadMineEvent } from '@/lib/leadMine';
 import { recordSendEngagement } from '@/lib/campaigns';
 
-import { sendRSVPConfirmation } from '@/lib/sendgrid-email';
+import { sendRSVPConfirmation } from '@/lib/email';
 import { checkRSVPRateLimit } from '@/lib/rate-limiter';
 import { validateRSVPSubmission, getTestDetectionConfig } from '@/lib/test-detection';
 import { createSecureResponse } from '@/lib/security-headers';
