@@ -35,88 +35,202 @@ export function isValidEmailDomain(email: string): boolean {
 
 // Generate RSVP confirmation email HTML
 function generateRSVPConfirmationHTML(name: string, eventDetails: any): string {
+  const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || process.env.VERCEL_URL || 'https://rsvp.evergreenwebsolutions.ca';
+  
   return `
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>RSVP Confirmed - AI in Northern BC</title>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>RSVP Confirmed - AI in Northern BC</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+    <style>
+        /* Reset & base */
+        html,body{margin:0;padding:0;width:100% !important;-webkit-text-size-adjust:100%;-ms-text-size-adjust:100%;}
+        body{background:#f0fdf4;font-family:'Inter',system-ui,-apple-system,"Segoe UI",Roboto,Arial,sans-serif;color:#222;}
+        img{display:block;border:0;outline:none;text-decoration:none;}
+        a{color:#10b981;text-decoration:none;}
+        
+        /* Wrapper */
+        .evergreen-wrapper{width:100%;max-width:640px;margin:40px auto;box-sizing:border-box;padding:0;}
+        .evergreen-table{width:100%;border-collapse:collapse;box-shadow:0 20px 48px rgba(16,185,129,0.15);border-radius:12px;overflow:hidden;background:#fff;}
+        
+        /* Typography */
+        h1,h2,h3,h4,p{margin:0 0 12px 0;padding:0;line-height:1.3;}
+        h1{font-size:28px;color:#10b981;font-weight:700;}
+        h2{font-size:20px;color:#047857;font-weight:600;}
+        h3{font-size:18px;color:#047857;font-weight:600;}
+        p{font-size:16px;color:#374151;margin-bottom:12px;}
+        
+        /* Header / logo */
+        .evergreen-header{padding:24px;text-align:center;}
+        .evergreen-logo{max-width:240px;height:auto;margin:8px auto;display:block;}
+        
+        /* HERO nested table */
+        .hero-inner{width:100%;border-radius:8px;overflow:hidden;}
+        .hero-left{width:8px;background:#10b981;vertical-align:top;}
+        .hero-right{vertical-align:middle;padding:18px 16px;background-color:#e6f9ef; /* fallback */ background-color:rgba(16,185,129,0.06); border-radius:0 8px 8px 0;}
+        .hero-title{font-size:20px;color:#065f46;font-weight:700;margin-bottom:6px;}
+        .hero-sub{font-size:14px;color:#065f46;margin:0;}
+        
+        /* Content blocks */
+        .content-cell{padding:18px 24px;}
+        .evergreen-signature{background:#f0fdf4;padding:14px;border-radius:8px;border-left:4px solid #10b981;margin:14px 0;}
+        .btn{display:inline-block;padding:12px 28px;border-radius:10px;font-weight:700;color:#fff !important;background:linear-gradient(135deg,#10b981 0%,#059669 100%);text-decoration:none;box-shadow:0 4px 14px rgba(16,185,129,0.3);}
+        
+        /* Event details section */
+        .event-details{background:#f8fafc;padding:16px;border-radius:8px;border:1px solid #e2e8f0;margin:14px 0;}
+        .event-details h3{color:#1e293b;margin-bottom:8px;}
+        .event-details p{margin-bottom:4px;color:#475569;}
+        
+        /* Divider & footer */
+        .divider{border-top:1px solid #f0fdf4;margin:16px 0;}
+        .footer{padding:12px 24px 28px 24px;text-align:center;color:#6b7280;font-size:13px;}
+        .social-link{display:inline-block;margin:6px 10px;text-decoration:none;color:#065f46;font-weight:600;}
+        .sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0;}
+        
+        @media (max-width:480px){
+            h1{font-size:22px;}
+            .hero-title{font-size:18px;}
+            .content-cell{padding:12px 16px;}
+            .evergreen-wrapper{margin:16px auto;}
+            .social-link{display:block;padding:8px 0;}
+        }
+    </style>
 </head>
-<body style="margin: 0; padding: 0; font-family: Arial, sans-serif; background-color: #f5f5f5; line-height: 1.6;">
-  <div style="max-width: 600px; margin: 0 auto; background-color: white;">
-    <!-- Header -->
-    <div style="background-color: #10b981; padding: 20px; text-align: center;">
-      <h1 style="color: white; margin: 0; font-size: 24px;">AI in Northern BC</h1>
-      <p style="color: white; margin: 5px 0 0 0; font-size: 16px;">Information Session</p>
+<body>
+    <div class="evergreen-wrapper">
+        <table class="evergreen-table" role="presentation" cellpadding="0" cellspacing="0" aria-hidden="false">
+            <tbody>
+                <!-- Header -->
+                <tr>
+                    <td class="evergreen-header" style="padding-top:22px;padding-bottom:8px;">
+                        <h1 style="margin-bottom:6px;">RSVP Confirmed - AI in Northern BC</h1>
+                        <img src="https://www.evergreenwebsolutions.ca/_next/image?url=%2Flogo.png&w=640&q=75" alt="Evergreen Web Solutions" class="evergreen-logo" style="max-width:240px;height:auto;" />
+                    </td>
+                </tr>
+                
+                <!-- HERO (vertical bar + translucent fill) -->
+                <tr>
+                    <td style="padding:0 24px 0 24px;">
+                        <table class="hero-inner" role="presentation" cellpadding="0" cellspacing="0" width="100%" style="border-collapse:collapse;">
+                            <tr>
+                                <td class="hero-left" width="8" style="background:#10b981;"></td>
+                                <td class="hero-right" style="background-color:#e6f9ef; background-color:rgba(16,185,129,0.06);">
+                                    <div>
+                                        <div class="hero-title">🎉 You&apos;re All Set!</div>
+                                        <p class="hero-sub">Thank you for registering for our AI information session</p>
+                                    </div>
+                                </td>
+                            </tr>
+                        </table>
+                    </td>
+                </tr>
+                
+                <!-- Greeting -->
+                <tr>
+                    <td class="content-cell">
+                        <h2 style="margin-top:0;">Hello ${name},</h2>
+                        <p style="margin-top:6px;margin-bottom:12px;">Great news! Your RSVP has been confirmed for our upcoming AI information session. We&apos;re excited to share practical AI insights that can help your business grow.</p>
+                    </td>
+                </tr>
+                
+                <!-- Event Details -->
+                <tr>
+                    <td class="content-cell">
+                        <div class="event-details">
+                            <h3>📅 Event Details</h3>
+                            <p><strong>Date:</strong> Thursday, October 23, 2025</p>
+                            <p><strong>Time:</strong> 6:00 PM - 8:30 PM</p>
+                            <p><strong>Location:</strong> Sunshine Inn Terrace — Jasmine Room</p>
+                            <p><strong>Address:</strong> 4812 Hwy 16, Terrace, BC, Canada</p>
+                            <p><strong>Cost:</strong> Completely FREE</p>
+                            <p><strong>Includes:</strong> Coffee, refreshments, networking, and actionable AI insights</p>
+                        </div>
+                    </td>
+                </tr>
+                
+                <!-- What You'll Learn -->
+                <tr>
+                    <td class="content-cell">
+                        <h3 style="margin-top:0;">🎯 What You&apos;ll Learn</h3>
+                        <p>At this session, you&apos;ll discover:</p>
+                        <ul style="color:#374151; padding-left:20px;">
+                            <li>Real-world AI applications for small businesses</li>
+                            <li>Cost-effective AI tools you can implement today</li>
+                            <li>How to measure AI success in your operations</li>
+                            <li>Networking with other local business owners</li>
+                        </ul>
+                    </td>
+                </tr>
+                
+                <!-- Action Buttons -->
+                <tr>
+                    <td class="content-cell" style="text-align:center;padding-bottom:12px;">
+                        <a href="https://www.google.com/maps/search/?api=1&query=Sunshine+Inn+Terrace+4812+Hwy+16+Terrace+BC" target="_blank" class="btn" style="display:inline-block;margin:5px;">📍 Get Directions</a>
+                        <a href="https://rsvp.evergreenwebsolutions.ca/api/ics?title=AI%20in%20Northern%20BC&start=2025-10-23T18:00:00-07:00&end=2025-10-23T20:30:00-07:00&location=Sunshine%20Inn%20Terrace&desc=AI%20Information%20Session" target="_blank" class="btn" style="display:inline-block;margin:5px;">📅 Add to Calendar</a>
+                    </td>
+                </tr>
+                
+                <!-- Signature block -->
+                <tr>
+                    <td class="content-cell">
+                        <div class="evergreen-signature">
+                            <p style="margin:0;"><strong>Gabriel Lacroix</strong><br>
+                            AI Solutions Specialist<br>
+                            Evergreen Web Solutions<br>
+                            Terrace, BC</p>
+                        </div>
+                    </td>
+                </tr>
+                
+                <!-- Closing -->
+                <tr>
+                    <td class="content-cell">
+                        <h3 style="margin-top:0;">Questions?</h3>
+                        <p style="margin-bottom:6px;">If you have any questions or need to make changes to your RSVP, please don&apos;t hesitate to contact us at <a href="mailto:gabriel@evergreenwebsolutions.ca">gabriel@evergreenwebsolutions.ca</a>. We&apos;re looking forward to seeing you there!</p>
+                    </td>
+                </tr>
+                
+                <!-- Divider and footer with unsubscribe (VISIBLE) -->
+                <tr>
+                    <td style="padding:12px 24px 18px 24px;">
+                        <div class="divider"></div>
+                        <div class="footer" role="contentinfo" aria-label="Footer">
+                            <div style="margin-bottom:8px;">© 2025 Gabriel Lacroix - Evergreen Web Solutions, Terrace BC</div>
+                            
+                            <!-- Social links: LinkedIn / Facebook / X (label + icon) -->
+                            <div style="margin-bottom:12px; text-align:center;">
+                                <!-- LinkedIn -->
+                                <a href="https://www.linkedin.com/in/gabriel-marko-6b7aaa357/" target="_blank" rel="noopener noreferrer" class="social-link" aria-label="LinkedIn – opens in a new tab">
+                                    <img src="${baseUrl}/linkedin-logo.webp" alt="LinkedIn" style="width:48px;height:48px;display:block;" />
+                                </a>
+                                
+                                <!-- Facebook -->
+                                <a href="https://www.facebook.com/share/14Exmoytvrs/?mibextid=wwXIfr" target="_blank" rel="noopener noreferrer" class="social-link" aria-label="Facebook – opens in a new tab">
+                                    <img src="${baseUrl}/facebook-logo.webp" alt="Facebook" style="width:48px;height:48px;display:block;" />
+                                </a>
+                                
+                                <!-- X (Twitter) -->
+                                <a href="https://x.com/Evergreenweb3D" target="_blank" rel="noopener noreferrer" class="social-link" aria-label="X (Twitter) – opens in a new tab">
+                                    <img src="${baseUrl}/twitter-logo.webp" alt="X (Twitter)" style="width:48px;height:48px;display:block;" />
+                                </a>
+                            </div>
+                            
+                            <!-- Visible unsubscribe text (required & obvious) -->
+                            <div style="font-size:13px;color:#6b7280;">
+                                If you no longer wish to receive these emails, <a href="mailto:unsubscribe@evergreenwebsolutions.ca" style="color:#065f46;font-weight:600;" target="_blank" rel="noopener noreferrer">unsubscribe here</a>.
+                            </div>
+                        </div>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
     </div>
-    
-    <!-- Content -->
-    <div style="padding: 30px 20px;">
-      <h2 style="color: #1f2937; margin-top: 0;">RSVP Confirmed!</h2>
-      <p style="color: #374151; font-size: 16px;">Hi ${name},</p>
-      <p style="color: #374151; font-size: 16px;">Thank you for registering for our AI information session. Your seat has been reserved!</p>
-      
-      <!-- Event Details Card -->
-      <div style="background-color: #f0fdf4; border: 1px solid #10b981; border-radius: 8px; padding: 20px; margin: 25px 0;">
-        <h3 style="color: #10b981; margin-top: 0; font-size: 18px;">📅 Event Details</h3>
-        <p style="margin: 8px 0; color: #374151;"><strong>Date:</strong> Thursday, October 23, 2025</p>
-        <p style="margin: 8px 0; color: #374151;"><strong>Time:</strong> 6:00 PM - 8:30 PM (Doors open at 6:00 PM)</p>
-        <p style="margin: 8px 0; color: #374151;"><strong>Location:</strong> Sunshine Inn Terrace — Jasmine Room</p>
-        <p style="margin: 8px 0; color: #374151;"><strong>Address:</strong> 4812 Hwy 16, Terrace, BC, Canada</p>
-      </div>
-      
-      <!-- What to Expect -->
-      <div style="background-color: #fef3c7; border: 1px solid #f59e0b; border-radius: 8px; padding: 20px; margin: 25px 0;">
-        <h3 style="color: #92400e; margin-top: 0; font-size: 18px;">🎯 What You'll Learn</h3>
-        <ul style="color: #374151; padding-left: 20px;">
-          <li>Real local examples of AI automation and machine learning</li>
-          <li>Practical implementation strategies for Northern BC businesses</li>
-          <li>Cost-effective AI solutions that actually work</li>
-          <li>Networking with other business leaders implementing AI</li>
-        </ul>
-      </div>
-      
-      <!-- CTA Buttons -->
-      <div style="text-align: center; margin: 30px 0;">
-        <a href="https://www.google.com/maps/search/?api=1&query=Sunshine+Inn+Terrace+4812+Hwy+16+Terrace+BC" 
-           style="background-color: #10b981; color: white; padding: 12px 24px; text-decoration: none; border-radius: 6px; display: inline-block; margin: 5px;">
-          📍 Get Directions
-        </a>
-        <a href="https://rsvp.evergreenwebsolutions.ca/api/ics?title=AI%20in%20Northern%20BC&start=2025-10-23T18:00:00-07:00&end=2025-10-23T20:30:00-07:00&location=Sunshine%20Inn%20Terrace&desc=AI%20Information%20Session" 
-           style="background-color: #374151; color: white; padding: 12px 24px; text-decoration: none; border-radius: 6px; display: inline-block; margin: 5px;">
-          📅 Add to Calendar
-        </a>
-      </div>
-      
-      <!-- Contact Info -->
-      <div style="border-top: 1px solid #e5e7eb; padding-top: 20px; margin-top: 30px;">
-        <p style="color: #374151; font-size: 16px;">Questions? Contact us:</p>
-        <p style="color: #374151; margin: 5px 0;">
-          <strong>Gabriel Lacroix</strong><br>
-          Evergreen Web Solutions<br>
-          <a href="mailto:gabriel@evergreenwebsolutions.ca" style="color: #10b981;">gabriel@evergreenwebsolutions.ca</a>
-        </p>
-      </div>
-    </div>
-    
-    <!-- Footer -->
-    <div style="background-color: #f9fafb; padding: 20px; text-align: center; border-top: 1px solid #e5e7eb;">
-      <p style="font-size: 12px; color: #6b7280; margin: 5px 0;">
-        <strong>Evergreen Web Solutions</strong><br>
-        Terrace, BC, Canada<br>
-        AI and Digital Strategy for Northern BC
-      </p>
-      <p style="font-size: 12px; color: #6b7280; margin: 15px 0 5px 0;">
-        <a href="mailto:unsubscribe@evergreenwebsolutions.ca" style="color: #6b7280; text-decoration: none;">Unsubscribe</a> | 
-        <a href="https://rsvp.evergreenwebsolutions.ca/privacy" style="color: #6b7280; text-decoration: none;">Privacy Policy</a> | 
-        <a href="https://rsvp.evergreenwebsolutions.ca/conduct" style="color: #6b7280; text-decoration: none;">Code of Conduct</a>
-      </p>
-    </div>
-  </div>
 </body>
 </html>
-  `;
+`;
 }
 
 // Generate RSVP confirmation email text version
