@@ -3,6 +3,16 @@
 @tailwind utilities;
 
 @layer base {
+  /* Prevent icon stretching */
+  img[rel="icon"], 
+  link[rel="icon"] img,
+  .favicon,
+  .icon {
+    object-fit: contain !important;
+    max-width: 100% !important;
+    height: auto !important;
+  }
+
   :root {
     /* Light mode colors */
     --color-background: 255 255 255;
@@ -362,7 +372,7 @@
   }
 
   /* Glass effect */
-  .glass {
+.glass {
     @apply bg-white/10 backdrop-blur-md border border-white/20;
   }
 
