@@ -166,17 +166,17 @@ const defaultGlobalTemplate = `<!DOCTYPE html>
                             <div style="margin-bottom:12px; text-align:center;">
                                 <!-- LinkedIn -->
                                 <a href="https://www.linkedin.com/in/gabriel-marko-6b7aaa357/" target="_blank" rel="noopener noreferrer" class="social-link" aria-label="LinkedIn – opens in a new tab">
-                                    <img src="{{base_url}}/Linkedinlogo.png" alt="LinkedIn" style="width:48px;height:48px;display:block;" />
+                                    <img src="{{base_url}}/linkedin-logo.webp" alt="LinkedIn" style="width:48px;height:48px;display:block;" />
                                 </a>
                                 
                                 <!-- Facebook -->
                                 <a href="https://www.facebook.com/share/14Exmoytvrs/?mibextid=wwXIfr" target="_blank" rel="noopener noreferrer" class="social-link" aria-label="Facebook – opens in a new tab">
-                                    <img src="{{base_url}}/facebooklogo.svg.png" alt="Facebook" style="width:48px;height:48px;display:block;" />
+                                    <img src="{{base_url}}/facebook-logo.webp" alt="Facebook" style="width:48px;height:48px;display:block;" />
                                 </a>
                                 
                                 <!-- X (Twitter) -->
                                 <a href="https://x.com/Evergreenweb3D" target="_blank" rel="noopener noreferrer" class="social-link" aria-label="X (Twitter) – opens in a new tab">
-                                    <img src="{{base_url}}/x-twitter-logo.png" alt="X (Twitter)" style="width:48px;height:48px;display:block;" />
+                                    <img src="{{base_url}}/twitter-logo.webp" alt="X (Twitter)" style="width:48px;height:48px;display:block;" />
                                 </a>
                             </div>
                             
