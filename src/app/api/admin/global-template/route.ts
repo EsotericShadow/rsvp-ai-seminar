@@ -28,7 +28,7 @@ const defaultGlobalTemplate = `<!DOCTYPE html>
         
         /* Header / logo */
         .evergreen-header{padding:24px;text-align:center;}
-        .evergreen-logo{max-width:120px;height:auto;margin:8px auto;display:block;}
+        .evergreen-logo{max-width:240px;height:auto;margin:8px auto;display:block;}
         
         /* HERO nested table */
         .hero-inner{width:100%;border-radius:8px;overflow:hidden;}
