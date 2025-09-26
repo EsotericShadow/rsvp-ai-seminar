@@ -142,7 +142,7 @@ function generateRSVPConfirmationHTML(name: string, eventDetails: any): string {
                         <div class="event-details">
                             <h3>📅 Event Details</h3>
                             <p><strong>Date:</strong> Thursday, October 23, 2025</p>
-                            <p><strong>Time:</strong> 6:00 PM - 8:30 PM</p>
+                            <p><strong>Time:</strong> 5:00 PM - 7:00 PM</p>
                             <p><strong>Location:</strong> Sunshine Inn Terrace — Jasmine Room</p>
                             <p><strong>Address:</strong> 4812 Hwy 16, Terrace, BC, Canada</p>
                             <p><strong>Cost:</strong> Completely FREE</p>
@@ -169,7 +169,7 @@ function generateRSVPConfirmationHTML(name: string, eventDetails: any): string {
                 <tr>
                     <td class="content-cell" style="text-align:center;padding-bottom:12px;">
                         <a href="https://www.google.com/maps/search/?api=1&query=Sunshine+Inn+Terrace+4812+Hwy+16+Terrace+BC" target="_blank" class="btn" style="display:inline-block;margin:5px;">📍 Get Directions</a>
-                        <a href="https://rsvp.evergreenwebsolutions.ca/api/ics?title=AI%20in%20Northern%20BC&start=2025-10-23T18:00:00-07:00&end=2025-10-23T20:30:00-07:00&location=Sunshine%20Inn%20Terrace&desc=AI%20Information%20Session" target="_blank" class="btn" style="display:inline-block;margin:5px;">📅 Add to Calendar</a>
+                        <a href="https://rsvp.evergreenwebsolutions.ca/api/ics?title=AI%20in%20Northern%20BC&start=2025-10-23T17:00:00-07:00&end=2025-10-23T19:00:00-07:00&location=Sunshine%20Inn%20Terrace&desc=AI%20Information%20Session" target="_blank" class="btn" style="display:inline-block;margin:5px;">📅 Add to Calendar</a>
                     </td>
                 </tr>
                 
