@@ -175,6 +175,19 @@ export async function POST(req: Request) {
       bounceRate,
     } = body;
 
+    // Check if RSVP already exists for this email
+    const existingRSVP = await prisma.rSVP.findUnique({
+      where: { email: values.email }
+    });
+
+    if (existingRSVP) {
+      return createSecureResponse({ 
+        message: 'RSVP already exists for this email address. If you need to make changes, please contact us directly.',
+        rsvpId: existingRSVP.id,
+        isUpdate: true
+      }, 200);
+    }
+
     const rsvp = await prisma.rSVP.create({
       data: {
         ...rsvpData,
