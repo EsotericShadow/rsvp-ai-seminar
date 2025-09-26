@@ -911,13 +911,18 @@ export default function CampaignControls({ initialData, defaults }: { initialDat
 
       <div className="mt-6">
         {activeTab === 'campaigns' && (
-          <CampaignDashboard
+          <CampaignsView
             campaigns={campaigns}
-            onSelectCampaign={handleSelectCampaignForDashboard}
-            onCreateCampaign={handleCreateCampaign}
-            onDuplicateCampaign={handleDuplicateCampaign}
-            onDeleteCampaign={deleteCampaign}
-            onBulkAction={handleBulkAction}
+            draft={campaignDraft}
+            setDraft={updateCampaignDraft}
+            templates={templates}
+            groups={groups}
+            onSave={saveCampaign}
+            onDelete={deleteCampaign}
+            isSaving={isSaving}
+            onSelectCampaign={handleSelectCampaign}
+            onRunStep={runScheduleStep}
+            runningStep={runningStep}
           />
         )}
         {activeTab === 'groups' && (
