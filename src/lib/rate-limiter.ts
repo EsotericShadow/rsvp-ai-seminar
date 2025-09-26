@@ -118,8 +118,8 @@ export function checkRSVPRateLimit(
     acceptEncoding: acceptEncoding.substring(0, 50)
   };
   
-  // Allow 3 RSVP submissions per fingerprint per hour
-  return checkRateLimit(`rsvp:${ip}`, fingerprint, 3, 60 * 60 * 1000);
+  // Allow 10 RSVP submissions per fingerprint per hour (increased for testing)
+  return checkRateLimit(`rsvp:${ip}`, fingerprint, 10, 60 * 60 * 1000);
 }
 
 // General API rate limiting
