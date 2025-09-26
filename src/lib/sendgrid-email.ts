@@ -244,7 +244,7 @@ Thank you for registering for our AI information session. Your seat has been res
 
 EVENT DETAILS
 Date: Thursday, October 23, 2025
-Time: 6:00 PM - 8:30 PM (Doors open at 6:00 PM)
+Time: 5:00 PM - 7:00 PM (Doors open at 5:00 PM)
 Location: Sunshine Inn Terrace — Jasmine Room
 Address: 4812 Hwy 16, Terrace, BC, Canada
 
@@ -297,7 +297,7 @@ export async function sendRSVPConfirmation({
 
     const eventDetails = {
       date: 'Thursday, October 23, 2025',
-      time: '6:00 PM - 8:30 PM',
+      time: '5:00 PM - 7:00 PM',
       location: 'Sunshine Inn Terrace — Jasmine Room',
       address: '4812 Hwy 16, Terrace, BC, Canada'
     };
@@ -385,7 +385,7 @@ export async function sendEventReminder({
           <p>Hi ${name},</p>
           <p>Just a quick reminder that our AI in Northern BC information session is ${daysUntil === 1 ? 'tomorrow' : `in ${daysUntil} days`}!</p>
           <p><strong>Date:</strong> Thursday, October 23, 2025<br>
-          <strong>Time:</strong> 6:00 PM - 8:30 PM<br>
+          <strong>Time:</strong> 5:00 PM - 7:00 PM<br>
           <strong>Location:</strong> Sunshine Inn Terrace — Jasmine Room</p>
           <p>We're looking forward to seeing you there!</p>
           <p>Best regards,<br>Gabriel Lacroix</p>
