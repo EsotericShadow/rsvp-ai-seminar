@@ -75,7 +75,7 @@ const coreRsvpSchema = z.object({
   attendanceStatus: z.enum(["YES", "NO", "MAYBE"]),
   attendeeCount: z.number().int().min(1).max(20).optional(),
 
-  dietaryPreference: z.enum(["NONE", "VEGETARIAN", "VEGAN", "GLUTEN_FREE", "OTHER"]),
+  dietaryPreference: z.enum(["NONE", "VEGETARIAN", "VEGAN", "GLUTEN_FREE", "DAIRY_FREE", "NUT_ALLERGY", "OTHER"]),
   dietaryOther: sanitizedString().optional(),
   accessibilityNeeds: sanitizedString().optional(),
 
