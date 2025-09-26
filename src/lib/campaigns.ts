@@ -772,7 +772,7 @@ export async function runSchedule(scheduleId: string, options: SendOptions = {})
       templateId: schedule.templateId,
       groupId: schedule.groupId,
       recipientEmail: member.primaryEmail,
-      recipientId: member.businessId,
+      recipientId: member.id,
       sendAt: schedule.sendAt || schedule.nextRunAt || new Date(),
       status: 'scheduled',
       meta: {},
