@@ -38,7 +38,7 @@ export async function sendCampaignEmail(jobId: string) {
       where: { id: job.groupId },
       include: {
         members: {
-          where: { businessId: job.recipientId },
+          where: { id: job.recipientId },
         },
       },
     });
