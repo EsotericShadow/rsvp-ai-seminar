@@ -162,7 +162,9 @@ function TemplateEditor({ template, onSave, onCancel, refreshTrigger }: Template
       .replace(/\{\{global_event_time\}\}/g, globalSettings?.global_event_time || '6:00 PM - 8:00 PM')
       .replace(/\{\{global_event_location\}\}/g, globalSettings?.global_event_location || 'Terrace, BC')
       .replace(/\{\{global_event_cost\}\}/g, globalSettings?.global_event_cost || 'Free')
-      .replace(/\{\{global_event_includes\}\}/g, globalSettings?.global_event_includes || 'Coffee, refreshments, networking, and actionable AI insights');
+      .replace(/\{\{global_event_includes\}\}/g, globalSettings?.global_event_includes || 'Coffee, refreshments, networking, and actionable AI insights')
+      // Fix base_url replacement
+      .replace(/\{\{base_url\}\}/g, 'https://rsvp.evergreenwebsolutions.ca');
   }, [formData, globalSettings, globalTemplateHtml]);
 
   useEffect(() => {
