@@ -69,12 +69,14 @@ export async function sendCampaignEmail(jobId: string) {
       .replace(/\{\{\s*business_id\s*\}\}/g, context.business_id)
       .replace(/\{\{\s*invite_link\s*\}\}/g, context.invite_link);
 
-    // Get global template settings for the email
+    // Get global template settings directly from database
     let globalSettings: any = {};
     try {
-      const settingsResponse = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL || process.env.VERCEL_URL || 'http://localhost:3000'}/api/admin/global-template-settings`);
-      if (settingsResponse.ok) {
-        globalSettings = await settingsResponse.json();
+      const settings = await prisma.globalTemplateSettings.findFirst({
+        orderBy: { createdAt: 'desc' }
+      });
+      if (settings) {
+        globalSettings = settings;
       }
     } catch (error) {
       console.error('Failed to fetch global template settings:', error);
@@ -96,9 +98,8 @@ export async function sendCampaignEmail(jobId: string) {
       additional_info_body: template.additional_info_body || '',
       closing_title: template.closing_title || '',
       closing_message: template.closing_message || '',
-      // Legacy parameters for compatibility
-      greeting: template.greeting_message || 'Hello!',
-      body: processedContent,
+      // Use main_content_body from template, not processedContent
+      body: template.main_content_body || processedContent,
       ctaLink: context.invite_link,
       inviteToken: member.inviteToken,
       businessName: context.business_name,
