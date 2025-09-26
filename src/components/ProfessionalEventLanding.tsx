@@ -311,7 +311,7 @@ export default function ProfessionalEventLanding() {
           >
             {/* What You'll Learn */}
             <div className="bg-white rounded-2xl shadow-xl border border-gray-100 p-8">
-              <h3 className="text-2xl font-bold text-gray-900 mb-6">What You&apos;ll Learn</h3>
+              <h3 className="text-2xl font-bold text-gray-900 mb-6">What You'll Learn</h3>
               <div className="space-y-6">
                 {benefits.map((benefit, index) => (
                   <motion.div
@@ -354,7 +354,7 @@ export default function ProfessionalEventLanding() {
                   </div>
                 </div>
                 <blockquote className="text-gray-300 italic leading-relaxed">
-                  &ldquo;This event isn&apos;t about tech hype. It&apos;s about showing what AI really does for businesses here in the North.&rdquo;
+                  "This event isn't about tech hype. It's about showing what AI really does for businesses here in the North."
                 </blockquote>
 
               </div>
@@ -396,7 +396,7 @@ export default function ProfessionalEventLanding() {
             Give Your Team a Clear Starting Point
           </h2>
           <p className="text-xl text-emerald-100 mb-8 max-w-2xl mx-auto">
-            You&apos;ll leave knowing where to start, what it might cost, and how to tell if it&apos;s working.
+            You'll leave knowing where to start, what it might cost, and how to tell if it's working.
           </p>
           <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
             <Link

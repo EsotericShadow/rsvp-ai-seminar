@@ -217,10 +217,10 @@ export function ProfessionalRsvpForm() {
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
           </svg>
         </div>
-        <h3 className="text-2xl font-bold text-gray-900 mb-2">You&apos;re all set!</h3>
+        <h3 className="text-2xl font-bold text-gray-900 mb-2">You're all set!</h3>
         <p className="text-gray-600 mb-6">
-          We&apos;ve reserved your seat for the AI in Northern BC Information Session. 
-          You&apos;ll receive a confirmation email shortly.
+          We've reserved your seat for the AI in Northern BC Information Session. 
+          You'll receive a confirmation email shortly.
         </p>
         <button
           onClick={() => {
@@ -360,9 +360,9 @@ export function ProfessionalRsvpForm() {
                   </label>
                   <div className="space-y-3">
                     {[
-                      { value: 'YES', label: 'Yes, I&apos;ll be there', description: 'I&apos;m excited to attend' },
-                      { value: 'MAYBE', label: 'Maybe', description: 'I&apos;m interested but not sure yet' },
-                      { value: 'NO', label: 'No, I can&apos;t make it', description: 'I won&apos;t be able to attend' }
+                      { value: 'YES', label: 'Yes, I'll be there', description: 'I'm excited to attend' },
+                      { value: 'MAYBE', label: 'Maybe', description: 'I'm interested but not sure yet' },
+                      { value: 'NO', label: 'No, I can't make it', description: 'I won't be able to attend' }
                     ].map((option) => (
                       <label key={option.value} className="flex items-start p-4 border-2 border-gray-200 rounded-lg cursor-pointer hover:border-emerald-300 transition-colors duration-200">
                         <input
@@ -498,7 +498,7 @@ export function ProfessionalRsvpForm() {
                       className="mt-1 h-4 w-4 text-emerald-600 border-gray-300 rounded focus:ring-emerald-500"
                     />
                     <span className="ml-3 text-sm text-gray-700">
-                      I&apos;d like to receive additional AI resources and updates from Evergreen Web Solutions
+                      I'd like to receive additional AI resources and updates from Evergreen Web Solutions
                     </span>
                   </label>
 
@@ -509,7 +509,7 @@ export function ProfessionalRsvpForm() {
                       className="mt-1 h-4 w-4 text-emerald-600 border-gray-300 rounded focus:ring-emerald-500"
                     />
                     <span className="ml-3 text-sm text-gray-700">
-                      I&apos;m interested in a free AI readiness audit for my business
+                      I'm interested in a free AI readiness audit for my business
                     </span>
                   </label>
                 </div>
