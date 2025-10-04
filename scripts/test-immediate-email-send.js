@@ -119,3 +119,4 @@ async function testImmediateEmailSend() {
 testImmediateEmailSend()
   .catch(console.error)
   .finally(() => prisma.$disconnect());
+

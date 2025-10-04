@@ -111,3 +111,4 @@ async function testEmailGenerationLocally() {
 testEmailGenerationLocally()
   .catch(console.error)
   .finally(() => prisma.$disconnect());
+

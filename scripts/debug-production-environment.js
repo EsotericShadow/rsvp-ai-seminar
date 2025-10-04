@@ -98,3 +98,4 @@ async function debugProductionEnvironment() {
 debugProductionEnvironment()
   .catch(console.error)
   .finally(() => prisma.$disconnect());
+

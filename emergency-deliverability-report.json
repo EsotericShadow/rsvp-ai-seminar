@@ -1,0 +1,51 @@
+{
+  "timestamp": "2025-09-26T04:58:22.107Z",
+  "emergencyActions": {
+    "campaignsPaused": 0,
+    "scheduledJobsPaused": 0,
+    "status": "EMERGENCY_PAUSE_ACTIVATED"
+  },
+  "emailJobStatistics": {
+    "sent": 708
+  },
+  "problematicDomains": [
+    {
+      "domain": "hotmail.com",
+      "total": 55,
+      "sent": 55,
+      "failed": 0,
+      "failureRate": "0.0"
+    },
+    {
+      "domain": "citywest.ca",
+      "total": 32,
+      "sent": 32,
+      "failed": 0,
+      "failureRate": "0.0"
+    },
+    {
+      "domain": "outlook.com",
+      "total": 14,
+      "sent": 14,
+      "failed": 0,
+      "failureRate": "0.0"
+    },
+    {
+      "domain": "hotmail.ca",
+      "total": 5,
+      "sent": 5,
+      "failed": 0,
+      "failureRate": "0.0"
+    }
+  ],
+  "recommendations": [
+    "Contact SendGrid Support immediately about IP reputation issues",
+    "Request new dedicated IP addresses",
+    "Implement proper email authentication (SPF, DKIM, DMARC)",
+    "Clean email list to remove problematic domains",
+    "Implement gradual IP warm-up process",
+    "Review email content for spam triggers",
+    "Set up proper sending intervals (not bulk sending)",
+    "Monitor deliverability metrics closely"
+  ]
+}

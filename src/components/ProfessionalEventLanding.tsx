@@ -192,9 +192,9 @@ export default function ProfessionalEventLanding() {
               variants={itemVariants}
               className="text-4xl sm:text-5xl lg:text-6xl xl:text-7xl font-bold tracking-tight text-gray-900 mb-6"
             >
-              <span className="block">AI in Northern BC</span>
+              <span className="block">AI for Business</span>
               <span className="block bg-gradient-to-r from-emerald-600 to-teal-600 bg-clip-text text-transparent">
-                Information Session
+                Informational Event
               </span>
             </motion.h1>
 
@@ -202,8 +202,7 @@ export default function ProfessionalEventLanding() {
               variants={itemVariants}
               className="text-lg sm:text-xl lg:text-2xl text-gray-600 max-w-4xl mx-auto leading-relaxed mb-8"
             >
-              Cut through the AI hype with real Northern BC examples. 
-              <span className="font-semibold text-gray-900"> Learn what works, what it costs, and where to start.</span>
+              <span className="font-semibold text-gray-900">Helping Northern BC Businesses Harness the Future</span>
             </motion.p>
 
             <motion.div 

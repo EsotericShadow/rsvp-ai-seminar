@@ -78,3 +78,4 @@ async function testGlobalTemplateProduction() {
 
 testGlobalTemplateProduction()
   .catch(console.error);
+

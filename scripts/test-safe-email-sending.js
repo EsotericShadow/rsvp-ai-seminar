@@ -92,3 +92,4 @@ async function testSafeEmailSending() {
 testSafeEmailSending()
   .catch(console.error)
   .finally(() => prisma.$disconnect());
+

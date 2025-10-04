@@ -449,3 +449,4 @@ createProperAITemplates()
   .finally(async () => {
     await prisma.$disconnect();
   });
+

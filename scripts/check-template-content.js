@@ -94,3 +94,4 @@ async function checkTemplateContent() {
 checkTemplateContent()
   .catch(console.error)
   .finally(() => prisma.$disconnect());
+

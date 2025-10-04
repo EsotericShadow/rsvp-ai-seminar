@@ -115,3 +115,4 @@ async function checkEmailScheduleTimes() {
 checkEmailScheduleTimes()
   .catch(console.error)
   .finally(() => prisma.$disconnect());
+

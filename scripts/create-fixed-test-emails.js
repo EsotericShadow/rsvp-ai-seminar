@@ -126,3 +126,4 @@ async function createFixedTestEmails() {
 createFixedTestEmails()
   .catch(console.error)
   .finally(() => prisma.$disconnect());
+

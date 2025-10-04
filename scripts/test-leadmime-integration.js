@@ -75,3 +75,4 @@ async function testLeadMineIntegration() {
 testLeadMineIntegration()
   .catch(console.error)
   .finally(() => prisma.$disconnect());
+

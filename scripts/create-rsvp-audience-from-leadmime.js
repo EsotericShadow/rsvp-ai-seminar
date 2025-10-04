@@ -125,3 +125,4 @@ async function createRSVPAudienceFromLeadMine() {
 createRSVPAudienceFromLeadMine()
   .catch(console.error)
   .finally(() => prisma.$disconnect());
+

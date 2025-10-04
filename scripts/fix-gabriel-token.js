@@ -120,3 +120,4 @@ async function fixGabrielToken() {
 fixGabrielToken()
   .catch(console.error)
   .finally(() => prisma.$disconnect());
+

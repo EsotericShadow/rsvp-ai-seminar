@@ -1,0 +1,1838 @@
+{
+  "timestamp": "2025-09-26T04:48:06.769Z",
+  "totalAudienceMembers": 1168,
+  "uniqueEmails": 1024,
+  "singleRecords": 933,
+  "duplicateEmails": 91,
+  "totalDuplicateRecords": 235,
+  "extraRecords": 144,
+  "duplicates": {
+    "accounting@acadiamechanical.ca": [
+      {
+        "id": "cmg09p9jp00159379z81wlbv5",
+        "primaryEmail": "accounting@acadiamechanical.ca",
+        "businessName": "ACADIA NORTHWEST MECHANICAL INC.",
+        "businessId": "registry-42",
+        "createdAt": "2025-09-26T03:13:42.805Z"
+      },
+      {
+        "id": "cmg09p9jq001m9379mkbzzzxm",
+        "primaryEmail": "accounting@acadiamechanical.ca",
+        "businessName": "ACADIA NORTHWEST MECHANICAL INC.",
+        "businessId": "registry-59",
+        "createdAt": "2025-09-26T03:13:42.805Z"
+      },
+      {
+        "id": "cmg09pbmk00ja9379gn2cayo7",
+        "primaryEmail": "accounting@acadiamechanical.ca",
+        "businessName": "VECTOR VENTURES LTD.",
+        "businessId": "registry-697",
+        "createdAt": "2025-09-26T03:13:45.498Z"
+      }
+    ],
+    "accounting@neidenterprises.com": [
+      {
+        "id": "cmg09pa9s005u937905sbwpep",
+        "primaryEmail": "accounting@neidenterprises.com",
+        "businessName": "Neid Enterprises",
+        "businessId": "registry-211",
+        "createdAt": "2025-09-26T03:13:43.744Z"
+      },
+      {
+        "id": "cmg09pa9u007n93790c4dx8ca",
+        "primaryEmail": "accounting@neidenterprises.com",
+        "businessName": "NEID ENTERPRISES LTD.",
+        "businessId": "registry-277",
+        "createdAt": "2025-09-26T03:13:43.744Z"
+      }
+    ],
+    "accounting@straightlinegmc.ca": [
+      {
+        "id": "cmg09p9jq001k9379efo2uw7x",
+        "primaryEmail": "accounting@straightlinegmc.ca",
+        "businessName": "Straightline Chevrolet Buick GMC Ltd.",
+        "businessId": "registry-57",
+        "createdAt": "2025-09-26T03:13:42.805Z"
+      },
+      {
+        "id": "cmg09p9wy00589379szay5qgg",
+        "primaryEmail": "accounting@straightlinegmc.ca",
+        "businessName": "Straightline Chevrolet Buick GMC Ltd.",
+        "businessId": "registry-189",
+        "createdAt": "2025-09-26T03:13:43.281Z"
+      }
+    ],
+    "accounting@straightlinehonda.ca": [
+      {
+        "id": "cmg09pa9t00669379x0oi7fgv",
+        "primaryEmail": "accounting@straightlinehonda.ca",
+        "businessName": "1468211 B.C. Ltd DBA Straightline Honda",
+        "businessId": "registry-223",
+        "createdAt": "2025-09-26T03:13:43.744Z"
+      },
+      {
+        "id": "cmg09p9wy004a9379tykqa4al",
+        "primaryEmail": "accounting@straightlinehonda.ca",
+        "businessName": "1468211 B.C. Ltd DBA Straightline Honda",
+        "businessId": "registry-155",
+        "createdAt": "2025-09-26T03:13:43.281Z"
+      }
+    ],
+    "accounting@straightlinerv.ca": [
+      {
+        "id": "cmg09p9wx003193799gy896iu",
+        "primaryEmail": "accounting@straightlinerv.ca",
+        "businessName": "Straightline RV & Marine Ltd.",
+        "businessId": "registry-110",
+        "createdAt": "2025-09-26T03:13:43.281Z"
+      },
+      {
+        "id": "cmg09pa9t00679379ey95j4xd",
+        "primaryEmail": "accounting@straightlinerv.ca",
+        "businessName": "Straightline RV & Marine Ltd.",
+        "businessId": "registry-224",
+        "createdAt": "2025-09-26T03:13:43.744Z"
+      }
+    ],
+    "ahampton@peterbilt.bc.ca": [
+      {
+        "id": "cmg09p9wy005f9379n8esj1v1",
+        "primaryEmail": "ahampton@peterbilt.bc.ca",
+        "businessName": "PETERBILT PACIFIC INC.",
+        "businessId": "registry-196",
+        "createdAt": "2025-09-26T03:13:43.281Z"
+      },
+      {
+        "id": "cmg09pam9008s9379s6tkhogp",
+        "primaryEmail": "ahampton@peterbilt.bc.ca",
+        "businessName": "PETERBILT PACIFIC INC.",
+        "businessId": "registry-318",
+        "createdAt": "2025-09-26T03:13:44.192Z"
+      }
+    ],
+    "amin.sunderji@gmail.com": [
+      {
+        "id": "cmg09p9jp001193792kn6qwor",
+        "primaryEmail": "amin.sunderji@gmail.com",
+        "businessName": "DAYS INN TERRACE",
+        "businessId": "registry-38",
+        "createdAt": "2025-09-26T03:13:42.805Z"
+      },
+      {
+        "id": "cmg09p9wx003o9379f8tu6fcf",
+        "primaryEmail": "amin.sunderji@gmail.com",
+        "businessName": "BEST WESTERN TERRACE INN",
+        "businessId": "registry-133",
+        "createdAt": "2025-09-26T03:13:43.281Z"
+      },
+      {
+        "id": "cmg09pbby00ev9379z3zb47qb",
+        "primaryEmail": "amin.sunderji@gmail.com",
+        "businessName": "TERRACE INN (BEST WESTERN)",
+        "businessId": "registry-538",
+        "createdAt": "2025-09-26T03:13:45.117Z"
+      },
+      {
+        "id": "cmg09p9wy004h9379u14x1egv",
+        "primaryEmail": "amin.sunderji@gmail.com",
+        "businessName": "TERRACE INN",
+        "businessId": "registry-162",
+        "createdAt": "2025-09-26T03:13:43.281Z"
+      },
+      {
+        "id": "cmg09p9wy00439379m1ckexi3",
+        "primaryEmail": "amin.sunderji@gmail.com",
+        "businessName": "BEST WESTERN TERRACE INN",
+        "businessId": "registry-148",
+        "createdAt": "2025-09-26T03:13:43.281Z"
+      },
+      {
+        "id": "cmg09p9jq001h9379laka0cqs",
+        "primaryEmail": "amin.sunderji@gmail.com",
+        "businessName": "DAYS INN TERRACE",
+        "businessId": "registry-54",
+        "createdAt": "2025-09-26T03:13:42.805Z"
+      }
+    ],
+    "andrea@cartersjewellers.com": [
+      {
+        "id": "cmg09pama00ar9379mbyo0g8e",
+        "primaryEmail": "andrea@cartersjewellers.com",
+        "businessName": "YOUR DOLLAR STORE WITH MORE #163",
+        "businessId": "registry-390",
+        "createdAt": "2025-09-26T03:13:44.192Z"
+      },
+      {
+        "id": "cmg09p9wy005j9379tq9u8pkh",
+        "primaryEmail": "andrea@cartersjewellers.com",
+        "businessName": "CARTERS JEWELLERS",
+        "businessId": "registry-200",
+        "createdAt": "2025-09-26T03:13:43.281Z"
+      }
+    ],
+    "anita@coppersidefoods.com": [
+      {
+        "id": "cmg09p9wx003k93799i65frp5",
+        "primaryEmail": "anita@coppersidefoods.com",
+        "businessName": "COPPERSIDE VI",
+        "businessId": "registry-129",
+        "createdAt": "2025-09-26T03:13:43.281Z"
+      },
+      {
+        "id": "cmg09p9jp000i9379nkdcfihu",
+        "primaryEmail": "anita@coppersidefoods.com",
+        "businessName": "COPPERSIDE II",
+        "businessId": "registry-19",
+        "createdAt": "2025-09-26T03:13:42.805Z"
+      },
+      {
+        "id": "cmg09p9wx00389379v9cy8qoz",
+        "primaryEmail": "anita@coppersidefoods.com",
+        "businessName": "COPPERSIDE VI",
+        "businessId": "registry-117",
+        "createdAt": "2025-09-26T03:13:43.281Z"
+      },
+      {
+        "id": "cmg09pam8008k9379wv45rlw3",
+        "primaryEmail": "anita@coppersidefoods.com",
+        "businessName": "COPPERSIDE II",
+        "businessId": "registry-310",
+        "createdAt": "2025-09-26T03:13:44.192Z"
+      },
+      {
+        "id": "cmg09p9wx003l9379fzdlhefh",
+        "primaryEmail": "anita@coppersidefoods.com",
+        "businessName": "COPPERSIDE VI",
+        "businessId": "registry-130",
+        "createdAt": "2025-09-26T03:13:43.281Z"
+      },
+      {
+        "id": "cmg09p9jq001d9379uji6moaf",
+        "primaryEmail": "anita@coppersidefoods.com",
+        "businessName": "COPPERSIDE II",
+        "businessId": "registry-50",
+        "createdAt": "2025-09-26T03:13:42.805Z"
+      }
+    ],
+    "ap@coralcanadawide.com": [
+      {
+        "id": "cmg09p9wy00599379uutofin9",
+        "primaryEmail": "ap@coralcanadawide.com",
+        "businessName": "Coral Canada Wide Ltd.",
+        "businessId": "registry-190",
+        "createdAt": "2025-09-26T03:13:43.281Z"
+      },
+      {
+        "id": "cmg09pci300pe9379zuiqxmld",
+        "primaryEmail": "ap@coralcanadawide.com",
+        "businessName": "Coral Canada Wide Ltd",
+        "businessId": "registry-920",
+        "createdAt": "2025-09-26T03:13:46.635Z"
+      }
+    ],
+    "ap@mills.ca": [
+      {
+        "id": "cmg09pbmj00hq9379yl13mqn3",
+        "primaryEmail": "ap@mills.ca",
+        "businessName": "MILLS PRINTING AND STATIONERY CO. LTD. dba MILLS OFFICE PRODUCTIVITY",
+        "businessId": "registry-641",
+        "createdAt": "2025-09-26T03:13:45.498Z"
+      },
+      {
+        "id": "cmg09pbmj00hp9379b8v2x509",
+        "primaryEmail": "ap@mills.ca",
+        "businessName": "MILLS PRINTING AND STATIONERY CO. LTD. dba MILLS OFFICE PRODUCTIVITY",
+        "businessId": "registry-640",
+        "createdAt": "2025-09-26T03:13:45.498Z"
+      }
+    ],
+    "aslanina@telus.net": [
+      {
+        "id": "cmg09pci500rp9379i3xom9vd",
+        "primaryEmail": "aslanina@telus.net",
+        "businessName": "Kyle McIver",
+        "businessId": "registry-1003",
+        "createdAt": "2025-09-26T03:13:46.635Z"
+      },
+      {
+        "id": "cmg09pa9t006t93793islxn89",
+        "primaryEmail": "aslanina@telus.net",
+        "businessName": "DR. M. DEBRUIN",
+        "businessId": "registry-246",
+        "createdAt": "2025-09-26T03:13:43.744Z"
+      },
+      {
+        "id": "cmg09pci500rm9379dziywhva",
+        "primaryEmail": "aslanina@telus.net",
+        "businessName": "TOBY HILTON INC",
+        "businessId": "registry-1000",
+        "createdAt": "2025-09-26T03:13:46.635Z"
+      },
+      {
+        "id": "cmg09pci500rn9379uqccsf0n",
+        "primaryEmail": "aslanina@telus.net",
+        "businessName": "MOHAMED SHEMBESH",
+        "businessId": "registry-1001",
+        "createdAt": "2025-09-26T03:13:46.635Z"
+      },
+      {
+        "id": "cmg09pcsr00ty9379s5qnl1wr",
+        "primaryEmail": "aslanina@telus.net",
+        "businessName": "Dr. Kevin Krysiak",
+        "businessId": "registry-1084",
+        "createdAt": "2025-09-26T03:13:47.017Z"
+      },
+      {
+        "id": "cmg09pci500ro93799htrjtau",
+        "primaryEmail": "aslanina@telus.net",
+        "businessName": "Willem Wiegersma",
+        "businessId": "registry-1002",
+        "createdAt": "2025-09-26T03:13:46.635Z"
+      }
+    ],
+    "asullivan@bearcreekgroup.ca": [
+      {
+        "id": "cmg09pbbz00gf9379nx7oe78p",
+        "primaryEmail": "asullivan@bearcreekgroup.ca",
+        "businessName": "BEAR CREEK CONTRACTING LTD",
+        "businessId": "registry-594",
+        "createdAt": "2025-09-26T03:13:45.117Z"
+      },
+      {
+        "id": "cmg09pa9u00879379dyntmab9",
+        "primaryEmail": "asullivan@bearcreekgroup.ca",
+        "businessName": "BEAR CREEK CONSTRUCTION LTD.",
+        "businessId": "registry-297",
+        "createdAt": "2025-09-26T03:13:43.744Z"
+      }
+    ],
+    "bclayton@tcsinfo.ca": [
+      {
+        "id": "cmg09pbx100jl9379cazjzzcx",
+        "primaryEmail": "bclayton@tcsinfo.ca",
+        "businessName": "THOMPSON COMMUNITY SERVICES INC",
+        "businessId": "registry-708",
+        "createdAt": "2025-09-26T03:13:45.877Z"
+      },
+      {
+        "id": "cmg09pcsq00sm9379lcv8jr6k",
+        "primaryEmail": "bclayton@tcsinfo.ca",
+        "businessName": "THOMPSON COMMUNITY SERVICES INC.",
+        "businessId": "registry-1036",
+        "createdAt": "2025-09-26T03:13:47.017Z"
+      }
+    ],
+    "bdcannabisstore@gmail.com": [
+      {
+        "id": "cmg09pci400px9379bbb49eep",
+        "primaryEmail": "bdcannabisstore@gmail.com",
+        "businessName": "BD CANNABIS STORE",
+        "businessId": "registry-939",
+        "createdAt": "2025-09-26T03:13:46.635Z"
+      },
+      {
+        "id": "cmg09pbmj00h99379o19w826g",
+        "primaryEmail": "bdcannabisstore@gmail.com",
+        "businessName": "BD CANNABIS",
+        "businessId": "registry-624",
+        "createdAt": "2025-09-26T03:13:45.498Z"
+      }
+    ],
+    "benkondolas@telus.net": [
+      {
+        "id": "cmg09pbx300m193794xeu3y7a",
+        "primaryEmail": "benkondolas@telus.net",
+        "businessName": "HIGH POINT CANNABIS LTD.",
+        "businessId": "registry-796",
+        "createdAt": "2025-09-26T03:13:45.877Z"
+      },
+      {
+        "id": "cmg09pa9u007l93794bi70dex",
+        "primaryEmail": "benkondolas@telus.net",
+        "businessName": "KONDOLAS FURNITURE (TERRACE) LTD.",
+        "businessId": "registry-275",
+        "createdAt": "2025-09-26T03:13:43.744Z"
+      },
+      {
+        "id": "cmg09p9wy004l9379sxy49zm0",
+        "primaryEmail": "benkondolas@telus.net",
+        "businessName": "TOTEM FURNITURE & APPLIANCES ",
+        "businessId": "registry-166",
+        "createdAt": "2025-09-26T03:13:43.281Z"
+      }
+    ],
+    "bertsdeli@live.com": [
+      {
+        "id": "cmg09payn00cq9379hodhfcol",
+        "primaryEmail": "bertsdeli@live.com",
+        "businessName": "BERTS DELI",
+        "businessId": "registry-461",
+        "createdAt": "2025-09-26T03:13:44.638Z"
+      },
+      {
+        "id": "cmg09p9jp000x9379f9caidiz",
+        "primaryEmail": "bertsdeli@live.com",
+        "businessName": "BERTS DELICATESSEN",
+        "businessId": "registry-34",
+        "createdAt": "2025-09-26T03:13:42.805Z"
+      }
+    ],
+    "betsy.dennis@northpacforestry.com": [
+      {
+        "id": "cmg09paym00b79379kjpgaoue",
+        "primaryEmail": "betsy.dennis@northpacforestry.com",
+        "businessName": "NORTHPAC FORESTRY GROUP LTD.",
+        "businessId": "registry-406",
+        "createdAt": "2025-09-26T03:13:44.638Z"
+      },
+      {
+        "id": "cmg09payn00d69379jncs98ni",
+        "primaryEmail": "betsy.dennis@northpacforestry.com",
+        "businessName": "COAST TSIMSHIAN RESOURCES LP",
+        "businessId": "registry-477",
+        "createdAt": "2025-09-26T03:13:44.638Z"
+      }
+    ],
+    "billing@pvlgroup.com": [
+      {
+        "id": "cmg09p9jq00239379e12iaj90",
+        "primaryEmail": "billing@pvlgroup.com",
+        "businessName": "Progressive Ventures",
+        "businessId": "registry-76",
+        "createdAt": "2025-09-26T03:13:42.805Z"
+      },
+      {
+        "id": "cmg09payn00cx9379quwe33wf",
+        "primaryEmail": "billing@pvlgroup.com",
+        "businessName": "Progressive Ventures (1998) LTD",
+        "businessId": "registry-468",
+        "createdAt": "2025-09-26T03:13:44.638Z"
+      }
+    ],
+    "bradyn@ppgcorp.ca": [
+      {
+        "id": "cmg09pd3600uw9379na012350",
+        "primaryEmail": "bradyn@ppgcorp.ca",
+        "businessName": "Huntington Holdings 4934 Inc",
+        "businessId": "registry-1118",
+        "createdAt": "2025-09-26T03:13:47.394Z"
+      },
+      {
+        "id": "cmg09pd3600ux9379w92n0iin",
+        "primaryEmail": "bradyn@ppgcorp.ca",
+        "businessName": "Huntington Holdings 4936 Inc",
+        "businessId": "registry-1119",
+        "createdAt": "2025-09-26T03:13:47.394Z"
+      }
+    ],
+    "calicensesandpermits@walmart.com": [
+      {
+        "id": "cmg09pam9009m9379r07ycszw",
+        "primaryEmail": "calicensesandpermits@walmart.com",
+        "businessName": "Walmart Supercentre #5834",
+        "businessId": "registry-348",
+        "createdAt": "2025-09-26T03:13:44.192Z"
+      },
+      {
+        "id": "cmg09pam9009n93792rmd5z9y",
+        "primaryEmail": "calicensesandpermits@walmart.com",
+        "businessName": "Walmart Supercentre #5834",
+        "businessId": "registry-349",
+        "createdAt": "2025-09-26T03:13:44.192Z"
+      },
+      {
+        "id": "cmg09pama009y93792rv8xzrv",
+        "primaryEmail": "calicensesandpermits@walmart.com",
+        "businessName": "Walmart Supercentre #5834",
+        "businessId": "registry-360",
+        "createdAt": "2025-09-26T03:13:44.192Z"
+      }
+    ],
+    "carolyn@bensonoptical.ca": [
+      {
+        "id": "cmg09p9jp000j9379pc4z4orw",
+        "primaryEmail": "carolyn@bensonoptical.ca",
+        "businessName": "BENSON OPTICAL LABORATORY LTD.",
+        "businessId": "registry-20",
+        "createdAt": "2025-09-26T03:13:42.805Z"
+      },
+      {
+        "id": "cmg09pam9009b9379f84bjelc",
+        "primaryEmail": "carolyn@bensonoptical.ca",
+        "businessName": "BENSON OPTICAL LABORATORY LTD.",
+        "businessId": "registry-337",
+        "createdAt": "2025-09-26T03:13:44.192Z"
+      }
+    ],
+    "cfoster@mcelhanney.com": [
+      {
+        "id": "cmg09p9wy00549379lhjtka7b",
+        "primaryEmail": "cfoster@mcelhanney.com",
+        "businessName": "McElhanney Ltd",
+        "businessId": "registry-185",
+        "createdAt": "2025-09-26T03:13:43.281Z"
+      },
+      {
+        "id": "cmg09p9jq002b9379tumbfc93",
+        "primaryEmail": "cfoster@mcelhanney.com",
+        "businessName": "McElhanney Associates Land Surveying Ltd.",
+        "businessId": "registry-84",
+        "createdAt": "2025-09-26T03:13:42.805Z"
+      }
+    ],
+    "charityk@awgni.com": [
+      {
+        "id": "cmg09p9wy004e9379oy7dmbs8",
+        "primaryEmail": "charityk@awgni.com",
+        "businessName": "YOMO MANAGEMENT LTD.",
+        "businessId": "registry-159",
+        "createdAt": "2025-09-26T03:13:43.281Z"
+      },
+      {
+        "id": "cmg09p9jp00169379u9rmvn8n",
+        "primaryEmail": "charityk@awgni.com",
+        "businessName": "ALL WEST GLASS TERRACE LTD",
+        "businessId": "registry-43",
+        "createdAt": "2025-09-26T03:13:42.805Z"
+      }
+    ],
+    "chefsglobalfusion@gmail.com": [
+      {
+        "id": "cmg09pbx200jx93796jygbyse",
+        "primaryEmail": "chefsglobalfusion@gmail.com",
+        "businessName": "CHEF'S GLOBAL FUSION",
+        "businessId": "registry-720",
+        "createdAt": "2025-09-26T03:13:45.877Z"
+      },
+      {
+        "id": "cmg09pcsr00u29379sy2ct8gk",
+        "primaryEmail": "chefsglobalfusion@gmail.com",
+        "businessName": "Chefs global fusion (arena)",
+        "businessId": "registry-1088",
+        "createdAt": "2025-09-26T03:13:47.017Z"
+      },
+      {
+        "id": "cmg09pci400q79379f3za7cel",
+        "primaryEmail": "chefsglobalfusion@gmail.com",
+        "businessName": "Chefs Global Fusion ",
+        "businessId": "registry-949",
+        "createdAt": "2025-09-26T03:13:46.635Z"
+      }
+    ],
+    "cmmushrooms@gmail.com": [
+      {
+        "id": "cmg09pci500r69379v65mur7x",
+        "primaryEmail": "cmmushrooms@gmail.com",
+        "businessName": "Boomers Fireworks",
+        "businessId": "registry-984",
+        "createdAt": "2025-09-26T03:13:46.635Z"
+      },
+      {
+        "id": "cmg09pbx100js93799e9df6c9",
+        "primaryEmail": "cmmushrooms@gmail.com",
+        "businessName": "COAST MOUNTAIN MUSHROOMS & SPECIALTY FOODS",
+        "businessId": "registry-715",
+        "createdAt": "2025-09-26T03:13:45.877Z"
+      }
+    ],
+    "controller@rollyworks.com": [
+      {
+        "id": "cmg09pcsp00s79379r5dz6upx",
+        "primaryEmail": "controller@rollyworks.com",
+        "businessName": "Rollyworks Ventures Inc.",
+        "businessId": "registry-1021",
+        "createdAt": "2025-09-26T03:13:47.017Z"
+      },
+      {
+        "id": "cmg09pcsr00t59379hfgnik37",
+        "primaryEmail": "controller@rollyworks.com",
+        "businessName": "Rollyworks Venture Inc.",
+        "businessId": "registry-1055",
+        "createdAt": "2025-09-26T03:13:47.017Z"
+      }
+    ],
+    "coutotheresa@gmail.com": [
+      {
+        "id": "cmg09pa9u007y93799pf8bu2a",
+        "primaryEmail": "coutotheresa@gmail.com",
+        "businessName": "VLC HOLDINGS LTD.",
+        "businessId": "registry-288",
+        "createdAt": "2025-09-26T03:13:43.744Z"
+      },
+      {
+        "id": "cmg09pam9009593793zkjuxw2",
+        "primaryEmail": "coutotheresa@gmail.com",
+        "businessName": "VLC HOLDINGS LTD.",
+        "businessId": "registry-331",
+        "createdAt": "2025-09-26T03:13:44.192Z"
+      }
+    ],
+    "csmoley@telus.net": [
+      {
+        "id": "cmg09p9jp000r93794vxavjxh",
+        "primaryEmail": "csmoley@telus.net",
+        "businessName": "BEUTLE MASONRY LTD.",
+        "businessId": "registry-28",
+        "createdAt": "2025-09-26T03:13:42.805Z"
+      },
+      {
+        "id": "cmg09p9jp000d9379zqvt91e0",
+        "primaryEmail": "csmoley@telus.net",
+        "businessName": "BEUTLE MASONRY LTD.",
+        "businessId": "registry-14",
+        "createdAt": "2025-09-26T03:13:42.805Z"
+      }
+    ],
+    "daysinnliquor@gmail.com": [
+      {
+        "id": "cmg09pbx100jj9379zjaxaptx",
+        "primaryEmail": "daysinnliquor@gmail.com",
+        "businessName": "SPEEDY BEER DELIVERY SERVICE",
+        "businessId": "registry-706",
+        "createdAt": "2025-09-26T03:13:45.877Z"
+      },
+      {
+        "id": "cmg09p9jp000n9379hvgjdxtb",
+        "primaryEmail": "daysinnliquor@gmail.com",
+        "businessName": "DAYS INN TERRACE PATEL & DESAI ENTERPRISES LTD.",
+        "businessId": "registry-24",
+        "createdAt": "2025-09-26T03:13:42.805Z"
+      }
+    ],
+    "dcampbell@cccsr.ca": [
+      {
+        "id": "cmg09pbx300lz9379w0du02e7",
+        "primaryEmail": "dcampbell@cccsr.ca",
+        "businessName": "CROSS COUNTRY CANADA SUPPLIES & RENTALS INC",
+        "businessId": "registry-794",
+        "createdAt": "2025-09-26T03:13:45.877Z"
+      },
+      {
+        "id": "cmg09pd3600uo93798vwmmknn",
+        "primaryEmail": "dcampbell@cccsr.ca",
+        "businessName": "Cross Country Canada Sales & Rentals",
+        "businessId": "registry-1110",
+        "createdAt": "2025-09-26T03:13:47.394Z"
+      }
+    ],
+    "diane-robinson@outlook.com": [
+      {
+        "id": "cmg09p9wy00479379kqg7bbo7",
+        "primaryEmail": "diane-robinson@outlook.com",
+        "businessName": "TILLICUM THEATRES",
+        "businessId": "registry-152",
+        "createdAt": "2025-09-26T03:13:43.281Z"
+      },
+      {
+        "id": "cmg09p9wx003p9379loidlqfg",
+        "primaryEmail": "diane-robinson@outlook.com",
+        "businessName": "TILLICUM THEATRES",
+        "businessId": "registry-134",
+        "createdAt": "2025-09-26T03:13:43.281Z"
+      }
+    ],
+    "dlindsay@spinefit.co": [
+      {
+        "id": "cmg09pbbz00g09379b2mfwe9w",
+        "primaryEmail": "dlindsay@spinefit.co",
+        "businessName": "RAIN COAST WASH & LUBE",
+        "businessId": "registry-579",
+        "createdAt": "2025-09-26T03:13:45.117Z"
+      },
+      {
+        "id": "cmg09pama009w9379ufjtlljw",
+        "primaryEmail": "dlindsay@spinefit.co",
+        "businessName": "DR LINDSAY CHIROPRACTIC CORP",
+        "businessId": "registry-358",
+        "createdAt": "2025-09-26T03:13:44.192Z"
+      }
+    ],
+    "drcandicegriffith@gmail.com": [
+      {
+        "id": "cmg09pbby00f79379e3xfv4e9",
+        "primaryEmail": "drcandicegriffith@gmail.com",
+        "businessName": "NIHC NORTHWEST INTEGRATIVE HEALTHCARE CENTRE",
+        "businessId": "registry-550",
+        "createdAt": "2025-09-26T03:13:45.117Z"
+      },
+      {
+        "id": "cmg09pama00av9379mua6pm9v",
+        "primaryEmail": "drcandicegriffith@gmail.com",
+        "businessName": "DR. CANDICE GRIFFITH ND",
+        "businessId": "registry-394",
+        "createdAt": "2025-09-26T03:13:44.192Z"
+      }
+    ],
+    "edbjohnson@hotmail.com": [
+      {
+        "id": "cmg09p9jq002d9379f7mtguti",
+        "primaryEmail": "edbjohnson@hotmail.com",
+        "businessName": "COSTA-LESSA MOTEL (1997) LTD.",
+        "businessId": "registry-86",
+        "createdAt": "2025-09-26T03:13:42.805Z"
+      },
+      {
+        "id": "cmg09pbmk00ib9379io3vkhvd",
+        "primaryEmail": "edbjohnson@hotmail.com",
+        "businessName": "COSTA-LESSA MOTEL",
+        "businessId": "registry-662",
+        "createdAt": "2025-09-26T03:13:45.498Z"
+      }
+    ],
+    "erinn@sherwoodmountain.beer": [
+      {
+        "id": "cmg09pbmi00gv9379cfyc88x4",
+        "primaryEmail": "erinn@sherwoodmountain.beer",
+        "businessName": "SHERWOOD MOUNTAIN BREWHOUSE LTD.",
+        "businessId": "registry-610",
+        "createdAt": "2025-09-26T03:13:45.498Z"
+      },
+      {
+        "id": "cmg09pbmj00hu9379tsphnjs6",
+        "primaryEmail": "erinn@sherwoodmountain.beer",
+        "businessName": "SHERWOOD MOUNTAIN BREWHOUSE LTD.",
+        "businessId": "registry-645",
+        "createdAt": "2025-09-26T03:13:45.498Z"
+      },
+      {
+        "id": "cmg09pbbz00fv937905i1cdsn",
+        "primaryEmail": "erinn@sherwoodmountain.beer",
+        "businessName": "SHERWOOD MOUNTAIN BBQ",
+        "businessId": "registry-574",
+        "createdAt": "2025-09-26T03:13:45.117Z"
+      }
+    ],
+    "finance@tcsinfo.ca": [
+      {
+        "id": "cmg09pam9008r9379dngto1rq",
+        "primaryEmail": "finance@tcsinfo.ca",
+        "businessName": "THOMPSON COMMUNITY SERVICES INC",
+        "businessId": "registry-317",
+        "createdAt": "2025-09-26T03:13:44.192Z"
+      },
+      {
+        "id": "cmg09pbby00ec9379vx6558j1",
+        "primaryEmail": "finance@tcsinfo.ca",
+        "businessName": "THOMPSON COMMUNITY SERVICES",
+        "businessId": "registry-519",
+        "createdAt": "2025-09-26T03:13:45.117Z"
+      },
+      {
+        "id": "cmg09pbx200k293798p9cwq61",
+        "primaryEmail": "finance@tcsinfo.ca",
+        "businessName": "THOMPSON COMMUNITY SERVICES INC",
+        "businessId": "registry-725",
+        "createdAt": "2025-09-26T03:13:45.877Z"
+      },
+      {
+        "id": "cmg09pbbz00fe93792t8fazc8",
+        "primaryEmail": "finance@tcsinfo.ca",
+        "businessName": "THOMPSON COMMUNITY SERVICES INC",
+        "businessId": "registry-557",
+        "createdAt": "2025-09-26T03:13:45.117Z"
+      },
+      {
+        "id": "cmg09pbx100jm9379tve5gqpq",
+        "primaryEmail": "finance@tcsinfo.ca",
+        "businessName": "THOMPSON COMMUNITY SERVICES INC",
+        "businessId": "registry-709",
+        "createdAt": "2025-09-26T03:13:45.877Z"
+      }
+    ],
+    "gm_terrace@sandman.ca": [
+      {
+        "id": "cmg09p9jq002p9379ixfg9cs2",
+        "primaryEmail": "gm_terrace@sandman.ca",
+        "businessName": "SANDMAN INN (TERRACE) LTD.",
+        "businessId": "registry-98",
+        "createdAt": "2025-09-26T03:13:42.805Z"
+      },
+      {
+        "id": "cmg09p9jq001v93791ch5ytx7",
+        "primaryEmail": "gm_terrace@sandman.ca",
+        "businessName": "SANDMAN INN (TERRACE) LTD.",
+        "businessId": "registry-68",
+        "createdAt": "2025-09-26T03:13:42.805Z"
+      }
+    ],
+    "heather.ldc@telus.net": [
+      {
+        "id": "cmg09p9wy00539379943yekq5",
+        "primaryEmail": "heather.ldc@telus.net",
+        "businessName": "FORGIE, DR. MARK",
+        "businessId": "registry-184",
+        "createdAt": "2025-09-26T03:13:43.281Z"
+      },
+      {
+        "id": "cmg09p9wx003h9379283jfo1w",
+        "primaryEmail": "heather.ldc@telus.net",
+        "businessName": "FORGIE, DR. MARK",
+        "businessId": "registry-126",
+        "createdAt": "2025-09-26T03:13:43.281Z"
+      }
+    ],
+    "hotdesign@timecleaners.com": [
+      {
+        "id": "cmg09p9jq002793793hh7il5p",
+        "primaryEmail": "hotdesign@timecleaners.com",
+        "businessName": "TIME CLEANERS LTD. SPOTLESS DRYCLEANERS & LAUNDRY MAT",
+        "businessId": "registry-80",
+        "createdAt": "2025-09-26T03:13:42.805Z"
+      },
+      {
+        "id": "cmg09p9jp000g9379v5gowf7l",
+        "primaryEmail": "hotdesign@timecleaners.com",
+        "businessName": "TIME CLEANERS LTD. SPOTLESS LAUNDRY MAT",
+        "businessId": "registry-17",
+        "createdAt": "2025-09-26T03:13:42.805Z"
+      }
+    ],
+    "ibath@telus.net": [
+      {
+        "id": "cmg09pa9u007x9379wzj3hgsp",
+        "primaryEmail": "ibath@telus.net",
+        "businessName": "MOBIL #2928",
+        "businessId": "registry-287",
+        "createdAt": "2025-09-26T03:13:43.744Z"
+      },
+      {
+        "id": "cmg09pcss00ui9379yk9rhag7",
+        "primaryEmail": "ibath@telus.net",
+        "businessName": "Terrace Taxi Ltd.",
+        "businessId": "registry-1104",
+        "createdAt": "2025-09-26T03:13:47.017Z"
+      },
+      {
+        "id": "cmg09pa9u007c9379p2fgye6v",
+        "primaryEmail": "ibath@telus.net",
+        "businessName": "K&P BATH LTDdba SHEFIELD EXPRESS #4",
+        "businessId": "registry-266",
+        "createdAt": "2025-09-26T03:13:43.744Z"
+      },
+      {
+        "id": "cmg09pa9u007j9379db86cqto",
+        "primaryEmail": "ibath@telus.net",
+        "businessName": "MOBIL #2928",
+        "businessId": "registry-273",
+        "createdAt": "2025-09-26T03:13:43.744Z"
+      }
+    ],
+    "info@1637.ca": [
+      {
+        "id": "cmg09pbby00f39379yhugmsdi",
+        "primaryEmail": "info@1637.ca",
+        "businessName": "NORTHERN BUSINESS DEVELOPMENT SOCIETY",
+        "businessId": "registry-546",
+        "createdAt": "2025-09-26T03:13:45.117Z"
+      },
+      {
+        "id": "cmg09pbby00eb9379tdu55vtu",
+        "primaryEmail": "info@1637.ca",
+        "businessName": "NORTHERN BUSINESS MANAGEMENT SERVICES INC",
+        "businessId": "registry-518",
+        "createdAt": "2025-09-26T03:13:45.117Z"
+      }
+    ],
+    "info@expressnewsconvenience.com": [
+      {
+        "id": "cmg09pc7k00md9379ybk074y8",
+        "primaryEmail": "info@expressnewsconvenience.com",
+        "businessName": "SUTHA HOLDINGS LTD.",
+        "businessId": "registry-809",
+        "createdAt": "2025-09-26T03:13:46.256Z"
+      },
+      {
+        "id": "cmg09p9jp000b9379c7h07sex",
+        "primaryEmail": "info@expressnewsconvenience.com",
+        "businessName": "REST INN",
+        "businessId": "registry-12",
+        "createdAt": "2025-09-26T03:13:42.805Z"
+      },
+      {
+        "id": "cmg09p9jp000w9379n73gafju",
+        "primaryEmail": "info@expressnewsconvenience.com",
+        "businessName": "CLINTON MANOR",
+        "businessId": "registry-33",
+        "createdAt": "2025-09-26T03:13:42.805Z"
+      },
+      {
+        "id": "cmg09pbbz00fd9379u2xo5xjj",
+        "primaryEmail": "info@expressnewsconvenience.com",
+        "businessName": "REST INN RV PARK",
+        "businessId": "registry-556",
+        "createdAt": "2025-09-26T03:13:45.117Z"
+      }
+    ],
+    "info@upstreamadventures.com": [
+      {
+        "id": "cmg09pbbx00e19379p6g8xl7n",
+        "primaryEmail": "info@upstreamadventures.com",
+        "businessName": "Legendary Skeena Steelhead Lodge",
+        "businessId": "registry-508",
+        "createdAt": "2025-09-26T03:13:45.117Z"
+      },
+      {
+        "id": "cmg09pbbx00e09379uqyuxob3",
+        "primaryEmail": "info@upstreamadventures.com",
+        "businessName": "UPSTREAM ADVENTURES GUIDING SERVICES INC.",
+        "businessId": "registry-507",
+        "createdAt": "2025-09-26T03:13:45.117Z"
+      }
+    ],
+    "jbennett@vohora.ca": [
+      {
+        "id": "cmg09pbbz00gd9379qa8oxxff",
+        "primaryEmail": "jbennett@vohora.ca",
+        "businessName": "M&M VENTURES LTD",
+        "businessId": "registry-592",
+        "createdAt": "2025-09-26T03:13:45.117Z"
+      },
+      {
+        "id": "cmg09pa9s005p9379obam8ibk",
+        "primaryEmail": "jbennett@vohora.ca",
+        "businessName": "J.L.'S EXCAVATING LTD",
+        "businessId": "registry-206",
+        "createdAt": "2025-09-26T03:13:43.744Z"
+      }
+    ],
+    "jeanette@andres1.com": [
+      {
+        "id": "cmg09pbmk00il9379dqh11o7a",
+        "primaryEmail": "jeanette@andres1.com",
+        "businessName": "ANDRES ELECTRONIC EXPERTS",
+        "businessId": "registry-672",
+        "createdAt": "2025-09-26T03:13:45.498Z"
+      },
+      {
+        "id": "cmg09pbmk00iv9379z8atb85i",
+        "primaryEmail": "jeanette@andres1.com",
+        "businessName": "ANDRES ELECTRONIC EXPERTS",
+        "businessId": "registry-682",
+        "createdAt": "2025-09-26T03:13:45.498Z"
+      }
+    ],
+    "jmohler@tenaquip.com": [
+      {
+        "id": "cmg09p9wy004w9379vy6nhc9l",
+        "primaryEmail": "jmohler@tenaquip.com",
+        "businessName": "TENAQUIP LIMITED",
+        "businessId": "registry-177",
+        "createdAt": "2025-09-26T03:13:43.281Z"
+      },
+      {
+        "id": "cmg09p9jp00109379ycwi0eil",
+        "primaryEmail": "jmohler@tenaquip.com",
+        "businessName": "TENAQUIP LIMITED",
+        "businessId": "registry-37",
+        "createdAt": "2025-09-26T03:13:42.805Z"
+      }
+    ],
+    "josil_posadas@yahoo.com": [
+      {
+        "id": "cmg09pbmk00if9379bqlfy50a",
+        "primaryEmail": "josil_posadas@yahoo.com",
+        "businessName": "LOLA'S FILIPINO BISTRO",
+        "businessId": "registry-666",
+        "createdAt": "2025-09-26T03:13:45.498Z"
+      },
+      {
+        "id": "cmg09pcsq00sn9379fj7m8jc7",
+        "primaryEmail": "josil_posadas@yahoo.com",
+        "businessName": "Lola's Filipino Bistro",
+        "businessId": "registry-1037",
+        "createdAt": "2025-09-26T03:13:47.017Z"
+      }
+    ],
+    "jspearing@hotmail.com": [
+      {
+        "id": "cmg09pbbx00e29379u293yr0v",
+        "primaryEmail": "jspearing@hotmail.com",
+        "businessName": "SPEARING: JUSTIN & RAUCHENE",
+        "businessId": "registry-509",
+        "createdAt": "2025-09-26T03:13:45.117Z"
+      },
+      {
+        "id": "cmg09pa9u007e9379w2yftejk",
+        "primaryEmail": "jspearing@hotmail.com",
+        "businessName": "LITTLE TREES REFORESTATION INC.",
+        "businessId": "registry-268",
+        "createdAt": "2025-09-26T03:13:43.744Z"
+      }
+    ],
+    "kalumtire@hotmail.com": [
+      {
+        "id": "cmg09p9wx002w9379whoupt7u",
+        "primaryEmail": "kalumtire@hotmail.com",
+        "businessName": "KALUM TIRE SERVICE LTD.",
+        "businessId": "registry-105",
+        "createdAt": "2025-09-26T03:13:43.281Z"
+      },
+      {
+        "id": "cmg09p9jq001a93797iw981u7",
+        "primaryEmail": "kalumtire@hotmail.com",
+        "businessName": "KALUM TIRE SERVICE LTD.",
+        "businessId": "registry-47",
+        "createdAt": "2025-09-26T03:13:42.805Z"
+      }
+    ],
+    "kim.timhortons@hotmail.com": [
+      {
+        "id": "cmg09pci300po93796xpu6wkm",
+        "primaryEmail": "kim.timhortons@hotmail.com",
+        "businessName": "SJJK Investments Ltd",
+        "businessId": "registry-930",
+        "createdAt": "2025-09-26T03:13:46.635Z"
+      },
+      {
+        "id": "cmg09pci300pn9379u64s3uek",
+        "primaryEmail": "kim.timhortons@hotmail.com",
+        "businessName": "SJME INVESTMENTS LTD o/a Tim Hortons",
+        "businessId": "registry-929",
+        "createdAt": "2025-09-26T03:13:46.635Z"
+      }
+    ],
+    "kmarineacctng@gmail.com": [
+      {
+        "id": "cmg09p9jq001j9379qsclu0z9",
+        "primaryEmail": "kmarineacctng@gmail.com",
+        "businessName": "NORTHSTAR RECREATION LTD. dba KEN'S MARINE",
+        "businessId": "registry-56",
+        "createdAt": "2025-09-26T03:13:42.805Z"
+      },
+      {
+        "id": "cmg09p9wy004x9379l9kyumic",
+        "primaryEmail": "kmarineacctng@gmail.com",
+        "businessName": "NORTHSTAR RECREATION LTD. dba KEN'S MARINE",
+        "businessId": "registry-178",
+        "createdAt": "2025-09-26T03:13:43.281Z"
+      }
+    ],
+    "lavoie03@telus.net": [
+      {
+        "id": "cmg09payn00dc9379sdes4qga",
+        "primaryEmail": "lavoie03@telus.net",
+        "businessName": "HOWE CREEK TRAILER PARK",
+        "businessId": "registry-483",
+        "createdAt": "2025-09-26T03:13:44.638Z"
+      },
+      {
+        "id": "cmg09pa9u007q9379vusi8uuu",
+        "primaryEmail": "lavoie03@telus.net",
+        "businessName": "TERRACE BAKERY DISTRIBUTION",
+        "businessId": "registry-280",
+        "createdAt": "2025-09-26T03:13:43.744Z"
+      }
+    ],
+    "lizfash@telus.net": [
+      {
+        "id": "cmg09p9wy005i9379b024r2nf",
+        "primaryEmail": "lizfash@telus.net",
+        "businessName": "ELIZABETH FASHIONS",
+        "businessId": "registry-199",
+        "createdAt": "2025-09-26T03:13:43.281Z"
+      },
+      {
+        "id": "cmg09p9wx003j9379eurkx3vv",
+        "primaryEmail": "lizfash@telus.net",
+        "businessName": "STAR LADIES & MEN'S APPAREL LTD.",
+        "businessId": "registry-128",
+        "createdAt": "2025-09-26T03:13:43.281Z"
+      },
+      {
+        "id": "cmg09pama009z9379q60b9heg",
+        "primaryEmail": "lizfash@telus.net",
+        "businessName": "MENDES, JOAO AND MENDES, STELLA",
+        "businessId": "registry-361",
+        "createdAt": "2025-09-26T03:13:44.192Z"
+      }
+    ],
+    "manager@parkavemedical.ca": [
+      {
+        "id": "cmg09pa9u007r9379k84c5g3l",
+        "primaryEmail": "manager@parkavemedical.ca",
+        "businessName": "DR. GREG LINTON",
+        "businessId": "registry-281",
+        "createdAt": "2025-09-26T03:13:43.744Z"
+      },
+      {
+        "id": "cmg09pcss00ue9379f9wbmcuw",
+        "primaryEmail": "manager@parkavemedical.ca",
+        "businessName": "DR. OBINNA IKWUMELU",
+        "businessId": "registry-1100",
+        "createdAt": "2025-09-26T03:13:47.017Z"
+      },
+      {
+        "id": "cmg09pd3700w69379pkv6a23k",
+        "primaryEmail": "manager@parkavemedical.ca",
+        "businessName": "Park Avenue Medical Clinic",
+        "businessId": "registry-1165",
+        "createdAt": "2025-09-26T03:13:47.394Z"
+      },
+      {
+        "id": "cmg09pcss00uf93799f8wck8r",
+        "primaryEmail": "manager@parkavemedical.ca",
+        "businessName": "DR. CAROLINE VAN EVERY",
+        "businessId": "registry-1101",
+        "createdAt": "2025-09-26T03:13:47.017Z"
+      },
+      {
+        "id": "cmg09payn00db93795o2h8cm5",
+        "primaryEmail": "manager@parkavemedical.ca",
+        "businessName": "DR. P.C. LOTZ INC",
+        "businessId": "registry-482",
+        "createdAt": "2025-09-26T03:13:44.638Z"
+      },
+      {
+        "id": "cmg09pa9u008a9379zjhovvd4",
+        "primaryEmail": "manager@parkavemedical.ca",
+        "businessName": "DR. JOHNATHAN MOOLMAN",
+        "businessId": "registry-300",
+        "createdAt": "2025-09-26T03:13:43.744Z"
+      },
+      {
+        "id": "cmg09pci500rl9379ij4da7gg",
+        "primaryEmail": "manager@parkavemedical.ca",
+        "businessName": "BETHANIE BERENDS",
+        "businessId": "registry-999",
+        "createdAt": "2025-09-26T03:13:46.635Z"
+      },
+      {
+        "id": "cmg09pci500rk93792pv9uly3",
+        "primaryEmail": "manager@parkavemedical.ca",
+        "businessName": "JESSICA MCCANN",
+        "businessId": "registry-998",
+        "createdAt": "2025-09-26T03:13:46.635Z"
+      },
+      {
+        "id": "cmg09pcss00ud93794abag3s3",
+        "primaryEmail": "manager@parkavemedical.ca",
+        "businessName": "DR. LUCAS ARNOLD",
+        "businessId": "registry-1099",
+        "createdAt": "2025-09-26T03:13:47.017Z"
+      },
+      {
+        "id": "cmg09pama00an9379o4b3fdp4",
+        "primaryEmail": "manager@parkavemedical.ca",
+        "businessName": "DR. J. STRYDOM INC.",
+        "businessId": "registry-386",
+        "createdAt": "2025-09-26T03:13:44.192Z"
+      },
+      {
+        "id": "cmg09pbx100jp9379a9yr5a5t",
+        "primaryEmail": "manager@parkavemedical.ca",
+        "businessName": "DR. SASHA LANGILLE-ROWE MEDICAL INC.",
+        "businessId": "registry-712",
+        "createdAt": "2025-09-26T03:13:45.877Z"
+      },
+      {
+        "id": "cmg09pbmk00it9379wx2oclg5",
+        "primaryEmail": "manager@parkavemedical.ca",
+        "businessName": "LAZELLE AVENUE MEDICAL CLINIC",
+        "businessId": "registry-680",
+        "createdAt": "2025-09-26T03:13:45.498Z"
+      },
+      {
+        "id": "cmg09pci300pk9379u761ykam",
+        "primaryEmail": "manager@parkavemedical.ca",
+        "businessName": "Dr. Jeanette Madsen ",
+        "businessId": "registry-926",
+        "createdAt": "2025-09-26T03:13:46.635Z"
+      },
+      {
+        "id": "cmg09pci300pj9379hf6dm7c7",
+        "primaryEmail": "manager@parkavemedical.ca",
+        "businessName": "Dr. Robyn Penney ",
+        "businessId": "registry-925",
+        "createdAt": "2025-09-26T03:13:46.635Z"
+      },
+      {
+        "id": "cmg09pci300pi9379110rh2ue",
+        "primaryEmail": "manager@parkavemedical.ca",
+        "businessName": "Dr. Kathleen Christison ",
+        "businessId": "registry-924",
+        "createdAt": "2025-09-26T03:13:46.635Z"
+      },
+      {
+        "id": "cmg09pci300pl93793eqjpmhs",
+        "primaryEmail": "manager@parkavemedical.ca",
+        "businessName": "Dr. Eben Meyer",
+        "businessId": "registry-927",
+        "createdAt": "2025-09-26T03:13:46.635Z"
+      }
+    ],
+    "mannsonthego@gmail.com": [
+      {
+        "id": "cmg09payn00c39379dgbu5j0g",
+        "primaryEmail": "mannsonthego@gmail.com",
+        "businessName": "FLIPIT HOLDINGS LTD",
+        "businessId": "registry-438",
+        "createdAt": "2025-09-26T03:13:44.638Z"
+      },
+      {
+        "id": "cmg09paym00by9379orkqaq0b",
+        "primaryEmail": "mannsonthego@gmail.com",
+        "businessName": "TAR-RHONE CONTRACTING",
+        "businessId": "registry-433",
+        "createdAt": "2025-09-26T03:13:44.638Z"
+      }
+    ],
+    "melita.allwest@hotmail.com": [
+      {
+        "id": "cmg09p9jp000a9379aejw6qu7",
+        "primaryEmail": "melita.allwest@hotmail.com",
+        "businessName": "ALL WEST TRADING LIMITED",
+        "businessId": "registry-11",
+        "createdAt": "2025-09-26T03:13:42.805Z"
+      },
+      {
+        "id": "cmg09p9jp000293792kzb8egm",
+        "primaryEmail": "melita.allwest@hotmail.com",
+        "businessName": "E.WAYNE WEBBER",
+        "businessId": "registry-2",
+        "createdAt": "2025-09-26T03:13:42.805Z"
+      }
+    ],
+    "mercedestrigo1@gmail.com": [
+      {
+        "id": "cmg09pc7m00ot9379x5rkek6n",
+        "primaryEmail": "mercedestrigo1@gmail.com",
+        "businessName": "MERSANA AESTHETICS",
+        "businessId": "registry-899",
+        "createdAt": "2025-09-26T03:13:46.256Z"
+      },
+      {
+        "id": "cmg09pbbz00g493792n727rhx",
+        "primaryEmail": "mercedestrigo1@gmail.com",
+        "businessName": "GLOSS ESTHETICS",
+        "businessId": "registry-583",
+        "createdAt": "2025-09-26T03:13:45.117Z"
+      }
+    ],
+    "minsooca@naver.com": [
+      {
+        "id": "cmg09p9wx002v9379npcgj275",
+        "primaryEmail": "minsooca@naver.com",
+        "businessName": "BEAR COUNTRY INN",
+        "businessId": "registry-104",
+        "createdAt": "2025-09-26T03:13:43.281Z"
+      },
+      {
+        "id": "cmg09p9jq00289379675slc5s",
+        "primaryEmail": "minsooca@naver.com",
+        "businessName": "BEAR COUNTRY INN",
+        "businessId": "registry-81",
+        "createdAt": "2025-09-26T03:13:42.805Z"
+      }
+    ],
+    "mitch@totemford.net": [
+      {
+        "id": "cmg09pbby00f29379sqg9dgv8",
+        "primaryEmail": "mitch@totemford.net",
+        "businessName": "HERTZ SYSTEM LICENCEE",
+        "businessId": "registry-545",
+        "createdAt": "2025-09-26T03:13:45.117Z"
+      },
+      {
+        "id": "cmg09p9wy004k9379lfx6s2ss",
+        "primaryEmail": "mitch@totemford.net",
+        "businessName": "TERRACE TOTEM FORD SALES LTD.",
+        "businessId": "registry-165",
+        "createdAt": "2025-09-26T03:13:43.281Z"
+      },
+      {
+        "id": "cmg09pa9s005s93798v36xmzo",
+        "primaryEmail": "mitch@totemford.net",
+        "businessName": "TERRACE TOTEM FORD SALES LTD.",
+        "businessId": "registry-209",
+        "createdAt": "2025-09-26T03:13:43.744Z"
+      },
+      {
+        "id": "cmg09p9wx003a9379aktworn7",
+        "primaryEmail": "mitch@totemford.net",
+        "businessName": "HERTZ SYSTEM LICENCEE",
+        "businessId": "registry-119",
+        "createdAt": "2025-09-26T03:13:43.281Z"
+      }
+    ],
+    "nt.controller@knightautomotive.ca": [
+      {
+        "id": "cmg09pc7m00od9379po6masgh",
+        "primaryEmail": "nt.controller@knightautomotive.ca",
+        "businessName": "TERRACE TOYOTA",
+        "businessId": "registry-882",
+        "createdAt": "2025-09-26T03:13:46.256Z"
+      },
+      {
+        "id": "cmg09pa9t00689379o7coss9n",
+        "primaryEmail": "nt.controller@knightautomotive.ca",
+        "businessName": "TERRACE CHRYSLER DODGE JEEP RAM LTD",
+        "businessId": "registry-225",
+        "createdAt": "2025-09-26T03:13:43.744Z"
+      },
+      {
+        "id": "cmg09p9wx003n93797bkc2ibd",
+        "primaryEmail": "nt.controller@knightautomotive.ca",
+        "businessName": "TERRACE CHRYSLER DODGE JEEP RAM LTD.",
+        "businessId": "registry-132",
+        "createdAt": "2025-09-26T03:13:43.281Z"
+      },
+      {
+        "id": "cmg09pc7l00nq93793i7h4y4s",
+        "primaryEmail": "nt.controller@knightautomotive.ca",
+        "businessName": "TERRACE TOYOTA",
+        "businessId": "registry-858",
+        "createdAt": "2025-09-26T03:13:46.256Z"
+      }
+    ],
+    "payables@brandt.ca": [
+      {
+        "id": "cmg09pa9s005r9379x0x4vq6j",
+        "primaryEmail": "payables@brandt.ca",
+        "businessName": "BRANDT TRACTOR LTD.",
+        "businessId": "registry-208",
+        "createdAt": "2025-09-26T03:13:43.744Z"
+      },
+      {
+        "id": "cmg09p9jq001c9379wruqzzhp",
+        "primaryEmail": "payables@brandt.ca",
+        "businessName": "BRANDT TRACTOR LTD.",
+        "businessId": "registry-49",
+        "createdAt": "2025-09-26T03:13:42.805Z"
+      }
+    ],
+    "payables@sis-bc.ca": [
+      {
+        "id": "cmg09pbmj00h69379ezhul0am",
+        "primaryEmail": "payables@sis-bc.ca",
+        "businessName": "SKEENA INDUSTRIAL SERVICES LTD.",
+        "businessId": "registry-621",
+        "createdAt": "2025-09-26T03:13:45.498Z"
+      },
+      {
+        "id": "cmg09pama009u93796xitj9n1",
+        "primaryEmail": "payables@sis-bc.ca",
+        "businessName": "SKEENA GLASS LTD DBA SPEEDY GLASS",
+        "businessId": "registry-356",
+        "createdAt": "2025-09-26T03:13:44.192Z"
+      }
+    ],
+    "peter-gill@hotmail.com": [
+      {
+        "id": "cmg09p9jp000q9379whm6if0l",
+        "primaryEmail": "peter-gill@hotmail.com",
+        "businessName": "KALUM MOTEL",
+        "businessId": "registry-27",
+        "createdAt": "2025-09-26T03:13:42.805Z"
+      },
+      {
+        "id": "cmg09p9wx0034937940psvpdc",
+        "primaryEmail": "peter-gill@hotmail.com",
+        "businessName": "REEL INN MOTEL (1979) LTD.",
+        "businessId": "registry-113",
+        "createdAt": "2025-09-26T03:13:43.281Z"
+      },
+      {
+        "id": "cmg09pam9008q9379clch7s2w",
+        "primaryEmail": "peter-gill@hotmail.com",
+        "businessName": "HARYANA'S",
+        "businessId": "registry-316",
+        "createdAt": "2025-09-26T03:13:44.192Z"
+      },
+      {
+        "id": "cmg09payn00c593795yombc7e",
+        "primaryEmail": "peter-gill@hotmail.com",
+        "businessName": "KALUM MOTEL",
+        "businessId": "registry-440",
+        "createdAt": "2025-09-26T03:13:44.638Z"
+      },
+      {
+        "id": "cmg09paym00bq9379cn9kc1c7",
+        "primaryEmail": "peter-gill@hotmail.com",
+        "businessName": "REEL INN AND RV PARK",
+        "businessId": "registry-425",
+        "createdAt": "2025-09-26T03:13:44.638Z"
+      }
+    ],
+    "puretantra@outlook.com": [
+      {
+        "id": "cmg09pbby00fc9379c2ea97hn",
+        "primaryEmail": "puretantra@outlook.com",
+        "businessName": "PURE TANTRA",
+        "businessId": "registry-555",
+        "createdAt": "2025-09-26T03:13:45.117Z"
+      },
+      {
+        "id": "cmg09payn00cg9379z5x1dhw2",
+        "primaryEmail": "puretantra@outlook.com",
+        "businessName": "CELESTIAL SINGING STUDIO",
+        "businessId": "registry-451",
+        "createdAt": "2025-09-26T03:13:44.638Z"
+      }
+    ],
+    "raeanne@timberbaron.ca": [
+      {
+        "id": "cmg09pbby00f89379mh6bt8o7",
+        "primaryEmail": "raeanne@timberbaron.ca",
+        "businessName": "TIMBER BARON CONTRACTING (2013) LTD",
+        "businessId": "registry-551",
+        "createdAt": "2025-09-26T03:13:45.117Z"
+      },
+      {
+        "id": "cmg09pbx300kx9379ktoulla2",
+        "primaryEmail": "raeanne@timberbaron.ca",
+        "businessName": "TIMBER BARON CONTRACTING (2013) LTD. (SHOP)",
+        "businessId": "registry-756",
+        "createdAt": "2025-09-26T03:13:45.877Z"
+      }
+    ],
+    "rainbowinn@telus.net": [
+      {
+        "id": "cmg09p9wx003f9379kvdx1vwx",
+        "primaryEmail": "rainbowinn@telus.net",
+        "businessName": "RAINBOW INN MOTEL( TERRACE)LTD",
+        "businessId": "registry-124",
+        "createdAt": "2025-09-26T03:13:43.281Z"
+      },
+      {
+        "id": "cmg09p9wy004z9379396glid0",
+        "primaryEmail": "rainbowinn@telus.net",
+        "businessName": "RAINBOW INN MOTEL(TERRACE)LTD",
+        "businessId": "registry-180",
+        "createdAt": "2025-09-26T03:13:43.281Z"
+      }
+    ],
+    "ravenprints1@gmail.com": [
+      {
+        "id": "cmg09pbbz00fs9379hblyw1n5",
+        "primaryEmail": "ravenprints1@gmail.com",
+        "businessName": "RAVEN PRINTS",
+        "businessId": "registry-571",
+        "createdAt": "2025-09-26T03:13:45.117Z"
+      },
+      {
+        "id": "cmg09pcsr00tk9379476goykg",
+        "primaryEmail": "ravenprints1@gmail.com",
+        "businessName": "Raven Prints",
+        "businessId": "registry-1070",
+        "createdAt": "2025-09-26T03:13:47.017Z"
+      }
+    ],
+    "scsmith29@hotmail.ca": [
+      {
+        "id": "cmg09pbmk00id9379d4q58eln",
+        "primaryEmail": "scsmith29@hotmail.ca",
+        "businessName": "LAZELLE SHOPPING CENTRE",
+        "businessId": "registry-664",
+        "createdAt": "2025-09-26T03:13:45.498Z"
+      },
+      {
+        "id": "cmg09pbmk00ix937956ueg1fn",
+        "primaryEmail": "scsmith29@hotmail.ca",
+        "businessName": "LAZELLE SHOPPING CENTRE",
+        "businessId": "registry-684",
+        "createdAt": "2025-09-26T03:13:45.498Z"
+      },
+      {
+        "id": "cmg09pa9s006193791rt2gfrc",
+        "primaryEmail": "scsmith29@hotmail.ca",
+        "businessName": "S N T MINI STORAGE",
+        "businessId": "registry-218",
+        "createdAt": "2025-09-26T03:13:43.744Z"
+      }
+    ],
+    "seanb@terracechances.com": [
+      {
+        "id": "cmg09payn00cu9379pilv1akb",
+        "primaryEmail": "seanb@terracechances.com",
+        "businessName": "LUCKY DOLLAR BINGO PALACE LTD. dba CHANCES TERRACE",
+        "businessId": "registry-465",
+        "createdAt": "2025-09-26T03:13:44.638Z"
+      },
+      {
+        "id": "cmg09payo00dp9379229sqx4e",
+        "primaryEmail": "seanb@terracechances.com",
+        "businessName": "LUCKY DOLLAR BINGO PALACE LTD. dba CHANCES TERRACE",
+        "businessId": "registry-496",
+        "createdAt": "2025-09-26T03:13:44.638Z"
+      },
+      {
+        "id": "cmg09payn00dd9379udjh1r3g",
+        "primaryEmail": "seanb@terracechances.com",
+        "businessName": "LUCKY DOLLAR BINGO PALACE LTD. dba CHANCES TERRACE",
+        "businessId": "registry-484",
+        "createdAt": "2025-09-26T03:13:44.638Z"
+      },
+      {
+        "id": "cmg09payn00cp9379jhkx53i4",
+        "primaryEmail": "seanb@terracechances.com",
+        "businessName": "LUCKY DOLLAR BINGO PALACE LTD. dba CHANCES TERRACE",
+        "businessId": "registry-460",
+        "createdAt": "2025-09-26T03:13:44.638Z"
+      }
+    ],
+    "sf4946-adm@sobeys.com": [
+      {
+        "id": "cmg09pbby00ej9379y5mtr6bk",
+        "primaryEmail": "sf4946-adm@sobeys.com",
+        "businessName": "CANADA SAFEWAY #126",
+        "businessId": "registry-526",
+        "createdAt": "2025-09-26T03:13:45.117Z"
+      },
+      {
+        "id": "cmg09p9jp000s9379sj1aqdoq",
+        "primaryEmail": "sf4946-adm@sobeys.com",
+        "businessName": "CANADA SAFEWAY #126",
+        "businessId": "registry-29",
+        "createdAt": "2025-09-26T03:13:42.805Z"
+      }
+    ],
+    "shane.doodson@post.mcdonalds.ca": [
+      {
+        "id": "cmg09pama00ak9379ttj6kguw",
+        "primaryEmail": "shane.doodson@post.mcdonalds.ca",
+        "businessName": "P.S.D. VENTURES LTD.",
+        "businessId": "registry-382",
+        "createdAt": "2025-09-26T03:13:44.192Z"
+      },
+      {
+        "id": "cmg09p9jq001l9379isan2eoq",
+        "primaryEmail": "shane.doodson@post.mcdonalds.ca",
+        "businessName": "P.S.D. VENTURES LTD.",
+        "businessId": "registry-58",
+        "createdAt": "2025-09-26T03:13:42.805Z"
+      }
+    ],
+    "shelley.orford@thetire.ca": [
+      {
+        "id": "cmg09pam900949379e86gguyk",
+        "primaryEmail": "shelley.orford@thetire.ca",
+        "businessName": "ORFORD RETAIL SALES LTD. dba CANADIAN TIRE #486",
+        "businessId": "registry-330",
+        "createdAt": "2025-09-26T03:13:44.192Z"
+      },
+      {
+        "id": "cmg09pa9u007z9379meetsa2o",
+        "primaryEmail": "shelley.orford@thetire.ca",
+        "businessName": "ORFORD RETAIL SALES LTD. dba CANADIAN TIRE #486",
+        "businessId": "registry-289",
+        "createdAt": "2025-09-26T03:13:43.744Z"
+      }
+    ],
+    "skeenaliquor@gmail.com": [
+      {
+        "id": "cmg09p9jq001w9379gprojfzq",
+        "primaryEmail": "skeenaliquor@gmail.com",
+        "businessName": "SKEENA LIQUOR STORE",
+        "businessId": "registry-69",
+        "createdAt": "2025-09-26T03:13:42.805Z"
+      },
+      {
+        "id": "cmg09pbx200k69379nphiqcnq",
+        "primaryEmail": "skeenaliquor@gmail.com",
+        "businessName": "Skeena Bar",
+        "businessId": "registry-729",
+        "createdAt": "2025-09-26T03:13:45.877Z"
+      }
+    ],
+    "snapsexton@gmail.com": [
+      {
+        "id": "cmg09pbbx00e49379bz5g2j6m",
+        "primaryEmail": "snapsexton@gmail.com",
+        "businessName": "TINY STEPS",
+        "businessId": "registry-511",
+        "createdAt": "2025-09-26T03:13:45.117Z"
+      },
+      {
+        "id": "cmg09pa9t006d937914b4icg4",
+        "primaryEmail": "snapsexton@gmail.com",
+        "businessName": "KIDS AT PLAY",
+        "businessId": "registry-230",
+        "createdAt": "2025-09-26T03:13:43.744Z"
+      }
+    ],
+    "stcc-licensing@securitas.com": [
+      {
+        "id": "cmg09pci300p79379rxwhn2qv",
+        "primaryEmail": "stcc-licensing@securitas.com",
+        "businessName": "SECURITAS TECHNOLOGY CANADA CORPORATION",
+        "businessId": "registry-913",
+        "createdAt": "2025-09-26T03:13:46.635Z"
+      },
+      {
+        "id": "cmg09pc7m00on9379je3av06c",
+        "primaryEmail": "stcc-licensing@securitas.com",
+        "businessName": "SECURITAS TECHNOLOGY CANADA CORPORATION- BANKING MACHINE AIRPORT",
+        "businessId": "registry-893",
+        "createdAt": "2025-09-26T03:13:46.256Z"
+      }
+    ],
+    "sunsin01@shoppersdrugmart.ca": [
+      {
+        "id": "cmg09p9wx003693796sv7b2rp",
+        "primaryEmail": "sunsin01@shoppersdrugmart.ca",
+        "businessName": "Innovis Consulting Inc. dba Shoppers Drug Mart #266",
+        "businessId": "registry-115",
+        "createdAt": "2025-09-26T03:13:43.281Z"
+      },
+      {
+        "id": "cmg09pama00a693795hatqd19",
+        "primaryEmail": "sunsin01@shoppersdrugmart.ca",
+        "businessName": "INNOVIS CONSULTING INC. dba SHOPPERS DRUG MART #2259",
+        "businessId": "registry-368",
+        "createdAt": "2025-09-26T03:13:44.192Z"
+      }
+    ],
+    "suzy.provencher@fourrivers.crs": [
+      {
+        "id": "cmg09p9jq00209379ssweib0y",
+        "primaryEmail": "suzy.provencher@fourrivers.crs",
+        "businessName": "TERRACE CO-OP GAS BAR (FOUR RIVERS CO-OP)",
+        "businessId": "registry-73",
+        "createdAt": "2025-09-26T03:13:42.805Z"
+      },
+      {
+        "id": "cmg09p9jq001z9379dnw87agh",
+        "primaryEmail": "suzy.provencher@fourrivers.crs",
+        "businessName": "TERRACE CO-OP (FOUR RIVERS CO-OP)",
+        "businessId": "registry-72",
+        "createdAt": "2025-09-26T03:13:42.805Z"
+      },
+      {
+        "id": "cmg09p9wy00429379f15v0odf",
+        "primaryEmail": "suzy.provencher@fourrivers.crs",
+        "businessName": "FOUR RIVERS CO-OPERATIVE - TERRACE CARDLOCK",
+        "businessId": "registry-147",
+        "createdAt": "2025-09-26T03:13:43.281Z"
+      }
+    ],
+    "swifttcmservices@gmail.com": [
+      {
+        "id": "cmg09pc7l00nk9379bp42jme9",
+        "primaryEmail": "swifttcmservices@gmail.com",
+        "businessName": "Verma Building Maintenance LTD.",
+        "businessId": "registry-852",
+        "createdAt": "2025-09-26T03:13:46.256Z"
+      },
+      {
+        "id": "cmg09pd3600vk9379t0r69rxd",
+        "primaryEmail": "swifttcmservices@gmail.com",
+        "businessName": "Verma Building Maintenance Ltd",
+        "businessId": "registry-1142",
+        "createdAt": "2025-09-26T03:13:47.394Z"
+      }
+    ],
+    "t6323319@telus.net": [
+      {
+        "id": "cmg09pc7l00ny937962ai9gs9",
+        "primaryEmail": "t6323319@telus.net",
+        "businessName": "RUSTIC RIDGE CONTRACTING LTD. (Legion)",
+        "businessId": "registry-866",
+        "createdAt": "2025-09-26T03:13:46.256Z"
+      },
+      {
+        "id": "cmg09pbx200kp9379xd1fekyi",
+        "primaryEmail": "t6323319@telus.net",
+        "businessName": "RUSTIC RIDGE CONTRACTING LTD.",
+        "businessId": "registry-748",
+        "createdAt": "2025-09-26T03:13:45.877Z"
+      }
+    ],
+    "terracebavarian@gmail.com": [
+      {
+        "id": "cmg09p9jp000f9379az1q2yfo",
+        "primaryEmail": "terracebavarian@gmail.com",
+        "businessName": "BAVARIAN INN (TERRACE) LTD.",
+        "businessId": "registry-16",
+        "createdAt": "2025-09-26T03:13:42.805Z"
+      },
+      {
+        "id": "cmg09p9wy004y9379ngq4dtd2",
+        "primaryEmail": "terracebavarian@gmail.com",
+        "businessName": "BAVARIAN INN (TERRACE) LTD.",
+        "businessId": "registry-179",
+        "createdAt": "2025-09-26T03:13:43.281Z"
+      }
+    ],
+    "terracebowlingcentre@gmail.com": [
+      {
+        "id": "cmg09p9wy00419379c4xftdzy",
+        "primaryEmail": "terracebowlingcentre@gmail.com",
+        "businessName": "TERRACE BOWLING CENTER",
+        "businessId": "registry-146",
+        "createdAt": "2025-09-26T03:13:43.281Z"
+      },
+      {
+        "id": "cmg09p9wy00519379q4rssb97",
+        "primaryEmail": "terracebowlingcentre@gmail.com",
+        "businessName": "TERRACE BOWLING CENTER",
+        "businessId": "registry-182",
+        "createdAt": "2025-09-26T03:13:43.281Z"
+      }
+    ],
+    "terraceinnliquor@gmail.com": [
+      {
+        "id": "cmg09pam9009r9379yg8v012i",
+        "primaryEmail": "terraceinnliquor@gmail.com",
+        "businessName": "TERRACE INN LIQUOR STORE",
+        "businessId": "registry-353",
+        "createdAt": "2025-09-26T03:13:44.192Z"
+      },
+      {
+        "id": "cmg09pbbx00dy93794704ips5",
+        "primaryEmail": "terraceinnliquor@gmail.com",
+        "businessName": "TERRACE INN LIQUOR STORE",
+        "businessId": "registry-505",
+        "createdAt": "2025-09-26T03:13:45.117Z"
+      }
+    ],
+    "tmeeks@bosaproperties.com": [
+      {
+        "id": "cmg09pbby00f49379gxdyp8va",
+        "primaryEmail": "tmeeks@bosaproperties.com",
+        "businessName": "LOON PROPERTIES (SKEENA) INC",
+        "businessId": "registry-547",
+        "createdAt": "2025-09-26T03:13:45.117Z"
+      },
+      {
+        "id": "cmg09p9jr002r9379spzk5ng9",
+        "primaryEmail": "tmeeks@bosaproperties.com",
+        "businessName": "LOON PROPERTIES (SKEENA) INC",
+        "businessId": "registry-100",
+        "createdAt": "2025-09-26T03:13:42.805Z"
+      }
+    ],
+    "trevor_macandrew@saveonfoods.com": [
+      {
+        "id": "cmg09p9jq001o9379t40c7gbz",
+        "primaryEmail": "trevor_macandrew@saveonfoods.com",
+        "businessName": "PATTISON FOOD GROUP LTD.",
+        "businessId": "registry-61",
+        "createdAt": "2025-09-26T03:13:42.805Z"
+      },
+      {
+        "id": "cmg09p9jq002j93793xitfbs0",
+        "primaryEmail": "trevor_macandrew@saveonfoods.com",
+        "businessName": "PATTISON FOOD GROUP LTD.",
+        "businessId": "registry-92",
+        "createdAt": "2025-09-26T03:13:42.805Z"
+      }
+    ],
+    "trigos@telus.net": [
+      {
+        "id": "cmg09p9wy00489379m83b7drw",
+        "primaryEmail": "trigos@telus.net",
+        "businessName": "TRIGO'S FOOTWEAR",
+        "businessId": "registry-153",
+        "createdAt": "2025-09-26T03:13:43.281Z"
+      },
+      {
+        "id": "cmg09pcss00ub9379ihap728p",
+        "primaryEmail": "trigos@telus.net",
+        "businessName": "Trigo's",
+        "businessId": "registry-1097",
+        "createdAt": "2025-09-26T03:13:47.017Z"
+      },
+      {
+        "id": "cmg09pam8008f93795w67kozj",
+        "primaryEmail": "trigos@telus.net",
+        "businessName": "TRIGO'S LIFESTYLE",
+        "businessId": "registry-305",
+        "createdAt": "2025-09-26T03:13:44.192Z"
+      },
+      {
+        "id": "cmg09p9wy004m9379sgxg618q",
+        "primaryEmail": "trigos@telus.net",
+        "businessName": "TRIGO'S ENTERPRISES - RENTALS",
+        "businessId": "registry-167",
+        "createdAt": "2025-09-26T03:13:43.281Z"
+      }
+    ],
+    "uplandsnursery@yahoo.ca": [
+      {
+        "id": "cmg09pama00ay9379bjq21kpk",
+        "primaryEmail": "uplandsnursery@yahoo.ca",
+        "businessName": "0706342 BC LTD",
+        "businessId": "registry-397",
+        "createdAt": "2025-09-26T03:13:44.192Z"
+      },
+      {
+        "id": "cmg09pama00ap9379nwzkximy",
+        "primaryEmail": "uplandsnursery@yahoo.ca",
+        "businessName": "UPLANDS NURSERY Inc",
+        "businessId": "registry-388",
+        "createdAt": "2025-09-26T03:13:44.192Z"
+      }
+    ],
+    "vanessa.leechun@gmail.com": [
+      {
+        "id": "cmg09pc7m00os93790w35aqck",
+        "primaryEmail": "vanessa.leechun@gmail.com",
+        "businessName": "EIGHTY8 DESIGNS CO",
+        "businessId": "registry-898",
+        "createdAt": "2025-09-26T03:13:46.256Z"
+      },
+      {
+        "id": "cmg09pbx200kg9379s3tw9m4h",
+        "primaryEmail": "vanessa.leechun@gmail.com",
+        "businessName": "HEARTFELT HANKIES",
+        "businessId": "registry-739",
+        "createdAt": "2025-09-26T03:13:45.877Z"
+      }
+    ],
+    "vbedwell@cedarcoastdental.ca": [
+      {
+        "id": "cmg09pbbz00fq9379u0xkcv4l",
+        "primaryEmail": "vbedwell@cedarcoastdental.ca",
+        "businessName": "DROUIN HOLDINGS INC.",
+        "businessId": "registry-569",
+        "createdAt": "2025-09-26T03:13:45.117Z"
+      },
+      {
+        "id": "cmg09paym00bn9379qaoqy5n3",
+        "primaryEmail": "vbedwell@cedarcoastdental.ca",
+        "businessName": "CEDAR COAST DENTAL",
+        "businessId": "registry-422",
+        "createdAt": "2025-09-26T03:13:44.638Z"
+      },
+      {
+        "id": "cmg09p9jq001t9379b3zmqa6d",
+        "primaryEmail": "vbedwell@cedarcoastdental.ca",
+        "businessName": "DROUIN HOLDINGS INC.",
+        "businessId": "registry-66",
+        "createdAt": "2025-09-26T03:13:42.805Z"
+      }
+    ],
+    "vendor_payables@superiorpropane.com": [
+      {
+        "id": "cmg09pbbz00fg9379niytzom7",
+        "primaryEmail": "vendor_payables@superiorpropane.com",
+        "businessName": "SUPERIOR PROPANE",
+        "businessId": "registry-559",
+        "createdAt": "2025-09-26T03:13:45.117Z"
+      },
+      {
+        "id": "cmg09p9jq001y9379sgg0z2dk",
+        "primaryEmail": "vendor_payables@superiorpropane.com",
+        "businessName": "SUPERIOR PROPANE",
+        "businessId": "registry-71",
+        "createdAt": "2025-09-26T03:13:42.805Z"
+      }
+    ],
+    "wildduck@telus.net": [
+      {
+        "id": "cmg09p9wy004p9379he24a679",
+        "primaryEmail": "wildduck@telus.net",
+        "businessName": "WILD DUCK HOLDINGS LTD.",
+        "businessId": "registry-170",
+        "createdAt": "2025-09-26T03:13:43.281Z"
+      },
+      {
+        "id": "cmg09pa9t00699379i4oz8slu",
+        "primaryEmail": "wildduck@telus.net",
+        "businessName": "WILD DUCK HOLDINGS LTD.",
+        "businessId": "registry-226",
+        "createdAt": "2025-09-26T03:13:43.744Z"
+      }
+    ]
+  }
+}

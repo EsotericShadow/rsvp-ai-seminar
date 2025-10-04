@@ -2,8 +2,8 @@ import type { Metadata } from "next"
 import ProfessionalEventLanding from "@/components/ProfessionalEventLanding"
 
 export const metadata: Metadata = {
-  title: "AI in Northern BC: Information Session | Event Details",
-  description: "Join us for an information session on AI, machine learning, and automation in Terrace, BC. Learn about AI agents, custom AI integrations, and RAG systems for Northern BC businesses. October 23, 2025 at Sunshine Inn Terrace.",
+  title: "AI for Business Informational Event | Event Details",
+  description: "Join us for an informational event on AI, machine learning, and automation in Terrace, BC. Learn about AI agents, custom AI integrations, and RAG systems for Northern BC businesses. October 23, 2025 at Sunshine Inn Terrace.",
   keywords: [
     "AI information session",
     "Terrace BC AI event",
@@ -15,23 +15,23 @@ export const metadata: Metadata = {
     "Evergreen Web Solutions"
   ],
   openGraph: {
-    title: "AI in Northern BC: Information Session - Event Details",
-    description: "Join us for an information session on AI, machine learning, and automation in Terrace, BC. Learn about AI agents, custom AI integrations, and RAG systems.",
+    title: "AI for Business Informational Event - Event Details",
+    description: "Join us for an informational event on AI, machine learning, and automation in Terrace, BC. Learn about AI agents, custom AI integrations, and RAG systems.",
     url: "https://rsvp.evergreenwebsolutions.ca/event",
     images: [
       {
-        url: "/api/og?title=AI in Northern BC&subtitle=Information Session • Event Details • October 23, 2025",
+        url: "/api/og?title=AI for Business&subtitle=Informational Event • Event Details • October 23, 2025",
         width: 1200,
         height: 630,
-        alt: "AI in Northern BC Information Session Event Details"
+        alt: "AI for Business Informational Event Details"
       }
     ],
     type: "website",
   },
   twitter: {
     card: "summary_large_image",
-    title: "AI in Northern BC: Information Session - Event Details",
-    description: "Join us for an information session on AI, machine learning, and automation in Terrace, BC. Learn about AI agents, custom AI integrations, and RAG systems.",
+    title: "AI for Business Informational Event - Event Details",
+    description: "Join us for an informational event on AI, machine learning, and automation in Terrace, BC. Learn about AI agents, custom AI integrations, and RAG systems.",
   },
   alternates: {
     canonical: "https://rsvp.evergreenwebsolutions.ca/event",

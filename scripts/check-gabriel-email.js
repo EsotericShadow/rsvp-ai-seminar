@@ -107,3 +107,4 @@ async function checkGabrielEmail() {
 checkGabrielEmail()
   .catch(console.error)
   .finally(() => prisma.$disconnect());
+

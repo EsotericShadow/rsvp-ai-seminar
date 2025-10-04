@@ -434,3 +434,4 @@ createAIEventTemplates()
   .finally(async () => {
     await prisma.$disconnect();
   });
+

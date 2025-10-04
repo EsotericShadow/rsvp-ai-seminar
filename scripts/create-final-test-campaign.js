@@ -175,3 +175,4 @@ async function createFinalTestCampaign() {
 createFinalTestCampaign()
   .catch(console.error)
   .finally(() => prisma.$disconnect());
+

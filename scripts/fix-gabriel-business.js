@@ -130,3 +130,4 @@ async function fixGabrielBusiness() {
 fixGabrielBusiness()
   .catch(console.error)
   .finally(() => prisma.$disconnect());
+
