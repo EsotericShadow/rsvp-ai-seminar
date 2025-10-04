@@ -388,29 +388,29 @@ export default function ProfessionalEventLanding() {
       {/* Featured Article Section */}
       <motion.section 
         {...fadeInUp}
-        className="bg-white py-16"
+        className="bg-white py-8"
       >
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 lg:gap-12">
-            
-            {/* Featured Article - Large Card */}
-            <motion.div 
-              {...fadeInUp}
-              className="lg:col-span-2"
-            >
-              <div className="bg-gradient-to-br from-emerald-50 to-teal-50 rounded-2xl shadow-xl border border-emerald-100 overflow-hidden">
-                <div className="bg-gradient-to-r from-emerald-600 to-teal-600 px-8 py-6">
-                  <div className="flex items-center gap-4">
-                    <div className="w-12 h-12 bg-white/20 rounded-xl flex items-center justify-center">
-                      <svg className="w-7 h-7 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-                      </svg>
-                    </div>
-                    <div>
-                      <h2 className="text-2xl font-bold text-white">Featured Article</h2>
-                      <p className="text-emerald-100">Insights on AI for Northern BC businesses</p>
-                    </div>
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 lg:gap-12">
+          
+          {/* Featured Article - Large Card */}
+          <motion.div 
+            {...fadeInUp}
+            className="lg:col-span-2"
+          >
+            <div className="bg-gradient-to-br from-emerald-50 to-teal-50 rounded-2xl shadow-xl border border-emerald-100 overflow-hidden">
+              <div className="bg-gradient-to-r from-emerald-600 to-teal-600 px-8 py-6">
+                <div className="flex items-center gap-4">
+                  <div className="w-12 h-12 bg-white/20 rounded-xl flex items-center justify-center">
+                    <svg className="w-7 h-7 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                    </svg>
                   </div>
+                  <div>
+                    <h2 className="text-2xl font-bold text-white">Featured Article</h2>
+                    <p className="text-emerald-100">Insights on AI for Northern BC businesses</p>
+                  </div>
+                </div>
                 </div>
                 
                 <div className="p-8">
