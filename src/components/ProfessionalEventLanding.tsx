@@ -359,6 +359,45 @@ export default function ProfessionalEventLanding() {
               </div>
             </div>
 
+            {/* Featured Article */}
+            <div className="bg-gradient-to-br from-emerald-50 to-teal-50 rounded-2xl shadow-xl border border-emerald-100 p-8">
+              <div className="flex items-center gap-3 mb-4">
+                <div className="w-8 h-8 bg-emerald-500 rounded-lg flex items-center justify-center">
+                  <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                  </svg>
+                </div>
+                <h3 className="text-xl font-bold text-gray-900">Featured Article</h3>
+              </div>
+              
+              <div className="space-y-4">
+                <div className="bg-white rounded-xl p-6 border border-emerald-100">
+                  <h4 className="text-lg font-bold text-gray-900 mb-2">AI ≠ Chatbots</h4>
+                  <p className="text-sm text-gray-600 mb-4 leading-relaxed">
+                    AI isn't hype, it's infrastructure. Just like electricity once separated modern businesses from those stuck in the dark, AI will separate tomorrow's winners from tomorrow's laggards.
+                  </p>
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-2">
+                      <div className="w-6 h-6 bg-emerald-100 rounded-full flex items-center justify-center">
+                        <span className="text-emerald-600 font-semibold text-xs">GM</span>
+                      </div>
+                      <span className="text-sm font-medium text-gray-700">Gabriel Marko</span>
+                    </div>
+                    <span className="text-xs text-gray-500">5 min read</span>
+                  </div>
+                </div>
+                
+                <Link
+                  href="https://evergreenwebsolutions.ca/articles/ai-not-chatbots"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="block w-full bg-emerald-600 text-white text-center py-3 px-4 rounded-lg font-semibold hover:bg-emerald-700 transition-colors duration-200 focus:outline-none focus:ring-4 focus:ring-emerald-200"
+                >
+                  Read Full Article →
+                </Link>
+              </div>
+            </div>
+
             {/* Testimonials */}
             <div className="bg-white rounded-2xl shadow-xl border border-gray-100 p-8">
               <h3 className="text-xl font-bold text-gray-900 mb-6">What Others Say</h3>
