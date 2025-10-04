@@ -93,3 +93,4 @@ async function fixTemplatePlaceholders() {
 fixTemplatePlaceholders()
   .catch(console.error)
   .finally(() => prisma.$disconnect());
+

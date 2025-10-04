@@ -82,3 +82,4 @@ async function checkMemberTokens() {
 checkMemberTokens()
   .catch(console.error)
   .finally(() => prisma.$disconnect());
+

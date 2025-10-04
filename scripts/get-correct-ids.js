@@ -68,3 +68,4 @@ async function getCorrectIds() {
 getCorrectIds()
   .catch(console.error)
   .finally(() => prisma.$disconnect());
+

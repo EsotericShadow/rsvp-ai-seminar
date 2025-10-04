@@ -39,3 +39,4 @@ async function deleteAllTemplates() {
 deleteAllTemplates()
   .catch(console.error)
   .finally(() => prisma.$disconnect());
+

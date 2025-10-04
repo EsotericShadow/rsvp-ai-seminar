@@ -71,3 +71,4 @@ async function fixGlobalTemplateIntegration() {
 fixGlobalTemplateIntegration()
   .catch(console.error)
   .finally(() => prisma.$disconnect());
+

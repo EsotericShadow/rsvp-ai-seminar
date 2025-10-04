@@ -95,3 +95,4 @@ async function fixTemplateStructure() {
 fixTemplateStructure()
   .catch(console.error)
   .finally(() => prisma.$disconnect());
+

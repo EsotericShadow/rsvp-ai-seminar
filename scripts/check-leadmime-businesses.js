@@ -103,3 +103,4 @@ async function checkLeadMineBusinesses() {
 checkLeadMineBusinesses()
   .catch(console.error)
   .finally(() => prisma.$disconnect());
+

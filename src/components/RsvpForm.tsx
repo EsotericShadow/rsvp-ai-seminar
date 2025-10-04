@@ -454,8 +454,10 @@ export function RsvpForm() {
             className={fieldInputClass}
           >
             <option value="RADIO">Radio</option>
+            <option value="RADIO_AD">Radio Ad</option>
             <option value="CHAMBER">Chamber</option>
             <option value="FACEBOOK">Facebook</option>
+            <option value="FACEBOOK_EVENT">Facebook Event</option>
             <option value="LINKEDIN">LinkedIn</option>
             <option value="WORD_OF_MOUTH">Word of Mouth</option>
             <option value="OTHER">Other</option>

@@ -149,3 +149,4 @@ async function checkProductionDatabase() {
 checkProductionDatabase()
   .catch(console.error)
   .finally(() => prisma.$disconnect());
+

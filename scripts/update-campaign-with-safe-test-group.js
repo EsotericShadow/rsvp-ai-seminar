@@ -86,3 +86,4 @@ async function updateCampaignWithSafeTestGroup() {
 updateCampaignWithSafeTestGroup()
   .catch(console.error)
   .finally(() => prisma.$disconnect());
+

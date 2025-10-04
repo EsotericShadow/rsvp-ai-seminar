@@ -118,7 +118,7 @@ export const rsvpFormSchema = z.object({
   dietaryPreference: z.enum(['None', 'Vegetarian', 'Vegan', 'Gluten-Free', 'Other']).optional(),
   dietaryOther: z.string().max(200, 'Dietary note too long').optional(),
   accessibilityNeeds: z.string().max(500, 'Accessibility note too long').optional(),
-  referralSource: z.enum(['Website', 'Social Media', 'Email', 'Friend', 'Other']).optional(),
+  referralSource: z.enum(['Website', 'Social Media', 'Email', 'Friend', 'Radio Ad', 'Facebook Event', 'Other']).optional(),
   referralOther: z.string().max(200, 'Referral note too long').optional(),
   wantsResources: z.boolean().optional(),
   wantsAudit: z.boolean().optional(),

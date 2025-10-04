@@ -96,3 +96,4 @@ async function createLeadMineBusiness() {
 createLeadMineBusiness()
   .catch(console.error)
   .finally(() => prisma.$disconnect());
+

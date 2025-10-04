@@ -76,3 +76,4 @@ async function debugURLGeneration() {
 debugURLGeneration()
   .catch(console.error)
   .finally(() => prisma.$disconnect());
+

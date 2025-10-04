@@ -86,3 +86,4 @@ async function updateCampaignWithRealAudience() {
 updateCampaignWithRealAudience()
   .catch(console.error)
   .finally(() => prisma.$disconnect());
+

@@ -58,3 +58,4 @@ async function checkTemplateFields() {
 checkTemplateFields()
   .catch(console.error)
   .finally(() => prisma.$disconnect());
+

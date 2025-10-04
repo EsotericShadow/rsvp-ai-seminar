@@ -1,0 +1,58 @@
+{
+  "timestamp": "2025-09-26T04:41:32.031Z",
+  "totalSends": 5,
+  "uniqueEmails": 0,
+  "sends": [
+    {
+      "email": "Unknown",
+      "businessName": "Unknown",
+      "businessId": "test-green-alderson",
+      "subject": "N/A",
+      "templateName": "N/A",
+      "status": "SENT",
+      "sentAt": "2025-09-25T23:27:30.638Z",
+      "sendId": "cmg01md73000ldnaokeu5axrw"
+    },
+    {
+      "email": "Unknown",
+      "businessName": "Unknown",
+      "businessId": "test-green-alderson",
+      "subject": "N/A",
+      "templateName": "N/A",
+      "status": "SENT",
+      "sentAt": "2025-09-25T23:27:30.446Z",
+      "sendId": "cmg01md1r000fdnaojs6pa7d3"
+    },
+    {
+      "email": "Unknown",
+      "businessName": "Unknown",
+      "businessId": "test-green-alderson",
+      "subject": "N/A",
+      "templateName": "N/A",
+      "status": "SENT",
+      "sentAt": "2025-09-25T23:27:29.339Z",
+      "sendId": "cmg01mc710009dnaozmbdhptm"
+    },
+    {
+      "email": "Unknown",
+      "businessName": "Unknown",
+      "businessId": "test-green-alderson",
+      "subject": "N/A",
+      "templateName": "N/A",
+      "status": "SENT",
+      "sentAt": "2025-09-25T22:50:27.249Z",
+      "sendId": "cmg00apma0009fexp1aallgq5"
+    },
+    {
+      "email": "Unknown",
+      "businessName": "Unknown",
+      "businessId": "test-green-alderson",
+      "subject": "N/A",
+      "templateName": "N/A",
+      "status": "SENT",
+      "sentAt": "2025-09-25T22:50:26.419Z",
+      "sendId": "cmg00aoz90003fexpur8k8f7i"
+    }
+  ],
+  "uniqueEmailList": []
+}

@@ -121,3 +121,4 @@ async function checkEmailStatus() {
 checkEmailStatus()
   .catch(console.error)
   .finally(() => prisma.$disconnect());
+

@@ -78,3 +78,4 @@ async function testInviteLinkProduction() {
 
 testInviteLinkProduction()
   .catch(console.error);
+

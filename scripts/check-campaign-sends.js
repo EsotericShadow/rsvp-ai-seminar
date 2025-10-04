@@ -46,3 +46,4 @@ async function checkCampaignSends() {
 checkCampaignSends()
   .catch(console.error)
   .finally(() => prisma.$disconnect());
+
