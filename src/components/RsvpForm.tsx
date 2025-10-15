@@ -460,6 +460,7 @@ export function RsvpForm() {
             <option value="FACEBOOK_EVENT">Facebook Event</option>
             <option value="LINKEDIN">LinkedIn</option>
             <option value="WORD_OF_MOUTH">Word of Mouth</option>
+            <option value="TERRACE_STANDARD">Terrace Standard</option>
             <option value="OTHER">Other</option>
           </select>
         </div>
