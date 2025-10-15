@@ -79,7 +79,7 @@ const coreRsvpSchema = z.object({
   dietaryOther: sanitizedString().optional(),
   accessibilityNeeds: sanitizedString().optional(),
 
-  referralSource: z.enum(["RADIO", "RADIO_AD", "CHAMBER", "FACEBOOK", "FACEBOOK_EVENT", "LINKEDIN", "WORD_OF_MOUTH", "OTHER"]),
+  referralSource: z.enum(["RADIO", "RADIO_AD", "CHAMBER", "FACEBOOK", "FACEBOOK_EVENT", "LINKEDIN", "WORD_OF_MOUTH", "SOCIAL_MEDIA", "EMAIL", "WEBSITE", "BUSINESS_NETWORK", "TERRACE_STANDARD", "OTHER"]),
   referralOther: sanitizedString().optional(),
 
   wantsResources: z.boolean().default(false),

@@ -464,6 +464,7 @@ export function ProfessionalRsvpForm() {
                     <option value="BUSINESS_NETWORK">Business network</option>
                     <option value="RADIO_AD">Radio Ad</option>
                     <option value="FACEBOOK_EVENT">Facebook Event</option>
+                    <option value="TERRACE_STANDARD">Terrace Standard</option>
                     <option value="OTHER">Other</option>
                   </select>
                   {form.watch('referralSource') === 'OTHER' && (
