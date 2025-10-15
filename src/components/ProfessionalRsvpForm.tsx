@@ -389,7 +389,7 @@ export function ProfessionalRsvpForm() {
                       How many people will be attending? *
                     </label>
                     <select
-                      {...form.register('attendeeCount')}
+                      {...form.register('attendeeCount', { valueAsNumber: true })}
                       className={`${fieldInputClass} ${form.formState.errors.attendeeCount ? 'border-red-500 focus:border-red-500 focus:ring-red-100' : ''}`}
                     >
                       {[1, 2, 3, 4, 5].map(num => (
