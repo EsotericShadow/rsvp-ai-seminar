@@ -115,7 +115,7 @@ export async function POST(req: Request) {
       email: values.email,
       phone: values.phone,
       attendanceStatus: values.attendanceStatus,
-      attendeeCount: values.attendeeCount,
+      attendeeCount: values.attendeeCount || 0, // Default to 0 if not provided (for NO/MAYBE responses)
       dietaryPreference: values.dietaryPreference,
       dietaryOther: values.dietaryOther,
       accessibilityNeeds: values.accessibilityNeeds,

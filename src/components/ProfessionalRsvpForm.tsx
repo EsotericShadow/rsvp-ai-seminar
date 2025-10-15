@@ -179,15 +179,137 @@ export function ProfessionalRsvpForm() {
     setCurrentStep((s) => Math.max(s - 1, 0));
   };
 
+  // Analytics helper functions
+  function getScrollDepth(): number {
+    const doc = document.documentElement;
+    const totalScrollable = doc.scrollHeight - window.innerHeight;
+    if (totalScrollable <= 0) return 100;
+    const current = window.scrollY;
+    return Math.round((current / totalScrollable) * 100);
+  }
+
+  function getInteractionCounts(): Record<string, number> {
+    // This would be tracked by AnalyticsBeacon, but for RSVP we'll use a simplified version
+    return {
+      clicks: 0, // Would be tracked by AnalyticsBeacon
+      keypresses: 0,
+      copies: 0,
+      pointerMoves: 0,
+    };
+  }
+
+  function getVisibilityTimeline(): Array<{ state: string; at: number }> {
+    return [{ state: document.visibilityState, at: Date.now() }];
+  }
+
+  function calculateEngagementScore(): number {
+    // Simple engagement score based on available metrics
+    const scrollDepth = getScrollDepth();
+    const timeOnPage = performance.now();
+    
+    // Weight scroll depth (40%) and time on page (60%)
+    const scrollScore = Math.min(scrollDepth, 100);
+    const timeScore = Math.min(timeOnPage / 1000, 100); // Convert to seconds, cap at 100
+    
+    return Math.round(scrollScore * 0.4 + timeScore * 0.6);
+  }
+
+  async function collectClientContext(): Promise<Record<string, unknown>> {
+    if (typeof window === 'undefined') return {};
+
+    try {
+      const nav = window.navigator as Navigator & { userAgentData?: { platform?: string; brands?: Array<{ brand: string; version: string }>; mobile?: boolean }; storage?: Navigator['storage']; }
+      const screen = window.screen;
+      const orientation = screen?.orientation?.type;
+      const language = nav.language ?? (nav as any).userLanguage;
+      const languages = Array.isArray(nav.languages) && nav.languages.length ? nav.languages : undefined;
+      const tz = Intl.DateTimeFormat().resolvedOptions().timeZone;
+      const platform = nav.userAgentData?.platform || nav.platform;
+      const deviceMemory = typeof (nav as any).deviceMemory === 'number' ? (nav as any).deviceMemory : undefined;
+      const hardwareConcurrency = typeof nav.hardwareConcurrency === 'number' ? nav.hardwareConcurrency : undefined;
+      const maxTouchPoints = typeof nav.maxTouchPoints === 'number' ? nav.maxTouchPoints : undefined;
+      const storageEstimate = nav.storage && typeof nav.storage.estimate === 'function' ? await nav.storage.estimate() : undefined;
+
+      const navigationEntry = performance.getEntriesByType('navigation')[0] as PerformanceNavigationTiming | undefined;
+      const navigation = navigationEntry
+        ? {
+            type: navigationEntry.type,
+            startTime: Math.round(navigationEntry.startTime),
+            duration: Math.round(navigationEntry.duration),
+            domContentLoaded: Math.round(navigationEntry.domContentLoadedEventEnd),
+            loadEventEnd: Math.round(navigationEntry.loadEventEnd),
+            responseEnd: Math.round(navigationEntry.responseEnd),
+            requestStart: Math.round(navigationEntry.requestStart),
+            transferSize: navigationEntry.transferSize,
+            encodedBodySize: navigationEntry.encodedBodySize,
+            decodedBodySize: navigationEntry.decodedBodySize,
+            redirectCount: navigationEntry.redirectCount,
+          }
+        : undefined;
+
+      const paintEntries = performance.getEntriesByType('paint') as PerformanceEntry[];
+      const paint = paintEntries.length
+        ? paintEntries.map((entry) => ({
+            name: entry.name,
+            startTime: Math.round(entry.startTime),
+            duration: Math.round(entry.duration),
+          }))
+        : undefined;
+
+      // Engagement tracking
+      const engagementInfo = {
+        scrollDepth: getScrollDepth(),
+        timeOnPageMs: Math.round(performance.now()),
+        interactionCounts: getInteractionCounts(),
+        visibility: getVisibilityTimeline(),
+        // Calculate engagement score (0-100)
+        engagementScore: calculateEngagementScore(),
+        // Session metrics
+        pageViews: 1, // RSVP form is typically 1 page view
+        sessionDuration: Math.round(performance.now()),
+        bounceRate: 0, // If user is filling out RSVP form, they're engaged (not bounced)
+      };
+
+      return {
+        language,
+        languages,
+        tz,
+        screenW: screen?.width,
+        screenH: screen?.height,
+        viewportW: window.innerWidth,
+        viewportH: window.innerHeight,
+        orientation,
+        dpr: window.devicePixelRatio,
+        platform,
+        deviceMemory,
+        hardwareConcurrency,
+        maxTouchPoints,
+        storage: storageEstimate,
+        navigation,
+        paint,
+        performance: {
+          timeOrigin: Math.round(performance.timeOrigin),
+          now: Math.round(performance.now()),
+        },
+        ...engagementInfo,
+      };
+    } catch (error) {
+      console.error('Failed to collect client context', error);
+      return {};
+    }
+  }
+
   const onSubmit = async (data: RsvpFormValues) => {
     setIsSubmitting(true);
     setSubmitStatus('idle');
     
     try {
+      const context = await collectClientContext();
+      
       const response = await fetch('/api/rsvp', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(data),
+        body: JSON.stringify({ ...data, ...context }),
       });
 
       if (response.ok) {
