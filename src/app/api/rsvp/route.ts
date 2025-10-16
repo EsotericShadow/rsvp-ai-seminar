@@ -69,13 +69,18 @@ export async function POST(req: Request) {
     const validation = rsvpSchema.safeParse(body);
 
     if (!validation.success) {
-      // Log invalid input for security monitoring
-      const validationErrors = validation.error?.errors.map(e => e.message) || [];
+      // Log invalid input for security monitoring with detailed field information
+      const validationErrors = validation.error?.errors.map(e => `${e.path.join('.')}: ${e.message}`) || [];
+      console.error('RSVP Validation Failed:', {
+        errors: validation.error?.errors,
+        body: JSON.stringify(body, null, 2)
+      });
       logInvalidInput(clientIP, body, validationErrors);
       
       // Don't expose detailed validation errors to prevent information disclosure
       return createSecureResponse({ 
-        message: 'Invalid form data. Please check your input and try again.' 
+        message: 'Invalid form data. Please check your input and try again.',
+        errors: process.env.NODE_ENV === 'development' ? validationErrors : undefined
       }, 400);
     }
 
