@@ -107,9 +107,16 @@ export async function POST(req: Request) {
     }, getTestDetectionConfig());
     
     if (testValidation.isTest) {
-      console.warn('Test submission blocked:', testValidation.message);
+      console.warn('Test submission blocked:', {
+        message: testValidation.message,
+        email: values.email,
+        fullName,
+        confidence: testValidation.testDetection.confidence,
+        reasons: testValidation.testDetection.reasons
+      });
       return createSecureResponse({ 
-        message: 'Invalid submission. Please use the proper form to submit your RSVP.'
+        message: 'Invalid submission. Please use the proper form to submit your RSVP.',
+        debug: process.env.NODE_ENV === 'development' ? testValidation.testDetection.reasons : undefined
       }, 400);
     }
     

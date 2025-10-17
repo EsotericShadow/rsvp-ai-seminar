@@ -177,10 +177,10 @@ export const getTestDetectionConfig = (): TestDetectionConfig => {
 
   if (isProduction) {
     return {
-      blockTestEmails: true,
-      blockTestNames: true,
-      blockAPIUserAgents: true,
-      requireVisitorTracking: false, // Set to true if you want strict tracking
+      blockTestEmails: false, // DISABLED - was blocking real users with "test" in email
+      blockTestNames: false,  // DISABLED - was blocking real users like "Preston", "Templeton"
+      blockAPIUserAgents: true, // Still block bots/curl/postman
+      requireVisitorTracking: false,
     };
   }
 

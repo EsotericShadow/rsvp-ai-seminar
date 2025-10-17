@@ -31,6 +31,7 @@ const sanitizedString = (minLength?: number) => {
 };
 
 // Analytics schema for comprehensive tracking data
+// Using .passthrough() to allow additional browser-specific fields
 const analyticsSchema = z.object({
   // Basic device info
   language: z.string().optional(),
@@ -42,6 +43,7 @@ const analyticsSchema = z.object({
   viewportH: z.number().optional(),
   orientation: z.string().optional(),
   dpr: z.number().optional(),
+  platform: z.string().optional(),
   deviceMemory: z.number().optional(),
   hardwareConcurrency: z.number().optional(),
   maxTouchPoints: z.number().optional(),
@@ -62,7 +64,7 @@ const analyticsSchema = z.object({
   pageViews: z.number().optional(),
   sessionDuration: z.number().optional(),
   bounceRate: z.number().optional(),
-});
+}).passthrough(); // Allow additional fields from different browsers
 
 // Core RSVP form schema
 const coreRsvpSchema = z.object({
@@ -125,4 +127,6 @@ export const coreRsvpFormSchema = coreRsvpSchema.superRefine((val, ctx) => {
   }
 });
 
-export type RsvpFormValues = z.infer<typeof rsvpSchema>;
+// Export types
+export type RsvpFormValues = z.infer<typeof coreRsvpFormSchema>; // Form fields only
+export type RsvpSubmissionData = z.infer<typeof rsvpSchema>; // Form + Analytics
