@@ -304,6 +304,18 @@ export function ProfessionalRsvpForm() {
     setSubmitStatus('idle');
     
     try {
+      // Validate phone is complete before submission
+      const phoneRegex = /^\d{3}-\d{3}-\d{4}$/;
+      if (!phoneRegex.test(data.phone)) {
+        form.setError('phone', { 
+          type: 'manual', 
+          message: 'Please complete your phone number (format: 250-635-1234)' 
+        });
+        setIsSubmitting(false);
+        setCurrentStep(0); // Go back to step 0 where phone field is
+        return;
+      }
+      
       const context = await collectClientContext();
       
       const response = await fetch('/api/rsvp', {
@@ -316,6 +328,8 @@ export function ProfessionalRsvpForm() {
         setSubmitStatus('success');
         form.reset();
       } else {
+        const errorData = await response.json().catch(() => ({ message: 'Unknown error' }));
+        console.error('RSVP submission failed:', errorData);
         setSubmitStatus('error');
       }
     } catch (error) {

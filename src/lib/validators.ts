@@ -70,7 +70,15 @@ const coreRsvpSchema = z.object({
   lastName: sanitizedString(1),
   organization: sanitizedString().optional(),
   email: z.string().email("Enter a valid email").transform((email) => email.toLowerCase().trim()),
-  phone: z.string().regex(phoneRegex, "Use 000-000-0000"),
+  phone: z.string()
+    .min(1, "Phone number is required")
+    .refine((val) => {
+      // Allow partial input for form validation (during step progression)
+      // Must be in format: NNN-NNN-NNNN or partial like "250-" or "250-635-"
+      const digitsOnly = val.replace(/\D/g, '');
+      // Accept if less than 10 digits (partial) or exactly 10 digits (complete)
+      return (digitsOnly.length <= 10 && val.match(/^\d{1,3}(-\d{0,3}(-\d{0,4})?)?$/)) || phoneRegex.test(val);
+    }, "Enter phone number in format: 250-635-1234"),
 
   attendanceStatus: z.enum(["YES", "NO", "MAYBE"]),
   attendeeCount: z.number().int().min(1).max(20).optional(),
@@ -97,6 +105,10 @@ export const rsvpSchema = coreRsvpSchema.merge(analyticsSchema).superRefine((val
   }
   if (val.referralSource === "OTHER" && !val.referralOther?.trim()) {
     ctx.addIssue({ code: "custom", message: "Tell us where you heard about us", path: ["referralOther"] });
+  }
+  // Require complete phone number for backend submission
+  if (!phoneRegex.test(val.phone)) {
+    ctx.addIssue({ code: "custom", message: "Complete phone number required (format: 250-635-1234)", path: ["phone"] });
   }
 });
 
