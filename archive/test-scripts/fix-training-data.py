@@ -104,7 +104,7 @@ def upload_fixed_data_to_weaviate():
         
         # Weaviate configuration
         WEAVIATE_URL = "https://rbq70xfws0wsquqdhxxc4w.c0.us-west3.gcp.weaviate.cloud"
-        WEAVIATE_API_KEY = "REDACTED_CREDENTIAL"
+        WEAVIATE_API_KEY = os.environ["WEAVIATE_API_KEY"]
         
         # Connect to Weaviate
         client = weaviate.connect_to_weaviate_cloud(

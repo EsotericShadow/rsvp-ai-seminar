@@ -4,6 +4,7 @@ Comprehensive System Validation
 Tests all AI system components to ensure everything works correctly
 """
 
+import os
 import time
 import json
 import requests
@@ -14,7 +15,7 @@ import logging
 
 # Configuration
 WEAVIATE_URL = "https://rbq70xfws0wsquqdhxxc4w.c0.us-west3.gcp.weaviate.cloud"
-WEAVIATE_API_KEY = "REDACTED_CREDENTIAL"
+WEAVIATE_API_KEY = os.environ["WEAVIATE_API_KEY"]
 NEXTJS_BASE_URL = "http://localhost:3000"
 
 class SystemValidator:

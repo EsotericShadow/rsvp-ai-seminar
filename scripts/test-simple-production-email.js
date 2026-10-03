@@ -1,7 +1,7 @@
 async function testSimpleProductionEmail() {
   console.log('🔍 Testing simple email send in production...');
   
-  const cronSecret = 'REDACTED_CREDENTIAL';
+  const cronSecret = requireAuditEnvironment('CAMPAIGN_CRON_SECRET');
   const mainAppUrl = 'https://rsvp.evergreenwebsolutions.ca';
   
   try {
@@ -65,3 +65,11 @@ async function testSimpleProductionEmail() {
 testSimpleProductionEmail()
   .catch(console.error);
 
+
+
+// Require an operator-supplied credential without embedding it in source.
+function requireAuditEnvironment(name) {
+  const value = process.env[name];
+  if (!value) throw new Error(`Missing required environment variable: ${name}`);
+  return value;
+}

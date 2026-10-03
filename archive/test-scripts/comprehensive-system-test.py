@@ -3,6 +3,7 @@
 Comprehensive System Testing - Find All Potential Issues
 """
 
+import os
 import weaviate
 import requests
 import json
@@ -11,7 +12,7 @@ from typing import Dict, List, Any
 
 # Configuration
 WEAVIATE_URL = "https://rbq70xfws0wsquqdhxxc4w.c0.us-west3.gcp.weaviate.cloud"
-WEAVIATE_API_KEY = "REDACTED_CREDENTIAL"
+WEAVIATE_API_KEY = os.environ["WEAVIATE_API_KEY"]
 NEXTJS_BASE_URL = "http://localhost:3000"
 
 class SystemTester:

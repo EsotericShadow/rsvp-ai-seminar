@@ -25,10 +25,10 @@ async function fixGabrielToken() {
     }
     
     console.log('✅ Found Gabriel member:', gabrielMember.id);
-    console.log('   Current token:', gabrielMember.inviteToken || 'None');
+    console.log('Invitation token details omitted from output.');
     
     // Update with the token from LeadMine
-    const inviteToken = 'REDACTED_CREDENTIAL';
+    const inviteToken = requireAuditEnvironment('AUDIENCE_INVITE_TOKEN');
     
     const updatedMember = await prisma.audienceMember.update({
       where: { id: gabrielMember.id },
@@ -37,7 +37,7 @@ async function fixGabrielToken() {
       }
     });
     
-    console.log('✅ Updated Gabriel member with token:', updatedMember.inviteToken);
+    console.log('Invitation token details omitted from output.');
     
     // Test URL generation
     const inviteLink = `https://rsvp.evergreenwebsolutions.ca/?eid=biz_${inviteToken}`;
@@ -109,7 +109,7 @@ async function fixGabrielToken() {
     
     console.log('\n✅ Final member status:');
     console.log('   Email:', finalMember.primaryEmail);
-    console.log('   Token:', finalMember.inviteToken);
+    console.log('Invitation token details omitted from output.');
     console.log('   Business ID:', finalMember.businessId);
     
   } catch (error) {
@@ -121,3 +121,11 @@ fixGabrielToken()
   .catch(console.error)
   .finally(() => prisma.$disconnect());
 
+
+
+// Require an operator-supplied credential without embedding it in source.
+function requireAuditEnvironment(name) {
+  const value = process.env[name];
+  if (!value) throw new Error(`Missing required environment variable: ${name}`);
+  return value;
+}

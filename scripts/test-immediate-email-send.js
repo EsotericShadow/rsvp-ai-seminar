@@ -46,7 +46,7 @@ async function testImmediateEmailSend() {
   console.log('\n📋 Members with invite tokens:');
   immediateSchedule.group.members.forEach((member, index) => {
     console.log(`   ${index + 1}. ${member.businessName} (${member.primaryEmail})`);
-    console.log(`      Token: ${member.inviteToken || 'NO TOKEN'}`);
+    console.log('Invitation token details omitted from output.');
   });
   
   console.log('\n📤 Testing email sending via API...');
@@ -56,7 +56,7 @@ async function testImmediateEmailSend() {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
-      'x-cron-secret': 'REDACTED_CREDENTIAL'
+      'x-cron-secret': requireAuditEnvironment('CAMPAIGN_CRON_SECRET')
     },
     body: JSON.stringify({
       scheduleId: immediateSchedule.id,
@@ -120,3 +120,11 @@ testImmediateEmailSend()
   .catch(console.error)
   .finally(() => prisma.$disconnect());
 
+
+
+// Require an operator-supplied credential without embedding it in source.
+function requireAuditEnvironment(name) {
+  const value = process.env[name];
+  if (!value) throw new Error(`Missing required environment variable: ${name}`);
+  return value;
+}

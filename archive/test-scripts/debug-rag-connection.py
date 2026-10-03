@@ -3,12 +3,13 @@
 Debug RAG Connection Issues
 """
 
+import os
 import weaviate
 import json
 
 # Weaviate configuration
 WEAVIATE_URL = "https://rbq70xfws0wsquqdhxxc4w.c0.us-west3.gcp.weaviate.cloud"
-WEAVIATE_API_KEY = "REDACTED_CREDENTIAL"
+WEAVIATE_API_KEY = os.environ["WEAVIATE_API_KEY"]
 
 def debug_rag_connection():
     """Debug the RAG connection issues"""
